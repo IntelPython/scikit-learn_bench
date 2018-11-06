@@ -83,3 +83,6 @@ Python*
   - `{two,multi}_class_svm --fileX <feature-file> --fileY <label-file> --num-threads <threads>`:
     benchmark two/multi class SVM, using pregenerated feature and label file and using the given
     number of threads
+
+## See also
+"[Accelerating Scientific Python with Intel Optimizations](http://conference.scipy.org/proceedings/scipy2017/pdfs/oleksandr_pavlyk.pdf)" by Oleksandr Pavlyk, Denis Nagorny, Andres Guzman-Ballen, Anton Malakhov, Hai Liu, Ehsan Totoni, Todd A. Anderson, Sergey Maidanov. Proceedings of the 16th Python in Science Conference (SciPy 2017), July 10 - July 16, Austin, Texas
