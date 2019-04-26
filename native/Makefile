@@ -2,14 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-BENCHMARKS += correlation cosine kmeans linear ridge kmeans_predict two_class_svm multi_class_svm
+BENCHMARKS += correlation cosine kmeans linear ridge \
+			  two_class_svm multi_class_svm log_reg_lbfgs \
+			  decision_forest_regr decision_forest_clsf
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
 
 CXX = icc
 CXXFLAGS += -m64 -fPIC -fp-model strict -O3 -g -fomit-frame-pointer \
 		  -xSSE4.2 -axCORE-AVX2,COMMON-AVX512
-CXXFLAGS += -std=c++11
-LDFLAGS += -ldaal_core -ldaal_thread
+CXXFLAGS += -std=c++14
+LDFLAGS += -ldaal_core -ldaal_thread -Wl,-rpath,$(CONDA_PREFIX)/lib
 CXXINCLUDE += CLI11/include
 
 ifneq ($(CONDA_PREFIX),)

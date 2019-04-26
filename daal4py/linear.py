@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Intel Corporation
+# Copyright (C) 2017-2019 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -6,12 +6,9 @@ from __future__ import print_function
 import numpy as np
 import timeit
 from numpy.random import rand
-from sklearn import linear_model
+from daal4py import linear_regression_training, linear_regression_prediction, daalinit
 from args import getArguments, coreString
-import sklearn
-sklearn._ASSUME_FINITE = True
-if sklearn.__version__ == '0.18.2':
-    sklearn.utils.validation._assert_all_finite = lambda X: None
+from bench import prepare_benchmark
 
 import argparse
 argParser = argparse.ArgumentParser(prog="linear.py",
@@ -19,15 +16,8 @@ argParser = argparse.ArgumentParser(prog="linear.py",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 args = getArguments(argParser)
 REP = args.iteration if args.iteration != '?' else 10
+core_number, daal_version = prepare_benchmark(args)
 
-try:
-    from daal.services import Environment
-    nThreadsInit = Environment.getInstance().getNumberOfThreads()
-    core_number = int(args.core_number)
-    if core_number != -1:
-        Environment.getInstance().setNumberOfThreads(core_number)
-except:
-    pass
 
 def st_time(func):
     def st_func(*args, **keyArgs):
@@ -47,17 +37,19 @@ X = rand(p,n)
 Xp = rand(p,n)
 y = rand(p,n)
 
-regr = linear_model.LinearRegression(n_jobs=int(args.core_number))
+regr_train = linear_regression_training()
+regr_predict = linear_regression_prediction()
 
 @st_time
 def test_fit(X,y):
-    regr.fit(X,y)
+    regr_train.compute(X, y)
 
 @st_time
-def test_predict(X):
-    regr.predict(X)
+def test_predict(X, m):
+    regr_predict.compute(X, m)
 
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.fit", coreString(args.core_number), "Double", "%sx%s" % (p,n)]), end=',')
+print (','.join([args.batchID, args.arch, args.prefix, "Linear.fit", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
 test_fit(X, y)
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.prediction", coreString(args.core_number), "Double", "%sx%s" % (p,n)]), end=',')
-test_predict(Xp)
+res = regr_train.compute(X, y)
+print (','.join([args.batchID, args.arch, args.prefix, "Linear.prediction", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
+test_predict(Xp, res.model)
