@@ -1,6 +1,6 @@
 # scikit-learn_bench
 
-Benchmark for optimizations to scikit-learn in the Intel Distribution for
+Benchmark for optimizations to scikit-learn in the Intel(R) Distribution for
 Python*
 
 ## Prerequisites
