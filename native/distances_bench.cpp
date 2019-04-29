@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
         << batch << ','
         << arch << ','
         << prefix << ','
-        << num_threads << ','
+        << daal_threads << ','
         << stringSize << ',';
     std::string meta_info = meta_info_stream.str();
 

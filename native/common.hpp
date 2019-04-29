@@ -121,7 +121,7 @@ double time_min(std::function<void()> func, int reps) {
 template<typename T>
 dm::NumericTablePtr make_table(T *data, size_t rows, size_t cols) {
 
-    return dm::HomogenNumericTable<T>::create(data, rows, cols);
+    return dm::HomogenNumericTable<T>::create(data, cols, rows);
 
 }
 
