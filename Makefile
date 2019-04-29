@@ -37,10 +37,8 @@ native: data
 	@echo "# Compiling native benchmarks"
 	$(MAKE) -C native
 	@echo "# Running native benchmarks"
-	native/bin/cosine $(BATCH) $(HOST) native cosine_distances \
-		$(NUM_THREADS) double $(DISTANCES_SIZE)
-	native/bin/correlation $(BATCH) $(HOST) native correlation_distances \
-		$(NUM_THREADS) double $(DISTANCES_SIZE)
+	native/bin/distances --batch "$(BATCH)" --arch "$(HOST)" \
+		--num-threads "$(NUM_THREADS)" --size "$(DISTANCES_SIZE)"
 	native/bin/ridge $(BATCH) $(HOST) native ridge \
 		$(NUM_THREADS) double $(REGRESSION_SIZE)
 	native/bin/linear $(BATCH) $(HOST) native linear \

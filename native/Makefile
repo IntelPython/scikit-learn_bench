@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-BENCHMARKS += correlation cosine kmeans linear ridge \
+BENCHMARKS += distances kmeans linear ridge \
 			  two_class_svm multi_class_svm log_reg_lbfgs \
 			  decision_forest_regr decision_forest_clsf
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
