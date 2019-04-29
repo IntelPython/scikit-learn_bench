@@ -12,7 +12,7 @@ CXXFLAGS += -m64 -fPIC -fp-model strict -O3 -g -fomit-frame-pointer \
 		  -xSSE4.2 -axCORE-AVX2,COMMON-AVX512
 CXXFLAGS += -std=c++14
 LDFLAGS += -ldaal_core -ldaal_thread -Wl,-rpath,$(CONDA_PREFIX)/lib
-CXXINCLUDE += CLI11/include
+CXXINCLUDE += include
 
 ifneq ($(CONDA_PREFIX),)
 	LDFLAGS += -L"$(CONDA_PREFIX)/lib"

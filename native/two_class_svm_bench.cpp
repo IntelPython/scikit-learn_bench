@@ -16,7 +16,7 @@
 #define DAAL_DATA_TYPE double
 #include "daal.h"
 #include "npyfile.h"
-#include "CLI/CLI.hpp"
+#include "CLI11.hpp"
 #include "common_svm.hpp"
 
 namespace dm=daal::data_management;
