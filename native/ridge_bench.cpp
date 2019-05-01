@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < predict_samples; i++) {
-        time = time_min([=] { linear_predict_test(X, size[0], size[1]); }, predict_reps);
+        time = time_min([=] { linear_predict_test(Xp, size[0], size[1]); }, predict_reps);
         std::cout << meta_info << "Ridge.predict," << time << std::endl;
     }
     return 0;
