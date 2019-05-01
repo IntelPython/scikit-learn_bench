@@ -12,30 +12,10 @@
 #include <chrono>  
 
 #define DAAL_DATA_TYPE double
+#include "common.hpp"
+#include "CLI11.hpp"
 #include "daal.h"
 #include "npyfile.h"
-
-namespace dm=daal::data_management;
-namespace ds=daal::services;
-namespace da=daal::algorithms;
-
-
-#define REPS 10
-
-
-template<typename T>
-ds::SharedPtr<dm::HomogenNumericTable<T> > makeTable(T* data, size_t rows, size_t cols)
-{
-    return ds::SharedPtr<dm::HomogenNumericTable<T> >(new dm::HomogenNumericTable<T>(data, cols, rows));
-}
-
-
-std::vector<std::pair<int, int> > init_problem_sizes(int size0, int size1) 
-{
-    std::vector<std::pair<int, int> > ret_val;
-    ret_val.push_back({size0, size1});
-    return ret_val; 
-}
 
 
 const int n_clusters = 10;
@@ -43,9 +23,9 @@ da::kmeans::init::Batch<double, da::kmeans::init::plusPlusDense> init(n_clusters
 
 const size_t max_iters = 100;
 
-void kmeans_fit_test(dm::NumericTablePtr &X_nt, dm::NumericTablePtr &X_init_nt, double tol)
-{
-    dm::NumericTablePtr &seeding_centroids = X_init_nt;
+void kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double tol) {
+
+    dm::NumericTablePtr seeding_centroids = X_init_nt;
 
     int n_clusters = seeding_centroids->getNumberOfRows();
     da::kmeans::Batch<double> algorithm(n_clusters, max_iters);
@@ -67,15 +47,15 @@ void kmeans_fit_test(dm::NumericTablePtr &X_nt, dm::NumericTablePtr &X_init_nt, 
     nIterationsNumericTable->releaseBlockOfRows(blockNI);
     
     if(actual_iters != max_iters) {
-	std::cout << std::endl << "WARNING: Number of actual iterations " << actual_iters << " is less than max_iters of " << max_iters << " " << std::endl;
-	std::cout << "Tolerance: " << tol << std::endl;
+	std::cout << std::endl << "@ WARNING: Number of actual iterations " << actual_iters << " is less than max_iters of " << max_iters << " " << std::endl;
+	std::cout << "@ Tolerance: " << tol << std::endl;
     }
 }
 
 
-void kmeans_predict_test(dm::NumericTablePtr& X_nt, dm::NumericTablePtr &X_init_nt)
-{
-    dm::NumericTablePtr &seeding_centroids = X_init_nt;
+void kmeans_predict_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt) {
+
+    dm::NumericTablePtr seeding_centroids = X_init_nt;
 
     int n_clusters = seeding_centroids->getNumberOfRows();
 	da::kmeans::Batch<double> algorithm(n_clusters, max_iters);
@@ -90,45 +70,87 @@ void kmeans_predict_test(dm::NumericTablePtr& X_nt, dm::NumericTablePtr &X_init_
 }
 
 
-std::pair<double, double> bench(size_t threadNum, const std::string& fname,
-                                double data_multiplier)
-{
-    /* Set the maximum number of threads to be used by the library */
-    if (threadNum != 0)
-        daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
+int main(int argc, char *argv[]) {
 
-    /* Load data */
-    struct npyarr *arrX = load_npy((fname + ".npy").c_str());
-    struct npyarr *arrX_init = load_npy((fname + ".init.npy").c_str());
-    struct npyarr *arrX_tol = load_npy((fname + ".tol.npy").c_str());
+    CLI::App app("Native benchmark for Intel(R) DAAL KMeans clustering");
+
+    std::string batch, arch, prefix;
+    int num_threads;
+    bool header, verbose;
+    add_common_args(app, batch, arch, prefix, num_threads, header, verbose);
+
+    int fit_samples = 1;
+    app.add_option("--fit-samples", fit_samples,
+                   "Number of samples to report (fit)");
+
+    int fit_reps = 10;
+    app.add_option("--fit-reps", fit_reps,
+                   "Number of repetitions in each sample (fit)");
+
+    int predict_samples = 1;
+    app.add_option("--predict-samples", predict_samples,
+                   "Number of samples to report (predict)");
+
+    int predict_reps = 10;
+    app.add_option("--predict-reps", predict_samples,
+                   "Number of repetitions in each sample (predict)");
+
+    std::string filex, filei, filet;
+    app.add_option("-x,--filex,--fileX", filex,
+                   "Feature file name")
+        ->required()->check(CLI::ExistingFile);
+    app.add_option("-i,--filei,--fileI", filei,
+                   "Initial cluster centers file name")
+        ->required()->check(CLI::ExistingFile);
+    app.add_option("-t,--filet,--fileT", filet,
+                   "Absolute threshold file name")
+        ->required()->check(CLI::ExistingFile);
+
+    int data_multiplier = 100;
+    app.add_option("-m,--data-multiplier", data_multiplier, "Data multiplier");
+
+    CLI11_PARSE(app, argc, argv);
+
+    // Set DAAL thread count
+    int daal_threads = set_threads(num_threads);
+
+    // Load data
+    struct npyarr *arrX = load_npy(filex.c_str());
+    struct npyarr *arrX_init = load_npy(filei.c_str());
+    struct npyarr *arrX_tol = load_npy(filet.c_str());
     if (!arrX || !arrX_init || !arrX_tol) {
         std::cerr << "Failed to load input arrays" << std::endl;
-        std::exit(1);
+        return EXIT_FAILURE;
     }
     if (arrX->shape_len != 2) {
         std::cerr << "Expected 2 dimensions for X, found "
             << arrX->shape_len << std::endl;
-        std::exit(1);
+        return EXIT_FAILURE;
     }
     if (arrX_init->shape_len != 2) {
-        std::cerr << "Expected 2 dimension for X_init, found "
+        std::cerr << "Expected 2 dimensions for X_init, found "
             << arrX_init->shape_len << std::endl;
-        std::exit(1);
+        return EXIT_FAILURE;
     }
     if (arrX_tol->shape_len != 0) {
         std::cerr << "Expected 0 dimensions for X_tol, found "
             << arrX_tol->shape_len << std::endl;
-        std::exit(1);
+        return EXIT_FAILURE;
     }
     double tol = ((double *) arrX_tol->data)[0];
 
-    /* Create numeric tables */
-    dm::NumericTablePtr X_nt = dm::HomogenNumericTable<double>::create(
-            (double *) arrX->data, arrX->shape[1], arrX->shape[0]);
-    dm::NumericTablePtr X_init_nt = dm::HomogenNumericTable<double>::create(
-            (double *) arrX_init->data, arrX_init->shape[1], arrX_init->shape[0]);
+    // Infer data size from loaded arrays
+    std::ostringstream stringSizeStream;
+    stringSizeStream << arrX->shape[0] << 'x' << arrX->shape[1];
+    std::string stringSize = stringSizeStream.str();
 
-    /* Apply data multiplier for KMeans prediction */
+    // Create numeric tables from input data
+    dm::NumericTablePtr X_nt = make_table(
+            (double *) arrX->data, arrX->shape[0], arrX->shape[1]);
+    dm::NumericTablePtr X_init_nt = make_table(
+            (double *) arrX_init->data, arrX_init->shape[0], arrX_init->shape[1]);
+
+    // Apply data multiplier for KMeans prediction
 	double* X_mult = (double*) daal::services::daal_malloc(
             X_nt->getNumberOfColumns() * X_nt->getNumberOfRows() *
             data_multiplier * sizeof(double));
@@ -139,66 +161,32 @@ std::pair<double, double> bench(size_t threadNum, const std::string& fname,
 		}
 	}
 
-    dm::NumericTablePtr X_mult_nt = dm::HomogenNumericTable<double>::create(
-            (double *) X_mult, arrX->shape[1], arrX->shape[0]);
+    dm::NumericTablePtr X_mult_nt = make_table(
+            (double *) X_mult, arrX->shape[0], arrX->shape[1]);
 
-    /* Actually time benches */
+    // Prepare meta-info
+    std::string header_string = "Batch,Arch,Prefix,Threads,Size,Function,Time";
+    std::ostringstream meta_info_stream;
+    meta_info_stream
+        << batch << ','
+        << arch << ','
+        << prefix << ','
+        << daal_threads << ','
+        << stringSize << ',';
+    std::string meta_info = meta_info_stream.str();
 
-    std::vector<std::chrono::duration<double>> times_fit, times_predict;
-    for(int i = 0; i < REPS; i++) {
-        auto start = std::chrono::high_resolution_clock::now();
-        kmeans_fit_test(X_nt, X_init_nt, tol);
-        auto finish = std::chrono::high_resolution_clock::now();
-        times_fit.push_back(finish - start);
-
-        start = std::chrono::high_resolution_clock::now();
-        kmeans_predict_test(X_mult_nt, X_init_nt);
-        finish = std::chrono::high_resolution_clock::now();
-        times_predict.push_back(finish - start);
+    // Actually time benches
+    double time;
+    for (int i = 0; i < fit_samples; i++) {
+        time = time_min([=] { kmeans_fit_test(X_nt, X_init_nt, tol); }, fit_reps);
+        std::cout << meta_info << "KMeans.fit," << time << std::endl;
     }
 
-    return std::make_pair(std::min_element(times_fit.begin(), times_fit.end())->count(),
-                          std::min_element(times_predict.begin(), times_predict.end())->count());
-}
-
-
-int main(int args, char **argsv)
-{
-    if (args != 10) {
-        fprintf(stderr, "usage: %s BATCH ARCH PREFIX FUNC CORES DTYPE SIZE1xSIZE2 INPUT MULTIPLIER\n", argsv[0]);
-        exit(1);
+    for (int i = 0; i < predict_samples; i++) {
+        time = time_min([=] { kmeans_predict_test(X_mult_nt, X_init_nt); }, predict_reps);
+        std::cout << meta_info << "KMeans.predict," << time << std::endl;
     }
 
-    std::string fname = argsv[8];
-    if (fname.back() == '/') {
-        // We got a dir in which kmeans data should be found
-        fname += "kmeans_";
-        fname += argsv[7];
-    }
-
-    double data_multiplier = std::stod(argsv[9]);
-    const size_t nThreads = atoi(argsv[5]);
-    std::pair<double, double> results = bench(nThreads, fname, data_multiplier);
-
-    for(int f=1; f < args; f++) {
-        if (f==5)
-            std::cout << ((atoi(argsv[f]) == 1) ? "Serial," : "Threaded,"); 
-        else if (f == 4)
-            std::cout << "KMeans.fit,";
-        else
-            std::cout << argsv[f] << ",";
-    }
-    std::cout << results.first << std::endl;
-
-    for(int f=1; f < args; f++) {
-        if (f==5)
-            std::cout << ((atoi(argsv[f]) == 1) ? "Serial," : "Threaded,"); 
-        else if (f == 4)
-            std::cout << "KMeans.predict,";
-        else
-            std::cout << argsv[f] << ",";
-    }
-    std::cout << results.second << std::endl;
     return 0;
 }
 

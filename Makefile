@@ -39,12 +39,14 @@ native: data
 	@echo "# Running native benchmarks"
 	native/bin/distances --batch "$(BATCH)" --arch "$(HOST)" \
 		--num-threads "$(NUM_THREADS)" --size "$(DISTANCES_SIZE)"
-	native/bin/ridge $(BATCH) $(HOST) native ridge \
-		$(NUM_THREADS) double $(REGRESSION_SIZE)
-	native/bin/linear $(BATCH) $(HOST) native linear \
-		$(NUM_THREADS) double $(REGRESSION_SIZE)
-	native/bin/kmeans $(BATCH) $(HOST) native kmeans \
-		$(NUM_THREADS) double $(KMEANS_SIZE) $(DATA_DIR) $(MULTIPLIER)
+	native/bin/ridge --batch "$(BATCH)" --arch "$(HOST)" \
+		--num-threads "$(NUM_THREADS)" --size "$(REGRESSION_SIZE)"
+	native/bin/linear --batch "$(BATCH)" --arch "$(HOST)" \
+		--num-threads "$(NUM_THREADS)" --size "$(REGRESSION_SIZE)"
+	native/bin/kmeans --batch "$(BATCH)" --arch "$(HOST)" \
+		--num-threads "$(NUM_THREADS)" --data-multiplier "$(MULTIPLIER)" \
+		--filex $(KMEANS_DATA) --filei $(basename $(KMEANS_DATA)).init.npy \
+		--filet $(basename $(KMEANS_DATA)).tol.npy
 	native/bin/two_class_svm \
 		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
