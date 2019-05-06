@@ -8,7 +8,7 @@ BENCHMARKS += distances kmeans linear ridge pca \
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
 
 CXX = icc
-#CXXFLAGS += -m64 -fPIC -fp-model strict -O3 -fomit-frame-pointer \
+CXXFLAGS += -m64 -fPIC -fp-model strict -O3 -fomit-frame-pointer \
 		  -xSSE4.2 -axCORE-AVX2,COMMON-AVX512
 CXXFLAGS += -std=c++14 -g
 LDFLAGS += -ldaal_core -ldaal_thread -Wl,-rpath,$(CONDA_PREFIX)/lib
