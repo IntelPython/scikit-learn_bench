@@ -16,25 +16,27 @@
 namespace dal=da::linear_regression;
 
 
-ds::SharedPtr<dal::training::Result> trainingResult;
-dal::training::Batch<double> training_algorithm;
-void linear_fit_test(double *X, double *y, size_t rows, size_t cols) {
+dal::training::ResultPtr
+linear_fit_test(double *X, double *y, size_t rows, size_t cols) {
 
+    dal::training::Batch<double> training_algorithm;
     training_algorithm.input.set(dal::training::data, make_table(X, rows, cols));
     training_algorithm.input.set(dal::training::dependentVariables, make_table(y, rows, cols));
     training_algorithm.compute();
-    trainingResult = training_algorithm.getResult();
+    return training_algorithm.getResult();
 
 }
 
 
-dal::prediction::Batch<double> predict_algorithm;
-void linear_predict_test(double *X, size_t rows, size_t cols) {
+dm::NumericTablePtr
+linear_predict_test(dal::training::ResultPtr training_result,
+                    double *X, size_t rows, size_t cols) {
 
+    dal::prediction::Batch<double> predict_algorithm;
     predict_algorithm.input.set(dal::prediction::data, make_table(X, rows, cols));
-    predict_algorithm.input.set(dal::prediction::model, trainingResult->get(dal::training::model));
+    predict_algorithm.input.set(dal::prediction::model, training_result->get(dal::training::model));
     predict_algorithm.compute();
-    predict_algorithm.getResult()->get(dal::prediction::prediction);
+    return predict_algorithm.getResult()->get(dal::prediction::prediction);
 
 }
 
@@ -64,7 +66,7 @@ int main(int argc, char *argv[]) {
                    "Number of samples to report (predict)");
 
     int predict_reps = 10;
-    app.add_option("--predict-reps", predict_samples,
+    app.add_option("--predict-reps", predict_reps,
                    "Number of repetitions in each sample (predict)");
 
     CLI11_PARSE(app, argc, argv);
@@ -93,13 +95,23 @@ int main(int argc, char *argv[]) {
     double *y = gen_random(size[0] * size[1]);
 
     double time;
+    dal::training::ResultPtr training_result;
     for (int i = 0; i < fit_samples; i++) {
-        time = time_min([=] { linear_fit_test(X, y, size[0], size[1]); }, fit_reps);
+        auto pair = time_min<dal::training::ResultPtr> ([=] {
+                    return linear_fit_test(X, y, size[0], size[1]);
+                }, fit_reps);
+        time = pair.first;
+        training_result = pair.second;
         std::cout << meta_info << "Linear.fit," << time << std::endl;
     }
 
+    dm::NumericTablePtr predict_result;
     for (int i = 0; i < predict_samples; i++) {
-        time = time_min([=] { linear_predict_test(Xp, size[0], size[1]); }, predict_reps);
+        auto pair = time_min<dm::NumericTablePtr> ([=] {
+                    return linear_predict_test(training_result, Xp, size[0], size[1]);
+                }, predict_reps);
+        time = pair.first;
+        // predict_result = pair.second;
         std::cout << meta_info << "Linear.predict," << time << std::endl;
     }
     return 0;

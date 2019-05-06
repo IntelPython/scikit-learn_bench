@@ -16,25 +16,27 @@
 namespace dar=da::ridge_regression;
 
 
-ds::SharedPtr<dar::training::Result> trainingResult;
-dar::training::Batch<double> training_algorithm;
-void linear_fit_test(double *X, double *y, size_t rows, size_t cols) {
+dar::training::ResultPtr
+linear_fit_test(double *X, double *y, size_t rows, size_t cols) {
 
+    dar::training::Batch<double> training_algorithm;
     training_algorithm.input.set(dar::training::data, make_table(X, rows, cols));
     training_algorithm.input.set(dar::training::dependentVariables, make_table(y, rows, cols));
     training_algorithm.compute();
-    trainingResult = training_algorithm.getResult();
+    return training_algorithm.getResult();
 
 }
 
 
-dar::prediction::Batch<double> predict_algorithm;
-void linear_predict_test(double *X, size_t rows, size_t cols) {
+dm::NumericTablePtr
+linear_predict_test(dar::training::ResultPtr training_result,
+                    double *X, size_t rows, size_t cols) {
 
+    dar::prediction::Batch<double> predict_algorithm;
     predict_algorithm.input.set(dar::prediction::data, make_table(X, rows, cols));
-    predict_algorithm.input.set(dar::prediction::model, trainingResult->get(dar::training::model));
+    predict_algorithm.input.set(dar::prediction::model, training_result->get(dar::training::model));
     predict_algorithm.compute();
-    predict_algorithm.getResult()->get(dar::prediction::prediction);
+    return predict_algorithm.getResult()->get(dar::prediction::prediction);
 
 }
 
@@ -64,7 +66,7 @@ int main(int argc, char *argv[]) {
                    "Number of samples to report (predict)");
 
     int predict_reps = 10;
-    app.add_option("--predict-reps", predict_samples,
+    app.add_option("--predict-reps", predict_reps,
                    "Number of repetitions in each sample (predict)");
 
     CLI11_PARSE(app, argc, argv);
@@ -93,13 +95,23 @@ int main(int argc, char *argv[]) {
     double *y = gen_random(size[0] * size[1]);
 
     double time;
+    dar::training::ResultPtr training_result;
     for (int i = 0; i < fit_samples; i++) {
-        time = time_min([=] { linear_fit_test(X, y, size[0], size[1]); }, fit_reps);
+        auto pair = time_min<dar::training::ResultPtr> ([=] {
+                    return linear_fit_test(X, y, size[0], size[1]);
+                }, fit_reps);
+        time = pair.first;
+        training_result = pair.second;
         std::cout << meta_info << "Ridge.fit," << time << std::endl;
     }
 
+    dm::NumericTablePtr predict_result;
     for (int i = 0; i < predict_samples; i++) {
-        time = time_min([=] { linear_predict_test(Xp, size[0], size[1]); }, predict_reps);
+        auto pair = time_min<dm::NumericTablePtr> ([=] {
+                    return linear_predict_test(training_result, Xp, size[0], size[1]);
+                }, predict_reps);
+        time = pair.first;
+        predict_result = pair.second;
         std::cout << meta_info << "Ridge.predict," << time << std::endl;
     }
     return 0;

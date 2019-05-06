@@ -87,30 +87,37 @@ int set_threads(int num_threads) {
 
 /*
  * Time the given function for the specified number of repetitions,
- * returning a vector of durations.
+ * returning a pair of a vector of durations and the LAST result.
  */
-std::vector<std::chrono::duration<double>> time_vec(std::function<void()> func, int reps) {
+template <typename T>
+std::pair<std::vector<std::chrono::duration<double>>, T>
+time_vec(std::function<T()> func, int reps) {
 
     std::vector<std::chrono::duration<double>> vec;
+    T result;
     for (int i = 0; i < reps; i++) {
         auto t0 = std::chrono::high_resolution_clock::now();
-        func();
+        result = func();
         auto t1 = std::chrono::high_resolution_clock::now();
         vec.push_back(t1 - t0);
     }
-    return vec;
+    return std::make_pair(vec, result);
 
 }
 
 
 /*
  * Time the given function for the specified number of repetitions,
- * returning the minimum duration.
+ * returning a pair of the minimum duration and the LAST result.
  */
-double time_min(std::function<void()> func, int reps) {
+template <typename T>
+std::pair<double, T> time_min(std::function<T()> func, int reps) {
 
-    auto times = time_vec(func, reps);
-    return std::min_element(times.begin(), times.end())->count();
+    auto pair = time_vec(func, reps);
+    auto times = pair.first;
+    double time = std::min_element(times.begin(), times.end())->count();
+
+    return std::make_pair(time, pair.second);
 
 }
 
@@ -118,7 +125,7 @@ double time_min(std::function<void()> func, int reps) {
 /*
  * Create a DAAL HomogenNumericTable from an array in memory.
  */
-template<typename T>
+template <typename T>
 dm::NumericTablePtr make_table(T *data, size_t rows, size_t cols) {
 
     return dm::HomogenNumericTable<T>::create(data, cols, rows);

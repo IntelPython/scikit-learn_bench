@@ -18,12 +18,10 @@
 #include "npyfile.h"
 
 
-const int n_clusters = 10;
-da::kmeans::init::Batch<double, da::kmeans::init::plusPlusDense> init(n_clusters);
-
 const size_t max_iters = 100;
 
-void kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double tol) {
+da::kmeans::ResultPtr
+kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double tol) {
 
     dm::NumericTablePtr seeding_centroids = X_init_nt;
 
@@ -35,9 +33,11 @@ void kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, do
     algorithm.parameter.accuracyThreshold = tol;
     algorithm.compute();
 
-    algorithm.getResult()->get(da::kmeans::assignments);
-    algorithm.getResult()->get(da::kmeans::centroids  );
-    algorithm.getResult()->get(da::kmeans::goalFunction);
+    da::kmeans::ResultPtr kmeans_result = algorithm.getResult();
+
+    kmeans_result->get(da::kmeans::assignments);
+    kmeans_result->get(da::kmeans::centroids  );
+    kmeans_result->get(da::kmeans::goalFunction);
 
     dm::NumericTablePtr nIterationsNumericTable = algorithm.getResult()->get(da::kmeans::nIterations);
     dm::BlockDescriptor<int> blockNI;
@@ -50,10 +50,14 @@ void kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, do
 	std::cout << std::endl << "@ WARNING: Number of actual iterations " << actual_iters << " is less than max_iters of " << max_iters << " " << std::endl;
 	std::cout << "@ Tolerance: " << tol << std::endl;
     }
+
+    return kmeans_result;
+
 }
 
 
-void kmeans_predict_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt) {
+dm::NumericTablePtr
+kmeans_predict_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt) {
 
     dm::NumericTablePtr seeding_centroids = X_init_nt;
 
@@ -66,7 +70,8 @@ void kmeans_predict_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt
 	algorithm.parameter.accuracyThreshold = 0.0;
 	algorithm.compute();
 
-	algorithm.getResult()->get(da::kmeans::assignments);
+	return algorithm.getResult()->get(da::kmeans::assignments);
+
 }
 
 
@@ -177,13 +182,19 @@ int main(int argc, char *argv[]) {
 
     // Actually time benches
     double time;
+    da::kmeans::ResultPtr kmeans_result;
     for (int i = 0; i < fit_samples; i++) {
-        time = time_min([=] { kmeans_fit_test(X_nt, X_init_nt, tol); }, fit_reps);
+        std::tie(time, kmeans_result) = time_min<da::kmeans::ResultPtr> ([=] {
+                    return kmeans_fit_test(X_nt, X_init_nt, tol);
+                }, fit_reps);
         std::cout << meta_info << "KMeans.fit," << time << std::endl;
     }
 
+    dm::NumericTablePtr predict_result;
     for (int i = 0; i < predict_samples; i++) {
-        time = time_min([=] { kmeans_predict_test(X_mult_nt, X_init_nt); }, predict_reps);
+        std::tie(time, predict_result) = time_min<dm::NumericTablePtr> ([=] {
+                    return kmeans_predict_test(X_mult_nt, X_init_nt);
+                }, predict_reps);
         std::cout << meta_info << "KMeans.predict," << time << std::endl;
     }
 
