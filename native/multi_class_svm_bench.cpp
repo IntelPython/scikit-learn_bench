@@ -15,7 +15,7 @@
 
 #define DAAL_DATA_TYPE double
 #include "daal.h"
-#include "CLI/CLI.hpp"
+#include "CLI11.hpp"
 #include "common_svm.hpp"
 #include "npyfile.h"
 
