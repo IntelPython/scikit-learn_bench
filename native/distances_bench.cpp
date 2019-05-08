@@ -13,22 +13,22 @@
 #include "CLI11.hpp"
 #include "common.hpp"
 
-void correlation_test(double *X, size_t rows, size_t cols) {
+dm::NumericTablePtr correlation_test(double *X, size_t rows, size_t cols) {
 
     da::correlation_distance::Batch<double> algorithm;
     algorithm.input.set(da::correlation_distance::data, make_table(X, rows, cols));
     algorithm.compute();
-    algorithm.getResult()->get(da::correlation_distance::correlationDistance);
+    return algorithm.getResult()->get(da::correlation_distance::correlationDistance);
 
 }
 
 
-void cosine_test(double *X, size_t rows, size_t cols) {
+dm::NumericTablePtr cosine_test(double *X, size_t rows, size_t cols) {
 
     da::cosine_distance::Batch<double> algorithm;
     algorithm.input.set(da::cosine_distance::data, make_table(X, rows, cols));
     algorithm.compute();
-    algorithm.getResult()->get(da::cosine_distance::cosineDistance);
+    return algorithm.getResult()->get(da::cosine_distance::cosineDistance);
 
 }
 
@@ -75,12 +75,17 @@ int main(int argc, char *argv[]) {
     // Actual bench here
     double *X = gen_random(size[0] * size[1]);
     double time;
+    dm::NumericTablePtr result;
 
     for (int i = 0; i < samples; i++) {
-        time = time_min([=] { correlation_test(X, size[0], size[1]); }, reps);
+        std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
+                    return correlation_test(X, size[0], size[1]);
+                }, reps);
         std::cout << meta_info << "Correlation," << time << std::endl;
 
-        time = time_min([=] { cosine_test(X, size[0], size[1]); }, reps);
+        std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
+                    return cosine_test(X, size[0], size[1]);
+                }, reps);
         std::cout << meta_info << "Cosine," << time << std::endl;
     }
     return 0;
