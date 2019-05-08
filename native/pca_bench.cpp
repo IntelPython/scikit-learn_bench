@@ -14,6 +14,9 @@
 #include "daal.h"
 
 
+namespace dn = daal::algorithms::normalization;
+
+
 std::pair<da::pca::ResultPtr, dm::NumericTablePtr>
 pca_fit_daal(double *X, size_t rows, size_t cols, size_t n_components) {
 
@@ -29,8 +32,19 @@ pca_fit_daal(double *X, size_t rows, size_t cols, size_t n_components) {
         da::pca::mean | da::pca::variance | da::pca::eigenvalue;
     pca_algorithm.parameter.isDeterministic = true;
     pca_algorithm.parameter.nComponents = n_components;
-    // method svdDense is specified in the template parameters for the
-    // pca::Batch algorithm, and normalization zscore is the default.
+
+    // We must explicitly create zscore_algorithm here to make
+    // DAAL only center, and not scale.
+    // We do two things differently here:
+    // 1. The zscore Batch object is in the heap because DAAL SharedPtr likes to
+    //    free it afterwards.
+    // 2. In order to change zscore parameters, we call its parameter() method,
+    //    which returns a Parameter object like the one PCA provides directly.
+    auto zscore_algorithm = new dn::zscore::Batch<double, dn::zscore::defaultDense>;
+    zscore_algorithm->parameter().doScale = false;
+    ds::SharedPtr<dn::zscore::Batch<double, dn::zscore::defaultDense>> zscore_ptr {zscore_algorithm};
+
+    pca_algorithm.parameter.normalization = zscore_ptr;
 
     pca_algorithm.compute();
     da::pca::ResultPtr pca_result = pca_algorithm.getResult();
