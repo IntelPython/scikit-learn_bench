@@ -1,10 +1,12 @@
 # Sizes
 DISTANCES_SIZE = 1000x15000
 REGRESSION_SIZE = 1000000x50
-KMEANS_SIZE = $(REGRESSION_SIZE)
-SVM_VECTORS = 10000
+KMEANS_SAMPLES = 1000000
+KMEANS_FEATURES = 50
+KMEANS_SIZE = $(KMEANS_SAMPLES)x$(KMEANS_FEATURES)
+SVM_SAMPLES = 10000
 SVM_FEATURES = 1000
-ITERATIONS = ?
+ITERATIONS = 10
 
 # Bookkeeping options
 BATCH = $(shell date -Iseconds)
@@ -15,17 +17,20 @@ NUM_THREADS = -1
 SVM_NUM_THREADS = 0
 MULTIPLIER = 100
 DATA_DIR = data/
-KMEANS_DATA = $(addsuffix .csv,$(addprefix data/kmeans_,$(KMEANS_SIZE))) 
+KMEANS_DATA = data/kmeans_$(KMEANS_SIZE).npy
 
 comma = ,
 
 ifneq ($(CONDA_PREFIX),)
-    LD_LIBRARY_PATH := $(CONDA_PREFIX)/lib
+	LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(CONDA_PREFIX)/lib
     export LD_LIBRARY_PATH
 endif
 
+export I_MPI_ROOT
 
 all: native python
+
+python: sklearn daal4py
 
 native: data
 	git submodule init && git submodule update
@@ -40,56 +45,114 @@ native: data
 		$(NUM_THREADS) double $(REGRESSION_SIZE)
 	native/bin/linear $(BATCH) $(HOST) native linear \
 		$(NUM_THREADS) double $(REGRESSION_SIZE)
-	native/bin/kmeans $(BATCH) $(HOST) native kmeans.fit \
-		$(NUM_THREADS) double $(REGRESSION_SIZE) $(DATA_DIR)
-	native/bin/kmeans_predict $(BATCH) $(HOST) native kmeans.predict \
-		$(NUM_THREADS) double $(REGRESSION_SIZE) $(DATA_DIR) $(MULTIPLIER)
+	native/bin/kmeans $(BATCH) $(HOST) native kmeans \
+		$(NUM_THREADS) double $(KMEANS_SIZE) $(DATA_DIR) $(MULTIPLIER)
 	native/bin/two_class_svm \
-		--fileX data/two/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv \
-		--fileY data/two/y-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv \
-		--num-threads $(SVM_NUM_THREADS)
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
 	native/bin/multi_class_svm \
-		--fileX data/multi/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv \
-		--fileY data/multi/y-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv \
-		--num-threads $(SVM_NUM_THREADS)
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
+	native/bin/log_reg_lbfgs \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
+	native/bin/log_reg_lbfgs \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
+	native/bin/decision_forest_clsf \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
+	native/bin/decision_forest_clsf \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--num-threads $(SVM_NUM_THREADS) --header
 
-python: data
-	@echo "# Running python benchmarks"
-	python python/distances.py --batchID $(BATCH) --arch $(HOST) \
+sklearn: data
+	@echo "# Running scikit-learn benchmarks"
+	python sklearn/distances.py --batchID $(BATCH) --arch $(HOST) \
 		--prefix python --core-number $(NUM_THREADS) \
 		--size $(subst x,$(comma),$(DISTANCES_SIZE)) --iteration $(ITERATIONS)
-	python python/ridge.py --batchID $(BATCH) --arch $(HOST) \
+	python sklearn/ridge.py --batchID $(BATCH) --arch $(HOST) \
 		--prefix python --core-number $(NUM_THREADS) \
 		--size $(subst x,$(comma),$(REGRESSION_SIZE)) --iteration $(ITERATIONS)
-	python python/linear.py --batchID $(BATCH) --arch $(HOST) \
+	python sklearn/linear.py --batchID $(BATCH) --arch $(HOST) \
 		--prefix python --core-number $(NUM_THREADS) \
 		--size $(subst x,$(comma),$(REGRESSION_SIZE)) --iteration $(ITERATIONS)
-	python python/kmeans.py --batchID $(BATCH) --arch $(HOST) \
+	python sklearn/kmeans.py --batchID $(BATCH) --arch $(HOST) \
 		--prefix python --core-number $(NUM_THREADS) \
 		--size $(subst x,$(comma),$(KMEANS_SIZE)) --iteration $(ITERATIONS) \
-		--input $(DATA_DIR)
-	python python/kmeans_predict.py --batchID $(BATCH) --arch $(HOST) \
+		-x $(KMEANS_DATA) -i $(basename $(KMEANS_DATA)).init.npy
+	python sklearn/svm_bench.py --core-number $(NUM_THREADS) \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python sklearn/svm_bench.py --core-number $(NUM_THREADS) \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python sklearn/log_reg.py --num-threads $(NUM_THREADS) \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python sklearn/log_reg.py --num-threads $(NUM_THREADS) \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python sklearn/df_clsf.py --num-threads $(NUM_THREADS) \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python sklearn/df_clsf.py --num-threads $(NUM_THREADS) \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+
+daal4py: data
+	@echo "# Running daal4py benchmarks"
+	python daal4py/distances.py --batchID $(BATCH) --arch $(HOST) \
+		--prefix python --core-number $(NUM_THREADS) \
+		--size $(subst x,$(comma),$(DISTANCES_SIZE)) --iteration $(ITERATIONS)
+	python daal4py/ridge.py --batchID $(BATCH) --arch $(HOST) \
+		--prefix python --core-number $(NUM_THREADS) \
+		--size $(subst x,$(comma),$(REGRESSION_SIZE)) --iteration $(ITERATIONS)
+	python daal4py/linear.py --batchID $(BATCH) --arch $(HOST) \
+		--prefix python --core-number $(NUM_THREADS) \
+		--size $(subst x,$(comma),$(REGRESSION_SIZE)) --iteration $(ITERATIONS)
+	python daal4py/kmeans.py --batchID $(BATCH) --arch $(HOST) \
 		--prefix python --core-number $(NUM_THREADS) \
 		--size $(subst x,$(comma),$(KMEANS_SIZE)) --iteration $(ITERATIONS) \
-		--input $(DATA_DIR) --data-multiplier $(MULTIPLIER)
-	python python/svm_bench.py --core-number $(NUM_THREADS) \
-		--fileX data/two/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy \
-		--fileY data/two/y-$(SVM_VECTORS)x$(SVM_FEATURES).npy
-	python python/svm_bench.py --core-number $(NUM_THREADS) \
-		--fileX data/multi/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy \
-		--fileY data/multi/y-$(SVM_VECTORS)x$(SVM_FEATURES).npy
+		-x $(KMEANS_DATA) -i $(basename $(KMEANS_DATA)).init.npy
+	python daal4py/svm_bench.py --core-number $(NUM_THREADS) \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python daal4py/svm_bench.py --core-number $(NUM_THREADS) \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
 
 data: $(KMEANS_DATA) svm_data
 
 $(KMEANS_DATA): | data/
-	python python/kmeans_data.py --size \
-		$(shell basename $@ .csv | cut -d _ -f 2) --fname $@ --clusters 10
+	python make_datasets.py -f $(KMEANS_FEATURES) -s $(KMEANS_SAMPLES) \
+		kmeans -c 10 -x $(basename $@) -i $(basename $@).init \
+		-t $(basename $@).tol
 
-svm_data: data/two/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv
+svm_data: data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+	data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy
 
-data/two/X-$(SVM_VECTORS)x$(SVM_FEATURES).npy.csv: | data/
-	python python/svm_data.py -v $(SVM_VECTORS) -f $(SVM_FEATURES)
-	native/svm_native_data.sh
+data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy: | data/
+	python make_datasets.py -f $(SVM_FEATURES) -s $(SVM_SAMPLES) \
+		classification -c 2 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
+
+data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy: | data/
+	python make_datasets.py -f $(SVM_FEATURES) -s $(SVM_SAMPLES) \
+		classification -c 5 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
 
 data/:
 	mkdir -p data/
@@ -100,4 +163,4 @@ clean:
 	$(MAKE) -C native clean
 	rm -rf data
 
-.PHONY: native python all clean native_data data kmeans_data svm_data
+.PHONY: native python sklearn daal4py all clean native_data data kmeans_data svm_data

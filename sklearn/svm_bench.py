@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Intel Corporation
+# Copyright (C) 2018-2019 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -14,10 +14,7 @@ import sklearn
 import sklearn.svm as svm
 from sklearn.datasets import make_classification
 from sklearn.metrics import accuracy_score
-
-sklearn._ASSUME_FINITE = True
-if sklearn.__version__ == '0.18.2':
-    sklearn.utils.validation._assert_all_finite = lambda X: None
+import bench
 
 def _decoy_check_X_y(X, y, *args,  **kwargs):
     return X, y
@@ -37,7 +34,7 @@ def getOptimalCacheSize(numFeatures):
     return cache_size_bytes
 
 
-def bench(meta_info, X_train, y_train, fit_samples, fit_repetitions, predict_samples, predict_repetitions, svc_params_dict):
+def _bench(meta_info, X_train, y_train, fit_samples, fit_repetitions, predict_samples, predict_repetitions, svc_params_dict):
 
     fit_times = []
     for it in range(fit_samples):
@@ -76,7 +73,7 @@ def getArguments(argParser):
     argParser.add_argument('--fit-repetitions',     type=int, default=10, help="Number of fit calls to time for each sample")
     argParser.add_argument('--predict-repetitions', type=int, default=10, help="Number of predict calls to time for each sample")
     #
-    argParser.add_argument('--core-number',         type=int, default=0, help="core numbers")
+    argParser.add_argument('--num-threads', '--core-number',         type=int, default=0, help="core numbers")
     argParser.add_argument('--verbose','-v',        action='store_true', help="Whether to be verbose or terse")
     argParser.add_argument('--header',              action='store_true', help="Whether to be print header")
     argParser.add_argument('--prefix',              type=str,  default=sys.executable, help="Prefix to report in the output")
@@ -91,15 +88,7 @@ def main():
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     args = getArguments(argParser)
-    try:
-        from daal.services import Environment
-        from daal import __version__ as daal_version
-        if args.num_threads > 0:
-            Environment.getInstance().setNumberOfThreads(args.num_threads)
-        numThreads = Environment.getInstance().getNumberOfThreads()
-    except:
-        numThreads = 1
-        daal_version = None
+    numThreads, daal_version = bench.prepare_benchmark(args)
 
     # This is so the .csv file can go directly into excel. However, it requries adding timing
     # in sklearn/daal4sklearn/svm.py around pydaal compute and post-processing
@@ -117,7 +106,7 @@ def main():
     v, f = X_train.shape
     cache_size_bytes = getOptimalCacheSize(X_train.shape[0])
     cache_size_mb = cache_size_bytes / 1024**2
-    meta_info = "{},{},{},{},{}".format(args.prefix, numThreads, v, f, int(cache_size_mb))
+    meta_info = ",".join([args.prefix, 'SVM', str(numThreads), str(v), str(f), str(int(cache_size_mb))])
 
     svc_params_dict = {'C' : 0.01, 'kernel': 'linear', 'max_iter' : 2000, 'cache_size': cache_size_mb, 'tol': 1e-16, 'shrinking': True}
 
@@ -125,9 +114,9 @@ def main():
         print("@ {}".format(svc_params_dict), file=sys.stderr)
 
     if args.header:
-        print('prefix_ID,threads,rows,features,cache-size-MB,fit,predict,accuracy,sv-len,classes')
-    bench(meta_info, X_train, y_train,
-          args.fit_samples, args.fit_repetitions, args.predict_samples, args.predict_repetitions, svc_params_dict)
+        print('prefix_ID,function,threads,rows,features,cache-size-MB,fit,predict,accuracy,sv-len,classes')
+    _bench(meta_info, X_train, y_train,
+           args.fit_samples, args.fit_repetitions, args.predict_samples, args.predict_repetitions, svc_params_dict)
 
 
 if __name__ == '__main__':

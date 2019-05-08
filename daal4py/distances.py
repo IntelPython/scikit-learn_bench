@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Intel Corporation
+# Copyright (C) 2017-2019 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -6,14 +6,9 @@ from __future__ import print_function
 import numpy as np
 import timeit
 from numpy.random import rand
-from sklearn.metrics.pairwise import pairwise_distances
+from daal4py import correlation_distance, cosine_distance, daalinit
 from args import getArguments, coreString
-
-import sklearn
-sklearn._ASSUME_FINITE = True
-
-if sklearn.__version__ == '0.18.2':
-    sklearn.utils.validation._assert_all_finite = lambda X: None
+from bench import prepare_benchmark
 
 import argparse
 argParser = argparse.ArgumentParser(prog="pairwise_distances.py",
@@ -22,14 +17,7 @@ argParser = argparse.ArgumentParser(prog="pairwise_distances.py",
 
 args = getArguments(argParser)
 REP = args.iteration if args.iteration != '?' else 10
-try:
-    from daal.services import Environment
-    nThreadsInit = Environment.getInstance().getNumberOfThreads()
-    core_number = int(args.core_number)
-    if core_number != -1:
-        Environment.getInstance().setNumberOfThreads(core_number)
-except:
-    pass
+core_number, daal_version = prepare_benchmark(args)
 
 
 def st_time(func):
@@ -53,12 +41,12 @@ X = rand(p,n)
 
 @st_time
 def cosine(X):
-    cos_dist = pairwise_distances(X, metric='cosine', n_jobs=int(args.core_number))
+    cos_dist = cosine_distance().compute(X)
 @st_time
 def correlation(X):
-    cor_dist = pairwise_distances(X, metric='correlation', n_jobs=int(args.core_number))
+    cor_dist = correlation_distance().compute(X)
 
-print (','.join([args.batchID, args.arch, args.prefix, "Cosine", coreString(args.core_number), "Double", "%sx%s" % (p,n)]), end=',')
+print (','.join([args.batchID, args.arch, args.prefix, "Cosine", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
 cosine(X)
-print (','.join([args.batchID, args.arch, args.prefix, "Correlation", coreString(args.core_number), "Double", "%sx%s" % (p,n)]), end=',')
+print (','.join([args.batchID, args.arch, args.prefix, "Correlation", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
 correlation(X)

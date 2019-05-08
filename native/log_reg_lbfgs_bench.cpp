@@ -11,81 +11,107 @@
 #include <fstream>
 #include <chrono>  
 #include <cassert>
-#include <cstdint>
 
 #define DAAL_DATA_TYPE double
 #include "daal.h"
-#include "npyfile.h"
 #include "CLI/CLI.hpp"
-#include "common_svm.hpp"
+#include "npyfile.h"
 
 namespace dm=daal::data_management;
 namespace ds=daal::services;
 namespace da=daal::algorithms;
+namespace dl=daal::algorithms::logistic_regression;
 
 using namespace daal;
 using namespace da;
 
+void print_numeric_table(dm::NumericTablePtr, std::string);
 
-da::svm::training::ResultPtr
-two_class_linear_svm_fit(
-    svm_linear_kernel_parameters svc_params,
+dl::training::ResultPtr 
+logistic_regression_fit(
+    int nClasses,
+    bool fit_intercept,
+    double C,
+    size_t max_iter,
+    double tol, 
     dm::NumericTablePtr Xt,
     dm::NumericTablePtr Yt,
     bool verbose)
 {
-    da::svm::training::Batch<double> algorithm;
+    size_t n_samples = Yt->getNumberOfRows();
 
-    /* Parameters for the SVM kernel function */
-    ds::SharedPtr<kernel_function::linear::Batch<double> > kernel(new kernel_function::linear::Batch<double>());
-    size_t nFeatures = Xt->getNumberOfColumns();
-    size_t nSamples = Xt->getNumberOfRows();
+    // da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense> solver;
+    ds::SharedPtr<da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense> > 
+	lbfgsSolver(new da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense>() );
 
-    algorithm.parameter.C = svc_params.C;
-    algorithm.parameter.kernel = kernel;
-    algorithm.parameter.cacheSize = getOptimalCacheSize(nSamples);
-    algorithm.parameter.accuracyThreshold = svc_params.tol;
-    algorithm.parameter.tau = svc_params.tau;
-    algorithm.parameter.maxIterations = svc_params.max_iter;
-    algorithm.parameter.doShrinking = true;
+    lbfgsSolver->parameter.nIterations = max_iter;
+    lbfgsSolver->parameter.accuracyThreshold = tol;
+
+    // these settings make stochastic QN into deterministic L_BFGS
+    lbfgsSolver->parameter.batchSize = n_samples;
+    lbfgsSolver->parameter.correctionPairBatchSize = n_samples;
+    lbfgsSolver->parameter.L = 1;
+
+    // 
+    double stepLength(1.0);
+    lbfgsSolver->parameter.stepLengthSequence = 
+	dm::NumericTablePtr(new dm::HomogenNumericTable<>(1, 1, dm::NumericTableIface::doAllocate, stepLength));
+    lbfgsSolver->parameter.optionalResultRequired = true;
+
+    dl::training::Batch<double> log_reg_alg(nClasses);
+    log_reg_alg.parameter().interceptFlag = fit_intercept;
+    log_reg_alg.parameter().penaltyL1 = 0.;
+    log_reg_alg.parameter().penaltyL2 = 0.5 / C / n_samples;
+    // services::SharedPtr<optimization_solver::lbfgs::Batch<double, optimization_solver::lbfgs::defaultDense> > func(new optimization_solver::lbfgs::Batch<double, optimization_solver::lbfgs::defaultDense>() ); 
+    log_reg_alg.parameter().optimizationSolver = lbfgsSolver;
 
     if (verbose) {
-	print_svm_linear_kernel_parameters(svc_params);
+	std::cout << "@ {'fit_intercept': " << fit_intercept << 
+                    ", 'C': " << C << 
+                    ", 'max_iter': " <<  max_iter << 
+                    ", 'tol': " << tol << 
+                    "}" <<  std::endl;
     }
 
-    /* Pass a training data set and dependent values to the algorithm */
-    algorithm.input.set(da::classifier::training::data, Xt);
-    algorithm.input.set(da::classifier::training::labels, Yt);
+    log_reg_alg.input.set(da::classifier::training::data, Xt);
+    log_reg_alg.input.set(da::classifier::training::labels, Yt);
 
-    /* Build the SVM model */
-    algorithm.compute();
+    log_reg_alg.compute();
 
-    /* Retrieve the algorithm results */
-    da::svm::training::ResultPtr trainingResult = algorithm.getResult();
+    dl::training::ResultPtr result_ptr = log_reg_alg.getResult();
 
-    return trainingResult;
+    if(verbose) {
+	print_numeric_table(
+	    lbfgsSolver->getResult()->get(da::optimization_solver::iterative_solver::nIterations),
+	    "Number of iterations");
+	print_numeric_table(
+	    result_ptr->get(da::classifier::training::model)->getBeta(),
+	    "Fitted coefficients"
+	    );
+    }
+
+    return result_ptr;
 }
 
-dm::NumericTablePtr two_class_linear_svm_predict(
-    svm_linear_kernel_parameters svc_params,
-    da::svm::training::ResultPtr trainingResult,
-    dm::NumericTablePtr X_nt,
-    bool verbose)
+dm::NumericTablePtr 
+logistic_regression_predict(
+    int nClasses,
+    dl::training::ResultPtr training_result_ptr,
+    dm::NumericTablePtr Xt, 
+    bool verbose
+    )
 {
-    svm::prediction::Batch<double> prediction_algorithm;
+    dl::prediction::Batch<double> pred_alg(nClasses);
+    pred_alg.input.set(da::classifier::prediction::data, Xt);
+    pred_alg.input.set(da::classifier::prediction::model, 
+		       training_result_ptr->get(da::classifier::training::model));
 
-    ds::SharedPtr<kernel_function::linear::Batch<double> > kernel(new kernel_function::linear::Batch<double>());
-    prediction_algorithm.parameter.kernel = kernel;
+    pred_alg.compute();
 
-    prediction_algorithm.input.set(classifier::prediction::data, X_nt);
-    prediction_algorithm.input.set(classifier::prediction::model,
-                         trainingResult->get(classifier::training::model));
+    da::classifier::prediction::ResultPtr pred_res = pred_alg.getResult();
+    dm::NumericTablePtr Y_pred_t = pred_res->get(da::classifier::prediction::prediction);
 
-    prediction_algorithm.compute();
-
-    da::classifier::prediction::ResultPtr res = prediction_algorithm.getResult();
-
-    return res->get(da::classifier::prediction::prediction);
+    return Y_pred_t;
 }
 
 size_t
@@ -103,12 +129,54 @@ count_same_labels(
     double *Yp_data_ptr = blockYp.getBlockPtr();
 
     for(size_t i = 0; i < n_rows; i++) {
-	equal_counter += ((Y_data_ptr[i] >= 0.0) ^ (Yp_data_ptr[i] >= 0.0)) ? 0 : 1;
+	equal_counter += (fabs(Y_data_ptr[i] - Yp_data_ptr[i]) < 0.5) ? 1 : 0;
     }
     Yp_nt->releaseBlockOfRows(blockYp);
     Y_nt->releaseBlockOfRows(blockY);
 
     return equal_counter;
+}
+
+int
+find_nClasses(dm::NumericTablePtr Y_nt)
+{
+    /* compute min and max labels with DAAL */
+    da::low_order_moments::Batch<double> algorithm;
+    algorithm.input.set(da::low_order_moments::data, Y_nt);
+    algorithm.compute();
+    da::low_order_moments::ResultPtr res = algorithm.getResult();
+    dm::NumericTablePtr min_nt = res->get(da::low_order_moments::minimum);
+    dm::NumericTablePtr max_nt = res->get(da::low_order_moments::maximum);
+    int min, max;
+    dm::BlockDescriptor<> block;
+    min_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    min = block.getBlockPtr()[0];
+    max_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    max = block.getBlockPtr()[0];
+    return 1 + max - min;
+}
+
+void
+print_numeric_table(dm::NumericTablePtr X_nt, std::string label)
+{
+    size_t n_cols = X_nt->getNumberOfColumns();
+    size_t n_rows = X_nt->getNumberOfRows();
+
+    dm::BlockDescriptor<double> blockX;
+    X_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockX);
+
+    double *x = blockX.getBlockPtr();
+    std::cout << "@ " << label << ":" << std::endl;
+    std::cout << std::setprecision(18) << std::scientific;
+    for (size_t i_outer=0; i_outer < n_rows; i_outer++) {
+	std::cout << "@ ";
+	for(size_t i_inner=0; i_inner < n_cols; i_inner++) {
+	    std::cout << x[i_inner + i_outer * n_cols] << ", ";
+	}
+	std::cout << std::endl;
+    }
+
+    X_nt->releaseBlockOfRows(blockX);
 }
 
 void
@@ -128,7 +196,7 @@ bench(
         daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
 
     size_t daal_thread_num = daal::services::Environment::getInstance()->getNumberOfThreads();
-    
+
     /* Load data */
     struct npyarr *arrX = load_npy(X_fname.c_str());
     struct npyarr *arrY = load_npy(y_fname.c_str());
@@ -150,45 +218,40 @@ bench(
         return;
     }
 
-    /* DAAL wants labels in {-1, 1} instead of {0, 1} */
-    int64_t *y_data = (int64_t *) arrY->data;
-    for (int i = 0; i < arrY->shape[0]; i++) {
-        if (y_data[i] == 0) y_data[i] = -1;
-    }
-
     /* Create numeric tables */
     dm::NumericTablePtr X_nt = dm::HomogenNumericTable<double>::create(
             (double *) arrX->data, arrX->shape[1], arrX->shape[0]);
     dm::NumericTablePtr Y_nt = dm::HomogenNumericTable<int64_t>::create(
             (int64_t *) arrY->data, 1, arrY->shape[0]);
 
-    svm_linear_kernel_parameters svm_problem;
-    svm_problem.C = 0.01;
-    svm_problem.tol = 1e-16;
-    svm_problem.tau = 1e-12;
-    svm_problem.max_iter = 2000;
+    int n_classes = find_nClasses(Y_nt);
+    size_t max_iter = 1000;
+    double tol = 1e-10;
+    double C = 1.0;
+    bool fit_intercept = true;
 
     std::vector<std::chrono::duration<double> > fit_times;
-    svm::training::ResultPtr training_result;
+    dl::training::ResultPtr training_result;
     for(int i = 0; i < fit_samples; i++) {
         auto start = std::chrono::system_clock::now();
 	for(int j=0; j < fit_repetitions; j++) {
-	    training_result = two_class_linear_svm_fit(svm_problem, X_nt, Y_nt, verbose && (!i) && (!j));
+	    training_result = logistic_regression_fit(
+		n_classes, fit_intercept, C, max_iter, tol,
+		X_nt, Y_nt, verbose && (!i) && (!j)
+		);
 	}
         auto finish = std::chrono::system_clock::now();
         fit_times.push_back(finish - start);
     }
-
-    svm::ModelPtr svm_model = ds::dynamicPointerCast<svm::Model>(training_result->get(classifier::training::model));
-    auto sv_idx = svm_model->getSupportIndices();
-    size_t sv_len = sv_idx->getNumberOfRows();
   
     std::vector<std::chrono::duration<double> > predict_times;
     dm::NumericTablePtr Yp_nt;
     for(int i=0; i < predict_samples; i++) {
         auto start = std::chrono::system_clock::now();
         for(int j=0; j < predict_repetitions; j++) {
-	    Yp_nt = two_class_linear_svm_predict(svm_problem, training_result, X_nt, verbose && (!i) && (!j));
+	    Yp_nt = logistic_regression_predict(
+		n_classes, training_result,
+		X_nt, verbose && (!i) && (!j));
 	}
         auto finish = std::chrono::system_clock::now();
         predict_times.push_back(finish - start);
@@ -203,31 +266,28 @@ bench(
 	std::cout << 
         ""  << "prefix_ID"     <<
         "," << "function"      <<
+        "," << "solver"        <<
 	    "," << "threads"       <<
 	    "," << "rows"          <<
 	    "," << "features"      <<
-	    "," << "cache-size-MB" <<
 	    "," << "fit"           <<
 	    "," << "predict"       <<
 	    "," << "accuracy"      <<
-	    "," << "sv-len"        <<
 	    "," << "classes"       << std::endl;
     }
 
-    std::cout << "Native-C,SVM," << daal_thread_num;
+    std::cout << "Native-C,log_reg,lbfgs," << daal_thread_num;
     std::cout << "," << X_nt->getNumberOfRows() << 
 	         "," << X_nt->getNumberOfColumns();
-    std::cout << "," << getOptimalCacheSize(X_nt->getNumberOfRows()) / (1024*1024);
     std::cout << "," << std::min_element(fit_times.begin(), fit_times.end())->count() / fit_repetitions;
     std::cout << "," << std::min_element(predict_times.begin(), predict_times.end())->count() / predict_repetitions;
     std::cout << "," << accuracy;
-    std::cout << "," << sv_len;
-    std::cout << "," << 2; // number of classes
+    std::cout << "," << n_classes; // number of classes
     std::cout << std::endl;
 }
 
 int main(int argc, char** argv) {
-    CLI::App app("Native benchmark code for Intel(R) DAAL two-class SVM classifier");
+    CLI::App app("Native benchmark code for Intel(R) DAAL logistic regression classifier");
 
     std::string xfn = "./data/mX.csv";
     CLI::Option *optX = app.add_option("--fileX", xfn, "Feature file name")->required()->check(CLI::ExistingFile);

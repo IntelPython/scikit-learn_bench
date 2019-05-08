@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Intel Corporation
+ * Copyright (C) 2018-2019 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  */
@@ -17,6 +17,7 @@
 #include "daal.h"
 #include "CLI/CLI.hpp"
 #include "common_svm.hpp"
+#include "npyfile.h"
 
 namespace dm=daal::data_management;
 namespace ds=daal::services;
@@ -310,22 +311,20 @@ construct_dual_coefs(
 int
 find_nClasses(dm::NumericTablePtr Y_nt)
 {
-    // 
-    dm::NumericTablePtr maxY_nt = Y_nt->basicStatistics.get(dm::NumericTableIface::maximum);
-    dm::NumericTablePtr minY_nt = Y_nt->basicStatistics.get(dm::NumericTableIface::minimum);
-
-    dm::BlockDescriptor<double> block_maxY;
-    dm::BlockDescriptor<double> block_minY;
-    maxY_nt->getBlockOfRows(0, 1, dm::readOnly, block_maxY);
-    minY_nt->getBlockOfRows(0, 1, dm::readOnly, block_minY);
-
-    double *max_ptr = block_maxY.getBlockPtr();
-    double *min_ptr = block_minY.getBlockPtr();
-
-    maxY_nt->releaseBlockOfRows(block_maxY);
-    minY_nt->releaseBlockOfRows(block_minY);
-
-    return 1 + static_cast<int>(round(*max_ptr - *min_ptr));
+    /* compute min and max labels with DAAL */
+    da::low_order_moments::Batch<double> algorithm;
+    algorithm.input.set(da::low_order_moments::data, Y_nt);
+    algorithm.compute();
+    da::low_order_moments::ResultPtr res = algorithm.getResult();
+    dm::NumericTablePtr min_nt = res->get(da::low_order_moments::minimum);
+    dm::NumericTablePtr max_nt = res->get(da::low_order_moments::maximum);
+    int min, max;
+    dm::BlockDescriptor<> block;
+    min_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    min = block.getBlockPtr()[0];
+    max_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    max = block.getBlockPtr()[0];
+    return 1 + max - min;
 }
 
 void
@@ -337,16 +336,33 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
         daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
 
     size_t daal_thread_num = daal::services::Environment::getInstance()->getNumberOfThreads();
+    /* Load data */
+    struct npyarr *arrX = load_npy(X_fname.c_str());
+    struct npyarr *arrY = load_npy(y_fname.c_str());
+    if (!arrX || !arrY) {
+        std::cerr << "Failed to load input arrays" << std::endl;
+        std::exit(1);
+        return;
+    }
+    if (arrX->shape_len != 2) {
+        std::cerr << "Expected 2 dimensions for X, found "
+            << arrX->shape_len << std::endl;
+        std::exit(1);
+        return;
+    }
+    if (arrY->shape_len != 1) {
+        std::cerr << "Expected 1 dimension for y, found "
+            << arrY->shape_len << std::endl;
+        std::exit(1);
+        return;
+    }
 
-    dm::FileDataSource<dm::CSVFeatureManager> XdataSource(X_fname, dm::DataSource::doAllocateNumericTable,
-                                                          dm::DataSource::doDictionaryFromContext);
-    XdataSource.loadDataBlock();
-    dm::NumericTablePtr X_nt = XdataSource.getNumericTable();
+    /* Create numeric tables */
+    dm::NumericTablePtr X_nt = dm::HomogenNumericTable<double>::create(
+            (double *) arrX->data, arrX->shape[1], arrX->shape[0]);
+    dm::NumericTablePtr Y_nt = dm::HomogenNumericTable<int64_t>::create(
+            (int64_t *) arrY->data, 1, arrY->shape[0]);
 
-    dm::FileDataSource<dm::CSVFeatureManager> YdataSource(y_fname, dm::DataSource::doAllocateNumericTable,
-                                                          dm::DataSource::doDictionaryFromContext);
-    YdataSource.loadDataBlock();
-    dm::NumericTablePtr Y_nt = YdataSource.getNumericTable();
     size_t n_rows = Y_nt->getNumberOfRows();
 
     int nClasses = find_nClasses(Y_nt);
@@ -354,8 +370,8 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
     svm_linear_kernel_parameters svm_problem;
     svm_problem.C = 0.01;
     svm_problem.tol = 1e-16;
-    svm_problem.tau = svm_problem.tol * (1e-3);
-    svm_problem.max_iter = 10*1000;
+    svm_problem.tau = 1e-12;
+    svm_problem.max_iter = 2000;
 
     size_t sv_len = 0;
     double *dual_coefs_ptr = NULL;
@@ -395,7 +411,8 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
 
     if (header) {
 	std::cout << 
-            ""  << "prefix_ID"     <<
+        ""  << "prefix_ID"     <<
+        "," << "function"      <<
 	    "," << "threads"       <<
 	    "," << "rows"          <<
 	    "," << "features"      <<
@@ -408,6 +425,7 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
     }
 
     std::cout << "Native-C";
+    std::cout << "," << "SVM";
     std::cout << "," << daal_thread_num;
     std::cout << "," << X_nt->getNumberOfRows() << "," << X_nt->getNumberOfColumns();
     std::cout << "," << getOptimalCacheSize(X_nt->getNumberOfRows()) / (1024*1024);
