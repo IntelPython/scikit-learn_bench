@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef _NPYFILE_H_
 #define _NPYFILE_H_
@@ -281,6 +282,105 @@ fail:
     free_npy(arr);
     return NULL;
 }
+
+
+/*
+ * Write an array to disk.
+ * N.B. elem_size must be the correct size of each element in the
+ * array.
+ */
+void save_npy(const struct npyarr *arr, const char *path, size_t elem_size) {
+
+    if (path == NULL || arr == NULL) {
+        return;
+    }
+
+    /* open file */
+    FILE *f;
+    if ((f = fopen(path, "wb")) == NULL) {
+        return;
+    }
+
+    /* Determine header_len */
+    unsigned int header_len = 0;
+    static const char header_1[] = "{'descr': '";
+    static const char header_2[] = "', 'fortran_order': ";
+    static const char header_3[] = ", 'shape': (";
+    static const char header_4[] = ")}";
+    header_len += strlen(header_1) + strlen(header_2);
+    header_len += strlen(header_3) + strlen(header_4);
+
+    header_len += strlen(arr->descr);
+    header_len += (arr->fortran_order) ? 4 : 5;
+    header_len += 1; /* the terminating newline */
+
+    /* Determine shape length */
+    unsigned int shape_len = 0;
+    for (int i = 0; i < arr->shape_len; i++) {
+        /* Number of digits in the number */
+        if (arr->shape[i] > 0) {
+            shape_len += floor(log10(arr->shape[i]) + 1);
+        } else {
+            shape_len += 1;
+        }
+        if (i < arr->shape_len - 1 && arr->shape_len != 1) {
+            /* Adding commas where needed */
+            shape_len += 2;
+        }
+    }
+
+    header_len += shape_len;
     
+    /* 16-byte alignment */
+    unsigned int bytes_left = 16 - (strlen(NPY_HEADER) + 4 + header_len) % 16;
+    header_len += bytes_left;
+
+    unsigned char major_version = 0x01;
+    if (header_len > 65535) {
+        major_version = 0x02;
+    }
+    unsigned char minor_version = 0x00;
+
+    fputs(NPY_HEADER, f);
+    fputc(major_version, f);
+    fputc(minor_version, f);
+    
+    /* writing header_len in little-endian format always */
+    for (int i = 0; i < ((major_version >= 0x02) ? 4 : 2); i++) {
+        fputc((header_len >> (i * 8)) & 0xff, f);
+    }
+
+    fputs(header_1, f);
+    fputs(arr->descr, f);
+    fputs(header_2, f);
+    fputs((arr->fortran_order) ? "True" : "False", f);
+    fputs(header_3, f);
+
+    size_t nelem = 1;
+    for (int i = 0; i < arr->shape_len; i++) {
+        fprintf(f, "%d", arr->shape[i]);
+        nelem *= arr->shape[i];
+        if (i < arr->shape_len - 1 && arr->shape_len != 1) {
+            fputs(", ", f);
+        }
+    }
+    fputs(header_4, f);
+
+    /* Pad with spaces */
+    for (int i = 0; i < bytes_left; i++) {
+        fputc(' ', f);
+    }
+
+    /* Add terminating newline */
+    fputc('\n', f);
+
+    /* Write array data */
+    fwrite(arr->data, elem_size, nelem, f);
+
+    /* done. */
+    fflush(f);
+    fclose(f);
+
+}
 
 #endif /* _NPYFILE_H_ */

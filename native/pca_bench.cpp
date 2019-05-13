@@ -303,6 +303,14 @@ int main(int argc, char *argv[]) {
     app.add_option("--n-components", n_components,
                    "Number of components to get from PCA");
 
+    bool write_results = false;
+    app.add_flag("--write-results", write_results,
+                 "Write arrays to file");
+
+    std::string svd_solver = "daal";
+    app.add_option("--svd-solver", svd_solver,
+                   "Method to use for computing PCA");
+
     CLI11_PARSE(app, argc, argv);
 
     std::vector<int> size;
@@ -347,7 +355,7 @@ int main(int argc, char *argv[]) {
         std::tie(time, fit_results)
             = time_min<std::tuple<da::pca::ResultPtr, dm::NumericTablePtr,
                        dm::NumericTablePtr, dm::NumericTablePtr>> ([=] {
-                    return pca_fit_test(X, size[0], size[1], 'd', n_components);
+                    return pca_fit_test(X, size[0], size[1], svd_solver[0], n_components);
                 }, fit_reps);
 
         // Extract PCA results and U, S, V from tuple.
@@ -362,6 +370,14 @@ int main(int argc, char *argv[]) {
                     return pca_transform_test(pca_result, Xp, size[0], size[1], n_components);
                 }, transform_reps);
         std::cout << meta_info << "PCA.transform," << time << std::endl;
+    }
+
+    if (write_results) {
+        write_table<double>(make_table(X, size[0], size[1]), "<f8", "pca_X.npy");
+        write_table<double>(make_table(Xp, size[0], size[1]), "<f8", "pca_Xp.npy");
+        write_table<double>(pca_result->get(da::pca::eigenvalues), "<f8", "pca_eigvals.npy");
+        write_table<double>(pca_result->get(da::pca::eigenvectors), "<f8", "pca_eigvecs.npy");
+        write_table<double>(transform_result->get(da::pca::transform::transformedData), "<f8", "pca_transformed.npy");
     }
     return 0;
 

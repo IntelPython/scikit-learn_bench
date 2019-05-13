@@ -7,6 +7,7 @@
 
 #include "CLI11.hpp"
 #include "daal.h"
+#include "npyfile.h"
 
 namespace dm = daal::data_management;
 namespace ds = daal::services;
@@ -129,6 +130,34 @@ template <typename T>
 dm::NumericTablePtr make_table(T *data, size_t rows, size_t cols) {
 
     return dm::HomogenNumericTable<T>::create(data, cols, rows);
+
+}
+
+
+/*
+ * Write a NumericTable to npy format.
+ */
+template <typename T>
+void write_table(dm::NumericTablePtr table,
+                 const std::string descr, const std::string fn) {
+
+    dm::BlockDescriptor<T> block;
+    table->getBlockOfRows(0, table->getNumberOfRows(), dm::readOnly, block);
+    T *data = block.getBlockPtr();
+
+    size_t shape[] = {table->getNumberOfRows(), table->getNumberOfColumns()};
+
+    char *c_descr = new char[descr.size() + 1];
+    strcpy(c_descr, descr.c_str());
+    const struct npyarr arr {
+        .descr = c_descr,
+        .fortran_order = false,
+        .shape_len = 2,
+        .shape = shape,
+        .data = data
+    };
+
+    save_npy(&arr, fn.c_str(), sizeof(T));
 
 }
 
