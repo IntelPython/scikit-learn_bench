@@ -94,7 +94,7 @@ da::pca::transform::ResultPtr pca_transform_daal(
         need_to_free_pca_eigvals = true;
         if (whiten) {
             for (int i = 0; i < arrsize; i++) {
-                new_eigvals[i] = (rows - 1) * new_eigvals[i];
+                new_eigvals[i] = (rows - 1) * eigvals[i];
             }
         } else {
             for (int i = 0; i < arrsize; i++) {
@@ -103,6 +103,13 @@ da::pca::transform::ResultPtr pca_transform_daal(
         }
         pca_eigvals = make_table(new_eigvals, eigrows, eigcols);
     }
+
+    // only pass means and eigenvalues to pca transform
+    dm::KeyValueDataCollection *new_map_p = new dm::KeyValueDataCollection;
+    dm::KeyValueDataCollectionPtr new_map {new_map_p};
+    dm::KeyValueDataCollectionPtr old_map = pca_result->get(da::pca::dataForTransform);
+    (*new_map)[da::pca::means] = (*old_map)[da::pca::means];
+    (*new_map)[da::pca::eigenvalues] = pca_eigvals;
     
     // time to call DAAL algorithm.
     transform_algorithm.input.set(da::pca::transform::data,
@@ -110,7 +117,7 @@ da::pca::transform::ResultPtr pca_transform_daal(
     transform_algorithm.input.set(da::pca::transform::eigenvectors,
                                   pca_result->get(da::pca::eigenvectors));
     transform_algorithm.input.set(da::pca::transform::dataForTransform,
-                                  pca_result->get(da::pca::dataForTransform));
+                                  new_map);
     transform_algorithm.parameter.nComponents = n_components;
 
     transform_algorithm.compute();
