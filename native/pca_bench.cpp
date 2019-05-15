@@ -108,8 +108,8 @@ da::pca::transform::ResultPtr pca_transform_daal(
     dm::KeyValueDataCollection *new_map_p = new dm::KeyValueDataCollection;
     dm::KeyValueDataCollectionPtr new_map {new_map_p};
     dm::KeyValueDataCollectionPtr old_map = pca_result->get(da::pca::dataForTransform);
-    (*new_map)[da::pca::means] = (*old_map)[da::pca::means];
-    (*new_map)[da::pca::eigenvalues] = pca_eigvals;
+    (*new_map)[da::pca::mean] = (*old_map)[da::pca::mean];
+    (*new_map)[da::pca::eigenvalue] = pca_eigvals;
     
     // time to call DAAL algorithm.
     transform_algorithm.input.set(da::pca::transform::data,
