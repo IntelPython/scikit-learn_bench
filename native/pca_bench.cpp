@@ -62,6 +62,8 @@ pca_fit_daal(double *X, size_t rows, size_t cols, size_t n_components) {
         singular_values_arr[i] = std::sqrt((rows - 1) * eigenvalues_arr[i]);
     }
 
+    eigenvalues->releaseBlockOfRows(block);
+
     dm::NumericTablePtr singular_values = make_table(
             singular_values_arr,
             eigenvalues->getNumberOfRows(),
@@ -84,18 +86,21 @@ da::pca::transform::ResultPtr pca_transform_daal(
     
     // sklearn scales eigenvalues before whitening operation...
     if (scale_eigenvalues) {
-        dm::BlockDescriptor<double> block;
-        pca_eigvals->getBlockOfRows(0, pca_eigvals->getNumberOfRows(), dm::readOnly, block);
-        double *eigvals = block.getBlockPtr();
         size_t eigrows = pca_eigvals->getNumberOfRows();
         size_t eigcols = pca_eigvals->getNumberOfColumns();
         size_t arrsize = eigrows * eigcols;
         new_eigvals = new double[arrsize];
         need_to_free_pca_eigvals = true;
         if (whiten) {
+            dm::BlockDescriptor<double> block;
+            pca_eigvals->getBlockOfRows(0, pca_eigvals->getNumberOfRows(), dm::readOnly, block);
+            double *eigvals = block.getBlockPtr();
+
             for (int i = 0; i < arrsize; i++) {
                 new_eigvals[i] = (rows - 1) * eigvals[i];
             }
+
+            pca_eigvals->releaseBlockOfRows(block);
         } else {
             for (int i = 0; i < arrsize; i++) {
                 new_eigvals[i] = rows - 1;
@@ -140,11 +145,11 @@ void svd_flip(dm::NumericTablePtr U, dm::NumericTablePtr V) {
     int v_cols = V->getNumberOfColumns();
 
     double *u, *v;
-    dm::BlockDescriptor<double> block;
-    U->getBlockOfRows(0, u_rows, dm::readWrite, block);
-    u = block.getBlockPtr();
-    V->getBlockOfRows(0, v_rows, dm::readWrite, block);
-    v = block.getBlockPtr();
+    dm::BlockDescriptor<double> ublock, vblock;
+    U->getBlockOfRows(0, u_rows, dm::readWrite, ublock);
+    u = ublock.getBlockPtr();
+    V->getBlockOfRows(0, v_rows, dm::readWrite, vblock);
+    v = vblock.getBlockPtr();
     
     // Need to allocate a sign array of ints here.
     // Then we need TWO loops. The first one gets signs.,
@@ -185,6 +190,9 @@ void svd_flip(dm::NumericTablePtr U, dm::NumericTablePtr V) {
             }
         }
     }
+
+    U->releaseBlockOfRows(ublock);
+    V->releaseBlockOfRows(vblock);
 
 }
 

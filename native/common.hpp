@@ -159,6 +159,8 @@ void write_table(dm::NumericTablePtr table,
 
     save_npy(&arr, fn.c_str(), sizeof(T));
 
+    table->releaseBlockOfRows(block);
+
 }
 
 
@@ -171,20 +173,24 @@ dm::NumericTablePtr
 copy_submatrix(dm::NumericTablePtr src,
                size_t row, size_t col, size_t rows, size_t cols) {
 
-    dm::BlockDescriptor<T> block;
-    src->getBlockOfRows(0, src->getNumberOfRows(), dm::readOnly, block);
-    T *srcdata = block.getBlockPtr();
+    dm::BlockDescriptor<T> srcblock;
+    src->getBlockOfRows(0, src->getNumberOfRows(), dm::readOnly, srcblock);
+    T *srcdata = srcblock.getBlockPtr();
 
     dm::NumericTablePtr dest = dm::HomogenNumericTable<T>::create(
             cols, rows, dm::NumericTable::doAllocate);
-    dest->getBlockOfRows(0, dest->getNumberOfRows(), dm::readWrite, block);
-    T *destdata = block.getBlockPtr();
+    dm::BlockDescriptor<T> destblock;
+    dest->getBlockOfRows(0, dest->getNumberOfRows(), dm::readWrite, destblock);
+    T *destdata = destblock.getBlockPtr();
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             destdata[i*cols + j] = srcdata[(i+col)*cols + j+row];
         }
     }
+
+    src->releaseBlockOfRows(srcblock);
+    dest->releaseBlockOfRows(destblock);
 
     return dest;
 
