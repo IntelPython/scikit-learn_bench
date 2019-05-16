@@ -59,7 +59,7 @@ pca_fit_daal(double *X, size_t rows, size_t cols, size_t n_components) {
     double *singular_values_arr = new double[s_diag_size];
 
     for (int i = 0; i < s_diag_size; i++) {
-        singular_values_arr[i] = sqrt((rows - 1) * eigenvalues_arr[i]);
+        singular_values_arr[i] = std::sqrt((rows - 1) * eigenvalues_arr[i]);
     }
 
     dm::NumericTablePtr singular_values = make_table(
@@ -146,25 +146,40 @@ void svd_flip(dm::NumericTablePtr U, dm::NumericTablePtr V) {
     V->getBlockOfRows(0, v_rows, dm::readWrite, block);
     v = block.getBlockPtr();
     
+    // Need to allocate a sign array of ints here.
+    // Then we need TWO loops. The first one gets signs.,
+    // and the second one actually scales.
+    // Just store 1 or -1 and multiply.
+    // Use the sign function on the component we find as max
+    // std::sign <- might be sgn, std::abs
+    bool *flip = new bool[u_cols];
 
+    // Find signs.
     // for each column in u...
     for (int i = 0; i < u_cols; i++) {
         // find the maximum absolute value...
         double absmax = 0.0;
         for (int j = 0; j < u_rows; j++) {
             double curr = u[j*u_cols + i];
-            if (curr > absmax) {
+            if (std::abs(curr) > std::abs(absmax)) {
                 absmax = curr;
             }
         }
+        flip[i] = (absmax < 0);
+    }
+
+    // Apply sign flipping
+    for (int i = 0; i < u_cols; i++) {
 
         // now, scale this column of u and same-indexed ROW of v
         // by the sign of absmax.
-        if (absmax < 0) {
+        if (flip[i]) {
+// #pragma vector
             for (int j = 0; j < u_rows; j++) {
                 u[j*u_cols + i] = -u[j*u_cols + i];
             }
             
+// #pragma vector
             for (int j = 0; j < v_cols; j++) {
                 v[j + i*v_rows] = -v[j + i*v_rows];
             }
@@ -196,6 +211,14 @@ pca_fit_full_daal(double *X, size_t rows, size_t cols, size_t n_components) {
 
     // Flip signs to make largest row values positive for each column in U.
     svd_flip(U, V);
+
+    // Need to take subcomponents of the eigenvalues and eigenvectors here.
+    dm::NumericTablePtr orig_eigvals = pca_result->get(da::pca::eigenvalues);
+    dm::NumericTablePtr eigvals = copy_submatrix<double>(orig_eigvals, 0, 0, 1, n_components);
+    dm::NumericTablePtr eigvecs = copy_submatrix<double>(V, 0, 0, n_components, cols);
+
+    pca_result->set(da::pca::eigenvalues, eigvals);
+    pca_result->set(da::pca::eigenvectors, eigvecs);
 
     return std::make_tuple(pca_result, U, singular_values, V);
 

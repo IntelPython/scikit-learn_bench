@@ -163,6 +163,35 @@ void write_table(dm::NumericTablePtr table,
 
 
 /*
+ * Create a new HomogenNumericTable from a submatrix of an existing
+ * HomogenNumericTable.
+ */
+template <typename T>
+dm::NumericTablePtr
+copy_submatrix(dm::NumericTablePtr src,
+               size_t row, size_t col, size_t rows, size_t cols) {
+
+    dm::BlockDescriptor<T> block;
+    src->getBlockOfRows(0, src->getNumberOfRows(), dm::readOnly, block);
+    T *srcdata = block.getBlockPtr();
+
+    dm::NumericTablePtr dest = dm::HomogenNumericTable<T>::create(
+            cols, rows, dm::NumericTable::doAllocate);
+    dest->getBlockOfRows(0, dest->getNumberOfRows(), dm::readWrite, block);
+    T *destdata = block.getBlockPtr();
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            destdata[i*cols + j] = srcdata[(i+col)*cols + j+row];
+        }
+    }
+
+    return dest;
+
+}
+
+
+/*
  * Generate an array of random numbers.
  */
 double *gen_random(size_t n) {
