@@ -145,7 +145,7 @@ void write_table(dm::NumericTablePtr table,
     table->getBlockOfRows(0, table->getNumberOfRows(), dm::readOnly, block);
     T *data = block.getBlockPtr();
 
-    size_t shape[] = {table->getNumberOfRows(), table->getNumberOfColumns()};
+    size_t shape[2] = {table->getNumberOfRows(), table->getNumberOfColumns()};
 
     char *c_descr = new char[descr.size() + 1];
     strcpy(c_descr, descr.c_str());
@@ -167,15 +167,22 @@ void write_table(dm::NumericTablePtr table,
 /*
  * Create a new HomogenNumericTable from a submatrix of an existing
  * HomogenNumericTable.
+ *
+ * equivalent in python:
+ *   return src[row_start:row_end, col_start:col_end].copy()
  */
 template <typename T>
 dm::NumericTablePtr
 copy_submatrix(dm::NumericTablePtr src,
-               size_t row, size_t col, size_t rows, size_t cols) {
+               size_t row_start, size_t row_end,
+               size_t col_start, size_t col_end) {
 
     dm::BlockDescriptor<T> srcblock;
     src->getBlockOfRows(0, src->getNumberOfRows(), dm::readOnly, srcblock);
     T *srcdata = srcblock.getBlockPtr();
+
+    size_t cols = col_end - col_start;
+    size_t rows = row_end - row_start;
 
     dm::NumericTablePtr dest = dm::HomogenNumericTable<T>::create(
             cols, rows, dm::NumericTable::doAllocate);
@@ -185,7 +192,7 @@ copy_submatrix(dm::NumericTablePtr src,
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            destdata[i*cols + j] = srcdata[(i+col)*cols + j+row];
+            destdata[i*cols + j] = srcdata[(i+col_start)*cols + j+row_start];
         }
     }
 

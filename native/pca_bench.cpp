@@ -222,8 +222,8 @@ pca_fit_full_daal(double *X, size_t rows, size_t cols, size_t n_components) {
 
     // Need to take subcomponents of the eigenvalues and eigenvectors here.
     dm::NumericTablePtr orig_eigvals = pca_result->get(da::pca::eigenvalues);
-    dm::NumericTablePtr eigvals = copy_submatrix<double>(orig_eigvals, 0, 0, 1, n_components);
-    dm::NumericTablePtr eigvecs = copy_submatrix<double>(V, 0, 0, n_components, cols);
+    dm::NumericTablePtr eigvals = copy_submatrix<double>(orig_eigvals, 0, 1, 0, n_components);
+    dm::NumericTablePtr eigvecs = copy_submatrix<double>(V, 0, n_components, 0, cols);
 
     pca_result->set(da::pca::eigenvalues, eigvals);
     pca_result->set(da::pca::eigenvectors, eigvecs);
