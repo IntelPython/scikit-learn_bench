@@ -22,7 +22,7 @@ pca_fit_daal(double *X, size_t rows, size_t cols, size_t n_components) {
 
     // Find number of components to use in DAAL
     if (n_components < 1) {
-        n_components = std::min(n_components, rows);
+        n_components = std::min(cols, rows);
     }
 
     da::pca::Batch<double, da::pca::svdDense> pca_algorithm;
