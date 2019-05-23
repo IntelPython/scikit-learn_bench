@@ -7,6 +7,7 @@
 
 #include "CLI11.hpp"
 #include "daal.h"
+#include "npyfile.h"
 
 namespace dm = daal::data_management;
 namespace ds = daal::services;
@@ -129,6 +130,76 @@ template <typename T>
 dm::NumericTablePtr make_table(T *data, size_t rows, size_t cols) {
 
     return dm::HomogenNumericTable<T>::create(data, cols, rows);
+
+}
+
+
+/*
+ * Write a NumericTable to npy format.
+ */
+template <typename T>
+void write_table(dm::NumericTablePtr table,
+                 const std::string descr, const std::string fn) {
+
+    dm::BlockDescriptor<T> block;
+    table->getBlockOfRows(0, table->getNumberOfRows(), dm::readOnly, block);
+    T *data = block.getBlockPtr();
+
+    size_t shape[2] = {table->getNumberOfRows(), table->getNumberOfColumns()};
+
+    char *c_descr = new char[descr.size() + 1];
+    strcpy(c_descr, descr.c_str());
+    const struct npyarr arr {
+        .descr = c_descr,
+        .fortran_order = false,
+        .shape_len = 2,
+        .shape = shape,
+        .data = data
+    };
+
+    save_npy(&arr, fn.c_str(), sizeof(T));
+
+    table->releaseBlockOfRows(block);
+
+}
+
+
+/*
+ * Create a new HomogenNumericTable from a submatrix of an existing
+ * HomogenNumericTable.
+ *
+ * equivalent in python:
+ *   return src[row_start:row_end, col_start:col_end].copy()
+ */
+template <typename T>
+dm::NumericTablePtr
+copy_submatrix(dm::NumericTablePtr src,
+               size_t row_start, size_t row_end,
+               size_t col_start, size_t col_end) {
+
+    dm::BlockDescriptor<T> srcblock;
+    src->getBlockOfRows(0, src->getNumberOfRows(), dm::readOnly, srcblock);
+    T *srcdata = srcblock.getBlockPtr();
+
+    size_t cols = col_end - col_start;
+    size_t rows = row_end - row_start;
+
+    dm::NumericTablePtr dest = dm::HomogenNumericTable<T>::create(
+            cols, rows, dm::NumericTable::doAllocate);
+    dm::BlockDescriptor<T> destblock;
+    dest->getBlockOfRows(0, dest->getNumberOfRows(), dm::readWrite, destblock);
+    T *destdata = destblock.getBlockPtr();
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            destdata[i*cols + j] = srcdata[(i+col_start)*cols + j+row_start];
+        }
+    }
+
+    src->releaseBlockOfRows(srcblock);
+    dest->releaseBlockOfRows(destblock);
+
+    return dest;
 
 }
 
