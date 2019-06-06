@@ -135,6 +135,14 @@ daal4py: data
 		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--header
+	python daal4py/df_clsf.py --num-threads $(NUM_THREADS) \
+		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
+	python daal4py/df_clsf.py --num-threads $(NUM_THREADS) \
+		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
+		--header
 
 data: $(KMEANS_DATA) svm_data
 

@@ -55,7 +55,7 @@ df_regression_fit(
     df_reg_alg.parameter.minObservationsInLeafNode = 1;
     df_reg_alg.parameter.impurityThreshold = min_impurity;
     df_reg_alg.parameter.bootstrap = bootsrap;
-    df_reg_alg.parameter.engine = da::engines::mt19937::Batch<double>::create(seed);
+    df_reg_alg.parameter.engine = da::engines::mt2203::Batch<double>::create(seed);
 
     if (verbose) {
 	std::cout << "@ {'nTrees': " << nTrees <<
@@ -85,7 +85,8 @@ df_regression_predict(
     bool verbose
     )
 {
-    dfr::prediction::Batch<double> pred_alg;
+    // We explicitly specify float here to match sklearn.
+    dfr::prediction::Batch<float> pred_alg;
     pred_alg.input.set(dfr::prediction::data, Xt);
     pred_alg.input.set(dfr::prediction::model,
 		       training_result_ptr->get(dfr::training::model));
