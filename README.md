@@ -1,7 +1,7 @@
 # scikit-learn_bench
 
 Benchmark for optimizations to scikit-learn in the Intel(R) Distribution for
-Python*
+Python*. See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 
 ## Prerequisites
 - python and scikit-learn to run python versions
