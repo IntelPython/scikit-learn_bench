@@ -41,6 +41,7 @@ namespace lbfgsb {
          *                   2         lower and upper bounded,
          *                   3         only upper bounded.
          * factr - Tolerance in termination test (see L-BFGS-B).
+         * m - Number of corrections used in limited memory matrix (see L-BFGS-B).
          * iprint - Diagnostic information flag (see L-BFGS-B; 0 = silent).
          */
         Parameter(
@@ -50,8 +51,9 @@ namespace lbfgsb {
             dm::NumericTablePtr lowerBound = dm::NumericTablePtr(),
             dm::NumericTablePtr upperBound = dm::NumericTablePtr(),
             size_t batchSize = 1,
-            int bounded = 0,
+            dm::NumericTablePtr bounded = dm::NumericTablePtr(),
             double factr = 1e7,
+            int m = 10,
             int iprint = 0
         ) :
             dai::Parameter(function, nIterations, accuracyThreshold, false, batchSize),
@@ -67,15 +69,6 @@ namespace lbfgsb {
             ds::Status s = dai::Parameter::check();
             if (!s) return s;
 
-            DAAL_CHECK_EX(bounded < 0 || bounded > 4, ds::ErrorIncorrectParameter,
-                          ds::ArgumentName, "bounded");
-            if (bounded == 1 || bounded == 2) {
-                // Require lower bound
-            }
-            if (bounded == 2 || bounded == 3) {
-                // Require upper bound
-            }
-
             DAAL_CHECK_EX(iprint >= 0, ds::ErrorIncorrectParameter,
                           ds::ArgumentName, "iprint");
             return s;
@@ -86,7 +79,7 @@ namespace lbfgsb {
         // Extra variables for L-BFGS-B.
         dm::NumericTablePtr lowerBound;
         dm::NumericTablePtr upperBound;
-        int bounded;
+        dm::NumericTablePtr bounded;
         double factr;
         int iprint;
 
@@ -98,8 +91,119 @@ namespace lbfgsb {
             }
             ~BatchContainer() {
             }
-
             ds::Status compute() {
+
+                // If following along, this is similar to the code
+                // in driver1.f provided in the L-BFGS-B library.
+
+                // Fetch parameters so we don't have to go through
+                // hoops to get them.
+                dai::Input *input = static_cast<dai::Input *>(_in);
+                dai::Result *result = static_cast<dai::Result *>(_res);
+                Parameter *parameter = static_cast<Parameter *>(_par);
+
+                // The initial argument to the function to minimize.
+                NumericTable *inputArgument = input->get(dai::inputArgument).get();
+                // We will place the computed minimizing argument here
+                NumericTable *minimum = result->get(dai::minimum).get();
+                // We will write the number of iterations used here.
+                NumericTable *actualIters = result->get(dai::nIterations).get();
+
+                // Read parameters.
+                const double accuracyThreshold = parameter->accuracyThreshold;
+                NumericTable *lowerBound = parameter->lowerBound;
+                NumericTable *upperBound = parameter->upperBound;
+                NumericTable *bounded = parameter->bounded;
+                const double factr = parameter->factr;
+                int iprint = parameter->iprint;
+                size_t nIter = parameter->nIterations;
+
+
+                // Static allocations which don't change.
+                char task[60], csave[60];
+                int lsave[4];
+                int n, m, iprint, isave[44];
+                double f, pgtol, dsave[29];
+
+                n = inputArgument->getNumberOfColumns();
+                m = parameter->m;
+
+                // Because we have the freedom to dynamically allocate
+                // our arrays, we don't need to specify nmax, mmax as
+                // in driver1.f.
+                int *nbd = new int[n];
+                int *iwa = new int[3*n];
+                double *x = new double[n];
+                double *l = new double[n];
+                double *u = new double[n];
+                double *g = new double[n];
+                double *wa = new double[2*mmax*nmax + 5*nmax + 11*mmax*mmax + 8*mmax];
+
+                // set bounds in nbd, l, u.
+                dm::BlockDescriptor<double> block;
+                double *blockPtr;
+                bounded->getBlockOfRows(0, 1, dm::readOnly, block);
+                blockPtr = block.getBlockPtr();
+                memcpy(nbd, blockPtr, n*sizeof(double));
+                bounded->releaseBlockOfRows(block);
+
+                lowerBound->getBlockOfRows(0, 1, dm::readOnly, block);
+                blockPtr = block.getBlockPtr();
+                memcpy(l, blockPtr, n*sizeof(double));
+                lowerBound->releaseBlockOfRows(block);
+
+                upperBound->getBlockOfRows(0, 1, dm::readOnly, block);
+                blockPtr = block.getBlockPtr();
+                memcpy(u, blockPtr, n*sizeof(double));
+                upperBound->releaseBlockOfRows(block);
+
+                // set initial guess of x
+                inputArgument->getBlockOfRows(0, 1, dm::readOnly, block);
+                blockPtr = block.getBlockPtr();
+                memcpy(x, blockPtr, n*sizeof(double));
+                inputArgument->releaseBlockOfRows(block);
+
+                // set task
+                strcpy(task, "START");
+                memset(task+5, ' ', sizeof(task) - 5);
+
+                // loop: setulb, compute function, compute gradient.
+                do {
+                    // This is the actual function call to the L-BFGS-B library.
+                    setulb_(&n, &m, x, l, u, nbd, &f, g, &factr, &pgtol, wa,
+                            iwa, task, &iprint, csave, lsave, isave, dsave,
+                            60, 60);
+
+                    if (strncmp(task, "FG", 2) == 0) {
+
+                        // The library asked us to compute the function value
+                        // and its gradient.
+                        dm::NumericTablePtr x_nt = dm::HomogenNumericTable<double>::create(
+                                x, n, rows);
+
+                        function->sumOfFunctionsInput->set(
+                                dao::sum_of_functions::argument, x_nt);
+                        function->computeNoThrow();
+
+                        // Get the function value.
+                        dm::NumericTablePtr f_nt = function->getResult()->get(dao::valueIdx);
+                        f_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+                        blockPtr = block.getBlockPtr();
+                        memcpy(f, blockPtr, sizeof(double));
+                        f_nt->releaseBlockOfRows(block);
+
+                        // Get the gradient value.
+                        dm::NumericTablePtr g_nt = function->getResult->get(dao::gradientIdx);
+                        g_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+                        blockPtr = block.getBlockPtr();
+                        memcpy(g, blockPtr, n*sizeof(double));
+                        g_nt->releaseBlockOfRows(block);
+
+                    }
+
+                } while (strncmp(task, "FG", 2) == 0 || strncmp(task, "NEW_X", 2) == 0);
+
+
             }
     };
 
