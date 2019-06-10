@@ -61,6 +61,7 @@ namespace lbfgsb {
             upperBound(upperBound),
             bounded(bounded),
             factr(factr),
+            m(m),
             iprint(iprint)
         {};
 
@@ -81,6 +82,7 @@ namespace lbfgsb {
         dm::NumericTablePtr upperBound;
         dm::NumericTablePtr bounded;
         double factr;
+        int m;
         int iprint;
 
     };
@@ -101,20 +103,21 @@ namespace lbfgsb {
                 dai::Input *input = static_cast<dai::Input *>(_in);
                 dai::Result *result = static_cast<dai::Result *>(_res);
                 Parameter *parameter = static_cast<Parameter *>(_par);
+                dao::sum_of_functions::BatchPtr function = parameter->function;
 
                 // The initial argument to the function to minimize.
-                NumericTable *inputArgument = input->get(dai::inputArgument).get();
+                dm::NumericTablePtr inputArgument = input->get(dai::inputArgument);
                 // We will place the computed minimizing argument here
-                NumericTable *minimum = result->get(dai::minimum).get();
+                dm::NumericTablePtr minimum = result->get(dai::minimum);
                 // We will write the number of iterations used here.
-                NumericTable *actualIters = result->get(dai::nIterations).get();
+                dm::NumericTablePtr actualIters = result->get(dai::nIterations);
 
                 // Read parameters.
                 const double accuracyThreshold = parameter->accuracyThreshold;
-                NumericTable *lowerBound = parameter->lowerBound;
-                NumericTable *upperBound = parameter->upperBound;
-                NumericTable *bounded = parameter->bounded;
-                const double factr = parameter->factr;
+                dm::NumericTablePtr lowerBound = parameter->lowerBound;
+                dm::NumericTablePtr upperBound = parameter->upperBound;
+                dm::NumericTablePtr bounded = parameter->bounded;
+                double factr = parameter->factr;
                 int iprint = parameter->iprint;
                 size_t nIter = parameter->nIterations;
 
@@ -122,7 +125,7 @@ namespace lbfgsb {
                 // Static allocations which don't change.
                 char task[60], csave[60];
                 int lsave[4];
-                int n, m, iprint, isave[44];
+                int n, m, isave[44];
                 double f, pgtol, dsave[29];
 
                 n = inputArgument->getNumberOfColumns();
@@ -137,7 +140,7 @@ namespace lbfgsb {
                 double *l = new double[n];
                 double *u = new double[n];
                 double *g = new double[n];
-                double *wa = new double[2*mmax*nmax + 5*nmax + 11*mmax*mmax + 8*mmax];
+                double *wa = new double[2*m*n + 5*n + 11*m*m + 8*m];
 
                 // set bounds in nbd, l, u.
                 dm::BlockDescriptor<double> block;
@@ -178,6 +181,7 @@ namespace lbfgsb {
 
                         // The library asked us to compute the function value
                         // and its gradient.
+                        size_t rows = inputArgument->getNumberOfRows();
                         dm::NumericTablePtr x_nt = dm::HomogenNumericTable<double>::create(
                                 x, n, rows);
 
@@ -186,14 +190,16 @@ namespace lbfgsb {
                         function->computeNoThrow();
 
                         // Get the function value.
-                        dm::NumericTablePtr f_nt = function->getResult()->get(dao::valueIdx);
+                        dm::NumericTablePtr f_nt = function->getResult()->get(
+                                dao::objective_function::valueIdx);
                         f_nt->getBlockOfRows(0, 1, dm::readOnly, block);
                         blockPtr = block.getBlockPtr();
-                        memcpy(f, blockPtr, sizeof(double));
+                        f = *blockPtr;
                         f_nt->releaseBlockOfRows(block);
 
                         // Get the gradient value.
-                        dm::NumericTablePtr g_nt = function->getResult->get(dao::gradientIdx);
+                        dm::NumericTablePtr g_nt = function->getResult()->get(
+                                dao::objective_function::gradientIdx);
                         g_nt->getBlockOfRows(0, 1, dm::readOnly, block);
                         blockPtr = block.getBlockPtr();
                         memcpy(g, blockPtr, n*sizeof(double));
