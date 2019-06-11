@@ -70,8 +70,6 @@ namespace lbfgsb {
             ds::Status s = dai::Parameter::check();
             if (!s) return s;
 
-            DAAL_CHECK_EX(iprint >= 0, ds::ErrorIncorrectParameter,
-                          ds::ArgumentName, "iprint");
             return s;
         }
 

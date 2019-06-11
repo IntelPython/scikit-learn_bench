@@ -47,7 +47,7 @@ logistic_regression_fit(
 
     lbfgsSolver->parameter.nIterations = max_iter;
     lbfgsSolver->parameter.accuracyThreshold = tol;
-    lbfgsSolver->parameter.iprint = 1;
+    lbfgsSolver->parameter.iprint = (verbose) ? 1 : -1;
 
 
     dl::training::Batch<double> log_reg_alg(nClasses);
