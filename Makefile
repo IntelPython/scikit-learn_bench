@@ -118,6 +118,16 @@ sklearn: data
 		--fileX data/multi/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
 		--fileY data/multi/y-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
 		--header --prefix python
+	python sklearn/pca.py --batchID $(BATCH) --arch $(HOST) \
+		--prefix python --core-number $(NUM_THREADS) \
+		--size $(subst x,$(comma),$(REGRESSION_SIZE)) \
+		--iteration $(ITERATIONS) \
+		--svd-solver daal
+	python sklearn/pca.py --batchID $(BATCH) --arch $(HOST) \
+		--prefix python --core-number $(NUM_THREADS) \
+		--size $(subst x,$(comma),$(REGRESSION_SIZE)) \
+		--iteration $(ITERATIONS) \
+		--svd-solver full
 
 daal4py: data
 	@echo "# Running daal4py benchmarks"
