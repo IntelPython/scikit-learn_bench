@@ -4,8 +4,13 @@ REGRESSION_SIZE = 1000000x50
 KMEANS_SAMPLES = 1000000
 KMEANS_FEATURES = 50
 KMEANS_SIZE = $(KMEANS_SAMPLES)x$(KMEANS_FEATURES)
-SVM_SAMPLES = 10000
-SVM_FEATURES = 1000
+SVM_SAMPLES = 50000
+SVM_FEATURES = 100
+LOGREG_SAMPLES = 100000
+LOGREG_FEATURES = 100
+DFCLF_SAMPLES = 10000
+DFCLF_FEATURES = 50
+
 ITERATIONS = 10
 
 # Bookkeeping options
@@ -15,6 +20,8 @@ HOST = $(shell hostname)
 # Other options
 NUM_THREADS = -1
 SVM_NUM_THREADS = 0
+DFCLF_NUM_THREADS = 0
+LOGREG_NUM_THREADS = 0
 MULTIPLIER = 100
 DATA_DIR = data/
 KMEANS_DATA = data/kmeans_$(KMEANS_SIZE).npy
@@ -56,21 +63,21 @@ native: data
 		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--num-threads $(SVM_NUM_THREADS) --header
 	native/bin/log_reg_lbfgs \
-		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--num-threads $(SVM_NUM_THREADS) --header
+		--fileX data/two/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--fileY data/two/y-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--num-threads $(LOGREG_NUM_THREADS) --header
 	native/bin/log_reg_lbfgs \
-		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--num-threads $(SVM_NUM_THREADS) --header
+		--fileX data/multi/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--fileY data/multi/y-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--num-threads $(LOGREG_NUM_THREADS) --header
 	native/bin/decision_forest_clsf \
-		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--num-threads $(SVM_NUM_THREADS) --header
+		--fileX data/two/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--fileY data/two/y-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--num-threads $(DFCLF_NUM_THREADS) --header
 	native/bin/decision_forest_clsf \
-		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--num-threads $(SVM_NUM_THREADS) --header
+		--fileX data/multi/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--fileY data/multi/y-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--num-threads $(DFCLF_NUM_THREADS) --header
 
 sklearn: data
 	@echo "# Running scikit-learn benchmarks"
@@ -90,27 +97,27 @@ sklearn: data
 	python sklearn/svm_bench.py --core-number $(NUM_THREADS) \
 		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--header --prefix python
 	python sklearn/svm_bench.py --core-number $(NUM_THREADS) \
 		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--header --prefix python
 	python sklearn/log_reg.py --num-threads $(NUM_THREADS) \
-		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--fileX data/two/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--fileY data/two/y-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--header --multiclass ovr --prefix python
 	python sklearn/log_reg.py --num-threads $(NUM_THREADS) \
-		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--fileX data/multi/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--fileY data/multi/y-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+		--header --multiclass multinomial --prefix python
 	python sklearn/df_clsf.py --num-threads $(NUM_THREADS) \
-		--fileX data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/two/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--fileX data/two/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--fileY data/two/y-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--header --prefix python
 	python sklearn/df_clsf.py --num-threads $(NUM_THREADS) \
-		--fileX data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
-		--header
+		--fileX data/multi/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--fileY data/multi/y-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+		--header --prefix python
 
 daal4py: data
 	@echo "# Running daal4py benchmarks"
@@ -136,7 +143,7 @@ daal4py: data
 		--fileY data/multi/y-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 		--header
 
-data: $(KMEANS_DATA) svm_data
+data: $(KMEANS_DATA) svm_data logreg_data df_clf_data
 
 $(KMEANS_DATA): | data/
 	python make_datasets.py -f $(KMEANS_FEATURES) -s $(KMEANS_SAMPLES) \
@@ -146,12 +153,35 @@ $(KMEANS_DATA): | data/
 svm_data: data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy \
 	data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy
 
+logreg_data: data/two/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy \
+	data/multi/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy
+
+df_clf_data: data/two/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy \
+	data/multi/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy
+
+
 data/two/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy: | data/
 	python make_datasets.py -f $(SVM_FEATURES) -s $(SVM_SAMPLES) \
 		classification -c 2 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
 
 data/multi/X-$(SVM_SAMPLES)x$(SVM_FEATURES).npy: | data/
 	python make_datasets.py -f $(SVM_FEATURES) -s $(SVM_SAMPLES) \
+		classification -c 5 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
+
+data/two/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy: | data/
+	python make_datasets.py -f $(LOGREG_FEATURES) -s $(LOGREG_SAMPLES) \
+		classification -c 2 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
+
+data/multi/X-$(LOGREG_SAMPLES)x$(LOGREG_FEATURES).npy: | data/
+	python make_datasets.py -f $(LOGREG_FEATURES) -s $(LOGREG_SAMPLES) \
+		classification -c 5 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
+
+data/two/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy: | data/
+	python make_datasets.py -f $(DFCLF_FEATURES) -s $(DFCLF_SAMPLES) \
+		classification -c 2 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
+
+data/multi/X-$(DFCLF_SAMPLES)x$(DFCLF_FEATURES).npy: | data/
+	python make_datasets.py -f $(DFCLF_FEATURES) -s $(DFCLF_SAMPLES) \
 		classification -c 5 -x $@ -y $(dir $@)/$(subst X-,y-,$(notdir $@))
 
 data/:
@@ -163,4 +193,4 @@ clean:
 	$(MAKE) -C native clean
 	rm -rf data
 
-.PHONY: native python sklearn daal4py all clean native_data data kmeans_data svm_data
+.PHONY: native python sklearn daal4py all clean native_data data kmeans_data svm_data logreg_data df_clf_data
