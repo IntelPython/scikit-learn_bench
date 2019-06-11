@@ -105,6 +105,10 @@ namespace lbfgsb {
                 Parameter *parameter = static_cast<Parameter *>(_par);
                 dao::sum_of_functions::BatchPtr function = parameter->function;
 
+                // We need value and gradient for L-BFGS-B
+                function->sumOfFunctionsParameter->resultsToCompute =
+                    dao::objective_function::value | dao::objective_function::gradient;
+
                 // The initial argument to the function to minimize.
                 dm::NumericTablePtr inputArgument = input->get(dai::inputArgument);
                 // We will place the computed minimizing argument here
@@ -128,7 +132,7 @@ namespace lbfgsb {
                 int n, m, isave[44];
                 double f, pgtol, dsave[29];
 
-                n = inputArgument->getNumberOfColumns();
+                n = inputArgument->getNumberOfRows();
                 m = parameter->m;
 
                 // Because we have the freedom to dynamically allocate
@@ -145,23 +149,29 @@ namespace lbfgsb {
                 // set bounds in nbd, l, u.
                 dm::BlockDescriptor<double> block;
                 double *blockPtr;
-                bounded->getBlockOfRows(0, 1, dm::readOnly, block);
-                blockPtr = block.getBlockPtr();
-                memcpy(nbd, blockPtr, n*sizeof(double));
-                bounded->releaseBlockOfRows(block);
+                if (bounded) {
+                    bounded->getBlockOfRows(0, 1, dm::readOnly, block);
+                    blockPtr = block.getBlockPtr();
+                    memcpy(nbd, blockPtr, n*sizeof(double));
+                    bounded->releaseBlockOfRows(block);
 
-                lowerBound->getBlockOfRows(0, 1, dm::readOnly, block);
-                blockPtr = block.getBlockPtr();
-                memcpy(l, blockPtr, n*sizeof(double));
-                lowerBound->releaseBlockOfRows(block);
+                    lowerBound->getBlockOfRows(0, 1, dm::readOnly, block);
+                    blockPtr = block.getBlockPtr();
+                    memcpy(l, blockPtr, n*sizeof(double));
+                    lowerBound->releaseBlockOfRows(block);
 
-                upperBound->getBlockOfRows(0, 1, dm::readOnly, block);
-                blockPtr = block.getBlockPtr();
-                memcpy(u, blockPtr, n*sizeof(double));
-                upperBound->releaseBlockOfRows(block);
+                    upperBound->getBlockOfRows(0, 1, dm::readOnly, block);
+                    blockPtr = block.getBlockPtr();
+                    memcpy(u, blockPtr, n*sizeof(double));
+                    upperBound->releaseBlockOfRows(block);
+                } else {
+                    for (int i = 0; i < n; i++) {
+                        nbd[i] = 0.;
+                    }
+                }
 
                 // set initial guess of x
-                inputArgument->getBlockOfRows(0, 1, dm::readOnly, block);
+                inputArgument->getBlockOfRows(0, n, dm::readOnly, block);
                 blockPtr = block.getBlockPtr();
                 memcpy(x, blockPtr, n*sizeof(double));
                 inputArgument->releaseBlockOfRows(block);
@@ -171,6 +181,7 @@ namespace lbfgsb {
                 memset(task+5, ' ', sizeof(task) - 5);
 
                 // loop: setulb, compute function, compute gradient.
+                size_t actual_n_iterations = 0;
                 do {
                     // This is the actual function call to the L-BFGS-B library.
                     setulb_(&n, &m, x, l, u, nbd, &f, g, &factr, &pgtol, wa,
@@ -183,7 +194,7 @@ namespace lbfgsb {
                         // and its gradient.
                         size_t rows = inputArgument->getNumberOfRows();
                         dm::NumericTablePtr x_nt = dm::HomogenNumericTable<double>::create(
-                                x, n, rows);
+                                x, 1, rows);
 
                         function->sumOfFunctionsInput->set(
                                 dao::sum_of_functions::argument, x_nt);
@@ -200,15 +211,35 @@ namespace lbfgsb {
                         // Get the gradient value.
                         dm::NumericTablePtr g_nt = function->getResult()->get(
                                 dao::objective_function::gradientIdx);
-                        g_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+                        g_nt->getBlockOfRows(0, n, dm::readOnly, block);
                         blockPtr = block.getBlockPtr();
                         memcpy(g, blockPtr, n*sizeof(double));
                         g_nt->releaseBlockOfRows(block);
 
+                    } else if (strncmp(task, "NEW_X", 5) == 0) {
+
+                        // New iteration.
+                        actual_n_iterations++;
+                        if (actual_n_iterations >= nIter) {
+                            strcpy(task, "STOP ");
+                        }
+                    } else {
+                        break;
                     }
 
-                } while (strncmp(task, "FG", 2) == 0 || strncmp(task, "NEW_X", 2) == 0);
+                } while (1);
 
+                minimum->getBlockOfRows(0, n, dm::readWrite, block);
+                blockPtr = block.getBlockPtr();
+                memcpy(blockPtr, x, n*sizeof(double));
+                minimum->releaseBlockOfRows(block);
+
+                actualIters->getBlockOfRows(0, 1, dm::readWrite, block);
+                blockPtr = block.getBlockPtr();
+                *blockPtr = actual_n_iterations;
+                actualIters->releaseBlockOfRows(block);
+
+                return ds::Status();
 
             }
     };
@@ -225,6 +256,14 @@ namespace lbfgsb {
             Batch(const dao::sum_of_functions::BatchPtr &func = dao::sum_of_functions::BatchPtr()) :
                 input(),
                 parameter(func)
+            {
+                initialize();
+            }
+
+            Batch(const Batch &other) :
+                dai::Batch(other),
+                input(other.input),
+                parameter(other.parameter)
             {
                 initialize();
             }
