@@ -16,7 +16,7 @@
 #include "daal.h"
 #include "CLI11.hpp"
 #include "npyfile.h"
-#include "lbfgsb_daal.h"
+#include "lbfgsb/lbfgsb_daal.h"
 
 namespace dm=daal::data_management;
 namespace ds=daal::services;

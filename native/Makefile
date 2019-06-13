@@ -5,6 +5,7 @@
 BENCHMARKS += distances kmeans linear ridge pca \
 			  two_class_svm multi_class_svm log_reg_lbfgs \
 			  decision_forest_regr decision_forest_clsf
+FOBJ = $(addprefix lbfgsb/,lbfgsb.o linpack.o timer.o)
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
 
 CXX = icc
@@ -26,8 +27,17 @@ all: $(addprefix bin/,$(BENCHMARKS))
 bin:
 	mkdir -p bin
 
+bin/log_reg_lbfgs: log_reg_lbfgs_bench.cpp $(FOBJ) | bin
+	$(CXX) $^ $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -lmkl_rt -lm -lifcore \
+	   -limf -o $@
+
+
 bin/%: %_bench.cpp | bin
 	$(CXX) $< $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -o $@
+
+
+$(FOBJ):
+	make -C lbfgsb
 
 
 clean:
