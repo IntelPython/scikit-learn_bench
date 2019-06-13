@@ -3,9 +3,43 @@ c  L-BFGS-B is released under the “New BSD License” (aka “Modified BSD Lic
 c  or “3-clause license”)                                                              
 c  Please read attached file License.txt                                               
 c                                        
+c  These implementations have been replaced with calls to LAPACK as done
+c  in scipy v.0.10.0. Scipy is also licensed under the BSD license:
+c
+c  Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
+c  All rights reserved.
+c  
+c  Redistribution and use in source and binary forms, with or without
+c  modification, are permitted provided that the following conditions
+c  are met:
+c  
+c  1. Redistributions of source code must retain the above copyright
+c     notice, this list of conditions and the following disclaimer.
+c  
+c  2. Redistributions in binary form must reproduce the above
+c     copyright notice, this list of conditions and the following
+c     disclaimer in the documentation and/or other materials provided
+c     with the distribution.
+c  
+c  3. Neither the name of the copyright holder nor the names of its
+c     contributors may be used to endorse or promote products derived
+c     from this software without specific prior written permission.
+c  
+c  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+c  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+c  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+c  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+c  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+c  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+c  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+c  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+c  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+c  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+c  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
       subroutine dpofa(a,lda,n,info)
       integer lda,n,info
-      double precision a(lda,*)
+      double precision a(lda,1)
 c
 c     dpofa factors a double precision symmetric positive definite
 c     matrix.
@@ -38,49 +72,19 @@ c                = 0  for normal return.
 c                = k  signals an error condition.  the leading minor
 c                     of order  k  is not positive definite.
 c
-c     linpack.  this version dated 08/14/78 .
-c     cleve moler, university of new mexico, argonne national lab.
-c
-c     subroutines and functions
-c
-c     blas ddot
-c     fortran sqrt
-c
-c     internal variables
-c
-      double precision ddot,t
-      double precision s
-      integer j,jm1,k
-c     begin block with ...exits to 40
-c
-c
-         do 30 j = 1, n
-            info = j
-            s = 0.0d0
-            jm1 = j - 1
-            if (jm1 .lt. 1) go to 20
-            do 10 k = 1, jm1
-               t = a(k,j) - ddot(k-1,a(1,k),1,a(1,j),1)
-               t = t/a(k,k)
-               a(k,j) = t
-               s = s + t*t
-   10       continue
-   20       continue
-            s = a(j,j) - s
-c     ......exit
-            if (s .le. 0.0d0) go to 40
-            a(j,j) = sqrt(s)
-   30    continue
-         info = 0
-   40 continue
-      return
+c     This is a wrapper from scipy:
+c     https://github.com/scipy/scipy/blob/
+c    +37d1c4b8941469ed3ccec7ca362115488112b41b/scipy/optimize/lbfgsb/
+c    +routines.f#L3991
+      
+      call dpotrf('U', n, a, lda, info)
       end
       
 c====================== The end of dpofa ===============================
 
       subroutine dtrsl(t,ldt,n,b,job,info)
       integer ldt,n,job,info
-      double precision t(ldt,*),b(*)
+      double precision t(ldt,1),b(1)
 c
 c
 c     dtrsl solves systems of the form
@@ -128,89 +132,29 @@ c                   info contains zero if the system is nonsingular.
 c                   otherwise info contains the index of
 c                   the first zero diagonal element of t.
 c
-c     linpack. this version dated 08/14/78 .
-c     g. w. stewart, university of maryland, argonne national lab.
+c     This is a wrapper from scipy:
+c     https://github.com/scipy/scipy/blob/
+c    +37d1c4b8941469ed3ccec7ca362115488112b41b/scipy/optimize/lbfgsb/
+c    +routines.f#L4049
 c
-c     subroutines and functions
-c
-c     blas daxpy,ddot
-c     fortran mod
-c
-c     internal variables
-c
-      double precision ddot,temp
-      integer case,j,jj
-c
-c     begin block permitting ...exits to 150
-c
-c        check for zero diagonal elements.
-c
-         do 10 info = 1, n
-c     ......exit
-            if (t(info,info) .eq. 0.0d0) go to 150
-   10    continue
-         info = 0
-c
-c        determine the task and go to it.
-c
-         case = 1
-         if (mod(job,10) .ne. 0) case = 2
-         if (mod(job,100)/10 .ne. 0) case = case + 2
-         go to (20,50,80,110), case
-c
-c        solve t*x=b for t lower triangular
-c
-   20    continue
-            b(1) = b(1)/t(1,1)
-            if (n .lt. 2) go to 40
-            do 30 j = 2, n
-               temp = -b(j-1)
-               call daxpy(n-j+1,temp,t(j,j-1),1,b(j),1)
-               b(j) = b(j)/t(j,j)
-   30       continue
-   40       continue
-         go to 140
-c
-c        solve t*x=b for t upper triangular.
-c
-   50    continue
-            b(n) = b(n)/t(n,n)
-            if (n .lt. 2) go to 70
-            do 60 jj = 2, n
-               j = n - jj + 1
-               temp = -b(j+1)
-               call daxpy(j,temp,t(1,j+1),1,b(1),1)
-               b(j) = b(j)/t(j,j)
-   60       continue
-   70       continue
-         go to 140
-c
-c        solve trans(t)*x=b for t lower triangular.
-c
-   80    continue
-            b(n) = b(n)/t(n,n)
-            if (n .lt. 2) go to 100
-            do 90 jj = 2, n
-               j = n - jj + 1
-               b(j) = b(j) - ddot(jj-1,t(j+1,j),1,b(j+1),1)
-               b(j) = b(j)/t(j,j)
-   90       continue
-  100       continue
-         go to 140
-c
-c        solve trans(t)*x=b for t upper triangular.
-c
-  110    continue
-            b(1) = b(1)/t(1,1)
-            if (n .lt. 2) go to 130
-            do 120 j = 2, n
-               b(j) = b(j) - ddot(j-1,t(1,j),1,b(1),1)
-               b(j) = b(j)/t(j,j)
-  120       continue
-  130       continue
-  140    continue
-  150 continue
-      return
+
+      character*1 uplo, trans
+      
+      if (job .eq. 00) then
+          uplo = 'L'
+          trans = 'N'
+      else if (job .eq. 01) then
+          uplo = 'U'
+          trans = 'N'
+      else if (job .eq. 10) then
+          uplo = 'L'
+          trans = 'T'
+      else if (job .eq. 11) then
+          uplo = 'U'
+          trans = 'T'
+      endif
+
+      call dtrtrs(uplo, trans, 'N', n, 1, t, ldt, b, n, info)
       end
       
 c====================== The end of dtrsl ===============================

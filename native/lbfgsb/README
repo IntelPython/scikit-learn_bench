@@ -3,8 +3,11 @@ L-BFGS-B
 
 This directory contains version 3.0 of L-BFGS-B in Fortran, available
 at http://users.iems.northwestern.edu/~nocedal/lbfgsb.html
-under the terms of the BSD license. Fortran files `lbfgsb.f`, `linpack.f`,
-and `timer.f` come from this library.
+under the terms of the 3-clause BSD license. Fortran files `lbfgsb.f`,
+`linpack.f`, and `timer.f` come from this library.
+
+`linpack.f` was modified to include calls to LAPACK as in scipy v0.10.0.
+Scipy is also licensed under the BSD license.
 
 `lbfgsb.h` contains a C header to call the Fortran setulb_ routine.
 `lbfgsb_daal.h` contains a DAAL class wrapping the L-BFGS-B library for use
