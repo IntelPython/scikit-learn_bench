@@ -86,7 +86,7 @@ if __name__ == '__main__':
        print("}")
 
     C = 1.0
-    tol = 1e-10
+    tol = 1e-3 if args.solver == 'newton-cg' else 1e-10
     fit_intercept = True
 
     if args.verbose:
