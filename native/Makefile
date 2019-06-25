@@ -12,7 +12,8 @@ CXX = icc
 CXXFLAGS += -m64 -fPIC -fp-model strict -O3 -fomit-frame-pointer \
 		  -xSSE4.2 -axCORE-AVX2,COMMON-AVX512
 CXXFLAGS += -std=c++14 -g
-LDFLAGS += -ldaal_core -ldaal_thread -Wl,-rpath,$(CONDA_PREFIX)/lib
+LDFLAGS += -ltbb -lstdc++ -lpthread -lm -ldaal_core -ldaal_thread \
+		   -Wl,-rpath,$(CONDA_PREFIX)/lib
 CXXINCLUDE += include
 
 ifneq ($(CONDA_PREFIX),)
@@ -28,8 +29,8 @@ bin:
 	mkdir -p bin
 
 bin/log_reg_lbfgs: log_reg_lbfgs_bench.cpp $(FOBJ) | bin
-	$(CXX) $^ $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -lmkl_rt -lm -lifcore \
-	   -limf -o $@
+	$(CXX) $^ $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -DMKL_ILP64 -mkl=parallel \
+		-lmkl_rt -lifcore -limf -o $@
 
 
 bin/%: %_bench.cpp | bin

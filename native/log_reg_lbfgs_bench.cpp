@@ -13,8 +13,9 @@
 #include <cassert>
 
 #define DAAL_DATA_TYPE double
-#include "daal.h"
 #include "CLI11.hpp"
+#include "daal.h"
+#include "mkl.h"
 #include "npyfile.h"
 #include "lbfgsb/lbfgsb_daal.h"
 
@@ -183,6 +184,9 @@ bench(
     bool verbose,
     bool header)
 {
+    /* Set MKL threading layer to TBB to match DAAL's default */
+    mkl_set_threading_layer(MKL_THREADING_TBB);
+
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
         daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
