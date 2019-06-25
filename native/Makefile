@@ -29,7 +29,7 @@ bin:
 	mkdir -p bin
 
 bin/log_reg_lbfgs: log_reg_lbfgs_bench.cpp $(FOBJ) | bin
-	$(CXX) $^ $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -DMKL_ILP64 -mkl=parallel \
+	$(CXX) $^ $(CXXINCLUDE) $(CXXFLAGS) $(LDFLAGS) -mkl=parallel \
 		-lmkl_rt -lifcore -limf -o $@
 
 
