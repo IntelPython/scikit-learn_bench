@@ -29,8 +29,9 @@ sklearn.utils.validation.check_array = _decoy_check_array
 def getOptimalCacheSize(numFeatures):
     byte_size = np.empty(0, dtype=np.double).itemsize
     optimal_cache_size_bytes = numFeatures * numFeatures * byte_size
-    eight_gb = byte_size * 1024 * 1024 * 1024
-    cache_size_bytes = eight_gb if optimal_cache_size_bytes > eight_gb else optimal_cache_size_bytes
+    one_gb = byte_size * 1024 * 1024 * 1024
+    max_cache_gb = 64 * one_gb
+    cache_size_bytes = max_cache_gb if optimal_cache_size_bytes > max_cache_gb else optimal_cache_size_bytes
     return cache_size_bytes
 
 

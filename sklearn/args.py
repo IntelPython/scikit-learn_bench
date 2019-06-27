@@ -25,4 +25,4 @@ def getArguments(argParser):
 
 
 def coreString(num):
-    return 'Serial' if num == 1 else 'Threaded'
+    return 'Serial' if num == 1 else 'Threaded:' + str(num)

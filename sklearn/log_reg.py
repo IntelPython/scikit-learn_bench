@@ -128,7 +128,7 @@ if __name__ == '__main__':
        args.prefix,
        'log_reg',
        args.solver,
-       "Serial" if num_threads==1 else "Threaded",
+       "Serial" if num_threads==1 else "Threaded:" + str(num_threads),
        str(X.shape[0]),
        str(X.shape[1]),
        "{0:.3f}".format(min(fit_times)),
