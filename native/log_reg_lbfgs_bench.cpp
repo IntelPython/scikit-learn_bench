@@ -13,9 +13,11 @@
 #include <cassert>
 
 #define DAAL_DATA_TYPE double
-#include "daal.h"
 #include "CLI11.hpp"
+#include "daal.h"
+#include "mkl.h"
 #include "npyfile.h"
+#include "lbfgsb/lbfgsb_daal.h"
 
 namespace dm=daal::data_management;
 namespace ds=daal::services;
@@ -41,22 +43,13 @@ logistic_regression_fit(
     size_t n_samples = Yt->getNumberOfRows();
 
     // da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense> solver;
-    ds::SharedPtr<da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense> > 
-	lbfgsSolver(new da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense>() );
+    ds::SharedPtr<lbfgsb::Batch> 
+	lbfgsSolver(new lbfgsb::Batch());
 
     lbfgsSolver->parameter.nIterations = max_iter;
     lbfgsSolver->parameter.accuracyThreshold = tol;
+    lbfgsSolver->parameter.iprint = (verbose) ? 1 : -1;
 
-    // these settings make stochastic QN into deterministic L_BFGS
-    lbfgsSolver->parameter.batchSize = n_samples;
-    lbfgsSolver->parameter.correctionPairBatchSize = n_samples;
-    lbfgsSolver->parameter.L = 1;
-
-    // 
-    double stepLength(1.0);
-    lbfgsSolver->parameter.stepLengthSequence = 
-	dm::NumericTablePtr(new dm::HomogenNumericTable<>(1, 1, dm::NumericTableIface::doAllocate, stepLength));
-    lbfgsSolver->parameter.optionalResultRequired = true;
 
     dl::training::Batch<double> log_reg_alg(nClasses);
     log_reg_alg.parameter().interceptFlag = fit_intercept;
@@ -191,6 +184,9 @@ bench(
     bool verbose,
     bool header)
 {
+    /* Set MKL threading layer to TBB to match DAAL's default */
+    mkl_set_threading_layer(MKL_THREADING_TBB);
+
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
         daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);

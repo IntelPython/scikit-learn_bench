@@ -5,7 +5,7 @@ Python*. See benchmark results [here](https://intelpython.github.io/scikit-learn
 
 ## Prerequisites
 - python and scikit-learn to run python versions
-- `icc` and `daal` to compile and run native benchmarks
+- `icc`, `ifort`, `mkl`, `daal` to compile and run native benchmarks
 
 ## Automatically build and run
 - Run `make`. This will generate data, compile benchmarks, and run them.
