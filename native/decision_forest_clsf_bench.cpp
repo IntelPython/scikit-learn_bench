@@ -57,7 +57,7 @@ df_classification_fit(
     df_clsf_alg.parameter.minObservationsInLeafNode = 1;
     df_clsf_alg.parameter.impurityThreshold = min_impurity;
     df_clsf_alg.parameter.bootstrap = bootsrap;
-    df_clsf_alg.parameter.engine = da::engines::mt19937::Batch<double>::create(seed);
+    df_clsf_alg.parameter.engine = da::engines::mt2203::Batch<double>::create(seed);
 
     if (verbose) {
 	std::cout << "@ {'nTrees': " << nTrees <<
@@ -88,7 +88,8 @@ df_classification_predict(
     bool verbose
     )
 {
-    dfc::prediction::Batch<double> pred_alg(nClasses);
+    // We explicitly specify float here to match sklearn.
+    dfc::prediction::Batch<float> pred_alg(nClasses);
     pred_alg.input.set(da::classifier::prediction::data, Xt);
     pred_alg.input.set(da::classifier::prediction::model,
 		       training_result_ptr->get(da::classifier::training::model));
