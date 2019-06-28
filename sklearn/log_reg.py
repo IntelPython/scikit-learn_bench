@@ -2,148 +2,82 @@
 #
 # SPDX-License-Identifier: MIT
 
-
+import argparse
+from bench import parse_args, time_mean_min, print_header, print_row, size_str
 import numpy as np
-from bench import set_daal_num_threads, sklearn_set_no_input_check
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
+parser = argparse.ArgumentParser(description='scikit-learn logistic '
+                                             'regression benchmark')
+parser.add_argument('-x', '--filex', '--fileX', type=argparse.FileType('r'),
+                    required=True,
+                    help='Input file with features, in NPY format')
+parser.add_argument('-y', '--filey', '--fileY', type=argparse.FileType('r'),
+                    required=True,
+                    help='Input file with labels, in NPY format')
+parser.add_argument('--no-fit-intercept', dest='fit_intercept',
+                    action='store_false', default=True,
+                    help="Don't fit intercept")
+parser.add_argument('--multiclass', default='auto',
+                    choices=('auto', 'ovr', 'multinomial'),
+                    help="How to treat multi class data. "
+                         "'auto' picks 'ovr' for binary classification, and "
+                         "'multinomial' otherwise.")
+parser.add_argument('--solver', default='lbfgs',
+                    choices=('lbfgs', 'newton-cg', 'saga'),
+                    help='Solver to use.')
+parser.add_argument('--maxiter', type=int, default=100,
+                    help='Maximum iterations for the iterative solver')
+parser.add_argument('-C', dest='C', type=float, default=1.0,
+                    help='Regularization parameter')
+parser.add_argument('--tol', type=float, default=None,
+                    help="Tolerance for solver. If solver == 'newton-cg', "
+                         "then the default is 1e-3. Otherwise, the default "
+                         "is 1e-10.")
+params = parse_args(parser, loop_types=('fit', 'predict'))
 
-if __name__ == '__main__':
-    import argparse
+# Load generated data
+X = np.load(params.filex.name)
+y = np.load(params.filey.name)
 
-    def valid_solver(s):
-        if s in ['lbfgs', 'newton-cg', 'saga']:
-            return s
-        raise ValueError("Invalid solver choice")
+params.n_classes = len(np.unique(y))
+if params.multiclass == 'auto':
+    params.multiclass = 'ovr' if params.n_classes == 2 else 'multinomial'
 
+if not params.tol:
+    params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
-    def valid_multiclass(s):
-        if s in ['ovr', 'multinomial']:
-            return s
-        raise ValueError("Invalid multiclass choice")
+# Create our classifier object
+clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
+                         fit_intercept=params.fit_intercept,
+                         tol=params.tol, max_iter=params.maxiter,
+                         solver=params.solver, multi_class=params.multiclass)
 
+columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+           'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
+params.size = size_str(X.shape)
+params.dtype = X.dtype
 
-    def getArguments(argParser):
-        argParser.add_argument('--prefix',   type=str, default='python',
-                               help="Identifier of the bench being executed")
-        argParser.add_argument('--fileX',        type=argparse.FileType('r'),
-                               help="Input file with features")
-        argParser.add_argument('--fileY',        type=argparse.FileType('r'),
-                               help="Input file with labels")
-        argParser.add_argument('--intercept',    action="store_true",
-                               help="Whether to fit intercept")
-        argParser.add_argument('--multiclass',   type=valid_multiclass, default='ovr',
-                               help="How to treat multi class data. Valid choices are 'ovr' or 'multinomial'")
-        argParser.add_argument('--solver',       type=valid_solver, default='lbfgs',
-                               help="Solver to use. Valid choices are 'lbfgs', 'newton-cg' or 'saga'.")
-        argParser.add_argument('--maxiter',      type=int, default=100,
-                               help="Maximum iterations setting for the iterative solver of choice")
-        argParser.add_argument('--fit-repetitions', dest="fit_inner_reps", type=int, default=1,
-                               help="Count of operations whose execution time is being clocked, average time reported")
-        argParser.add_argument('--fit-samples',  dest="fit_outer_reps", type=int, default=5,
-                               help="Count of repetitions of time measurements to collect statistics ")
-        argParser.add_argument('--verbose',  action="store_true",
-                               help="Whether to print additional information.")
-        argParser.add_argument('--header',  action="store_true",
-                               help="Whether to print header.")
-        argParser.add_argument('--predict-repetitions', dest="predict_inner_reps", type=int, default=50,
-                               help="Count of operations whose execution time is being clocked, average time reported")
-        argParser.add_argument('--predict-samples',  dest="predict_outer_reps", type=int, default=5,
-                               help="Count of repetitions of time measurements to collect statistics ")
-        argParser.add_argument('--num-threads', type=int, dest="num_threads", default=0,
-                               help="Number of threads for DAAL to use")
+print_header(columns, params)
 
-        args = argParser.parse_args()
+# Time fit and predict
+fit_time, _ = time_mean_min(clf.fit, X, y,
+                            outer_loops=params.fit_outer_loops,
+                            inner_loops=params.fit_inner_loops)
+print_row(columns, params, function='LogReg.fit', time=fit_time)
 
-        return args
+predict_time, y_pred = time_mean_min(clf.predict, X,
+                                     outer_loops=params.predict_outer_loops,
+                                     inner_loops=params.predict_inner_loops)
+acc = 100 * accuracy_score(y_pred, y)
+print_row(columns, params, function='LogReg.predict', time=predict_time,
+          accuracy=acc)
 
-
-    argParser = argparse.ArgumentParser(prog="logistic_bench.py",
-                                        description="Execute Logistic Regression",
-                                        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    args = getArguments(argParser)
-
-    num_threads = args.num_threads
-    set_daal_num_threads(num_threads)
-
-    import sklearn
-    from sklearn.linear_model import LogisticRegression
-    import sklearn.linear_model.logistic
-
-    sklearn_set_no_input_check()
-
-    import timeit
-
-
-    X = np.load(args.fileX.name)
-    y = np.load(args.fileY.name)
-
-    if args.verbose:
-       print("@ {", end='')
-       print(" FIT_SAMPLES : {0}, FIT_REPETITIONS : {1}, PREDICT_SAMPLES: {2}, PREDICT_REPETITIONS: {3}".format(
-          args.fit_outer_reps, args.fit_inner_reps, args.predict_outer_reps, args.predict_inner_reps
-       ), end='')
-       print("}")
-
-    C = 1.0
-    tol = 1e-3 if args.solver == 'newton-cg' else 1e-10
-    fit_intercept = True
-
-    if args.verbose:
-       print("@ {", end='')
-       print("'fit_intercept' : {0}, 'C' : {1}, 'max_iter' : {2}, 'tol' : {3}, 'solver' : {4}, 'multi_class' : {5}".format(
-          fit_intercept, C, args.maxiter, tol, args.solver, args.multiclass
-       ), end='')
-       print("}")
-
-    fit_times = []
-    n_iters = []
-    for outer_it in range(args.fit_outer_reps):
-        clf = LogisticRegression(penalty='l2', C=C, fit_intercept=fit_intercept, tol = tol,
-                                 max_iter=args.maxiter, solver=args.solver, multi_class=args.multiclass)
-        t0 = timeit.default_timer()
-        for _ in range(args.fit_inner_reps):
-            clf.fit(X, y)
-        t1 = timeit.default_timer()
-        fit_times.append((t1 - t0) / args.fit_inner_reps)
-        n_iters.append(clf.n_iter_)
-
-
-    predict_times = []
-    for outer_it in range(args.predict_outer_reps):
-
-        t0 = timeit.default_timer()
-        for _ in range(args.predict_inner_reps):
-            y_pred = clf.predict(X)
-        t1 = timeit.default_timer()
-        predict_times.append((t1 - t0) / args.predict_inner_reps)
-
-
-    acc = sklearn.metrics.accuracy_score(y_pred, y)
-
-    num_classes = lambda c: 2 if c.shape[0] == 1 else c.shape[0]
-    if args.header:
-       print("prefix_ID,function,solver,threads,rows,features,fit,predict,accuracy,classes")
-    print(",".join((
-       args.prefix,
-       'log_reg',
-       args.solver,
-       "Serial" if num_threads==1 else "Threaded:" + str(num_threads),
-       str(X.shape[0]),
-       str(X.shape[1]),
-       "{0:.3f}".format(min(fit_times)),
-       "{0:.3f}".format(min(predict_times)),
-       "{0:.4f}".format(100*acc),
-       str(num_classes(clf.coef_))
-    )))
-
-    if args.verbose:
-        print("")
-        print("@ Median of {0} runs of .fit averaging over {1} executions is {2:3.3f}".format(args.fit_outer_reps, args.fit_inner_reps, np.percentile(fit_times, 50)))
-        print("@ Median of {0} runs of .predict averaging over {1} executions is {2:3.3f}".format(args.predict_outer_reps, args.predict_inner_reps, np.percentile(predict_times, 50)))
-        print("")
-        print("@ Number of iterations: {}".format(clf.n_iter_))
-        print("@ fit coefficients:")
-        print("@ {}".format(clf.coef_.tolist()))
-        print("@ fit intercept")
-        print("@ {}".format(clf.intercept_.tolist()))
+if params.verbose:
+    print()
+    print("@ Number of iterations: {}".format(clf.n_iter_))
+    print("@ fit coefficients:")
+    print("@ {}".format(clf.coef_.tolist()))
+    print("@ fit intercept:")
+    print("@ {}".format(clf.intercept_.tolist()))

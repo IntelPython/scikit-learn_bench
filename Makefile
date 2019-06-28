@@ -37,6 +37,8 @@ MULTIPLIER = 100
 DATA_DIR = data/
 DATA_kmeans = data/kmeans_$(KMEANS_SIZE).npy
 
+COMMON_ARGS = --batch '$(BATCH)' --arch '$(HOST)' --header
+
 # Define which benchmarks to run
 NATIVE_BENCHMARKS =		distances ridge linear kmeans svm2 svm5 \
 						logreg2 logreg5 dfclf2 dfclf5 dfreg pca_daal pca_full
@@ -61,30 +63,21 @@ NATIVE_pca_daal = pca
 NATIVE_pca_full = pca
 
 # Define arguments for native benchmarks
-ARGS_NATIVE_distances = --batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
+ARGS_NATIVE_distances = --num-threads "$(NUM_THREADS)" \
 						--size "$(DISTANCES_SIZE)" --header
-ARGS_NATIVE_ridge = 	--batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
+ARGS_NATIVE_ridge = 	--num-threads "$(NUM_THREADS)" \
 						--size "$(REGRESSION_SIZE)" --header
-ARGS_NATIVE_linear = 	--batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
+ARGS_NATIVE_linear = 	--num-threads "$(NUM_THREADS)" \
 						--size "$(REGRESSION_SIZE)" --header
-ARGS_NATIVE_pca_daal = 	--batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" --header \
-						--svd-solver daal
-ARGS_NATIVE_pca_full = 	--batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" --header \
-						--svd-solver full
-ARGS_NATIVE_kmeans = 	--batch "$(BATCH)" --arch "$(HOST)" \
-						--num-threads "$(NUM_THREADS)" \
+ARGS_NATIVE_pca_daal = 	--num-threads "$(NUM_THREADS)" --header \
+						--size "$(REGRESSION_SIZE)" --svd-solver daal
+ARGS_NATIVE_pca_full = 	--num-threads "$(NUM_THREADS)" --header \
+						--size "$(REGRESSION_SIZE)" --svd-solver full
+ARGS_NATIVE_kmeans = 	--num-threads "$(NUM_THREADS)" --header \
 						--data-multiplier "$(MULTIPLIER)" \
 						--filex data/kmeans_$(KMEANS_SIZE).npy \
 						--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-						--filet data/kmeans_$(KMEANS_SIZE).tol.npy \
-						--header
+						--filet data/kmeans_$(KMEANS_SIZE).tol.npy 
 ARGS_NATIVE_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
 						--fileY data/two/y-$(SVM_SIZE).npy \
 						--num-threads $(SVM_NUM_THREADS) --header
@@ -113,8 +106,8 @@ SKLEARN_linear = linear
 SKLEARN_pca_full = pca
 SKLEARN_pca_daal = pca
 SKLEARN_kmeans = kmeans
-SKLEARN_svm2 = svm_bench
-SKLEARN_svm5 = svm_bench
+SKLEARN_svm2 = svm
+SKLEARN_svm5 = svm
 SKLEARN_logreg2 = log_reg
 SKLEARN_logreg5 = log_reg
 SKLEARN_dfclf2 = df_clsf
@@ -123,56 +116,47 @@ SKLEARN_dfreg = df_regr
 
 ARGS_SKLEARN_distances = --batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
-						--size "$(DISTANCES_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix sklearn
+						--size "$(DISTANCES_SIZE)"
 ARGS_SKLEARN_ridge = 	--batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix sklearn
+						--size "$(REGRESSION_SIZE)"
 ARGS_SKLEARN_linear = 	--batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix sklearn
+						--size "$(REGRESSION_SIZE)"
 ARGS_SKLEARN_pca_daal = --batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
 						--size "$(REGRESSION_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix sklearn \
 						--svd-solver daal
 ARGS_SKLEARN_pca_full = --batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
 						--size "$(REGRESSION_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix sklearn \
 						--svd-solver full
 ARGS_SKLEARN_kmeans = 	--batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
 						--data-multiplier "$(MULTIPLIER)" \
 						--filex data/kmeans_$(KMEANS_SIZE).npy \
-						--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-						--iteration "$(ITERATIONS)" --prefix sklearn \
-						--size "$(KMEANS_SIZE)"
+						--filei data/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_SKLEARN_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
 						--fileY data/two/y-$(SVM_SIZE).npy \
-						--num-threads $(SVM_NUM_THREADS) --header
+						--num-threads $(SVM_NUM_THREADS)
 ARGS_SKLEARN_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
 						--fileY data/multi/y-$(SVM_SIZE).npy \
-						--num-threads $(SVM_NUM_THREADS) --header
+						--num-threads $(SVM_NUM_THREADS)
 ARGS_SKLEARN_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
 						--fileY data/two/y-$(LOGREG_SIZE).npy \
-						--num-threads $(LOGREG_NUM_THREADS) --header \
-						--multiclass ovr
+						--num-threads $(LOGREG_NUM_THREADS)
 ARGS_SKLEARN_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
 						--fileY data/multi/y-$(LOGREG_SIZE).npy \
-						--num-threads $(LOGREG_NUM_THREADS) --header \
-						--multiclass multinomial
+						--num-threads $(LOGREG_NUM_THREADS)
 ARGS_SKLEARN_dfclf2 = 	--fileX data/two/X-$(DFCLF_SIZE).npy \
 						--fileY data/two/y-$(DFCLF_SIZE).npy \
-						--num-threads $(DFCLF_NUM_THREADS) --header
+						--num-threads $(DFCLF_NUM_THREADS)
 ARGS_SKLEARN_dfclf5 = 	--fileX data/multi/X-$(DFCLF_SIZE).npy \
 						--fileY data/multi/y-$(DFCLF_SIZE).npy \
-						--num-threads $(DFCLF_NUM_THREADS) --header
+						--num-threads $(DFCLF_NUM_THREADS)
 ARGS_SKLEARN_dfreg = 	--fileX data/multi/X-$(DFREG_SIZE).npy \
 						--fileY data/multi/y-$(DFREG_SIZE).npy \
-						--num-threads $(DFREG_NUM_THREADS) --header
+						--num-threads $(DFREG_NUM_THREADS)
 
 DAAL4PY_distances = distances
 DAAL4PY_ridge = ridge
@@ -263,7 +247,7 @@ output/native/%.out: | DATA_% output/native/
 	native/bin/$(NATIVE_$*) $(ARGS_NATIVE_$*) | tee $@
 
 output/sklearn/%.out: | DATA_% output/sklearn/
-	python sklearn/$(SKLEARN_$*).py $(ARGS_SKLEARN_$*) | tee $@
+	python sklearn/$(SKLEARN_$*).py $(COMMON_ARGS) $(ARGS_SKLEARN_$*) | tee $@
 
 output/daal4py/%.out: | DATA_% output/daal4py/
 	python daal4py/$(DAAL4PY_$*).py $(ARGS_DAAL4PY_$*) | tee $@
