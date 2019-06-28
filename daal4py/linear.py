@@ -2,54 +2,56 @@
 #
 # SPDX-License-Identifier: MIT
 
-from __future__ import print_function
-import numpy as np
-import timeit
-from numpy.random import rand
-from daal4py import linear_regression_training, linear_regression_prediction, daalinit
-from args import getArguments, coreString
-from bench import prepare_benchmark
-
 import argparse
-argParser = argparse.ArgumentParser(prog="linear.py",
-                                    description="sklearn linear regression benchmark",
-                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-args = getArguments(argParser)
-REP = args.iteration if args.iteration != '?' else 10
-core_number, daal_version = prepare_benchmark(args)
+from bench import parse_args, time_mean_min, print_header, print_row
+from daal4py import linear_regression_training, linear_regression_prediction
+from daal4py.sklearn.utils import getFPType
+import numpy as np
+
+parser = argparse.ArgumentParser(description='daal4py linear regression '
+                                             'benchmark')
+parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                    action='store_false',
+                    help="Don't fit intercept (assume data already centered)")
+parser.add_argument('--method', default='normEqDense',
+                    choices=('normEqDense', 'qrDense'),
+                    help="Training method used by DAAL. 'normEqDense' selects"
+                         "the normal equations method, while 'qrDense' selects"
+                         "the method based on QR decomposition.")
+params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
+                    loop_types=('fit', 'predict'), prefix='daal4py')
+
+# Generate random data
+X = np.random.rand(*params.shape).astype(params.dtype)
+Xp = np.random.rand(*params.shape).astype(params.dtype)
+y = np.random.rand(*params.shape).astype(params.dtype)
 
 
-def st_time(func):
-    def st_func(*args, **keyArgs):
-        times = []
-        for n in range(REP):
-            t1 = timeit.default_timer()
-            r = func(*args, **keyArgs)
-            t2 = timeit.default_timer()
-            times.append(t2-t1)
-        print(min(times))
-        return r
-    return st_func
+# Create our regression objects
+def test_fit(X, y):
+    regr_train = linear_regression_training(fptype=getFPType(X),
+                                            method=params.method,
+                                            interceptFlag=params.fit_intercept)
+    return regr_train.compute(X, y)
 
-p = args.size[0]
-n = args.size[1]
-X = rand(p,n)
-Xp = rand(p,n)
-y = rand(p,n)
 
-regr_train = linear_regression_training()
-regr_predict = linear_regression_prediction()
+def test_predict(Xp, model):
+    regr_predict = linear_regression_prediction(fptype=getFPType(X))
+    return regr_predict.compute(Xp, model)
 
-@st_time
-def test_fit(X,y):
-    regr_train.compute(X, y)
 
-@st_time
-def test_predict(X, m):
-    regr_predict.compute(X, m)
+columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+           'method', 'time')
+print_header(columns, params)
 
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.fit", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_fit(X, y)
-res = regr_train.compute(X, y)
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.prediction", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_predict(Xp, res.model)
+# Time fit
+fit_time, res = time_mean_min(test_fit, X, y,
+                              outer_loops=params.fit_outer_loops,
+                              inner_loops=params.fit_inner_loops)
+print_row(columns, params, function='Linear.fit', time=fit_time)
+
+# Time predict
+predict_time, yp = time_mean_min(test_predict, Xp, res.model,
+                                 outer_loops=params.predict_outer_loops,
+                                 inner_loops=params.predict_inner_loops)
+print_row(columns, params, function='Linear.predict', time=predict_time)

@@ -9,8 +9,8 @@ from sklearn.linear_model import Ridge
 
 parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
                                              'benchmark')
-parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=False,
-                    action='store_true',
+parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                    action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--solver', default='auto',
                     help='Solver used for training')

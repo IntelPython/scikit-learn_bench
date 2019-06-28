@@ -2,55 +2,50 @@
 #
 # SPDX-License-Identifier: MIT
 
-from __future__ import print_function
-import numpy as np
-import timeit
-from numpy.random import rand
-from daal4py import ridge_regression_training, ridge_regression_prediction, daalinit
-from args import getArguments, coreString
-from bench import prepare_benchmark
-
 import argparse
-argParser = argparse.ArgumentParser(prog="ridge.py",
-                                    description="sklearn ridge regression benchmark",
-                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-args = getArguments(argParser)
-REP = args.iteration if args.iteration != '?' else 10
-core_number, daal_version = prepare_benchmark(args)
+from bench import parse_args, time_mean_min, print_header, print_row
+from daal4py import ridge_regression_training, ridge_regression_prediction
+from daal4py.sklearn.utils import getFPType
+import numpy as np
+
+parser = argparse.ArgumentParser(description='daal4py ridge regression '
+                                             'benchmark')
+parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                    action='store_false',
+                    help="Don't fit intercept (assume data already centered)")
+params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
+                    loop_types=('fit', 'predict'), prefix='daal4py')
+
+# Generate random data
+X = np.random.rand(*params.shape).astype(params.dtype)
+Xp = np.random.rand(*params.shape).astype(params.dtype)
+y = np.random.rand(*params.shape).astype(params.dtype)
 
 
-def st_time(func):
-    def st_func(*args, **keyArgs):
-        times = []
-        for n in range(REP):
-            t1 = timeit.default_timer()
-            r = func(*args, **keyArgs)
-            t2 = timeit.default_timer()
-            times.append(t2-t1)
-        print (min(times))
-        return r
-    return st_func
+# Create our regression objects
+def test_fit(X, y):
+    regr_train = ridge_regression_training(fptype=getFPType(X),
+                                           interceptFlag=params.fit_intercept)
+    return regr_train.compute(X, y)
 
 
-p = args.size[0]
-n = args.size[1]
-X = rand(p,n)
-Xp = rand(p,n)
-y = rand(p,n)
+def test_predict(Xp, model):
+    regr_predict = ridge_regression_prediction(fptype=getFPType(X))
+    return regr_predict.compute(Xp, model)
 
-regr_train = ridge_regression_training()
-regr_predict = ridge_regression_prediction()
 
-@st_time
-def test_fit(X,y):
-    regr_train.compute(X, y)
+columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+           'time')
+print_header(columns, params)
 
-@st_time
-def test_predict(X, m):
-    regr_predict.compute(X, m)
+# Time fit
+fit_time, res = time_mean_min(test_fit, X, y,
+                              outer_loops=params.fit_outer_loops,
+                              inner_loops=params.fit_inner_loops)
+print_row(columns, params, function='Ridge.fit', time=fit_time)
 
-print (','.join([args.batchID, args.arch, args.prefix, "Ridge.fit", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_fit(X, y)
-res = regr_train.compute(X, y)
-print (','.join([args.batchID, args.arch, args.prefix, "Ridge.prediction", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_predict(Xp, res.model)
+# Time predict
+predict_time, yp = time_mean_min(test_predict, Xp, res.model,
+                                 outer_loops=params.predict_outer_loops,
+                                 inner_loops=params.predict_inner_loops)
+print_row(columns, params, function='Ridge.predict', time=predict_time)

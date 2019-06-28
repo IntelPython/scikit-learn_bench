@@ -27,7 +27,7 @@ def _parse_size(string, dim=2):
 
 
 def parse_args(parser, size=None, dtypes=None, loop_types=(),
-               n_jobs_supported=False):
+               n_jobs_supported=False, prefix='sklearn'):
     '''
     Add common arguments useful for most benchmarks and parse.
 
@@ -48,6 +48,8 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
         If set to True, generate a n_jobs member in the argparse Namespace
         corresponding to the optimal n_jobs parameter for scikit-learn.
         Otherwise, n_jobs will be set to None.
+    prefix : str, optional, default 'sklearn'
+        The default prefix to report
 
     Returns
     -------
@@ -63,7 +65,7 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
                         help='Machine architecture, for bookkeeping')
     parser.add_argument('-b', '--batch', '--batchID', default='?',
                         help='Batch ID, for bookkeeping')
-    parser.add_argument('-p', '--prefix', default='sklearn',
+    parser.add_argument('-p', '--prefix', default=prefix,
                         help='Prefix string, for bookkeeping')
     parser.add_argument('--header', default=False, action='store_true',
                         help='Output CSV header')

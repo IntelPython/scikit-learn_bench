@@ -182,8 +182,7 @@ ARGS_DAAL4PY_ridge = 	--batchID "$(BATCH)" --arch "$(HOST)" \
 						--iteration "$(ITERATIONS)" --prefix daal4py
 ARGS_DAAL4PY_linear = 	--batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" \
-						--iteration "$(ITERATIONS)" --prefix daal4py
+						--size "$(REGRESSION_SIZE)"
 ARGS_DAAL4PY_pca_daal = --batchID "$(BATCH)" --arch "$(HOST)" \
 						--num-threads "$(NUM_THREADS)" \
 						--size "$(REGRESSION_SIZE)" \

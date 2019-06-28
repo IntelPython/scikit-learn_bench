@@ -9,8 +9,8 @@ from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
                                              'benchmark')
-parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=False,
-                    action='store_true',
+parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                    action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
                     loop_types=('fit', 'predict'))
