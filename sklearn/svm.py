@@ -25,7 +25,7 @@ def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
 
     byte_size = np.empty(0, dtype=dtype).itemsize
     optimal_cache_size_bytes = byte_size * (n_features ** 2)
-    one_gb = byte_size * (2 ** 30)
+    one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
     if optimal_cache_size_bytes > max_cache_bytes:
         return max_cache_bytes
