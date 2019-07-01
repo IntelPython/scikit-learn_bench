@@ -304,7 +304,7 @@ def main():
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',
                         help="Don't use shrinking heuristic")
-    params = parse_args(parser, loop_types=('fit', 'predict'))
+    params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 
     # Load data and cast to float64
     X_train = np.load(params.filex.name).astype('f8')
