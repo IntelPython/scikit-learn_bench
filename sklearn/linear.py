@@ -2,54 +2,40 @@
 #
 # SPDX-License-Identifier: MIT
 
-
-from __future__ import print_function
-import numpy as np
-import timeit
-from numpy.random import rand
-from sklearn import linear_model
-from args import getArguments, coreString
-import sklearn
-import bench
-
 import argparse
-argParser = argparse.ArgumentParser(prog="linear.py",
-                                    description="sklearn linear regression benchmark",
-                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-args = getArguments(argParser)
-REP = args.iteration if args.iteration != '?' else 10
-core_number, daal_version = bench.prepare_benchmark(args)
+from bench import parse_args, time_mean_min, print_header, print_row
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
+parser = argparse.ArgumentParser(description='scikit-learn linear regression '
+                                             'benchmark')
+parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                    action='store_false',
+                    help="Don't fit intercept (assume data already centered)")
+params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
+                    loop_types=('fit', 'predict'))
 
-def st_time(func):
-    def st_func(*args, **keyArgs):
-        times = []
-        for n in range(REP):
-            t1 = timeit.default_timer()
-            r = func(*args, **keyArgs)
-            t2 = timeit.default_timer()
-            times.append(t2-t1)
-        print(min(times))
-        return r
-    return st_func
+# Generate random data
+X = np.random.rand(*params.shape).astype(params.dtype)
+Xp = np.random.rand(*params.shape).astype(params.dtype)
+y = np.random.rand(*params.shape).astype(params.dtype)
 
-p = args.size[0]
-n = args.size[1]
-X = rand(p,n)
-Xp = rand(p,n)
-y = rand(p,n)
+# Create our regression object
+regr = LinearRegression(fit_intercept=params.fit_intercept,
+                        n_jobs=params.n_jobs)
 
-regr = linear_model.LinearRegression(n_jobs=int(args.num_threads))
+columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+           'time')
+print_header(columns, params)
 
-@st_time
-def test_fit(X,y):
-    regr.fit(X,y)
+# Time fit
+fit_time, _ = time_mean_min(regr.fit, X, y,
+                            outer_loops=params.fit_outer_loops,
+                            inner_loops=params.fit_inner_loops)
+print_row(columns, params, function='Linear.fit', time=fit_time)
 
-@st_time
-def test_predict(X):
-    regr.predict(X)
-
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.fit", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_fit(X, y)
-print (','.join([args.batchID, args.arch, args.prefix, "Linear.prediction", coreString(args.num_threads), "Double", "%sx%s" % (p,n)]), end=',')
-test_predict(Xp)
+# Time predict
+predict_time, yp = time_mean_min(regr.predict, Xp,
+                                 outer_loops=params.predict_outer_loops,
+                                 inner_loops=params.predict_inner_loops)
+print_row(columns, params, function='Linear.predict', time=predict_time)

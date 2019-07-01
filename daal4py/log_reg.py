@@ -2,9 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-
+import argparse
+from bench import parse_args, time_mean_min, print_header, print_row, \
+                  size_str, accuracy_score
 import numpy as np
-from bench import prepare_benchmark
 import daal4py
 from daal4py import math_logistic, math_softmax
 from daal4py.sklearn.utils import getFPType, make2d
@@ -165,143 +166,76 @@ def test_predict(X, beta, intercept=0, multi_class='ovr'):
 
 
 if __name__ == '__main__':
-    import argparse
 
-    def getArguments(argParser):
-        argParser.add_argument('--prefix', type=str, default='daal4py',
-                               help="Identifier of the bench being executed")
-        argParser.add_argument('--fileX', type=argparse.FileType('r'),
-                               help="Input file with features")
-        argParser.add_argument('--fileY', type=argparse.FileType('r'),
-                               help="Input file with labels")
-        argParser.add_argument('--intercept', action="store_true",
-                               help="Whether to fit intercept")
-        argParser.add_argument('--solver', default='lbfgs',
-                               choices=['lbfgs', 'newton-cg'],
-                               help="Solver to use.")
-        argParser.add_argument('--maxiter',      type=int, default=100,
-                               help="Maximum iterations setting for the "
-                                    "iterative solver of choice")
-        argParser.add_argument('--fit-repetitions', dest="fit_inner_reps",
-                               type=int, default=1,
-                               help="Count of operations whose execution time "
-                                    "is being clocked, average time reported")
-        argParser.add_argument('--fit-samples',  dest="fit_outer_reps",
-                               type=int, default=5,
-                               help="Count of repetitions of time "
-                                    "measurements to collect statistics ")
-        argParser.add_argument('--verbose',  action="store_const",
-                               const=1, default=0,
-                               help="Whether to print additional information.")
-        argParser.add_argument('--header',  action="store_true",
-                               help="Whether to print header.")
-        argParser.add_argument('--predict-repetitions',
-                               dest="predict_inner_reps", type=int, default=50,
-                               help="Count of operations whose execution time "
-                               "is being clocked, average time reported")
-        argParser.add_argument('--predict-samples',  dest="predict_outer_reps",
-                               type=int, default=5,
-                               help="Count of repetitions of time "
-                                    "measurements to collect statistics ")
-        argParser.add_argument('--num-threads', type=int, dest="num_threads",
-                               default=0,
-                               help="Number of threads for DAAL to use")
+    parser = argparse.ArgumentParser(description='daal4py logistic '
+                                                 'regression benchmark')
+    parser.add_argument('-x', '--filex', '--fileX',
+                        type=argparse.FileType('r'),
+                        help='Input file with features, in NPY format')
+    parser.add_argument('-y', '--filey', '--fileY',
+                        type=argparse.FileType('r'),
+                        help='Input file with labels, in NPY format')
+    parser.add_argument('--no-fit-intercept', dest='fit_intercept',
+                        action='store_false', default=True,
+                        help="Don't fit intercept")
+    parser.add_argument('--solver', default='lbfgs',
+                        choices=('lbfgs', 'newton-cg'),
+                        help='Solver to use.')
+    parser.add_argument('--maxiter', type=int, default=100,
+                        help='Maximum iterations setting for the '
+                             'iterative solver of choice')
+    parser.add_argument('-C', dest='C', type=float, default=1.0,
+                        help='Regularization parameter')
+    parser.add_argument('--tol', type=float, default=None,
+                        help="Tolerance for solver. If solver == 'newton-cg', "
+                             "then the default is 1e-3. Otherwise the default "
+                             "is 1e-10.")
+    params = parse_args(parser, loop_types=('fit', 'predict'),
+                        prefix='daal4py')
 
-        args = argParser.parse_args()
-        return args
+    # Load generated data
+    X = np.load(params.filex.name)
+    y = np.load(params.filey.name)
 
-    argParser = argparse.ArgumentParser(description="daal4py logistic "
-                                                    "regression benchmark")
+    params.n_classes = len(np.unique(y))
+    if not params.tol:
+        params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
-    args = getArguments(argParser)
+    columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
+               'size', 'solver', 'C', 'multiclass', 'n_classes', 'accuracy',
+               'time')
+    params.size = size_str(X.shape)
+    params.dtype = X.dtype
 
-    num_threads, daal_version = prepare_benchmark(args)
+    print_header(columns, params)
 
-    import timeit
+    # Time fit and predict
+    fit_time, res = time_mean_min(test_fit, X, y, penalty='l2', C=params.C,
+                                  verbose=params.verbose,
+                                  fit_intercept=params.fit_intercept,
+                                  tol=params.tol,
+                                  max_iter=params.maxiter,
+                                  solver=params.solver,
+                                  outer_loops=params.fit_outer_loops,
+                                  inner_loops=params.fit_inner_loops)
 
-    X = np.load(args.fileX.name)
-    y = np.load(args.fileY.name)
+    beta, intercept, solver_result, params.multiclass = res
+    print_row(columns, params, function='LogReg.fit', time=fit_time)
 
-    if args.verbose:
-        print("@ {", end='')
-        print(" FIT_SAMPLES : {0}, FIT_REPETITIONS : {1},"
-              "  PREDICT_SAMPLES: {2}, PREDICT_REPETITIONS: {3}".format(
-                  args.fit_outer_reps, args.fit_inner_reps,
-                  args.predict_outer_reps, args.predict_inner_reps
-              ), end='')
-        print("}")
+    predict_time, yp = time_mean_min(test_predict, X, beta,
+                                     intercept=intercept,
+                                     multi_class=params.multiclass,
+                                     outer_loops=params.predict_outer_loops,
+                                     inner_loops=params.predict_inner_loops)
+    y_pred = np.argmax(yp, axis=1)
+    acc = 100 * accuracy_score(y_pred, y)
+    print_row(columns, params, function='LogReg.predict', time=predict_time,
+              accuracy=acc)
 
-    C = 1.0
-    tol = 1e-3 if args.solver == 'newton-cg' else 1e-10
-    fit_intercept = args.intercept
-
-    if args.verbose:
-        print("@ {", end='')
-        print("'fit_intercept' : {0}, 'C' : {1}, 'max_iter' : {2}, "
-              "'tol' : {3}, 'solver' : {4}".format(
-                  fit_intercept, C, args.maxiter, tol, args.solver
-              ), end='')
-        print("}")
-
-    fit_times = []
-    n_iters = []
-    for outer_it in range(args.fit_outer_reps):
-        t0 = timeit.default_timer()
-        for _ in range(args.fit_inner_reps):
-            w, w0, r, mc = test_fit(X, y, penalty='l2', C=C,
-                                    verbose=args.verbose,
-                                    fit_intercept=fit_intercept, tol=tol,
-                                    max_iter=args.maxiter, solver=args.solver)
-        t1 = timeit.default_timer()
-        fit_times.append((t1 - t0) / args.fit_inner_reps)
-        n_iters.append(r.nit)
-
-    predict_times = []
-    for outer_it in range(args.predict_outer_reps):
-
-        t0 = timeit.default_timer()
-        for _ in range(args.predict_inner_reps):
-            y_proba = test_predict(X, w, intercept=w0, multi_class=mc)
-            y_pred = np.argmax(y_proba, axis=1)
-        t1 = timeit.default_timer()
-        predict_times.append((t1 - t0) / args.predict_inner_reps)
-
-    acc = np.mean(abs(y_pred - y) < 0.5)
-
-    def num_classes(c):
-        if c.shape[0] == 1:
-            return 2
-        else:
-            return c.shape[0]
-
-    if args.header:
-        print("prefix_ID,function,solver,threads,rows,features,fit,predict,"
-              "accuracy,classes")
-    print(",".join((
-        args.prefix,
-        'log_reg',
-        args.solver,
-        "Serial" if num_threads == 1 else "Threaded",
-        str(X.shape[0]),
-        str(X.shape[1]),
-        "{0:.3f}".format(min(fit_times)),
-        "{0:.3f}".format(min(predict_times)),
-        "{0:.4f}".format(100*acc),
-        str(num_classes(w))
-    )))
-
-    if args.verbose:
-        print("")
-        print("@ Median of {0} runs of .fit averaging over {1} executions is "
-              "{2:3.3f}".format(args.fit_outer_reps, args.fit_inner_reps,
-                                np.percentile(fit_times, 50)))
-        print("@ Median of {0} runs of .predict averaging over {1} executions "
-              "is {2:3.3f}".format(args.predict_outer_reps,
-                                   args.predict_inner_reps,
-                                   np.percentile(predict_times, 50)))
-        print("")
-        print("@ Number of iterations: {}".format(r.nit))
+    if params.verbose:
+        print()
+        print("@ Number of iterations: {}".format(solver_result.nit))
         print("@ fit coefficients:")
-        print("@ {}".format(w.tolist()))
-        print("@ fit intercept")
-        print("@ {}".format(w0.tolist()))
+        print("@ {}".format(beta.tolist()))
+        print("@ fit intercept:")
+        print("@ {}".format(intercept.tolist()))
