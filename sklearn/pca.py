@@ -23,7 +23,7 @@ X = np.random.rand(*params.shape).astype(params.dtype)
 Xp = np.random.rand(*params.shape).astype(params.dtype)
 
 if not params.n_components:
-    setattr(params, 'n_components', min((n, (2 + min((n, p))) // 3)))
+    params.n_components = min((n, (2 + min((n, p))) // 3))
 
 # Create our PCA object
 pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
@@ -37,12 +37,10 @@ print_header(columns, params)
 fit_time, _ = time_mean_min(pca.fit, X,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops)
-print_row(columns, params, function='PCA.fit',
-          n_components=params.n_components, time=fit_time)
+print_row(columns, params, function='PCA.fit', time=fit_time)
 
 # Time transform
-transform_time, _ = time_mean_min(pca.transform, X,
+transform_time, _ = time_mean_min(pca.transform, Xp,
                                   outer_loops=params.transform_outer_loops,
                                   inner_loops=params.transform_inner_loops)
-print_row(columns, params, function='PCA.transform',
-          n_components=params.n_components, time=fit_time)
+print_row(columns, params, function='PCA.transform', time=transform_time)

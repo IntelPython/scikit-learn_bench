@@ -16,6 +16,8 @@ parser.add_argument('-i', '--filei', '--fileI', '--init',
 #                     type=str, help='Absolute threshold')
 parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
+parser.add_argument('--maxiter', type=int, default=100,
+                    help='Maximum number of iterations')
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
@@ -27,7 +29,7 @@ n_clusters = X_init.shape[0]
 
 # Create our clustering object
 kmeans = KMeans(n_clusters=n_clusters, n_jobs=params.n_jobs, tol=1e-16,
-                max_iter=100, n_init=1, init=X_init)
+                max_iter=params.maxiter, n_init=1, init=X_init)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
