@@ -42,7 +42,7 @@ def test_fit(X, X_init):
 
 def test_predict(X, X_init):
     algorithm = kmeans(
-        n_clusters=params.n_clusters,
+        nClusters=params.n_clusters,
         maxIterations=0
     )  # FIXME tolerance
     return algorithm.compute(X, X_init)
@@ -59,7 +59,7 @@ fit_time, _ = time_mean_min(test_fit, X, X_init,
 print_row(columns, params, function='KMeans.fit', time=fit_time)
 
 # Time predict
-predict_time, _ = time_mean_min(test_fit, X, X_init,
+predict_time, _ = time_mean_min(test_predict, X, X_init,
                                 outer_loops=params.predict_outer_loops,
                                 inner_loops=params.predict_inner_loops)
 print_row(columns, params, function='KMeans.predict', time=predict_time)

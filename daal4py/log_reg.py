@@ -222,11 +222,13 @@ if __name__ == '__main__':
     beta, intercept, solver_result, params.multiclass = res
     print_row(columns, params, function='LogReg.fit', time=fit_time)
 
-    predict_time, y_proba = time_mean_min(test_predict, X, beta,
-                                          intercept=intercept,
-                                          multi_class=params.multiclass)
-    y_pred = np.argmax(y_proba, axis=1)
-    acc = 100 * accuracy_score(y_pred - y)
+    predict_time, yp = time_mean_min(test_predict, X, beta,
+                                     intercept=intercept,
+                                     multi_class=params.multiclass,
+                                     outer_loops=params.predict_outer_loops,
+                                     inner_loops=params.predict_inner_loops)
+    y_pred = np.argmax(yp, axis=1)
+    acc = 100 * accuracy_score(y_pred, y)
     print_row(columns, params, function='LogReg.predict', time=predict_time,
               accuracy=acc)
 
