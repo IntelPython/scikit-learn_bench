@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     params.n_classes = len(np.unique(y))
     if not params.tol:
-        tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
+        params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'solver', 'C', 'multiclass', 'n_classes', 'accuracy',
@@ -225,7 +225,7 @@ if __name__ == '__main__':
                                           intercept=intercept,
                                           multi_class=params.multiclass)
     y_pred = np.argmax(y_proba, axis=1)
-    acc = np.mean(abs(y_pred - y) < 0.5)
+    acc = 100 * np.mean(abs(y_pred - y) < 0.5)
     print_row(columns, params, function='LogReg.predict', time=predict_time,
               accuracy=acc)
 

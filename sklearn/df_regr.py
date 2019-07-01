@@ -62,6 +62,6 @@ fit_time, _ = time_mean_min(regr.fit, X, y,
 print_row(columns, params, function='df_regr.fit', time=fit_time)
 
 predict_time, y_pred = time_mean_min(regr.predict, X,
-                                     outer_loops=params.fit_outer_loops,
-                                     inner_loops=params.fit_inner_loops)
+                                     outer_loops=params.predict_outer_loops,
+                                     inner_loops=params.predict_inner_loops)
 print_row(columns, params, function='df_regr.predict', time=predict_time)
