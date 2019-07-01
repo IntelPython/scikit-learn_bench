@@ -229,4 +229,8 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, **kwargs):
     return np.min(times), val
 
 
+def accuracy_score(y, yp):
+    return np.mean(y == yp)
+
+
 sklearn_set_no_input_check()

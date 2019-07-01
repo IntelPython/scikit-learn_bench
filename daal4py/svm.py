@@ -3,16 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, \
+                  size_str, accuracy_score
 import numpy as np
 from daal4py import svm_training, svm_prediction, kernel_function_linear, \
                     multi_class_classifier_training, \
                     multi_class_classifier_prediction
 from daal4py.sklearn.utils import getFPType
-
-
-def accuracy_score(y, yp):
-    return np.mean(y == yp)
 
 
 def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):

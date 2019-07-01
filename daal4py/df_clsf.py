@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, \
+                  size_str, accuracy_score
 import numpy as np
 from daal4py import decision_forest_classification_training, \
                     decision_forest_classification_prediction, \
                     engines_mt2203
 from daal4py.sklearn.utils import getFPType
-from sklearn.metrics import accuracy_score
 
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,

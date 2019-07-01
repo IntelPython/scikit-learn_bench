@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, \
+                  size_str, accuracy_score
 import numpy as np
 import daal4py
 from daal4py import math_logistic, math_softmax
@@ -225,7 +226,7 @@ if __name__ == '__main__':
                                           intercept=intercept,
                                           multi_class=params.multiclass)
     y_pred = np.argmax(y_proba, axis=1)
-    acc = 100 * np.mean(abs(y_pred - y) < 0.5)
+    acc = 100 * accuracy_score(y_pred - y)
     print_row(columns, params, function='LogReg.predict', time=predict_time,
               accuracy=acc)
 
