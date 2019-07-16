@@ -5,16 +5,17 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, size_str
 from daal4py import kmeans
+from daal4py.sklearn.utils import getFPType
 import numpy as np
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
-parser.add_argument('-x', '--filex', '--fileX', '--input',
+parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
-parser.add_argument('-i', '--filei', '--fileI', '--init',
+parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
                     type=str, help='Initial clusters')
-# parser.add_argument('-t', '--filet', '--fileT', '--tol',
-#                     type=str, help='Absolute threshold')
+parser.add_argument('-t', '--filet', '--fileT', '--tol', required=True,
+                    type=str, help='Absolute threshold')
 parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
@@ -25,6 +26,7 @@ params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 X = np.load(params.filex)
 X_init = np.load(params.filei)
 X_mult = np.vstack((X,) * params.data_multiplier)
+tol = np.load(params.filet)
 
 params.size = size_str(X.shape)
 params.n_clusters = X_init.shape[0]
@@ -34,17 +36,23 @@ params.dtype = X.dtype
 # Define functions to time
 def test_fit(X, X_init):
     algorithm = kmeans(
+        fptype=getFPType(X),
         nClusters=params.n_clusters,
-        maxIterations=params.maxiter
-    )  # FIXME tolerance?
+        maxIterations=params.maxiter,
+        assignFlag=True,
+        accuracyThreshold=tol
+    )
     return algorithm.compute(X, X_init)
 
 
 def test_predict(X, X_init):
     algorithm = kmeans(
+        fptype=getFPType(X),
         nClusters=params.n_clusters,
-        maxIterations=0
-    )  # FIXME tolerance
+        maxIterations=0,
+        assignFlag=True,
+        accuracyThreshold=0.0
+    )
     return algorithm.compute(X, X_init)
 
 

@@ -155,7 +155,8 @@ ARGS_DAAL4PY_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_DAAL4PY_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_DAAL4PY_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
 						--filex data/kmeans_$(KMEANS_SIZE).npy \
-						--filei data/kmeans_$(KMEANS_SIZE).init.npy
+						--filei data/kmeans_$(KMEANS_SIZE).init.npy \
+						--filet data/kmeans_$(KMEANS_SIZE).tol.npy
 ARGS_DAAL4PY_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
 						--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_DAAL4PY_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \

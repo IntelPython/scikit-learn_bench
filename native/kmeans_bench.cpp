@@ -21,7 +21,8 @@
 const size_t max_iters = 100;
 
 da::kmeans::ResultPtr
-kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double tol) {
+kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt,
+                double tol) {
 
     dm::NumericTablePtr seeding_centroids = X_init_nt;
 
@@ -29,7 +30,7 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double 
     da::kmeans::Batch<double> algorithm(n_clusters, max_iters);
     algorithm.input.set(da::kmeans::data, X_nt);
     algorithm.input.set(da::kmeans::inputCentroids, seeding_centroids);
-    algorithm.parameter.maxIterations = max_iters;
+    algorithm.parameter.assignFlag = true;
     algorithm.parameter.accuracyThreshold = tol;
     algorithm.compute();
 
@@ -39,7 +40,8 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double 
     kmeans_result->get(da::kmeans::centroids  );
     kmeans_result->get(da::kmeans::goalFunction);
 
-    dm::NumericTablePtr nIterationsNumericTable = algorithm.getResult()->get(da::kmeans::nIterations);
+    dm::NumericTablePtr nIterationsNumericTable
+        = algorithm.getResult()->get(da::kmeans::nIterations);
     dm::BlockDescriptor<int> blockNI;
     nIterationsNumericTable->getBlockOfRows(0, 1, dm::readOnly, blockNI);
     int *niPtr = blockNI.getBlockPtr();
@@ -47,8 +49,10 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt, double 
     nIterationsNumericTable->releaseBlockOfRows(blockNI);
     
     if(actual_iters != max_iters) {
-	std::cout << std::endl << "@ WARNING: Number of actual iterations " << actual_iters << " is less than max_iters of " << max_iters << " " << std::endl;
-	std::cout << "@ Tolerance: " << tol << std::endl;
+    std::cout << std::endl << "@ WARNING: Number of actual iterations "
+        << actual_iters << " is less than max_iters of "
+        << max_iters << " " << std::endl;
+    std::cout << "@ Tolerance: " << tol << std::endl;
     }
 
     return kmeans_result;
@@ -62,15 +66,14 @@ kmeans_predict_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt) {
     dm::NumericTablePtr seeding_centroids = X_init_nt;
 
     int n_clusters = seeding_centroids->getNumberOfRows();
-	da::kmeans::Batch<double> algorithm(n_clusters, max_iters);
-	algorithm.input.set(da::kmeans::data, X_nt);
-	algorithm.input.set(da::kmeans::inputCentroids, seeding_centroids);
+    da::kmeans::Batch<double> algorithm(n_clusters, 0);
+    algorithm.input.set(da::kmeans::data, X_nt);
+    algorithm.input.set(da::kmeans::inputCentroids, seeding_centroids);
     algorithm.parameter.assignFlag = 1;
-	algorithm.parameter.maxIterations = max_iters;
-	algorithm.parameter.accuracyThreshold = 0.0;
-	algorithm.compute();
+    algorithm.parameter.accuracyThreshold = 0.0;
+    algorithm.compute();
 
-	return algorithm.getResult()->get(da::kmeans::assignments);
+    return algorithm.getResult()->get(da::kmeans::assignments);
 
 }
 
@@ -150,21 +153,25 @@ int main(int argc, char *argv[]) {
     std::string stringSize = stringSizeStream.str();
 
     // Create numeric tables from input data
-    dm::NumericTablePtr X_nt = make_table(
-            (double *) arrX->data, arrX->shape[0], arrX->shape[1]);
-    dm::NumericTablePtr X_init_nt = make_table(
-            (double *) arrX_init->data, arrX_init->shape[0], arrX_init->shape[1]);
+    dm::NumericTablePtr X_nt = make_table((double *) arrX->data,
+                                          arrX->shape[0],
+                                          arrX->shape[1]);
+    dm::NumericTablePtr X_init_nt = make_table((double *) arrX_init->data,
+                                               arrX_init->shape[0],
+                                               arrX_init->shape[1]);
 
     // Apply data multiplier for KMeans prediction
-	double* X_mult = (double*) daal::services::daal_malloc(
+    double* X_mult = (double*) daal::services::daal_malloc(
             X_nt->getNumberOfColumns() * X_nt->getNumberOfRows() *
             data_multiplier * sizeof(double));
     
-	for (int i = 0; i < data_multiplier; i++) {
-		for (int j = 0; j < X_nt->getNumberOfColumns() * X_nt->getNumberOfRows(); j++) {
-			X_mult[i * X_nt->getNumberOfColumns() * X_nt->getNumberOfRows() + j] = ((double *) arrX->data)[j];
-		}
-	}
+    for (int i = 0; i < data_multiplier; i++) {
+        for (int j = 0;
+             j < X_nt->getNumberOfColumns() * X_nt->getNumberOfRows(); j++) {
+            X_mult[i * X_nt->getNumberOfColumns()
+                * X_nt->getNumberOfRows() + j] = ((double *) arrX->data)[j];
+        }
+    }
 
     dm::NumericTablePtr X_mult_nt = make_table(
             (double *) X_mult, arrX->shape[0], arrX->shape[1]);
