@@ -11,6 +11,7 @@
 
 #include "daal.h"
 #include "lbfgsb.h"
+#include "mkl.h"
 
 namespace da = daal::algorithms;
 namespace dai = daal::algorithms::optimization_solver::iterative_solver;
@@ -43,6 +44,8 @@ namespace lbfgsb {
          * factr - Tolerance in termination test (see L-BFGS-B).
          * m - Number of corrections used in limited memory matrix (see L-BFGS-B).
          * iprint - Diagnostic information flag (see L-BFGS-B; 0 = silent).
+         * funcScaling, gradScaling - scale function and gradient values
+         *                              before sending them to L-BFGS-B.
          */
         Parameter(
             const dao::sum_of_functions::BatchPtr &function, // minimize this
@@ -54,7 +57,9 @@ namespace lbfgsb {
             dm::NumericTablePtr bounded = dm::NumericTablePtr(),
             double factr = 1e7,
             int m = 10,
-            int iprint = 0
+            int iprint = 0,
+            double funcScaling = 1.,
+            double gradScaling = 1.
         ) :
             dai::Parameter(function, nIterations, accuracyThreshold, false, batchSize),
             lowerBound(lowerBound),
@@ -62,7 +67,9 @@ namespace lbfgsb {
             bounded(bounded),
             factr(factr),
             m(m),
-            iprint(iprint)
+            iprint(iprint),
+            funcScaling(funcScaling),
+            gradScaling(gradScaling)
         {};
 
 
@@ -82,6 +89,7 @@ namespace lbfgsb {
         double factr;
         int m;
         int iprint;
+        double funcScaling, gradScaling;
 
     };
 
@@ -116,6 +124,8 @@ namespace lbfgsb {
 
                 // Read parameters.
                 const double accuracyThreshold = parameter->accuracyThreshold;
+                const double funcScaling = parameter->funcScaling;
+                const double gradScaling = parameter->gradScaling;
                 dm::NumericTablePtr lowerBound = parameter->lowerBound;
                 dm::NumericTablePtr upperBound = parameter->upperBound;
                 dm::NumericTablePtr bounded = parameter->bounded;
@@ -132,6 +142,7 @@ namespace lbfgsb {
 
                 n = inputArgument->getNumberOfRows();
                 m = parameter->m;
+                pgtol = accuracyThreshold;
 
                 // Because we have the freedom to dynamically allocate
                 // our arrays, we don't need to specify nmax, mmax as
@@ -203,7 +214,7 @@ namespace lbfgsb {
                                 dao::objective_function::valueIdx);
                         f_nt->getBlockOfRows(0, 1, dm::readOnly, block);
                         blockPtr = block.getBlockPtr();
-                        f = *blockPtr;
+                        f = *blockPtr * funcScaling;
                         f_nt->releaseBlockOfRows(block);
 
                         // Get the gradient value.
@@ -212,6 +223,8 @@ namespace lbfgsb {
                         g_nt->getBlockOfRows(0, n, dm::readOnly, block);
                         blockPtr = block.getBlockPtr();
                         memcpy(g, blockPtr, n*sizeof(double));
+                        static const int incx = 1;
+                        dscal(&n, &gradScaling, g, &incx);
                         g_nt->releaseBlockOfRows(block);
 
                     } else if (strncmp(task, "NEW_X", 5) == 0) {
