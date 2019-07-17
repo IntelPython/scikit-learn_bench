@@ -43,8 +43,10 @@ df_regression_fit(
     size_t n_samples = Yt->getNumberOfRows();
     size_t n_features = Xt->getNumberOfColumns();
 
-    size_t fpn = (n_features_per_node > 0 && n_features_per_node <= n_features) ? \
-	n_features_per_node : n_features;
+    size_t fpn = n_features;
+    if (n_features_per_node > 0 && n_features_per_node <= n_features) {
+        fpn = n_features_per_node;
+    }
 
     dfr::training::Batch<double> df_reg_alg;
     df_reg_alg.parameter.nTrees = nTrees;
@@ -56,17 +58,18 @@ df_regression_fit(
     df_reg_alg.parameter.impurityThreshold = min_impurity;
     df_reg_alg.parameter.bootstrap = bootstrap;
     df_reg_alg.parameter.memorySavingMode = false;
-    df_reg_alg.parameter.engine = da::engines::mt2203::Batch<double>::create(seed);
+    df_reg_alg.parameter.engine
+        = da::engines::mt2203::Batch<double>::create(seed);
 
     if (verbose) {
-	std::cout << "@ {'nTrees': " << nTrees <<
-                      ", 'variable_importance': " << "MDI"<<
-                      ", 'features_per_node': " <<  fpn <<
-	              ", 'max_depth': " << max_depth << 
-                      ", 'min_impurity': " << min_impurity <<
-                      ", 'seed': " << seed <<
-	              ", 'bootstrap': " << (bootstrap ? "True" : "False") <<
-                      "}" <<  std::endl;
+        std::cout << "@ {'nTrees': " << nTrees
+                  << ", 'variable_importance': " << "MDI"
+                  << ", 'features_per_node': " << fpn
+                  << ", 'max_depth': " << max_depth 
+                  << ", 'min_impurity': " << min_impurity
+                  << ", 'seed': " << seed
+                  << ", 'bootstrap': " << (bootstrap ? "True" : "False")
+                  << "}" << std::endl;
     }
 
     df_reg_alg.input.set(dfr::training::data, Xt);
@@ -90,7 +93,7 @@ df_regression_predict(
     dfr::prediction::Batch<float> pred_alg;
     pred_alg.input.set(dfr::prediction::data, Xt);
     pred_alg.input.set(dfr::prediction::model,
-		       training_result_ptr->get(dfr::training::model));
+               training_result_ptr->get(dfr::training::model));
 
     pred_alg.compute();
 
@@ -118,14 +121,14 @@ explained_variance_score(
     double *Y_data_ptr = blockY.getBlockPtr();
     double *Yp_data_ptr = blockYp.getBlockPtr();
 
-    for(size_t i = 0; i < n_rows; i++) {
-	double y = Y_data_ptr[i], yp = Yp_data_ptr[i];
-	double dy = y - mean_y;
-	double dypy = (yp - y) - mean_ypy;
+    for (size_t i = 0; i < n_rows; i++) {
+        double y = Y_data_ptr[i], yp = Yp_data_ptr[i];
+        double dy = y - mean_y;
+        double dypy = (yp - y) - mean_ypy;
         mean_y += dy / (i+1);
-	mean_ypy += dypy / (i+1);
-	vy += dy*(y - mean_y);
-	vypy += dypy*((yp - y) - mean_ypy);
+        mean_ypy += dypy / (i+1);
+        vy += dy*(y - mean_y);
+        vypy += dypy*((yp - y) - mean_ypy);
     }
     Yp_nt->releaseBlockOfRows(blockYp);
     Y_nt->releaseBlockOfRows(blockY);
@@ -147,11 +150,11 @@ print_numeric_table(dm::NumericTablePtr X_nt, std::string label)
     std::cout << "@ " << label << ":" << std::endl;
     std::cout << std::setprecision(18) << std::scientific;
     for (size_t i_outer=0; i_outer < n_rows; i_outer++) {
-	std::cout << "@ ";
-	for(size_t i_inner=0; i_inner < n_cols; i_inner++) {
-	    std::cout << x[i_inner + i_outer * n_cols] << ", ";
-	}
-	std::cout << std::endl;
+    std::cout << "@ ";
+    for(size_t i_inner=0; i_inner < n_cols; i_inner++) {
+        std::cout << x[i_inner + i_outer * n_cols] << ", ";
+    }
+    std::cout << std::endl;
     }
 
     X_nt->releaseBlockOfRows(blockX);
@@ -169,13 +172,18 @@ bench(
     int predict_repetitions,
     bool verbose,
     bool header,
-    size_t n_trees, size_t seed, size_t n_features_per_node, size_t max_depth, double min_impurity, bool bootstrap)
+    size_t n_trees,
+    size_t seed,
+    size_t n_features_per_node,
+    size_t max_depth,
+    double min_impurity,
+    bool bootstrap)
 {
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
-        daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
+        ds::Environment::getInstance()->setNumberOfThreads(threadNum);
 
-    size_t daal_thread_num = daal::services::Environment::getInstance()->getNumberOfThreads();
+    threadNum = ds::Environment::getInstance()->getNumberOfThreads();
 
     /* Load data */
     struct npyarr *arrX = load_npy(X_fname.c_str());
@@ -208,12 +216,12 @@ bench(
     dfr::training::ResultPtr training_result;
     for(int i = 0; i < fit_samples; i++) {
         auto start = std::chrono::system_clock::now();
-	for(int j=0; j < fit_repetitions; j++) {
-	    training_result = df_regression_fit(
-		n_trees, seed, n_features_per_node, max_depth, min_impurity, bootstrap,
-		X_nt, Y_nt, verbose && (!i) && (!j)
-		);
-	}
+    for(int j=0; j < fit_repetitions; j++) {
+        training_result = df_regression_fit(
+        n_trees, seed, n_features_per_node, max_depth, min_impurity, bootstrap,
+        X_nt, Y_nt, verbose && (!i) && (!j)
+        );
+    }
         auto finish = std::chrono::system_clock::now();
         fit_times.push_back(finish - start);
     }
@@ -223,10 +231,10 @@ bench(
     for(int i=0; i < predict_samples; i++) {
         auto start = std::chrono::system_clock::now();
         for(int j=0; j < predict_repetitions; j++) {
-	    Yp_nt = df_regression_predict(
-		training_result,
-		X_nt, verbose && (!i) && (!j));
-	}
+        Yp_nt = df_regression_predict(
+        training_result,
+        X_nt, verbose && (!i) && (!j));
+    }
         auto finish = std::chrono::system_clock::now();
         predict_times.push_back(finish - start);
 
@@ -236,64 +244,82 @@ bench(
     double accuracy = explained_variance_score(Y_nt, Yp_nt, n_rows);
 
     if (header) {
-	std::cout <<
+    std::cout <<
         ""  << "prefix_ID"     <<
         "," << "function"      <<
-	    "," << "threads"       <<
-	    "," << "rows"          <<
-	    "," << "features"      <<
-	    "," << "fit"           <<
-	    "," << "predict"       <<
-	    "," << "accuracy"      << std::endl;
+        "," << "threads"       <<
+        "," << "rows"          <<
+        "," << "features"      <<
+        "," << "fit"           <<
+        "," << "predict"       <<
+        "," << "accuracy"      << std::endl;
     }
 
-    std::cout << "Native-C,df_regr," << daal_thread_num;
-    std::cout << "," << X_nt->getNumberOfRows() <<
-	         "," << X_nt->getNumberOfColumns();
-    std::cout << "," << std::min_element(fit_times.begin(), fit_times.end())->count() / fit_repetitions;
-    std::cout << "," << std::min_element(predict_times.begin(), predict_times.end())->count() / predict_repetitions;
+    std::cout << "Native-C,df_regr," << threadNum;
+    std::cout << "," << X_nt->getNumberOfRows()
+              << "," << X_nt->getNumberOfColumns();
+    std::cout << "," << std::min_element(fit_times.begin(),
+            fit_times.end())->count() / fit_repetitions;
+    std::cout << "," << std::min_element(predict_times.begin(),
+            predict_times.end())->count() / predict_repetitions;
     std::cout << "," << (100 * accuracy);
     std::cout << std::endl;
 }
 
 int main(int argc, char** argv) {
-    CLI::App app("Native benchmark code for Intel(R) DAAL random forest regressor");
+    CLI::App app("Native benchmark code for Intel(R) DAAL "
+                 "random forest regressor");
 
     std::string xfn = "./data/mX.csv";
-    CLI::Option *optX = app.add_option("--fileX", xfn, "Feature file name")->required()->check(CLI::ExistingFile);
+    app.add_option("--fileX", xfn, "Feature file name")
+        ->required()->check(CLI::ExistingFile);
 
     std::string yfn = "./data/mY.csv";
-    CLI::Option *optY = app.add_option("--fileY", yfn, "Labels file name")->required()->check(CLI::ExistingFile);
+    app.add_option("--fileY", yfn, "Labels file name")
+        ->required()->check(CLI::ExistingFile);
 
-    int fit_samples = 3, fit_repetitions = 1, predict_samples = 5, predict_repetitions = 50;
-    CLI::Option *optFitS = app.add_option("--fit-samples", fit_samples, "Number of samples to collect for time of execution of repeated fit calls", true);
-    CLI::Option *optFitR = app.add_option("--fit-repetitions", fit_repetitions, "Number of repeated fit calls to time", true);
-    CLI::Option *optPredS = app.add_option("--predict-samples", predict_samples, "Number of samples to collect for time of execution of repeated predict calls", true);
-    CLI::Option *optPredR = app.add_option("--predict-repetitions", predict_repetitions, "Number of repeated predict calls to time", true);
+    int fit_samples = 3, fit_repetitions = 1,
+        predict_samples = 5, predict_repetitions = 50;
+    app.add_option("--fit-samples", fit_samples,
+                   "Number of samples to collect for time of execution of "
+                   "repeated fit calls", true);
+    app.add_option("--fit-repetitions", fit_repetitions,
+                   "Number of repeated fit calls to time", true);
+    app.add_option("--predict-samples", predict_samples,
+                   "Number of samples to collect for time of execution of "
+                   "repeated predict calls", true);
+    app.add_option("--predict-repetitions", predict_repetitions,
+                   "Number of repeated predict calls to time", true);
 
     int num_threads = 0;
-    CLI::Option *optNumThreads = app.add_option("-n,--num-threads", num_threads, "Number of threads for DAAL to use", true);
+    app.add_option("-n,--num-threads", num_threads,
+                   "Number of threads for DAAL to use", true);
 
     bool verbose = false;
-    CLI::Option *optVerbose = app.add_flag("-v,--verbose", verbose, "Whether to be verbose or terse");
+    app.add_flag("-v,--verbose", verbose, "Whether to be verbose or terse");
 
     bool header = false;
-    CLI::Option *optHeader = app.add_flag("--header", header, "Whether to output header");
+    app.add_flag("--header", header, "Whether to output header");
 
     bool no_bootstrap = false;
-    CLI::Option *optNoBootstrap = app.add_flag("--no-bootstrap", no_bootstrap, "Whether to output header");
+    app.add_flag("--no-bootstrap", no_bootstrap,
+                 "Do not use bootstrap samples to build trees");
 
     size_t num_trees = 100;
-    CLI::Option *optNumTrees = app.add_option("--num-trees", num_trees, "Number of trees in decision forest", true);
+    app.add_option("--num-trees", num_trees,
+                   "Number of trees in decision forest", true);
 
     size_t max_depth = 0;
-    CLI::Option *optMaxDepth = app.add_option("--max-depth", max_depth, "Maximal depth of trees in the forest. Zero means depth is not limited.", true);
+    app.add_option("--max-depth", max_depth,
+                   "Maximal depth of trees in the forest. "
+                   "Zero means depth is not limited.", true);
 
     size_t num_features_per_node = 0;
-    CLI::Option *optFeaturesPerNode = app.add_option("--features-per-node", num_features_per_node, "Number of features per node", true);
+    app.add_option("--features-per-node", num_features_per_node,
+                   "Number of features per node", true);
 
     size_t seed = 12345;
-    CLI::Option *optSeed = app.add_option("--seed", seed, "Number of features per node", true);
+    app.add_option("--seed", seed, "Seed for the MT2203 RNG", true);
 
 
     CLI11_PARSE(app, argc, argv);
@@ -305,16 +331,17 @@ int main(int argc, char** argv) {
     assert(predict_repetitions > 0);
 
     if (verbose) {
-	std::clog <<
-	    "@ {FIT_SAMPLES: "        << fit_samples <<
-	    ", FIT_REPETIONS: "       << fit_repetitions <<
-	    ", PREDICT_SAMPLES: "     << predict_samples <<
-	    ", PREDICT_REPETITIONS: " << predict_repetitions <<
-	    "}" << std::endl;
+    std::clog <<
+        "@ {FIT_SAMPLES: "        << fit_samples <<
+        ", FIT_REPETITIONS: "     << fit_repetitions <<
+        ", PREDICT_SAMPLES: "     << predict_samples <<
+        ", PREDICT_REPETITIONS: " << predict_repetitions <<
+        "}" << std::endl;
     }
 
-    bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples, predict_repetitions, verbose, header,
-	  num_trees, seed, num_features_per_node, max_depth, 0., !no_bootstrap);
+    bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples,
+          predict_repetitions, verbose, header, num_trees, seed,
+          num_features_per_node, max_depth, 0., !no_bootstrap);
 
     return 0;
 }
