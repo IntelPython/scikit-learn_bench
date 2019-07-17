@@ -19,13 +19,16 @@
 #include "daal.h"
 #include "npyfile.h"
 
-namespace dam = daal::algorithms::multi_class_classifier;
+namespace dam = da::multi_class_classifier;
+namespace dak = da::kernel_function;
 
 struct svm_params {
     double C;
     double tol;
     double tau;
     int max_iter;
+    char kernel;
+    double gamma;
 };
 
 void print_svm_params(svm_params p) {
@@ -224,6 +227,25 @@ size_t construct_dual_coefs(dam::training::ResultPtr training_result,
 }
 
 template <typename dtype = double>
+ds::SharedPtr<dak::KernelIface> daal_kernel(char kernel, double gamma) {
+
+    assert(kernel == 'l' || kernel == 'r');
+    assert(gamma > 0);
+
+    /* Parameters for the SVM kernel function */
+    ds::SharedPtr<dak::KernelIface> kernel_ptr;
+    if (kernel == 'l') {
+        kernel_ptr.reset(new dak::linear::Batch<dtype>());
+    } else {
+        dak::rbf::Batch<dtype> *rbf = new dak::rbf::Batch<dtype>();
+        rbf->parameter.sigma = sqrt(0.5 / gamma);
+        kernel_ptr.reset(rbf);
+    }
+
+    return kernel_ptr;
+}
+
+template <typename dtype = double>
 std::tuple<da::classifier::training::ResultPtr, unsigned long>
 svm_fit(svm_params svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
         int n_classes, bool verbose) {
@@ -231,11 +253,11 @@ svm_fit(svm_params svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
     ds::SharedPtr<da::svm::training::Batch<dtype>> training_algo_ptr(
         new da::svm::training::Batch<dtype>());
 
-    /* Parameters for the SVM kernel function */
-    ds::SharedPtr<da::kernel_function::linear::Batch<dtype>> kernel_ptr(
-        new da::kernel_function::linear::Batch<dtype>());
     size_t n_features = Xt->getNumberOfColumns();
     size_t n_samples = Xt->getNumberOfRows();
+
+    ds::SharedPtr<dak::KernelIface> kernel_ptr =
+        daal_kernel(svc_params.kernel, svc_params.gamma);
 
     training_algo_ptr->parameter.C = svc_params.C;
     training_algo_ptr->parameter.kernel = kernel_ptr;
@@ -310,12 +332,11 @@ dm::NumericTablePtr
 svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
             dm::NumericTablePtr X_nt, int n_classes, bool verbose) {
 
-    ds::SharedPtr<da::kernel_function::linear::Batch<dtype>> kernel_ptr(
-        new da::kernel_function::linear::Batch<dtype>());
-
-    ds::SharedPtr<da::svm::prediction::Batch<dtype>>
-        two_class_pred_batch_algo_ptr(new da::svm::prediction::Batch<dtype>());
-    two_class_pred_batch_algo_ptr->parameter.kernel = kernel_ptr;
+    ds::SharedPtr<dak::KernelIface> kernel_ptr =
+        daal_kernel(svc_params.kernel, svc_params.gamma);
+    ds::SharedPtr<da::svm::prediction::Batch<dtype>> pred_algo_ptr(
+            new da::svm::prediction::Batch<dtype>());
+    pred_algo_ptr->parameter.kernel = kernel_ptr;
 
     ds::SharedPtr<da::classifier::prediction::Batch> algorithm;
 
@@ -334,12 +355,12 @@ svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
                 new dam::prediction::Batch<dtype, dam::prediction::voteBased>(
                     n_classes));
 
-        mc_algorithm->parameter.prediction = two_class_pred_batch_algo_ptr;
+        mc_algorithm->parameter.prediction = pred_algo_ptr;
 
         algorithm = mc_algorithm;
 
     } else {
-        algorithm = two_class_pred_batch_algo_ptr;
+        algorithm = pred_algo_ptr;
     }
 
     algorithm->getInput()->set(da::classifier::prediction::data, X_nt);
@@ -353,8 +374,8 @@ svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
 
 void bench(size_t threadNum, const std::string &X_fname,
            const std::string &y_fname, int fit_samples, int fit_repetitions,
-           int predict_samples, int predict_repetitions, bool verbose,
-           bool header) {
+           int predict_samples, int predict_repetitions, char kernel,
+           double gamma, bool verbose, bool header) {
 
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
@@ -391,6 +412,7 @@ void bench(size_t threadNum, const std::string &X_fname,
         (int64_t *) arrY->data, 1, arrY->shape[0]);
 
     size_t n_rows = Y_nt->getNumberOfRows();
+    size_t n_features = X_nt->getNumberOfColumns();
 
     int n_classes = count_classes(Y_nt);
 
@@ -408,6 +430,12 @@ void bench(size_t threadNum, const std::string &X_fname,
     svm_problem.tol = 1e-16;
     svm_problem.tau = 1e-12;
     svm_problem.max_iter = 2000;
+    svm_problem.kernel = kernel;
+    if (gamma <= 0) {
+        svm_problem.gamma = 1. / (double) n_features;
+    } else {
+        svm_problem.gamma = gamma;
+    }
 
     size_t sv_len = 0;
     std::vector<std::chrono::duration<double>> fit_times;
@@ -498,6 +526,14 @@ int main(int argc, char **argv) {
     app.add_option("-n,--num-threads", num_threads,
                    "Number of threads for DAAL to use", true);
 
+    std::string kernel = "linear";
+    app.add_option("--kernel", kernel, "SVM kernel function")
+        ->check(CLI::IsMember({"linear", "rbf"}));
+
+    double gamma = -1.; // will be replaced by 1 / n_features
+    app.add_option("--gamma", gamma, "Kernel coefficient for 'rbf'")
+        ->check(CLI::PositiveNumber);
+
     bool verbose = false;
     app.add_flag("-v,--verbose", verbose, "Whether to be verbose or terse");
 
@@ -521,7 +557,7 @@ int main(int argc, char **argv) {
     }
 
     bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples,
-          predict_repetitions, verbose, header);
+          predict_repetitions, kernel[0], gamma, verbose, header);
 
     return 0;
 }
