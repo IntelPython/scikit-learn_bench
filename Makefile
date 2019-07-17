@@ -4,17 +4,17 @@ REGRESSION_SIZE = 1000000x50
 KMEANS_SAMPLES = 1000000
 KMEANS_FEATURES = 50
 KMEANS_SIZE = $(KMEANS_SAMPLES)x$(KMEANS_FEATURES)
-SVM_SAMPLES = 50000
+SVM_SAMPLES = 100000
 SVM_FEATURES = 100
 SVM_SIZE = $(SVM_SAMPLES)x$(SVM_FEATURES)
 LOGREG_SAMPLES = 100000
 LOGREG_FEATURES = 100
 LOGREG_SIZE = $(LOGREG_SAMPLES)x$(LOGREG_FEATURES)
 DFCLF_SAMPLES = 10000
-DFCLF_FEATURES = 50
+DFCLF_FEATURES = 100
 DFCLF_SIZE = $(DFCLF_SAMPLES)x$(DFCLF_FEATURES)
 DFREG_SAMPLES = 10000
-DFREG_FEATURES = 50
+DFREG_FEATURES = 100
 DFREG_SIZE = $(DFREG_SAMPLES)x$(DFREG_FEATURES)
 
 ITERATIONS = 10
@@ -37,16 +37,16 @@ MULTIPLIER = 100
 DATA_DIR = data/
 DATA_kmeans = data/kmeans_$(KMEANS_SIZE).npy
 
-COMMON_ARGS = --batch '$(BATCH)' --arch '$(HOST)' \
-			  --num-threads '$(NUM_THREADS)' --header
+COMMON_ARGS =	--batch '$(BATCH)' --arch '$(HOST)' \
+		--num-threads '$(NUM_THREADS)' --header
 
 # Define which benchmarks to run
-NATIVE_BENCHMARKS =		distances ridge linear kmeans svm2 svm5 \
-						logreg2 logreg5 dfclf2 dfclf5 dfreg pca_daal pca_full
+NATIVE_BENCHMARKS =	distances ridge linear kmeans svm2 svm5 \
+			logreg2 logreg5 dfclf2 dfclf5 dfreg pca_daal pca_full
 SKLEARN_BENCHMARKS = 	distances ridge linear kmeans svm2 svm5 \
-						logreg2 logreg5 dfclf2 dfclf5 dfreg pca_full
+			logreg2 logreg5 dfclf2 dfclf5 dfreg pca_full
 DAAL4PY_BENCHMARKS = 	distances ridge linear kmeans svm2 svm5 \
-						logreg2 logreg5 dfclf2 dfclf5 dfreg pca_daal pca_full
+			logreg2 logreg5 dfclf2 dfclf5 dfreg pca_daal pca_full
 
 # Define native benchmark binary names
 NATIVE_distances = distances
@@ -65,41 +65,41 @@ NATIVE_pca_full = pca
 
 # Define arguments for native benchmarks
 ARGS_NATIVE_distances = --num-threads "$(NUM_THREADS)" \
-						--size "$(DISTANCES_SIZE)" --header
+			--size "$(DISTANCES_SIZE)" --header
 ARGS_NATIVE_ridge = 	--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" --header
+			--size "$(REGRESSION_SIZE)" --header
 ARGS_NATIVE_linear = 	--num-threads "$(NUM_THREADS)" \
-						--size "$(REGRESSION_SIZE)" --header
+			--size "$(REGRESSION_SIZE)" --header
 ARGS_NATIVE_pca_daal = 	--num-threads "$(NUM_THREADS)" --header \
-						--size "$(REGRESSION_SIZE)" --svd-solver daal
+			--size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_NATIVE_pca_full = 	--num-threads "$(NUM_THREADS)" --header \
-						--size "$(REGRESSION_SIZE)" --svd-solver full
+			--size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_NATIVE_kmeans = 	--num-threads "$(NUM_THREADS)" --header \
-						--data-multiplier "$(MULTIPLIER)" \
-						--filex data/kmeans_$(KMEANS_SIZE).npy \
-						--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-						--filet data/kmeans_$(KMEANS_SIZE).tol.npy 
-ARGS_NATIVE_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
-						--fileY data/two/y-$(SVM_SIZE).npy \
-						--num-threads $(SVM_NUM_THREADS) --header
-ARGS_NATIVE_svm5 = 		--fileX data/multi/X-$(SVM_SIZE).npy \
-						--fileY data/multi/y-$(SVM_SIZE).npy \
-						--num-threads $(SVM_NUM_THREADS) --header
+			--data-multiplier "$(MULTIPLIER)" \
+			--filex data/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/kmeans_$(KMEANS_SIZE).init.npy \
+			--filet data/kmeans_$(KMEANS_SIZE).tol.npy 
+ARGS_NATIVE_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
+			--fileY data/two/y-$(SVM_SIZE).npy \
+			--num-threads $(SVM_NUM_THREADS) --header
+ARGS_NATIVE_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
+			--fileY data/multi/y-$(SVM_SIZE).npy \
+			--num-threads $(SVM_NUM_THREADS) --header
 ARGS_NATIVE_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
-						--fileY data/two/y-$(LOGREG_SIZE).npy \
-						--num-threads $(LOGREG_NUM_THREADS) --header
+			--fileY data/two/y-$(LOGREG_SIZE).npy \
+			--num-threads $(LOGREG_NUM_THREADS) --header
 ARGS_NATIVE_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
-						--fileY data/multi/y-$(LOGREG_SIZE).npy \
-						--num-threads $(LOGREG_NUM_THREADS) --header
+			--fileY data/multi/y-$(LOGREG_SIZE).npy \
+			--num-threads $(LOGREG_NUM_THREADS) --header
 ARGS_NATIVE_dfclf2 = 	--fileX data/two/X-$(DFCLF_SIZE).npy \
-						--fileY data/two/y-$(DFCLF_SIZE).npy \
-						--num-threads $(DFCLF_NUM_THREADS) --header
+			--fileY data/two/y-$(DFCLF_SIZE).npy \
+			--num-threads $(DFCLF_NUM_THREADS) --header
 ARGS_NATIVE_dfclf5 = 	--fileX data/multi/X-$(DFCLF_SIZE).npy \
-						--fileY data/multi/y-$(DFCLF_SIZE).npy \
-						--num-threads $(DFCLF_NUM_THREADS) --header
+			--fileY data/multi/y-$(DFCLF_SIZE).npy \
+			--num-threads $(DFCLF_NUM_THREADS) --header
 ARGS_NATIVE_dfreg = 	--fileX data/reg/X-$(DFREG_SIZE).npy \
-						--fileY data/reg/y-$(DFREG_SIZE).npy \
-						--num-threads $(DFREG_NUM_THREADS) --header
+			--fileY data/reg/y-$(DFREG_SIZE).npy \
+			--num-threads $(DFREG_NUM_THREADS) --header
 
 SKLEARN_distances = distances
 SKLEARN_ridge = ridge
@@ -121,22 +121,22 @@ ARGS_SKLEARN_linear = 	--size "$(REGRESSION_SIZE)"
 ARGS_SKLEARN_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_SKLEARN_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_SKLEARN_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
-						--filex data/kmeans_$(KMEANS_SIZE).npy \
-						--filei data/kmeans_$(KMEANS_SIZE).init.npy
-ARGS_SKLEARN_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
-						--fileY data/two/y-$(SVM_SIZE).npy
+			--filex data/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/kmeans_$(KMEANS_SIZE).init.npy
+ARGS_SKLEARN_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
+			--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_SKLEARN_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
-						--fileY data/multi/y-$(SVM_SIZE).npy
+			--fileY data/multi/y-$(SVM_SIZE).npy
 ARGS_SKLEARN_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
-						--fileY data/two/y-$(LOGREG_SIZE).npy
+			--fileY data/two/y-$(LOGREG_SIZE).npy
 ARGS_SKLEARN_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
-						--fileY data/multi/y-$(LOGREG_SIZE).npy
+			--fileY data/multi/y-$(LOGREG_SIZE).npy
 ARGS_SKLEARN_dfclf2 = 	--fileX data/two/X-$(DFCLF_SIZE).npy \
-						--fileY data/two/y-$(DFCLF_SIZE).npy
+			--fileY data/two/y-$(DFCLF_SIZE).npy
 ARGS_SKLEARN_dfclf5 = 	--fileX data/multi/X-$(DFCLF_SIZE).npy \
-						--fileY data/multi/y-$(DFCLF_SIZE).npy
-ARGS_SKLEARN_dfreg = 	--fileX data/multi/X-$(DFREG_SIZE).npy \
-						--fileY data/multi/y-$(DFREG_SIZE).npy
+			--fileY data/multi/y-$(DFCLF_SIZE).npy
+ARGS_SKLEARN_dfreg = 	--fileX data/reg/X-$(DFREG_SIZE).npy \
+			--fileY data/reg/y-$(DFREG_SIZE).npy
 
 DAAL4PY_distances = distances
 DAAL4PY_ridge = ridge
@@ -158,23 +158,23 @@ ARGS_DAAL4PY_linear = 	--size "$(REGRESSION_SIZE)"
 ARGS_DAAL4PY_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_DAAL4PY_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_DAAL4PY_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
-						--filex data/kmeans_$(KMEANS_SIZE).npy \
-						--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-						--filet data/kmeans_$(KMEANS_SIZE).tol.npy
-ARGS_DAAL4PY_svm2 =		--fileX data/two/X-$(SVM_SIZE).npy \
-						--fileY data/two/y-$(SVM_SIZE).npy
+			--filex data/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/kmeans_$(KMEANS_SIZE).init.npy \
+			--filet data/kmeans_$(KMEANS_SIZE).tol.npy
+ARGS_DAAL4PY_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
+			--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_DAAL4PY_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
-						--fileY data/multi/y-$(SVM_SIZE).npy
+			--fileY data/multi/y-$(SVM_SIZE).npy
 ARGS_DAAL4PY_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
-						--fileY data/two/y-$(LOGREG_SIZE).npy
+			--fileY data/two/y-$(LOGREG_SIZE).npy
 ARGS_DAAL4PY_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
-						--fileY data/multi/y-$(LOGREG_SIZE).npy
+			--fileY data/multi/y-$(LOGREG_SIZE).npy
 ARGS_DAAL4PY_dfclf2 = 	--fileX data/two/X-$(DFCLF_SIZE).npy \
-						--fileY data/two/y-$(DFCLF_SIZE).npy
+			--fileY data/two/y-$(DFCLF_SIZE).npy
 ARGS_DAAL4PY_dfclf5 = 	--fileX data/multi/X-$(DFCLF_SIZE).npy \
-						--fileY data/multi/y-$(DFCLF_SIZE).npy
-ARGS_DAAL4PY_dfreg = 	--fileX data/multi/X-$(DFREG_SIZE).npy \
-						--fileY data/multi/y-$(DFREG_SIZE).npy
+			--fileY data/multi/y-$(DFCLF_SIZE).npy
+ARGS_DAAL4PY_dfreg = 	--fileX data/reg/X-$(DFREG_SIZE).npy \
+			--fileY data/reg/y-$(DFREG_SIZE).npy
 
 comma = ,
 
