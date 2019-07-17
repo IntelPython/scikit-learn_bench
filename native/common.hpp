@@ -204,6 +204,27 @@ copy_submatrix(dm::NumericTablePtr src,
 }
 
 
+int count_classes(dm::NumericTablePtr y) {
+
+    /* compute min and max labels with DAAL */
+    da::low_order_moments::Batch<double> algorithm;
+    algorithm.input.set(da::low_order_moments::data, y);
+    algorithm.compute();
+    da::low_order_moments::ResultPtr res = algorithm.getResult();
+    dm::NumericTablePtr min_nt = res->get(da::low_order_moments::minimum);
+    dm::NumericTablePtr max_nt = res->get(da::low_order_moments::maximum);
+
+    int min, max;
+    dm::BlockDescriptor<double> block;
+    min_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    min = block.getBlockPtr()[0];
+    max_nt->getBlockOfRows(0, 1, dm::readOnly, block);
+    max = block.getBlockPtr()[0];
+    return 1 + max - min;
+
+}
+
+
 /*
  * Generate an array of random numbers.
  */
