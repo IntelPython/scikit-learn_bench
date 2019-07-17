@@ -335,7 +335,7 @@ svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
     ds::SharedPtr<dak::KernelIface> kernel_ptr =
         daal_kernel(svc_params.kernel, svc_params.gamma);
     ds::SharedPtr<da::svm::prediction::Batch<dtype>> pred_algo_ptr(
-            new da::svm::prediction::Batch<dtype>());
+        new da::svm::prediction::Batch<dtype>());
     pred_algo_ptr->parameter.kernel = kernel_ptr;
 
     ds::SharedPtr<da::classifier::prediction::Batch> algorithm;
