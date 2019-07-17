@@ -51,6 +51,8 @@ multi_class_linear_svm_fit(
 
     da::multi_class_classifier::training::Batch<double> algorithm(nClasses);
     algorithm.parameter.training = training_algo_ptr;
+    algorithm.parameter.maxIterations = svc_params.max_iter;
+    algorithm.parameter.accuracyThreshold = svc_params.tol;
  
     /* Pass a training data set and dependent values to the algorithm */
     algorithm.input.set(da::classifier::training::data, Xt);

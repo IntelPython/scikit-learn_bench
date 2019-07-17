@@ -51,6 +51,7 @@ if not params.tol:
 # Create our classifier object
 clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
                          fit_intercept=params.fit_intercept,
+                         verbose=params.verbose,
                          tol=params.tol, max_iter=params.maxiter,
                          solver=params.solver, multi_class=params.multiclass)
 

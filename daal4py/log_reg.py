@@ -38,8 +38,19 @@ class Loss:
         self.X = make2d(X)
         self.y = make2d(y)
 
+        self.last_beta = beta.copy()
+
+        self.func = None
+        self.grad = None
+        self.hess = None
+
     def compute(self, beta):
+        # Don't compute if we have already cached func, grad, hess
+        if self.func is not None and np.array_equal(beta, self.last_beta):
+            return
+
         result = self.algo.compute(self.X, self.y, make2d(beta))
+        np.copyto(self.last_beta, beta)
         self.func = result.valueIdx[0, 0] * self.n
         self.grad = result.gradientIdx.ravel() * self.n
         if self.compute_hess:

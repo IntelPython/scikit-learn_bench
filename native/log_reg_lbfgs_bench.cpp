@@ -42,20 +42,20 @@ logistic_regression_fit(
 {
     size_t n_samples = Yt->getNumberOfRows();
 
-    // da::optimization_solver::lbfgs::Batch<double, da::optimization_solver::lbfgs::defaultDense> solver;
-    ds::SharedPtr<lbfgsb::Batch> 
-	lbfgsSolver(new lbfgsb::Batch());
+    ds::SharedPtr<lbfgsb::Batch> lbfgsSolver(new lbfgsb::Batch());
 
     lbfgsSolver->parameter.nIterations = max_iter;
     lbfgsSolver->parameter.accuracyThreshold = tol;
     lbfgsSolver->parameter.iprint = (verbose) ? 1 : -1;
+    lbfgsSolver->parameter.funcScaling = n_samples;
+    lbfgsSolver->parameter.gradScaling = n_samples;
 
 
     dl::training::Batch<double> log_reg_alg(nClasses);
     log_reg_alg.parameter().interceptFlag = fit_intercept;
     log_reg_alg.parameter().penaltyL1 = 0.;
     log_reg_alg.parameter().penaltyL2 = 0.5 / C / n_samples;
-    // services::SharedPtr<optimization_solver::lbfgs::Batch<double, optimization_solver::lbfgs::defaultDense> > func(new optimization_solver::lbfgs::Batch<double, optimization_solver::lbfgs::defaultDense>() ); 
+
     log_reg_alg.parameter().optimizationSolver = lbfgsSolver;
 
     if (verbose) {
