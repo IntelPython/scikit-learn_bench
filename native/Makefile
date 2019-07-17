@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-BENCHMARKS += distances kmeans linear ridge pca \
-	      two_class_svm svm log_reg_lbfgs \
+BENCHMARKS += distances kmeans linear ridge pca svm log_reg_lbfgs \
 	      decision_forest_regr decision_forest_clsf
 FOBJ = $(addprefix lbfgsb/,lbfgsb.o linpack.o timer.o)
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
