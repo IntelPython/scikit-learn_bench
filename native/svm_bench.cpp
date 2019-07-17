@@ -416,8 +416,14 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
                 sv_len = construct_dual_coefs(mc_training_result, n_classes,
                                               Y_nt, n_rows, dual_coefs_ptr,
                                               verbose && (!i) && (!j));
+            } else {
+                auto svm_training_result
+                    = ds::dynamicPointerCast<da::svm::training::Result>(training_result);
+                auto svm_model
+                    = ds::dynamicPointerCast<svm::Model>(svm_training_result->get(classifier::training::model));
+                auto sv_idx = svm_model->getSupportIndices();
+                sv_len = sv_idx->getNumberOfRows();
             }
-
         }
 
             auto finish = std::chrono::system_clock::now();
