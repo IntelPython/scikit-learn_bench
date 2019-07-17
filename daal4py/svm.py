@@ -6,7 +6,8 @@ import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, \
                   size_str, accuracy_score
 import numpy as np
-from daal4py import svm_training, svm_prediction, kernel_function_linear, \
+from daal4py import svm_training, svm_prediction, \
+                    kernel_function_linear, kernel_function_rbf, \
                     multi_class_classifier_training, \
                     multi_class_classifier_prediction
 from daal4py.sklearn.utils import getFPType
@@ -194,10 +195,19 @@ def construct_dual_coefs(model, num_classes, X, y):
     return support_
 
 
+def daal_kernel(name, fptype, gamma=1.0):
+
+    if name == 'linear':
+        return kernel_function_linear(fptype=fptype)
+    else:
+        sigma = np.sqrt(0.5 / gamma)
+        return kernel_function_rbf(fptype=fptype, sigma=sigma)
+
+
 def test_fit(X, y, params):
 
     fptype = getFPType(X)
-    kf = kernel_function_linear(fptype=fptype)
+    kf = daal_kernel(params.kernel, fptype, gamma=params.gamma)
 
     if params.n_classes == 2:
         y[y == 0] = -1
@@ -246,7 +256,7 @@ def test_fit(X, y, params):
 def test_predict(X, training_result, params):
 
     fptype = getFPType(X)
-    kf = kernel_function_linear(fptype=fptype)
+    kf = daal_kernel(params.kernel, fptype, gamma=params.gamma)
 
     svm_predict = svm_prediction(
             fptype=fptype,
@@ -287,8 +297,10 @@ def main():
                         help='Input file with labels, in NPY format')
     parser.add_argument('-C', dest='C', type=float, default=0.01,
                         help='SVM slack parameter')
-    parser.add_argument('--kernel', choices=('linear',), default='linear',
-                        help='SVM kernel function')
+    parser.add_argument('--kernel', choices=('linear', 'rbf'),
+                        default='linear', help='SVM kernel function')
+    parser.add_argument('--gamma', type=float, default=None,
+                        help="Parameter for kernel='rbf'")
     parser.add_argument('--maxiter', type=int, default=2000,
                         help='Maximum iterations for the iterative solver. '
                              '-1 means no limit.')
@@ -301,11 +313,15 @@ def main():
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',
                         help="Don't use shrinking heuristic")
-    params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
+    params = parse_args(parser, loop_types=('fit', 'predict'),
+                        prefix='daal4py')
 
     # Load data and cast to float64
     X_train = np.load(params.filex.name).astype('f8')
     y_train = np.load(params.filey.name).astype('f8')
+
+    if params.gamma is None:
+        params.gamma = 1 / X_train.shape[1]
 
     cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                               max_cache=params.max_cache_size)

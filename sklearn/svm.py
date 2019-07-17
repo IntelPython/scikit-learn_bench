@@ -43,8 +43,10 @@ parser.add_argument('-y', '--filey', '--fileY', type=argparse.FileType('r'),
                     help='Input file with labels, in NPY format')
 parser.add_argument('-C', dest='C', type=float, default=0.01,
                     help='SVM slack parameter')
-parser.add_argument('--kernel', choices=('linear',), default='linear',
-                    help='SVM kernel function')
+parser.add_argument('--kernel', choices=('linear', 'rbf'),
+                    default='linear', help='SVM kernel function')
+parser.add_argument('--gamma', type=float, default=None,
+                    help="Parameter for kernel='rbf'")
 parser.add_argument('--maxiter', type=int, default=2000,
                     help='Maximum iterations for the iterative solver. '
                          '-1 means no limit.')
@@ -59,6 +61,9 @@ params = parse_args(parser, loop_types=('fit', 'predict'))
 # Load data and cast to float64
 X = np.load(params.filex.name).astype('f8')
 y = np.load(params.filey.name).astype('f8')
+
+if params.gamma is None:
+    params.gamma = 'auto'
 
 cache_size_bytes = get_optimal_cache_size(X.shape[0],
                                           max_cache=params.max_cache_size)
