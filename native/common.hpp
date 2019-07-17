@@ -225,6 +225,40 @@ int count_classes(dm::NumericTablePtr y) {
 }
 
 
+size_t count_same_labels(dm::NumericTablePtr y1, dm::NumericTablePtr y2,
+                         double tol = 1e-6) {
+
+    size_t equal_counter = 0;
+    size_t n_rows = std::min(y1->getNumberOfRows(), y2->getNumberOfRows());
+    dm::BlockDescriptor<double> block_y1, block_y2;
+    y1->getBlockOfRows(0, n_rows, dm::readOnly, block_y1);
+    y2->getBlockOfRows(0, n_rows, dm::readOnly, block_y2);
+
+    double *ptr1 = block_y1.getBlockPtr();
+    double *ptr2 = block_y2.getBlockPtr();
+
+    for (size_t i = 0; i < n_rows; i++) {
+        if (abs(ptr1[i] - ptr2[i]) < tol) {
+            equal_counter++;
+        }
+    }
+    y1->releaseBlockOfRows(block_y1);
+    y2->releaseBlockOfRows(block_y2);
+
+    return equal_counter;
+
+}
+
+
+double accuracy_score(dm::NumericTablePtr y1, dm::NumericTablePtr y2,
+                      double tol = 1e-6) {
+
+    double n_rows = std::min(y1->getNumberOfRows(), y2->getNumberOfRows());
+    return (double) count_same_labels(y1, y2) / n_rows;
+
+}
+
+
 /*
  * Generate an array of random numbers.
  */

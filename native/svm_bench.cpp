@@ -138,27 +138,6 @@ dm::NumericTablePtr svm_predict(
     return algorithm->getResult()->get(da::classifier::prediction::prediction);
 }
 
-size_t
-count_same_labels(dm::NumericTablePtr Y_nt, dm::NumericTablePtr Yp_nt, size_t n_rows) {
-    size_t equal_counter = 0;
-    dm::BlockDescriptor<double> blockY;
-    dm::BlockDescriptor<double> blockYp;
-    Yp_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockYp);
-    Y_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockY);
-    double *Y_data_ptr = blockY.getBlockPtr();
-    double *Yp_data_ptr = blockYp.getBlockPtr();
-
-//    std::cout << "A P" << std::endl;
-    for(size_t i = 0; i < n_rows; i++) {
-//	std::cout << Y_data_ptr[i] << " " << Yp_data_ptr[i] << std::endl;
-	equal_counter += (abs(Y_data_ptr[i] - Yp_data_ptr[i]) > 1e-6) ? 0 : 1;
-    }
-    Yp_nt->releaseBlockOfRows(blockYp);
-    Y_nt->releaseBlockOfRows(blockY);
-
-    return equal_counter;
-}
-
 std::vector<int >
 lexicographic_permutation(int n_cl)
 {
@@ -419,8 +398,10 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
             } else {
                 auto svm_training_result
                     = ds::dynamicPointerCast<da::svm::training::Result>(training_result);
+                assert(svm_training_result);
                 auto svm_model
                     = ds::dynamicPointerCast<svm::Model>(svm_training_result->get(classifier::training::model));
+                assert(svm_model);
                 auto sv_idx = svm_model->getSupportIndices();
                 sv_len = sv_idx->getNumberOfRows();
             }
@@ -446,8 +427,7 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
         predict_times.push_back(finish - start);
     }
 
-    size_t equal_counter = count_same_labels(Y_nt, Yp_nt, n_rows);
-    double accuracy = ((double) equal_counter / (double) n_rows) * 100.00;
+    double accuracy = accuracy_score(Y_nt, Yp_nt) * 100.00;
 
     if (header) {
 	std::cout << 
