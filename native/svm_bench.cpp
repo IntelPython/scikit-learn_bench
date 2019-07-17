@@ -24,120 +24,6 @@ namespace dam = daal::algorithms::multi_class_classifier;
 
 using namespace daal;
 using namespace da;
-
-template <typename dtype = double>
-da::classifier::training::ResultPtr svm_fit(
-    svm_linear_kernel_parameters svc_params,
-    dm::NumericTablePtr Xt,
-    dm::NumericTablePtr Yt,
-    int n_classes,
-    bool verbose)
-{
-
-    ds::SharedPtr<svm::training::Batch<dtype>>
-        training_algo_ptr(new svm::training::Batch<dtype>());
-
-    /* Parameters for the SVM kernel function */
-    ds::SharedPtr<kernel_function::linear::Batch<dtype>>
-        kernel_ptr(new kernel_function::linear::Batch<dtype>());
-    size_t n_features = Xt->getNumberOfColumns();
-    size_t n_samples = Xt->getNumberOfRows();
-
-    training_algo_ptr->parameter.C = svc_params.C;
-    training_algo_ptr->parameter.kernel = kernel_ptr;
-    training_algo_ptr->parameter.cacheSize = getOptimalCacheSize(n_samples);
-    training_algo_ptr->parameter.accuracyThreshold = svc_params.tol;
-    training_algo_ptr->parameter.tau = svc_params.tau;
-    training_algo_ptr->parameter.maxIterations = svc_params.max_iter;
-    training_algo_ptr->parameter.doShrinking = true;
-
-    ds::SharedPtr<da::classifier::training::Batch> algorithm;
-
-    if (n_classes > 2) {
-
-        if (verbose) {
-            std::clog << "@ Using DAAL multi_class_classifier training"
-                << std::endl;
-        }
-
-        ds::SharedPtr<dam::training::Batch<dtype>>
-            mc_algorithm(new dam::training::Batch<dtype>(n_classes));
-        mc_algorithm->parameter.training = training_algo_ptr;
-        mc_algorithm->parameter.maxIterations = svc_params.max_iter;
-        mc_algorithm->parameter.accuracyThreshold = svc_params.tol;
-
-        algorithm = mc_algorithm;
-
-    } else {
-
-        algorithm = training_algo_ptr;
-
-    }
- 
-    /* Pass a training data set and dependent values to the algorithm */
-    algorithm->getInput()->set(da::classifier::training::data, Xt);
-    algorithm->getInput()->set(da::classifier::training::labels, Yt);
-
-    if (verbose) {
-        print_svm_linear_kernel_parameters(svc_params);
-    }
-    /* Build the multi-class SVM model */
-    algorithm->compute();
-
-    return algorithm->getResult();
-}
-
-
-template <typename dtype = double>
-dm::NumericTablePtr svm_predict(
-    svm_linear_kernel_parameters svc_params,
-    da::classifier::training::ResultPtr trainingResult,
-    dm::NumericTablePtr X_nt,
-    int n_classes,
-    bool verbose) 
-{
-
-
-    ds::SharedPtr<kernel_function::linear::Batch<dtype>>
-        kernel_ptr(new kernel_function::linear::Batch<dtype>());
-
-    ds::SharedPtr<svm::prediction::Batch<dtype>>
-        two_class_pred_batch_algo_ptr(new svm::prediction::Batch<dtype>());
-    two_class_pred_batch_algo_ptr->parameter.kernel = kernel_ptr;
-
-    ds::SharedPtr<da::classifier::prediction::Batch> algorithm;
-
-    // Was our result from a multi_class_classifier?
-    auto mc_training_result
-        = ds::dynamicPointerCast<dam::training::Result>(trainingResult);
-    if (mc_training_result) {
-
-        if (verbose) {
-            std::clog << "@ Using DAAL multi_class_classifier prediction"
-                << std::endl;
-        }
-
-        ds::SharedPtr<dam::prediction::Batch<dtype, dam::prediction::voteBased>>
-            mc_algorithm(new dam::prediction::Batch<dtype, dam::prediction::voteBased>(n_classes));
-
-        mc_algorithm->parameter.prediction = two_class_pred_batch_algo_ptr;
-
-        algorithm = mc_algorithm;
-
-    } else {
-        algorithm = two_class_pred_batch_algo_ptr;
-    }
-
-
-    algorithm->getInput()->set(da::classifier::prediction::data, X_nt);
-    algorithm->getInput()->set(da::classifier::prediction::model,
-            trainingResult->get(da::classifier::training::model));
-
-    algorithm->compute();
-
-    return algorithm->getResult()->get(da::classifier::prediction::prediction);
-}
-
 std::vector<int >
 lexicographic_permutation(int n_cl)
 {
@@ -324,10 +210,142 @@ construct_dual_coefs(
     return num_unique_sv;
 }
 
-void
-bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
-      int fit_samples, int fit_repetitions, int predict_samples, int predict_repetitions, bool verbose, bool header)
-{
+template <typename dtype = double>
+std::tuple<da::classifier::training::ResultPtr, unsigned long>
+svm_fit(svm_linear_kernel_parameters svc_params, dm::NumericTablePtr Xt,
+        dm::NumericTablePtr Yt, int n_classes, bool verbose) {
+
+    ds::SharedPtr<svm::training::Batch<dtype>>
+        training_algo_ptr(new svm::training::Batch<dtype>());
+
+    /* Parameters for the SVM kernel function */
+    ds::SharedPtr<kernel_function::linear::Batch<dtype>>
+        kernel_ptr(new kernel_function::linear::Batch<dtype>());
+    size_t n_features = Xt->getNumberOfColumns();
+    size_t n_samples = Xt->getNumberOfRows();
+
+    training_algo_ptr->parameter.C = svc_params.C;
+    training_algo_ptr->parameter.kernel = kernel_ptr;
+    training_algo_ptr->parameter.cacheSize = getOptimalCacheSize(n_samples);
+    training_algo_ptr->parameter.accuracyThreshold = svc_params.tol;
+    training_algo_ptr->parameter.tau = svc_params.tau;
+    training_algo_ptr->parameter.maxIterations = svc_params.max_iter;
+    training_algo_ptr->parameter.doShrinking = true;
+
+    ds::SharedPtr<da::classifier::training::Batch> algorithm;
+
+    if (n_classes > 2) {
+
+        if (verbose) {
+            std::clog << "@ Using DAAL multi_class_classifier training"
+                << std::endl;
+        }
+
+        ds::SharedPtr<dam::training::Batch<dtype>>
+            mc_algorithm(new dam::training::Batch<dtype>(n_classes));
+        mc_algorithm->parameter.training = training_algo_ptr;
+        mc_algorithm->parameter.maxIterations = svc_params.max_iter;
+        mc_algorithm->parameter.accuracyThreshold = svc_params.tol;
+
+        algorithm = mc_algorithm;
+
+    } else {
+        algorithm = training_algo_ptr;
+    }
+ 
+    /* Pass a training data set and dependent values to the algorithm */
+    algorithm->getInput()->set(da::classifier::training::data, Xt);
+    algorithm->getInput()->set(da::classifier::training::labels, Yt);
+
+    if (verbose) {
+        print_svm_linear_kernel_parameters(svc_params);
+    }
+
+    /* Build the SVM model */
+    algorithm->compute();
+    auto training_result = algorithm->getResult();
+
+    // for multi_class: allocates memory for dual coefficients
+    double *dual_coefs_ptr = NULL;
+    size_t sv_len;
+    auto mc_training_result
+        = ds::dynamicPointerCast<dam::training::Result>(training_result);
+    if (mc_training_result) {
+        sv_len = construct_dual_coefs(mc_training_result, n_classes,
+                                      Yt, n_samples, dual_coefs_ptr,
+                                      verbose);
+    } else {
+        auto svm_training_result
+            = ds::dynamicPointerCast<da::svm::training::Result>(training_result);
+        assert(svm_training_result);
+        auto svm_model
+            = ds::dynamicPointerCast<svm::Model>(svm_training_result->get(classifier::training::model));
+        assert(svm_model);
+        auto sv_idx = svm_model->getSupportIndices();
+        sv_len = sv_idx->getNumberOfRows();
+    }
+
+    if (dual_coefs_ptr) {
+        delete[] dual_coefs_ptr;
+        dual_coefs_ptr = NULL;
+    }
+
+    return std::make_tuple(training_result, sv_len);
+}
+
+
+template <typename dtype = double>
+dm::NumericTablePtr svm_predict(svm_linear_kernel_parameters svc_params,
+                                da::classifier::training::ResultPtr result,
+                                dm::NumericTablePtr X_nt, int n_classes,
+                                bool verbose) {
+
+    ds::SharedPtr<kernel_function::linear::Batch<dtype>>
+        kernel_ptr(new kernel_function::linear::Batch<dtype>());
+
+    ds::SharedPtr<svm::prediction::Batch<dtype>>
+        two_class_pred_batch_algo_ptr(new svm::prediction::Batch<dtype>());
+    two_class_pred_batch_algo_ptr->parameter.kernel = kernel_ptr;
+
+    ds::SharedPtr<da::classifier::prediction::Batch> algorithm;
+
+    // Was our result from a multi_class_classifier?
+    auto mc_training_result
+        = ds::dynamicPointerCast<dam::training::Result>(result);
+    if (mc_training_result) {
+
+        if (verbose) {
+            std::clog << "@ Using DAAL multi_class_classifier prediction"
+                << std::endl;
+        }
+
+        ds::SharedPtr<dam::prediction::Batch<dtype, dam::prediction::voteBased>>
+            mc_algorithm(new dam::prediction::Batch<dtype, dam::prediction::voteBased>(n_classes));
+
+        mc_algorithm->parameter.prediction = two_class_pred_batch_algo_ptr;
+
+        algorithm = mc_algorithm;
+
+    } else {
+        algorithm = two_class_pred_batch_algo_ptr;
+    }
+
+
+    algorithm->getInput()->set(da::classifier::prediction::data, X_nt);
+    algorithm->getInput()->set(da::classifier::prediction::model,
+                               result->get(da::classifier::training::model));
+
+    algorithm->compute();
+
+    return algorithm->getResult()->get(da::classifier::prediction::prediction);
+}
+
+
+void bench(size_t threadNum, const std::string& X_fname,
+           const std::string& y_fname, int fit_samples, int fit_repetitions,
+           int predict_samples, int predict_repetitions, bool verbose,
+           bool header) {
+
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
         daal::services::Environment::getInstance()->setNumberOfThreads(threadNum);
@@ -379,41 +397,20 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
     svm_problem.max_iter = 2000;
 
     size_t sv_len = 0;
-    double *dual_coefs_ptr = NULL;
-    std::vector<std::chrono::duration<double> > fit_times;
+    std::vector<std::chrono::duration<double>> fit_times;
     da::classifier::training::ResultPtr training_result;
     for (int i = 0; i < fit_samples; i++) {
         auto start = std::chrono::system_clock::now();
 
         for (int j = 0; j < fit_repetitions; j++) {
-            training_result = svm_fit(svm_problem, X_nt, Y_nt, n_classes, verbose && (!i) && (!j));
-
-            // for multi_class: allocates memory for dual coefficients
-            auto mc_training_result
-                = ds::dynamicPointerCast<dam::training::Result>(training_result);
-            if (mc_training_result) {
-                sv_len = construct_dual_coefs(mc_training_result, n_classes,
-                                              Y_nt, n_rows, dual_coefs_ptr,
-                                              verbose && (!i) && (!j));
-            } else {
-                auto svm_training_result
-                    = ds::dynamicPointerCast<da::svm::training::Result>(training_result);
-                assert(svm_training_result);
-                auto svm_model
-                    = ds::dynamicPointerCast<svm::Model>(svm_training_result->get(classifier::training::model));
-                assert(svm_model);
-                auto sv_idx = svm_model->getSupportIndices();
-                sv_len = sv_idx->getNumberOfRows();
-            }
+            std::tie(training_result, sv_len)
+                = svm_fit(svm_problem, X_nt, Y_nt, n_classes,
+                          verbose && (!i) && (!j));
         }
 
             auto finish = std::chrono::system_clock::now();
             fit_times.push_back(finish - start);
 
-        if (dual_coefs_ptr) {
-            delete[] dual_coefs_ptr;
-            dual_coefs_ptr = NULL;
-        }
     }
 
     std::vector<std::chrono::duration<double> > predict_times;
@@ -459,22 +456,32 @@ bench(size_t threadNum, const std::string& X_fname, const std::string& y_fname,
 
 int main(int argc, char **argv) {
 
-    CLI::App app("Native benchmark code for Intel(R) DAAL multi-class SVM classifier");
+    CLI::App app("Native benchmark code for Intel(R) DAAL SVM classifier");
 
     std::string xfn = "./data/mX.csv";
-    app.add_option("--fileX", xfn, "Feature file name")->required()->check(CLI::ExistingFile);
+    app.add_option("--fileX", xfn, "Feature file name")
+        ->required()->check(CLI::ExistingFile);
 
     std::string yfn = "./data/mY.csv";
-    app.add_option("--fileY", yfn, "Labels file name")->required()->check(CLI::ExistingFile);
+    app.add_option("--fileY", yfn, "Labels file name")
+        ->required()->check(CLI::ExistingFile);
 
-    int fit_samples = 3, fit_repetitions = 1, predict_samples = 5, predict_repetitions = 1;
-    app.add_option("--fit-samples", fit_samples, "Number of samples to collect for time of execution of repeated fit calls", true);
-    app.add_option("--fit-repetitions", fit_repetitions, "Number of repeated fit calls to time", true);
-    app.add_option("--predict-samples", predict_samples, "Number of samples to collect for time of execution of repeated predict calls", true);
-    app.add_option("--predict-repetitions", predict_repetitions, "Number of repeated predict calls to time", true);
+    int fit_samples = 3, fit_repetitions = 1,
+        predict_samples = 5, predict_repetitions = 1;
+    app.add_option("--fit-samples", fit_samples,
+                   "Number of samples to collect for time "
+                   "of execution of repeated fit calls", true);
+    app.add_option("--fit-repetitions", fit_repetitions,
+                   "Number of repeated fit calls to time", true);
+    app.add_option("--predict-samples", predict_samples,
+                   "Number of samples to collect for time of "
+                   "execution of repeated predict calls", true);
+    app.add_option("--predict-repetitions", predict_repetitions,
+                   "Number of repeated predict calls to time", true);
 
     int num_threads = 0;
-    app.add_option("-n,--num-threads", num_threads, "Number of threads for DAAL to use", true);
+    app.add_option("-n,--num-threads", num_threads,
+                   "Number of threads for DAAL to use", true);
 
     bool verbose = false;
     app.add_flag("-v,--verbose", verbose, "Whether to be verbose or terse");
@@ -491,15 +498,16 @@ int main(int argc, char **argv) {
     assert(predict_repetitions > 0);
 
     if (verbose) {
-	std::clog << 
-	    "@ {FIT_SAMPLES: "         << fit_samples <<
-	    ", FIT_REPETITIONS: "       << fit_repetitions <<
-	    ", PREDICT_SAMPLES: "     << predict_samples <<
-	    ", PREDICT_REPETITIONS: " << predict_repetitions << 
-	    "}" << std::endl;
+        std::clog << 
+            "@ {FIT_SAMPLES: "         << fit_samples <<
+            ", FIT_REPETITIONS: "       << fit_repetitions <<
+            ", PREDICT_SAMPLES: "     << predict_samples <<
+            ", PREDICT_REPETITIONS: " << predict_repetitions << 
+            "}" << std::endl;
     }
 
-    bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples, predict_repetitions, verbose, header);
+    bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples,
+          predict_repetitions, verbose, header);
 
     return 0;
 }
