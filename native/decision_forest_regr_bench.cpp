@@ -35,7 +35,7 @@ df_regression_fit(
     size_t n_features_per_node,
     size_t max_depth,
     double min_impurity,
-    bool bootsrap,
+    bool bootstrap,
     dm::NumericTablePtr Xt,
     dm::NumericTablePtr Yt,
     bool verbose)
@@ -54,7 +54,8 @@ df_regression_fit(
     df_reg_alg.parameter.featuresPerNode = fpn;
     df_reg_alg.parameter.minObservationsInLeafNode = 1;
     df_reg_alg.parameter.impurityThreshold = min_impurity;
-    df_reg_alg.parameter.bootstrap = bootsrap;
+    df_reg_alg.parameter.bootstrap = bootstrap;
+    df_reg_alg.parameter.memorySavingMode = false;
     df_reg_alg.parameter.engine = da::engines::mt2203::Batch<double>::create(seed);
 
     if (verbose) {
@@ -64,7 +65,7 @@ df_regression_fit(
 	              ", 'max_depth': " << max_depth << 
                       ", 'min_impurity': " << min_impurity <<
                       ", 'seed': " << seed <<
-	              ", 'bootstrap': " << (bootsrap ? "True" : "False") <<
+	              ", 'bootstrap': " << (bootstrap ? "True" : "False") <<
                       "}" <<  std::endl;
     }
 
