@@ -18,7 +18,7 @@ def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,
     fptype = getFPType(X)
 
     features_per_node = X.shape[1]
-    if n_features_per_node > 0 or n_features_per_node <= features_per_node:
+    if n_features_per_node > 0 and n_features_per_node <= features_per_node:
         features_per_node = n_features_per_node
 
     engine = engines_mt2203(seed=seed, fptype=fptype)
