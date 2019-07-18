@@ -27,8 +27,8 @@ struct svm_params {
     double tol;
     double tau;
     int max_iter;
-    char kernel;
     double gamma;
+    std::string kernel;
 };
 
 void print_svm_params(svm_params p) {
@@ -247,7 +247,7 @@ ds::SharedPtr<dak::KernelIface> daal_kernel(char kernel, double gamma) {
 
 template <typename dtype = double>
 std::tuple<da::classifier::training::ResultPtr, unsigned long>
-svm_fit(svm_params svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
+svm_fit(svm_params &svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
         int n_classes, bool verbose) {
 
     ds::SharedPtr<da::svm::training::Batch<dtype>> training_algo_ptr(
@@ -257,7 +257,7 @@ svm_fit(svm_params svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
     size_t n_samples = Xt->getNumberOfRows();
 
     ds::SharedPtr<dak::KernelIface> kernel_ptr =
-        daal_kernel(svc_params.kernel, svc_params.gamma);
+        daal_kernel(svc_params.kernel[0], svc_params.gamma);
 
     training_algo_ptr->parameter.C = svc_params.C;
     training_algo_ptr->parameter.kernel = kernel_ptr;
@@ -329,11 +329,11 @@ svm_fit(svm_params svc_params, dm::NumericTablePtr Xt, dm::NumericTablePtr Yt,
 
 template <typename dtype = double>
 dm::NumericTablePtr
-svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
+svm_predict(svm_params &svc_params, da::classifier::training::ResultPtr result,
             dm::NumericTablePtr X_nt, int n_classes, bool verbose) {
 
     ds::SharedPtr<dak::KernelIface> kernel_ptr =
-        daal_kernel(svc_params.kernel, svc_params.gamma);
+        daal_kernel(svc_params.kernel[0], svc_params.gamma);
     ds::SharedPtr<da::svm::prediction::Batch<dtype>> pred_algo_ptr(
         new da::svm::prediction::Batch<dtype>());
     pred_algo_ptr->parameter.kernel = kernel_ptr;
@@ -374,8 +374,8 @@ svm_predict(svm_params svc_params, da::classifier::training::ResultPtr result,
 
 void bench(size_t threadNum, const std::string &X_fname,
            const std::string &y_fname, int fit_samples, int fit_repetitions,
-           int predict_samples, int predict_repetitions, char kernel,
-           double gamma, bool verbose, bool header) {
+           int predict_samples, int predict_repetitions, svm_params &params,
+           bool verbose, bool header) {
 
     /* Set the maximum number of threads to be used by the library */
     if (threadNum != 0)
@@ -425,16 +425,8 @@ void bench(size_t threadNum, const std::string &X_fname,
         }
     }
 
-    svm_params svm_problem;
-    svm_problem.C = 0.01;
-    svm_problem.tol = 1e-16;
-    svm_problem.tau = 1e-12;
-    svm_problem.max_iter = 2000;
-    svm_problem.kernel = kernel;
-    if (gamma <= 0) {
-        svm_problem.gamma = 1. / (double) n_features;
-    } else {
-        svm_problem.gamma = gamma;
+    if (params.gamma <= 0) {
+        params.gamma = 1. / (double) n_features;
     }
 
     size_t sv_len = 0;
@@ -445,7 +437,7 @@ void bench(size_t threadNum, const std::string &X_fname,
 
         for (int j = 0; j < fit_repetitions; j++) {
             std::tie(training_result, sv_len) = svm_fit(
-                svm_problem, X_nt, Y_nt, n_classes, verbose && (!i) && (!j));
+                params, X_nt, Y_nt, n_classes, verbose && (!i) && (!j));
         }
 
         auto finish = std::chrono::system_clock::now();
@@ -457,7 +449,7 @@ void bench(size_t threadNum, const std::string &X_fname,
     for (int i = 0; i < predict_samples; i++) {
         auto start = std::chrono::system_clock::now();
         for (int j = 0; j < predict_repetitions; j++) {
-            Yp_nt = svm_predict(svm_problem, training_result, X_nt, n_classes,
+            Yp_nt = svm_predict(params, training_result, X_nt, n_classes,
                                 verbose && (!i) && (!j));
         }
         auto finish = std::chrono::system_clock::now();
@@ -526,12 +518,31 @@ int main(int argc, char **argv) {
     app.add_option("-n,--num-threads", num_threads,
                    "Number of threads for DAAL to use", true);
 
-    std::string kernel = "linear";
-    app.add_option("--kernel", kernel, "SVM kernel function")
+    svm_params params;
+    params.kernel = "linear";
+    app.add_option("--kernel", params.kernel, "SVM kernel function")
         ->check(CLI::IsMember({"linear", "rbf"}));
 
-    double gamma = -1.; // will be replaced by 1 / n_features
-    app.add_option("--gamma", gamma, "Kernel coefficient for 'rbf'")
+    params.gamma = -1.; // will be replaced by 1 / n_features
+    app.add_option("--gamma", params.gamma, "Kernel coefficient for 'rbf'")
+        ->check(CLI::PositiveNumber);
+
+    params.C = 0.01;
+    app.add_option("-C,--C", params.C, "SVM slack parameter")
+        ->check(CLI::PositiveNumber);
+
+    params.tol = 1e-16;
+    app.add_option("--tol", params.tol, "Tolerance")
+        ->check(CLI::PositiveNumber);
+
+    params.tau = 1e-12;
+    app.add_option("--tau", params.tau,
+                   "Tau parameter for working set selection scheme")
+        ->check(CLI::PositiveNumber);
+
+    params.max_iter = 2000;
+    app.add_option("--maxiter", params.max_iter,
+                   "Maximum iterations for the iterative solver")
         ->check(CLI::PositiveNumber);
 
     bool verbose = false;
@@ -557,7 +568,7 @@ int main(int argc, char **argv) {
     }
 
     bench(num_threads, xfn, yfn, fit_samples, fit_repetitions, predict_samples,
-          predict_repetitions, kernel[0], gamma, verbose, header);
+          predict_repetitions, params, verbose, header);
 
     return 0;
 }
