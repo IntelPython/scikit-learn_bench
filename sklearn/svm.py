@@ -73,7 +73,7 @@ params.n_classes = len(np.unique(y))
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
           cache_size=params.cache_size_mb, tol=params.tol,
-          shrinking=params.shrinking, gamma='auto')
+          shrinking=params.shrinking, gamma=params.gamma)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
