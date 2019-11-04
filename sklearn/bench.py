@@ -101,8 +101,15 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
                                  f'(we take the min over outer iterations)')
         parser.add_argument(f'--{loop_dash}time-limit', default=10.,
                             type=float,
-                            help=f'Number of outer loop iterations {loop_for}'
-                                 f'(we take the min over outer iterations)')
+                            help=f'Target time to spend to benchmark '
+                                 f'{loop_for}')
+        parser.add_argument(f'--{loop_dash}goal-outer-loops', default=10,
+                            type=int,
+                            dest=f'{loop_dash.replace("-", "_")}goal',
+                            help=f'Number of outer loops to aim {loop_for} '
+                                 f'while automatically picking number of '
+                                 f'inner loops. If zero, do not automatically '
+                                 f'decide number of inner loops.')
 
     params = parser.parse_args()
 
@@ -191,7 +198,7 @@ def prepare_daal(num_threads=-1):
 
 
 def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
-                  goal_outer_loops=10, warmup=True, verbose=True, **kwargs):
+                  goal_outer_loops=10, verbose=False, **kwargs):
     '''
     Time the given function (inner_loops * outer_loops) times, returning the
     min of the inner loop means.
@@ -204,14 +211,13 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
         Maximum number of inner loop iterations to take the mean over.
     outer_loops : int
         Maximum number of outer loop iterations to take the min over.
-    goal_outer_loops : int
-        Number of outer loop iterations to aim for, if using warmup.
     time_limit : double
         Number of seconds to aim for. If accumulated time exceeds time_limit
         in outer loops, exit without running more outer loops. If zero,
         disable time limit.
-    warmup : boolean
-        If True, run warm-up rounds to find optimal number of inner loops.
+    goal_outer_loops : int
+        Number of outer loop iterations to aim for by taking warmup rounds
+        and tuning inner_loops automatically.
     verbose : boolean
         If True, print outer loop timings and miscellaneous information.
 
@@ -230,6 +236,7 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
     total_time = 0.
 
     # Warm-up iterations to determine optimal inner_loops
+    warmup = (goal_outer_loops > 0)
     warmup_time = 0.
     last_warmup = 0.
     if warmup:
@@ -245,7 +252,6 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
 
         inner_loops = max(1, int(time_limit / last_warmup / goal_outer_loops))
         logverbose(f'Optimal inner loops = {inner_loops}', verbose)
-
 
     for i in range(outer_loops):
 
@@ -263,7 +269,6 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
             outer_loops = i + 1
             times = times[:outer_loops]
             break
-
 
     # We take the mean of inner loop times
     times /= inner_loops

@@ -61,12 +61,18 @@ print_header(columns, params)
 # Time fit and predict
 fit_time, _ = time_mean_min(clf.fit, X, y,
                             outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops)
+                            inner_loops=params.fit_inner_loops,
+                            goal_outer_loops=params.fit_goal,
+                            time_limit=params.fit_time_limit,
+                            verbose=params.verbose)
 print_row(columns, params, function='df_clsf.fit', time=fit_time)
 
 predict_time, y_pred = time_mean_min(clf.predict, X,
                                      outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops)
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
 acc = 100 * accuracy_score(y_pred, y)
 print_row(columns, params, function='df_clsf.predict', time=predict_time,
           accuracy=acc)
