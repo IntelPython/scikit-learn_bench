@@ -48,6 +48,7 @@ print_header(columns, params)
 fit_time, res = time_mean_min(test_fit, X, y,
                               outer_loops=params.fit_outer_loops,
                               inner_loops=params.fit_inner_loops,
+                              goal_outer_loops=params.fit_goal,
                               time_limit=params.fit_time_limit,
                               verbose=params.verbose)
 print_row(columns, params, function='Linear.fit', time=fit_time)
@@ -56,6 +57,7 @@ print_row(columns, params, function='Linear.fit', time=fit_time)
 predict_time, yp = time_mean_min(test_predict, Xp, res.model,
                                  outer_loops=params.predict_outer_loops,
                                  inner_loops=params.predict_inner_loops,
+                                 goal_outer_loops=params.predict_goal,
                                  time_limit=params.predict_time_limit,
                                  verbose=params.verbose)
 print_row(columns, params, function='Linear.predict', time=predict_time)

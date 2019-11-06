@@ -344,14 +344,20 @@ def main():
     # Time fit and predict
     fit_time, res = time_mean_min(test_fit, X_train, y_train, params,
                                   outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops)
+                                  inner_loops=params.fit_inner_loops,
+                                  goal_outer_loops=params.fit_goal,
+                                  time_limit=params.fit_time_limit,
+                                  verbose=params.verbose)
     res, support, indices, n_support = res
     params.sv_len = support.shape[0]
     print_row(columns, params, function='SVM.fit', time=fit_time)
 
     predict_time, yp = time_mean_min(test_predict, X_train, res, params,
                                      outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops)
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
     print_row(columns, params, function='SVM.predict', time=predict_time,
               accuracy=f'{100*accuracy_score(yp, y_train):.3}')
 

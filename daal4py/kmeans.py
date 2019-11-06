@@ -63,11 +63,17 @@ print_header(columns, params)
 # Time fit
 fit_time, _ = time_mean_min(test_fit, X, X_init,
                             outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops)
+                            inner_loops=params.fit_inner_loops,
+                            goal_outer_loops=params.fit_goal,
+                            time_limit=params.fit_time_limit,
+                            verbose=params.verbose)
 print_row(columns, params, function='KMeans.fit', time=fit_time)
 
 # Time predict
 predict_time, _ = time_mean_min(test_predict, X, X_init,
                                 outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops)
+                                inner_loops=params.predict_inner_loops,
+                                goal_outer_loops=params.predict_goal,
+                                time_limit=params.predict_time_limit,
+                                verbose=params.verbose)
 print_row(columns, params, function='KMeans.predict', time=predict_time)
