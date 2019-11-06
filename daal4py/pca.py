@@ -133,8 +133,8 @@ print_row(columns, params, function='PCA.fit', time=fit_time)
 transform_time, tr = time_mean_min(test_transform, Xp, *res[:3],
                                    outer_loops=params.transform_outer_loops,
                                    inner_loops=params.transform_inner_loops,
-                                   goal_outer_loops=params.predict_goal,
-                                   time_limit=params.predict_time_limit,
+                                   goal_outer_loops=params.transform_goal,
+                                   time_limit=params.transform_time_limit,
                                    verbose=params.verbose)
 print_row(columns, params, function='PCA.transform', time=transform_time)
 

@@ -242,7 +242,7 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
     if warmup:
         for _ in range(inner_loops):
             t0 = timeit.default_timer()
-            func(*args, **kwargs)
+            val = func(*args, **kwargs)
             t1 = timeit.default_timer()
 
             warmup_time += t1 - t0
@@ -253,26 +253,38 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
         inner_loops = max(1, int(time_limit / last_warmup / goal_outer_loops))
         logverbose(f'Optimal inner loops = {inner_loops}', verbose)
 
-    for i in range(outer_loops):
+    if last_warmup > time_limit:
+        # If we took too much time in warm-up, just use those numbers
+        logverbose(f'A single warmup iteration took {last_warmup:0.2f}s '
+                   f'> {time_limit:0.2f}s - not performing any more timings',
+                   verbose)
+        outer_loops = 1
+        inner_loops = 1
+        times[0] = last_warmup
+        times = times[:1]
+    else:
+        # Otherwise, actually take the timing
+        for i in range(outer_loops):
 
-        t0 = timeit.default_timer()
-        for _ in range(inner_loops):
-            val = func(*args, **kwargs)
-        t1 = timeit.default_timer()
+            t0 = timeit.default_timer()
+            for _ in range(inner_loops):
+                val = func(*args, **kwargs)
+            t1 = timeit.default_timer()
 
-        times[i] = t1 - t0
-        total_time += times[i]
+            times[i] = t1 - t0
+            total_time += times[i]
 
-        if time_limit > 0 and total_time > time_limit:
-            logverbose(f'TT={total_time:0.2f}s exceeding {time_limit}s '
-                       f'after iteration {i+1}', verbose)
-            outer_loops = i + 1
-            times = times[:outer_loops]
-            break
+            if time_limit > 0 and total_time > time_limit:
+                logverbose(f'TT={total_time:0.2f}s exceeding {time_limit}s '
+                           f'after iteration {i+1}', verbose)
+                outer_loops = i + 1
+                times = times[:outer_loops]
+                break
 
     # We take the mean of inner loop times
     times /= inner_loops
-    logverbose(f'Mean times [s]\n{times}', verbose)
+    logverbose('Mean times [s]', verbose)
+    logverbose(f'{times}', verbose)
 
     # We take the min of outer loop times
     return np.min(times), val
