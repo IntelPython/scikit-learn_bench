@@ -13,6 +13,40 @@ namespace dm = daal::data_management;
 namespace ds = daal::services;
 namespace da = daal::algorithms;
 
+struct timing_options {
+    int inner_loops; // Maximum number of inner loops
+    int outer_loops; // Maximum number of outer loops
+    double time_limit; // Time limit goal
+    int goal_outer_loops; // Number of outer loops to aim for
+};
+
+
+void add_timing_args(CLI::App &app, const std::string &loop,
+                     struct timing_options &opts) {
+
+    std::string loop_dash;
+
+    if (loop == "") {
+        loop_dash = "";
+    } else {
+        loop_dash = loop + "-";
+    }
+
+    app.add_option("--" + loop_dash + "inner-loops", opts.inner_loops,
+                   "Maximum inner loop iterations to run " + loop +
+                   " (we take the mean over inner loop iterations)");
+    app.add_option("--" + loop_dash + "outer-loops", opts.outer_loops,
+                   "Maximum outer loop iterations to run " + loop +
+                   " (we take the min over outer loop iterations)");
+    app.add_option("--" + loop_dash + "time-limit", opts.time_limit,
+                   "Target time to spend to benchmark " + loop);
+    app.add_option("--goal-" + loop_dash + "outer-loops", opts.goal_outer_loops,
+                   "Number of outer loops to aim for " + loop +
+                   " while automatically picking number of inner loops. If "
+                   "zero, do not automatically decide number of inner loops.");
+}
+
+
 /*
  * Parse a size argument as given to the command-line options.
  * This consists of each element of the size, delimited by
@@ -92,16 +126,89 @@ int set_threads(int num_threads) {
  */
 template <typename T>
 std::pair<std::vector<std::chrono::duration<double>>, T>
-time_vec(std::function<T()> func, int reps) {
+time_vec(std::function<T()> func, int inner_loops, int outer_loops,
+         double time_limit, int goal_outer_loops, bool verbose) {
 
     std::vector<std::chrono::duration<double>> vec;
+    double total_time = 0.;
+
     T result;
-    for (int i = 0; i < reps; i++) {
-        auto t0 = std::chrono::high_resolution_clock::now();
-        result = func();
-        auto t1 = std::chrono::high_resolution_clock::now();
-        vec.push_back(t1 - t0);
+
+    // Execute warm-up iterations to determine optimal inner_loops
+    bool warmup = (goal_outer_loops > 0);
+    double warmup_time = 0.;
+    std::chrono::duration<double> last_warmup;
+
+    if (warmup) {
+        for (int i = 0; i < inner_loops; i++) {
+            auto t0 = std::chrono::high_resolution_clock::now();
+            result = func();
+            auto t1 = std::chrono::high_resolution_clock::now();
+
+            last_warmup = t1 - t0;
+            warmup_time += last_warmup.count();
+            if (warmup_time > time_limit / 10) {
+                break;
+            }
+        }
+
+        inner_loops = time_limit / last_warmup.count() / goal_outer_loops;
+        if (inner_loops < 1) {
+            inner_loops = 1;
+        }
+
+        if (verbose) {
+            std::cout << "@ Optimal inner loops = " << inner_loops << std::endl;
+        }
     }
+
+    if (last_warmup.count() > time_limit) {
+        // If we took too much time in warm-up, just use those numbers
+        if (verbose) {
+            std::cout << "@ A single warmup iteration took "
+                      << last_warmup.count()
+                      << "s > " << time_limit << "s - not performing any "
+                      << "more timings" << std::endl;
+        }
+
+        outer_loops = 1;
+        inner_loops = 1;
+        vec.push_back(last_warmup);
+    } else {
+        // Otherwise, actually take the timing
+        for (int i = 0; i < outer_loops; i++) {
+
+            std::chrono::duration<double> delta;
+            auto t0 = std::chrono::high_resolution_clock::now();
+            for (int j = 0; j < inner_loops; j++) {
+                result = func();
+            }
+            auto t1 = std::chrono::high_resolution_clock::now();
+
+            delta = t1 - t0;
+
+            vec.push_back(delta / inner_loops);
+            total_time += delta.count();
+
+            if (time_limit > 0 && total_time > time_limit) {
+                if (verbose) {
+                    std::cout << "@ TT=" << total_time << "s exceeding "
+                              << time_limit << "s after iteration "
+                              << i + 1 << std::endl;
+                }
+                break;
+            }
+        }
+    }
+
+    if (verbose) {
+        std::cout << "@ Mean times [s]" << std::endl;
+        for (int i = 0; i < vec.size(); i++) {
+            std::cout << "@ times[" << i << "] = " << vec[i].count()
+                      << std::endl;
+        }
+    }
+
     return std::make_pair(vec, result);
 
 }
@@ -112,13 +219,30 @@ time_vec(std::function<T()> func, int reps) {
  * returning a pair of the minimum duration and the LAST result.
  */
 template <typename T>
-std::pair<double, T> time_min(std::function<T()> func, int reps) {
+std::pair<double, T>
+time_min(std::function<T()> func, int inner_loops, int outer_loops,
+         double time_limit, int goal_outer_loops, bool verbose) {
 
-    auto pair = time_vec(func, reps);
+    auto pair = time_vec(func, inner_loops, outer_loops, time_limit,
+                         goal_outer_loops, verbose);
     auto times = pair.first;
     double time = std::min_element(times.begin(), times.end())->count();
 
     return std::make_pair(time, pair.second);
+
+}
+
+
+/*
+ * Time the given function for the specified number of repetitions,
+ * returning a pair of the minimum duration and the LAST result.
+ */
+template <typename T>
+std::pair<double, T>
+time_min(std::function<T()> func, struct timing_options &o, bool verbose) {
+
+    return time_min(func, o.inner_loops, o.outer_loops, o.time_limit,
+                    o.goal_outer_loops, verbose);
 
 }
 
@@ -293,7 +417,7 @@ void add_common_args(CLI::App &app,
     app.add_flag("--header", header, "Output CSV header");
 
     verbose = false;
-    app.add_flag("--verbose", header, "Output extra debug messages");
+    app.add_flag("--verbose", verbose, "Output extra debug messages");
 
 }
 
