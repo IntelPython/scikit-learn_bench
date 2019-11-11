@@ -321,21 +321,11 @@ int main(int argc, char *argv[]) {
     std::string stringSize = "1000000x50";
     app.add_option("-s,--size", stringSize, "Problem size");
 
-    int fit_samples = 1;
-    app.add_option("--fit-samples", fit_samples,
-                   "Number of samples to report (fit)");
+    struct timing_options fit_opts = {100, 100, 10., 10};
+    add_timing_args(app, "fit", fit_opts);
 
-    int fit_reps = 10;
-    app.add_option("--fit-reps", fit_reps,
-                   "Number of repetitions in each sample (fit)");
-
-    int transform_samples = 1;
-    app.add_option("--transform-samples", transform_samples,
-                   "Number of samples to report (transform)");
-
-    int transform_reps = 10;
-    app.add_option("--transform-reps", transform_samples,
-                   "Number of repetitions in each sample (transform)");
+    struct timing_options transform_opts = {10, 100, 10., 10};
+    add_timing_args(app, "transform", transform_opts);
 
     int n_components = -1;
     app.add_option("--n-components", n_components,
@@ -382,33 +372,29 @@ int main(int argc, char *argv[]) {
     double time;
     da::pca::ResultPtr pca_result;
     dm::NumericTablePtr U, S, V;
-    for (int i = 0; i < fit_samples; i++) {
 
-        // PCA fit also *might* return U, S, V...
-        std::tuple<da::pca::ResultPtr, dm::NumericTablePtr,
-                   dm::NumericTablePtr, dm::NumericTablePtr> fit_results;
+    // PCA fit also *might* return U, S, V...
+    std::tuple<da::pca::ResultPtr, dm::NumericTablePtr,
+               dm::NumericTablePtr, dm::NumericTablePtr> fit_results;
 
-        // Get time and PCA results, including U, S, V.
-        // N.B.: we use DAAL solver here
-        std::tie(time, fit_results)
-            = time_min<std::tuple<da::pca::ResultPtr, dm::NumericTablePtr,
-                       dm::NumericTablePtr, dm::NumericTablePtr>> ([=] {
-                    return pca_fit_test(X, size[0], size[1], svd_solver[0], n_components);
-                }, fit_reps);
+    // Get time and PCA results, including U, S, V.
+    // N.B.: we use DAAL solver here
+    std::tie(time, fit_results)
+        = time_min<std::tuple<da::pca::ResultPtr, dm::NumericTablePtr,
+                   dm::NumericTablePtr, dm::NumericTablePtr>> ([=] {
+                return pca_fit_test(X, size[0], size[1], svd_solver[0], n_components);
+            }, fit_opts, verbose);
 
-        // Extract PCA results and U, S, V from tuple.
-        std::tie(pca_result, U, S, V) = fit_results;
-        std::cout << meta_info << "PCA.fit," << time << std::endl;
-    }
+    // Extract PCA results and U, S, V from tuple.
+    std::tie(pca_result, U, S, V) = fit_results;
+    std::cout << meta_info << "PCA.fit," << time << std::endl;
 
     da::pca::transform::ResultPtr transform_result;
-    for (int i = 0; i < transform_samples; i++) {
-        std::tie(time, transform_result)
-            = time_min<da::pca::transform::ResultPtr> ([=] {
-                    return pca_transform_test(pca_result, Xp, size[0], size[1], n_components);
-                }, transform_reps);
-        std::cout << meta_info << "PCA.transform," << time << std::endl;
-    }
+    std::tie(time, transform_result)
+        = time_min<da::pca::transform::ResultPtr> ([=] {
+                return pca_transform_test(pca_result, Xp, size[0], size[1], n_components);
+            }, transform_opts, verbose);
+    std::cout << meta_info << "PCA.transform," << time << std::endl;
 
     if (write_results) {
         write_table<double>(make_table(X, size[0], size[1]), "<f8", "pca_X.npy");

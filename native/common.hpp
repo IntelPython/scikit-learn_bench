@@ -417,7 +417,7 @@ void add_common_args(CLI::App &app,
     app.add_flag("--header", header, "Output CSV header");
 
     verbose = false;
-    app.add_flag("--verbose", verbose, "Output extra debug messages");
+    app.add_flag("-v,--verbose", verbose, "Output extra debug messages");
 
 }
 
