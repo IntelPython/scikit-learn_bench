@@ -108,73 +108,6 @@ logistic_regression_predict(
     return Y_pred_t;
 }
 
-size_t
-count_same_labels(
-    dm::NumericTablePtr Y_nt,
-    dm::NumericTablePtr Yp_nt,
-    size_t n_rows) 
-{
-    size_t equal_counter = 0;
-    dm::BlockDescriptor<double> blockY;
-    dm::BlockDescriptor<double> blockYp;
-    Yp_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockYp);
-    Y_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockY);
-    double *Y_data_ptr = blockY.getBlockPtr();
-    double *Yp_data_ptr = blockYp.getBlockPtr();
-
-    for(size_t i = 0; i < n_rows; i++) {
-	equal_counter += (fabs(Y_data_ptr[i] - Yp_data_ptr[i]) < 0.5) ? 1 : 0;
-    }
-    Yp_nt->releaseBlockOfRows(blockYp);
-    Y_nt->releaseBlockOfRows(blockY);
-
-    return equal_counter;
-}
-
-int
-find_nClasses(dm::NumericTablePtr Y_nt)
-{
-    /* compute min and max labels with DAAL */
-    da::low_order_moments::Batch<double> algorithm;
-    algorithm.input.set(da::low_order_moments::data, Y_nt);
-    algorithm.compute();
-    da::low_order_moments::ResultPtr res = algorithm.getResult();
-    dm::NumericTablePtr min_nt = res->get(da::low_order_moments::minimum);
-    dm::NumericTablePtr max_nt = res->get(da::low_order_moments::maximum);
-    int min, max;
-    dm::BlockDescriptor<> block;
-    min_nt->getBlockOfRows(0, 1, dm::readOnly, block);
-    min = block.getBlockPtr()[0];
-    max_nt->getBlockOfRows(0, 1, dm::readOnly, block);
-    max = block.getBlockPtr()[0];
-    return 1 + max - min;
-}
-
-void
-print_numeric_table(dm::NumericTablePtr X_nt, std::string label)
-{
-    size_t n_cols = X_nt->getNumberOfColumns();
-    size_t n_rows = X_nt->getNumberOfRows();
-
-    dm::BlockDescriptor<double> blockX;
-    X_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockX);
-
-    std::streamsize prec = std::cout.precision();
-
-    double *x = blockX.getBlockPtr();
-    std::cout << "@ " << label << ":" << std::endl;
-    std::cout << std::setprecision(18) << std::scientific;
-    for (size_t i_outer=0; i_outer < n_rows; i_outer++) {
-	std::cout << "@ ";
-	for(size_t i_inner=0; i_inner < n_cols; i_inner++) {
-	    std::cout << x[i_inner + i_outer * n_cols] << ", ";
-	}
-	std::cout << std::setprecision(prec) << std::defaultfloat << std::endl;
-    }
-
-    X_nt->releaseBlockOfRows(blockX);
-}
-
 int main(int argc, char** argv) {
 
     CLI::App app("Native benchmark code for Intel(R) DAAL logistic regression classifier");
@@ -274,7 +207,7 @@ int main(int argc, char** argv) {
     // Actually time benchmarks
 
     double time;
-    bool verbose_fit = true;
+    bool verbose_fit = verbose;
     dl::training::ResultPtr training_result;
     std::tie(time, training_result) = time_min<dl::training::ResultPtr> ([&] {
             auto r = logistic_regression_fit(n_classes, fit_intercept, C,

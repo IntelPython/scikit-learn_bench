@@ -488,7 +488,7 @@ int main(int argc, char **argv) {
     size_t cache_size_mb = get_optimal_cache_size(n_rows) / 1048576;
     // Actual benchmark timing here:
 
-    bool verbose_fit = true;
+    bool verbose_fit = verbose;
     size_t sv_len = 0;
     double time;
     da::classifier::training::ResultPtr training_result;

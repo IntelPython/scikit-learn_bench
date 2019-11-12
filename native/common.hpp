@@ -396,6 +396,37 @@ double *gen_random(size_t n) {
 }
 
 
+/*
+ * Print the given numeric table (for diagnostic purposes)
+ */
+void print_numeric_table(dm::NumericTablePtr X_nt, std::string label) {
+
+    size_t n_cols = X_nt->getNumberOfColumns();
+    size_t n_rows = X_nt->getNumberOfRows();
+
+    dm::BlockDescriptor<double> blockX;
+    X_nt->getBlockOfRows(0, n_rows, dm::readOnly, blockX);
+
+    std::streamsize prec = std::cout.precision();
+
+    double *x = blockX.getBlockPtr();
+    std::cout << "@ " << label << " (" << n_rows << 'x' << n_cols
+        << "):" << std::endl;
+    std::cout << std::setprecision(18) << std::scientific;
+    for (size_t i = 0; i < n_rows; i++) {
+        std::cout << "@ ";
+        for (size_t j = 0; j < n_cols; j++) {
+            std::cout << x[j + i * n_cols] << ", ";
+        }
+        std::cout << std::endl;
+    }
+	std::cout << std::setprecision(prec) << std::defaultfloat;
+
+    X_nt->releaseBlockOfRows(blockX);
+
+}
+
+
 void add_common_args(CLI::App &app,
                      std::string &batch, std::string &arch,
                      std::string &prefix, int &num_threads,
