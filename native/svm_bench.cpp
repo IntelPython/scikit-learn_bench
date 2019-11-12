@@ -392,7 +392,6 @@ int main(int argc, char **argv) {
         ->required()
         ->check(CLI::ExistingFile);
 
-
     struct timing_options fit_opts = {100, 100, 10., 10};
     add_timing_args(app, "fit", fit_opts);
 
