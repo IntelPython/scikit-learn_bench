@@ -38,7 +38,7 @@ DATA_DIR = data/
 DATA_kmeans = data/kmeans_$(KMEANS_SIZE).npy
 
 COMMON_ARGS =	--batch '$(BATCH)' --arch '$(HOST)' \
-		--num-threads '$(NUM_THREADS)' --header -v
+		--num-threads '$(NUM_THREADS)' --header
 
 # Define which benchmarks to run
 NATIVE_BENCHMARKS =	distances ridge linear kmeans svm2 svm5 \
