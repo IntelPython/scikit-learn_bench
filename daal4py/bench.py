@@ -245,8 +245,8 @@ def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,
             val = func(*args, **kwargs)
             t1 = timeit.default_timer()
 
-            warmup_time += t1 - t0
             last_warmup = t1 - t0
+            warmup_time += last_warmup
             if warmup_time > time_limit / 10:
                 break
 
