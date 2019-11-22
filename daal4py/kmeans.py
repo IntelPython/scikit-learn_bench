@@ -14,8 +14,8 @@ parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
 parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
                     type=str, help='Initial clusters')
-parser.add_argument('-t', '--filet', '--fileT', '--tol', required=True,
-                    type=str, help='Absolute threshold')
+parser.add_argument('-t', '--tol', default=0., type=float,
+                    help='Absolute threshold')
 parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
@@ -26,7 +26,6 @@ params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 X = np.load(params.filex)
 X_init = np.load(params.filei)
 X_mult = np.vstack((X,) * params.data_multiplier)
-tol = np.load(params.filet)
 
 params.size = size_str(X.shape)
 params.n_clusters = X_init.shape[0]
@@ -40,7 +39,7 @@ def test_fit(X, X_init):
         nClusters=params.n_clusters,
         maxIterations=params.maxiter,
         assignFlag=True,
-        accuracyThreshold=tol
+        accuracyThreshold=params.tol
     )
     return algorithm.compute(X, X_init)
 

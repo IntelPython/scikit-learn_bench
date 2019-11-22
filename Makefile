@@ -77,8 +77,7 @@ ARGS_NATIVE_pca_full = 	--num-threads "$(NUM_THREADS)" --header \
 ARGS_NATIVE_kmeans = 	--num-threads "$(NUM_THREADS)" --header \
 			--data-multiplier "$(MULTIPLIER)" \
 			--filex data/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-			--filet data/kmeans_$(KMEANS_SIZE).tol.npy 
+			--filei data/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_NATIVE_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy \
 			--num-threads $(SVM_NUM_THREADS) --header
@@ -159,8 +158,7 @@ ARGS_DAAL4PY_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_DAAL4PY_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_DAAL4PY_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
 			--filex data/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/kmeans_$(KMEANS_SIZE).init.npy \
-			--filet data/kmeans_$(KMEANS_SIZE).tol.npy
+			--filei data/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_DAAL4PY_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_DAAL4PY_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \

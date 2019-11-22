@@ -93,15 +93,16 @@ int main(int argc, char *argv[]) {
     struct timing_options predict_opts = {10, 100, 10., 10};
     add_timing_args(app, "predict", predict_opts);
 
-    std::string filex, filei, filet;
+    std::string filex, filei;
     app.add_option("-x,--filex,--fileX", filex,
                    "Feature file name")
         ->required()->check(CLI::ExistingFile);
     app.add_option("-i,--filei,--fileI", filei,
                    "Initial cluster centers file name")
         ->required()->check(CLI::ExistingFile);
-    app.add_option("-t,--filet,--fileT", filet,
-                   "Absolute threshold file name")
+
+    double tol = 0.;
+    app.add_option("-t,--tol", tol, "Absolute threshold")
         ->required()->check(CLI::ExistingFile);
 
     int data_multiplier = 100;
@@ -115,8 +116,7 @@ int main(int argc, char *argv[]) {
     // Load data
     struct npyarr *arrX = load_npy(filex.c_str());
     struct npyarr *arrX_init = load_npy(filei.c_str());
-    struct npyarr *arrX_tol = load_npy(filet.c_str());
-    if (!arrX || !arrX_init || !arrX_tol) {
+    if (!arrX || !arrX_init) {
         std::cerr << "Failed to load input arrays" << std::endl;
         return EXIT_FAILURE;
     }
@@ -130,12 +130,6 @@ int main(int argc, char *argv[]) {
             << arrX_init->shape_len << std::endl;
         return EXIT_FAILURE;
     }
-    if (arrX_tol->shape_len != 0) {
-        std::cerr << "Expected 0 dimensions for X_tol, found "
-            << arrX_tol->shape_len << std::endl;
-        return EXIT_FAILURE;
-    }
-    double tol = ((double *) arrX_tol->data)[0];
 
     // Infer data size from loaded arrays
     std::ostringstream stringSizeStream;
