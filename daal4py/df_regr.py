@@ -99,10 +99,16 @@ if __name__ == '__main__':
                                   n_features_per_node=params.max_features,
                                   max_depth=params.max_depth,
                                   outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops)
+                                  inner_loops=params.fit_inner_loops,
+                                  goal_outer_loops=params.fit_goal,
+                                  time_limit=params.fit_time_limit,
+                                  verbose=params.verbose)
     print_row(columns, params, function='df_regr.fit', time=fit_time)
 
     predict_time, yp = time_mean_min(df_regr_predict, X, res,
                                      outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops)
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
     print_row(columns, params, function='df_regr.predict', time=predict_time)

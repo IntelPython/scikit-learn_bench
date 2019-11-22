@@ -8,12 +8,12 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
-parser.add_argument('-x', '--filex', '--fileX', '--input',
+parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
-parser.add_argument('-i', '--filei', '--fileI', '--init',
+parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
                     type=str, help='Initial clusters')
-# parser.add_argument('-t', '--filet', '--fileT', '--tol',
-#                     type=str, help='Absolute threshold')
+parser.add_argument('-t', '--tol', type=float, default=0.,
+                    help='Absolute threshold')
 parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
@@ -28,7 +28,7 @@ X_mult = np.vstack((X,) * params.data_multiplier)
 n_clusters = X_init.shape[0]
 
 # Create our clustering object
-kmeans = KMeans(n_clusters=n_clusters, n_jobs=params.n_jobs, tol=1e-16,
+kmeans = KMeans(n_clusters=n_clusters, n_jobs=params.n_jobs, tol=params.tol,
                 max_iter=params.maxiter, n_init=1, init=X_init)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
@@ -41,11 +41,17 @@ print_header(columns, params)
 # Time fit
 fit_time, _ = time_mean_min(kmeans.fit, X,
                             outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops)
+                            inner_loops=params.fit_inner_loops,
+                            goal_outer_loops=params.fit_goal,
+                            time_limit=params.fit_time_limit,
+                            verbose=params.verbose)
 print_row(columns, params, function='KMeans.fit', time=fit_time)
 
 # Time predict
 predict_time, _ = time_mean_min(kmeans.predict, X,
                                 outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops)
+                                inner_loops=params.predict_inner_loops,
+                                goal_outer_loops=params.predict_goal,
+                                time_limit=params.predict_time_limit,
+                                verbose=params.verbose)
 print_row(columns, params, function='KMeans.predict', time=predict_time)

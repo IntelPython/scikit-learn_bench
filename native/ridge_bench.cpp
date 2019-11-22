@@ -53,21 +53,11 @@ int main(int argc, char *argv[]) {
     std::string stringSize = "1000000x50";
     app.add_option("-s,--size", stringSize, "Problem size");
 
-    int fit_samples = 1;
-    app.add_option("--fit-samples", fit_samples,
-                   "Number of samples to report (fit)");
+    struct timing_options fit_opts = {100, 100, 10., 10};
+    add_timing_args(app, "fit", fit_opts);
 
-    int fit_reps = 10;
-    app.add_option("--fit-reps", fit_reps,
-                   "Number of repetitions in each sample (fit)");
-
-    int predict_samples = 1;
-    app.add_option("--predict-samples", predict_samples,
-                   "Number of samples to report (predict)");
-
-    int predict_reps = 10;
-    app.add_option("--predict-reps", predict_reps,
-                   "Number of repetitions in each sample (predict)");
+    struct timing_options predict_opts = {10, 100, 10., 10};
+    add_timing_args(app, "predict", predict_opts);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -96,24 +86,16 @@ int main(int argc, char *argv[]) {
 
     double time;
     dar::training::ResultPtr training_result;
-    for (int i = 0; i < fit_samples; i++) {
-        auto pair = time_min<dar::training::ResultPtr> ([=] {
-                    return linear_fit_test(X, y, size[0], size[1]);
-                }, fit_reps);
-        time = pair.first;
-        training_result = pair.second;
-        std::cout << meta_info << "Ridge.fit," << time << std::endl;
-    }
+    std::tie(time, training_result) = time_min<dar::training::ResultPtr> ([=] {
+            return linear_fit_test(X, y, size[0], size[1]);
+        }, fit_opts, verbose);
+    std::cout << meta_info << "Ridge.fit," << time << std::endl;
 
     dm::NumericTablePtr predict_result;
-    for (int i = 0; i < predict_samples; i++) {
-        auto pair = time_min<dm::NumericTablePtr> ([=] {
-                    return linear_predict_test(training_result, Xp, size[0], size[1]);
-                }, predict_reps);
-        time = pair.first;
-        predict_result = pair.second;
-        std::cout << meta_info << "Ridge.predict," << time << std::endl;
-    }
+    std::tie(time, predict_result) = time_min<dm::NumericTablePtr> ([=] {
+            return linear_predict_test(training_result, Xp, size[0], size[1]);
+        }, predict_opts, verbose);
+    std::cout << meta_info << "Ridge.predict," << time << std::endl;
     return 0;
 
 }

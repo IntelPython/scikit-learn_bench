@@ -14,8 +14,8 @@ parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
 parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
                     type=str, help='Initial clusters')
-parser.add_argument('-t', '--filet', '--fileT', '--tol', required=True,
-                    type=str, help='Absolute threshold')
+parser.add_argument('-t', '--tol', default=0., type=float,
+                    help='Absolute threshold')
 parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
@@ -26,7 +26,6 @@ params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 X = np.load(params.filex)
 X_init = np.load(params.filei)
 X_mult = np.vstack((X,) * params.data_multiplier)
-tol = np.load(params.filet)
 
 params.size = size_str(X.shape)
 params.n_clusters = X_init.shape[0]
@@ -40,7 +39,7 @@ def test_fit(X, X_init):
         nClusters=params.n_clusters,
         maxIterations=params.maxiter,
         assignFlag=True,
-        accuracyThreshold=tol
+        accuracyThreshold=params.tol
     )
     return algorithm.compute(X, X_init)
 
@@ -63,11 +62,17 @@ print_header(columns, params)
 # Time fit
 fit_time, _ = time_mean_min(test_fit, X, X_init,
                             outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops)
+                            inner_loops=params.fit_inner_loops,
+                            goal_outer_loops=params.fit_goal,
+                            time_limit=params.fit_time_limit,
+                            verbose=params.verbose)
 print_row(columns, params, function='KMeans.fit', time=fit_time)
 
 # Time predict
 predict_time, _ = time_mean_min(test_predict, X, X_init,
                                 outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops)
+                                inner_loops=params.predict_inner_loops,
+                                goal_outer_loops=params.predict_goal,
+                                time_limit=params.predict_time_limit,
+                                verbose=params.verbose)
 print_row(columns, params, function='KMeans.predict', time=predict_time)

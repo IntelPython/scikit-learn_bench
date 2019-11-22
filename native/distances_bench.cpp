@@ -45,12 +45,8 @@ int main(int argc, char *argv[]) {
     std::string stringSize = "1000x150000";
     app.add_option("-s,--size", stringSize, "Problem size");
 
-    int samples = 1;
-    app.add_option("--samples", samples, "Number of samples to report");
-
-    int reps = 10;
-    app.add_option("-r,--reps", samples, "Number of repetitions in each sample");
-
+    struct timing_options timing_opts = {100, 100, 10., 10};
+    add_timing_args(app, "", timing_opts);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -77,17 +73,15 @@ int main(int argc, char *argv[]) {
     double time;
     dm::NumericTablePtr result;
 
-    for (int i = 0; i < samples; i++) {
-        std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
-                    return correlation_test(X, size[0], size[1]);
-                }, reps);
-        std::cout << meta_info << "Correlation," << time << std::endl;
+    std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
+                return correlation_test(X, size[0], size[1]);
+            }, timing_opts, verbose);
+    std::cout << meta_info << "Correlation," << time << std::endl;
 
-        std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
-                    return cosine_test(X, size[0], size[1]);
-                }, reps);
-        std::cout << meta_info << "Cosine," << time << std::endl;
-    }
+    std::tie(time, result) = time_min<dm::NumericTablePtr> ([=] {
+                return cosine_test(X, size[0], size[1]);
+            }, timing_opts, verbose);
+    std::cout << meta_info << "Cosine," << time << std::endl;
     return 0;
 
 }

@@ -32,5 +32,8 @@ for metric in params.metrics:
 
     time, _ = time_mean_min(test_distances, pairwise_distances, X,
                             outer_loops=params.outer_loops,
-                            inner_loops=params.inner_loops)
+                            inner_loops=params.inner_loops,
+                            goal_outer_loops=params.goal,
+                            time_limit=params.time_limit,
+                            verbose=params.verbose)
     print_row(columns, params, function=metric.capitalize(), time=time)

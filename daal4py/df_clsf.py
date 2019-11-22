@@ -103,16 +103,20 @@ if __name__ == '__main__':
                                   seed=params.seed,
                                   n_features_per_node=params.max_features,
                                   max_depth=params.max_depth,
-                                  verbose=params.verbose,
                                   outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops)
+                                  inner_loops=params.fit_inner_loops,
+                                  goal_outer_loops=params.fit_goal,
+                                  time_limit=params.fit_time_limit,
+                                  verbose=params.verbose)
     print_row(columns, params, function='df_clsf.fit', time=fit_time)
 
     predict_time, yp = time_mean_min(df_clsf_predict, X, res,
                                      params.n_classes,
-                                     verbose=params.verbose,
                                      outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops)
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
     acc = 100 * accuracy_score(yp, y)
     print_row(columns, params, function='df_clsf.predict', time=predict_time,
               accuracy=acc)

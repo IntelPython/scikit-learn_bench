@@ -22,7 +22,7 @@ const size_t max_iters = 100;
 
 da::kmeans::ResultPtr
 kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt,
-                double tol) {
+                double tol, bool verbose) {
 
     dm::NumericTablePtr seeding_centroids = X_init_nt;
 
@@ -48,7 +48,7 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt,
     int actual_iters = niPtr[0];
     nIterationsNumericTable->releaseBlockOfRows(blockNI);
     
-    if(actual_iters != max_iters) {
+    if(actual_iters != max_iters && verbose) {
     std::cout << std::endl << "@ WARNING: Number of actual iterations "
         << actual_iters << " is less than max_iters of "
         << max_iters << " " << std::endl;
@@ -87,32 +87,22 @@ int main(int argc, char *argv[]) {
     bool header, verbose;
     add_common_args(app, batch, arch, prefix, num_threads, header, verbose);
 
-    int fit_samples = 1;
-    app.add_option("--fit-samples", fit_samples,
-                   "Number of samples to report (fit)");
+    struct timing_options fit_opts = {100, 100, 10., 10};
+    add_timing_args(app, "fit", fit_opts);
 
-    int fit_reps = 10;
-    app.add_option("--fit-reps", fit_reps,
-                   "Number of repetitions in each sample (fit)");
+    struct timing_options predict_opts = {10, 100, 10., 10};
+    add_timing_args(app, "predict", predict_opts);
 
-    int predict_samples = 1;
-    app.add_option("--predict-samples", predict_samples,
-                   "Number of samples to report (predict)");
-
-    int predict_reps = 10;
-    app.add_option("--predict-reps", predict_samples,
-                   "Number of repetitions in each sample (predict)");
-
-    std::string filex, filei, filet;
+    std::string filex, filei;
     app.add_option("-x,--filex,--fileX", filex,
                    "Feature file name")
         ->required()->check(CLI::ExistingFile);
     app.add_option("-i,--filei,--fileI", filei,
                    "Initial cluster centers file name")
         ->required()->check(CLI::ExistingFile);
-    app.add_option("-t,--filet,--fileT", filet,
-                   "Absolute threshold file name")
-        ->required()->check(CLI::ExistingFile);
+
+    double tol = 0.;
+    app.add_option("-t,--tol", tol, "Absolute threshold");
 
     int data_multiplier = 100;
     app.add_option("-m,--data-multiplier", data_multiplier, "Data multiplier");
@@ -125,8 +115,7 @@ int main(int argc, char *argv[]) {
     // Load data
     struct npyarr *arrX = load_npy(filex.c_str());
     struct npyarr *arrX_init = load_npy(filei.c_str());
-    struct npyarr *arrX_tol = load_npy(filet.c_str());
-    if (!arrX || !arrX_init || !arrX_tol) {
+    if (!arrX || !arrX_init) {
         std::cerr << "Failed to load input arrays" << std::endl;
         return EXIT_FAILURE;
     }
@@ -140,12 +129,6 @@ int main(int argc, char *argv[]) {
             << arrX_init->shape_len << std::endl;
         return EXIT_FAILURE;
     }
-    if (arrX_tol->shape_len != 0) {
-        std::cerr << "Expected 0 dimensions for X_tol, found "
-            << arrX_tol->shape_len << std::endl;
-        return EXIT_FAILURE;
-    }
-    double tol = ((double *) arrX_tol->data)[0];
 
     // Infer data size from loaded arrays
     std::ostringstream stringSizeStream;
@@ -190,20 +173,16 @@ int main(int argc, char *argv[]) {
     // Actually time benches
     double time;
     da::kmeans::ResultPtr kmeans_result;
-    for (int i = 0; i < fit_samples; i++) {
-        std::tie(time, kmeans_result) = time_min<da::kmeans::ResultPtr> ([=] {
-                    return kmeans_fit_test(X_nt, X_init_nt, tol);
-                }, fit_reps);
-        std::cout << meta_info << "KMeans.fit," << time << std::endl;
-    }
+    std::tie(time, kmeans_result) = time_min<da::kmeans::ResultPtr> ([=] {
+                return kmeans_fit_test(X_nt, X_init_nt, tol, verbose);
+            }, fit_opts, verbose);
+    std::cout << meta_info << "KMeans.fit," << time << std::endl;
 
     dm::NumericTablePtr predict_result;
-    for (int i = 0; i < predict_samples; i++) {
-        std::tie(time, predict_result) = time_min<dm::NumericTablePtr> ([=] {
-                    return kmeans_predict_test(X_mult_nt, X_init_nt);
-                }, predict_reps);
-        std::cout << meta_info << "KMeans.predict," << time << std::endl;
-    }
+    std::tie(time, predict_result) = time_min<dm::NumericTablePtr> ([=] {
+                return kmeans_predict_test(X_mult_nt, X_init_nt);
+            }, predict_opts, verbose);
+    std::cout << meta_info << "KMeans.predict," << time << std::endl;
 
     return 0;
 }

@@ -222,13 +222,15 @@ if __name__ == '__main__':
 
     # Time fit and predict
     fit_time, res = time_mean_min(test_fit, X, y, penalty='l2', C=params.C,
-                                  verbose=params.verbose,
                                   fit_intercept=params.fit_intercept,
                                   tol=params.tol,
                                   max_iter=params.maxiter,
                                   solver=params.solver,
                                   outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops)
+                                  inner_loops=params.fit_inner_loops,
+                                  goal_outer_loops=params.fit_goal,
+                                  time_limit=params.fit_time_limit,
+                                  verbose=params.verbose)
 
     beta, intercept, solver_result, params.multiclass = res
     print_row(columns, params, function='LogReg.fit', time=fit_time)
@@ -237,7 +239,10 @@ if __name__ == '__main__':
                                      intercept=intercept,
                                      multi_class=params.multiclass,
                                      outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops)
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
     y_pred = np.argmax(yp, axis=1)
     acc = 100 * accuracy_score(y_pred, y)
     print_row(columns, params, function='LogReg.predict', time=predict_time,

@@ -123,13 +123,19 @@ print_header(columns, params)
 # Time fit
 fit_time, res = time_mean_min(test_fit, X,
                               outer_loops=params.fit_outer_loops,
-                              inner_loops=params.fit_inner_loops)
+                              inner_loops=params.fit_inner_loops,
+                              goal_outer_loops=params.fit_goal,
+                              time_limit=params.fit_time_limit,
+                              verbose=params.verbose)
 print_row(columns, params, function='PCA.fit', time=fit_time)
 
 # Time transform
 transform_time, tr = time_mean_min(test_transform, Xp, *res[:3],
                                    outer_loops=params.transform_outer_loops,
-                                   inner_loops=params.transform_inner_loops)
+                                   inner_loops=params.transform_inner_loops,
+                                   goal_outer_loops=params.transform_goal,
+                                   time_limit=params.transform_time_limit,
+                                   verbose=params.verbose)
 print_row(columns, params, function='PCA.transform', time=transform_time)
 
 if params.write_results:
