@@ -102,8 +102,7 @@ int main(int argc, char *argv[]) {
         ->required()->check(CLI::ExistingFile);
 
     double tol = 0.;
-    app.add_option("-t,--tol", tol, "Absolute threshold")
-        ->required()->check(CLI::ExistingFile);
+    app.add_option("-t,--tol", tol, "Absolute threshold");
 
     int data_multiplier = 100;
     app.add_option("-m,--data-multiplier", data_multiplier, "Data multiplier");
