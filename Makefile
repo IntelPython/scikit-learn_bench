@@ -35,7 +35,7 @@ DFCLF_NUM_THREADS = $(SVM_NUM_THREADS)
 DFREG_NUM_THREADS = $(SVM_NUM_THREADS)
 MULTIPLIER = 100
 DATA_DIR = data/
-DATA_kmeans = data/kmeans_$(KMEANS_SIZE).npy
+DATA_kmeans = data/clustering/kmeans_$(KMEANS_SIZE).npy
 
 COMMON_ARGS =	--batch '$(BATCH)' --arch '$(HOST)' \
 		--num-threads '$(NUM_THREADS)' --header
@@ -76,8 +76,8 @@ ARGS_NATIVE_pca_full = 	--num-threads "$(NUM_THREADS)" --header \
 			--size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_NATIVE_kmeans = 	--num-threads "$(NUM_THREADS)" --header \
 			--data-multiplier "$(MULTIPLIER)" \
-			--filex data/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/kmeans_$(KMEANS_SIZE).init.npy
+			--filex data/clustering/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_NATIVE_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy \
 			--num-threads $(SVM_NUM_THREADS) --header
@@ -120,8 +120,8 @@ ARGS_SKLEARN_linear = 	--size "$(REGRESSION_SIZE)"
 ARGS_SKLEARN_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_SKLEARN_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_SKLEARN_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
-			--filex data/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/kmeans_$(KMEANS_SIZE).init.npy
+			--filex data/clustering/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_SKLEARN_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_SKLEARN_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
@@ -157,8 +157,8 @@ ARGS_DAAL4PY_linear = 	--size "$(REGRESSION_SIZE)"
 ARGS_DAAL4PY_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_DAAL4PY_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_DAAL4PY_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
-			--filex data/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/kmeans_$(KMEANS_SIZE).init.npy
+			--filex data/clustering/kmeans_$(KMEANS_SIZE).npy \
+			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_DAAL4PY_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy
 ARGS_DAAL4PY_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
@@ -212,7 +212,7 @@ daal4py: $(addsuffix .out,$(addprefix output/daal4py/,$(DAAL4PY_BENCHMARKS))) da
 
 data: $(KMEANS_DATA) svm_data logreg_data df_clf_data
 
-DATA_kmeans: data/kmeans_$(KMEANS_SIZE).npy
+DATA_kmeans: data/clustering/kmeans_$(KMEANS_SIZE).npy
 DATA_svm2: data/two/X-$(SVM_SIZE).npy
 DATA_svm5: data/multi/X-$(SVM_SIZE).npy
 DATA_logreg2: data/two/X-$(LOGREG_SIZE).npy
@@ -223,7 +223,7 @@ DATA_dfreg: data/reg/X-$(DFREG_SIZE).npy
 DATA_%: ;
 
 
-data/kmeans_$(KMEANS_SAMPLES)x$(KMEANS_FEATURES).npy: | data/
+data/clustering/kmeans_$(KMEANS_SAMPLES)x$(KMEANS_FEATURES).npy: | data/clustering/
 	python make_datasets.py -f $(KMEANS_FEATURES) -s $(KMEANS_SAMPLES) \
 		kmeans -c 10 -x $(basename $@) -i $(basename $@).init \
 		-t $(basename $@).tol
