@@ -18,7 +18,8 @@ params = parse_args(parser, size=(1000, 150000), dtypes=('f8', 'f4'))
 X = np.random.rand(*params.shape).astype(params.dtype)
 
 X = convert_data(X, X.dtype, params.data_order, params.data_type)
-X.dtype = X.values.dtype
+if params.data_type is "pandas":
+    X.dtype = X.values.dtype
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
