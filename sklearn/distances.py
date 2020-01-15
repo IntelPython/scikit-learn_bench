@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row
+from bench import parse_args, time_mean_min, print_header, print_row, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.metrics.pairwise import pairwise_distances
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
@@ -15,6 +16,9 @@ params = parse_args(parser, size=(1000, 150000), dtypes=('f8', 'f4'))
 
 # Generate random data
 X = np.random.rand(*params.shape).astype(params.dtype)
+
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+X.dtype = X.values.dtype
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')

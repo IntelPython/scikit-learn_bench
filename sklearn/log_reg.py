@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
@@ -42,6 +43,10 @@ X = np.load(params.filex.name)
 y = np.load(params.filey.name)
 
 params.n_classes = len(np.unique(y))
+
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+y = convert_data(y, y.dtype, params.data_order, params.data_type)
+
 if params.multiclass == 'auto':
     params.multiclass = 'ovr' if params.n_classes == 2 else 'multinomial'
 
@@ -57,8 +62,12 @@ clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
-params.size = size_str(X.shape)
-params.dtype = X.dtype
+if params.data_type is "pandas":
+    params.size = size_str(X.values.shape)
+    params.dtype = X.values.dtype
+else:
+    params.size = size_str(X.shape)
+    params.dtype = X.dtype
 
 print_header(columns, params)
 

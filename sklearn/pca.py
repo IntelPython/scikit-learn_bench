@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row
+from bench import parse_args, time_mean_min, print_header, print_row, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
@@ -21,6 +22,9 @@ params = parse_args(parser, size=(10000, 1000), dtypes=('f8', 'f4'),
 p, n = params.shape
 X = np.random.rand(*params.shape).astype(params.dtype)
 Xp = np.random.rand(*params.shape).astype(params.dtype)
+
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+Xp = convert_data(Xp, Xp.dtype, params.data_order, params.data_type)
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))

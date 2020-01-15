@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
+import pandas as pd
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
                                              'regression benchmark')
@@ -42,6 +43,9 @@ else:
 X = np.load(params.filex.name)
 y = np.load(params.filey.name)
 
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+y = convert_data(y, y.dtype, params.data_order, params.data_type)
+
 # Create our random forest regressor
 regr = RandomForestRegressor(n_estimators=params.num_trees,
                              max_depth=params.max_depth,
@@ -50,8 +54,12 @@ regr = RandomForestRegressor(n_estimators=params.num_trees,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'time')
-params.size = size_str(X.shape)
-params.dtype = X.dtype
+if params.data_type is "pandas":
+    params.size = size_str(X.values.shape)
+    params.dtype = X.values.dtype
+else:
+    params.size = size_str(X.shape)
+    params.dtype = X.dtype
 
 print_header(columns, params)
 

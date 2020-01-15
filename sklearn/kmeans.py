@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.cluster import KMeans
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
@@ -25,6 +26,8 @@ X = np.load(params.filex)
 X_init = np.load(params.filei)
 X_mult = np.vstack((X,) * params.data_multiplier)
 
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+
 n_clusters = X_init.shape[0]
 
 # Create our clustering object
@@ -33,9 +36,13 @@ kmeans = KMeans(n_clusters=n_clusters, n_jobs=params.n_jobs, tol=params.tol,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
-params.size = size_str(X.shape)
 params.n_clusters = n_clusters
-params.dtype = X.dtype
+if params.data_type is "pandas":
+    params.size = size_str(X.values.shape)
+    params.dtype = X.values.dtype
+else:
+    params.size = size_str(X.shape)
+    params.dtype = X.dtype
 print_header(columns, params)
 
 # Time fit

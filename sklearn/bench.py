@@ -5,6 +5,7 @@
 
 import argparse
 import numpy as np
+import pandas as pd
 import sklearn
 import timeit
 
@@ -71,6 +72,10 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
                         help='Output CSV header')
     parser.add_argument('-v', '--verbose', default=False, action='store_true',
                         help='Output extra debug messages')
+    parser.add_argument("--data-type", type=str, default="pandas",
+                        help="Data type: numpy or pandas")
+    parser.add_argument("--data-order", type=str, default="F",
+                        help="Data order: F (column-major) or C (row-major)")
 
     if dtypes is not None:
         parser.add_argument('-d', '--dtype', default=np.dtype(dtypes[0]),
@@ -301,5 +306,23 @@ def logverbose(msg, verbose):
 def accuracy_score(y, yp):
     return np.mean(y == yp)
 
+
+def convert_data(data, fptype=np.float64, data_order:str="F", data_type:str="pandas"):
+    if data_order == "F":
+        data = np.asfortranarray(data, fptype)
+    elif data_order == "C":
+        data = np.ascontiguousarray(data, fptype)
+    else:
+        raise ValueError("Wrong data order")
+
+    if data_type == "numpy":
+        return data
+    elif data_type == "pandas":
+        if len(data.shape) == 1:
+            return pd.Series(data)
+        else:
+            return pd.DataFrame(data)
+    else:
+        raise ValueError("Wrong data type")
 
 sklearn_set_no_input_check()

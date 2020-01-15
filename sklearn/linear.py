@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row
+from bench import parse_args, time_mean_min, print_header, print_row, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
@@ -19,6 +20,10 @@ params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
 X = np.random.rand(*params.shape).astype(params.dtype)
 Xp = np.random.rand(*params.shape).astype(params.dtype)
 y = np.random.rand(*params.shape).astype(params.dtype)
+
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+Xp = convert_data(Xp, Xp.dtype, params.data_order, params.data_type)
+y = convert_data(y, y.dtype, params.data_order, params.data_type)
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,

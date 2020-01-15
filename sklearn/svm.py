@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
+import pandas as pd
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
@@ -62,6 +63,9 @@ params = parse_args(parser, loop_types=('fit', 'predict'))
 X = np.load(params.filex.name).astype('f8')
 y = np.load(params.filey.name).astype('f8')
 
+X = convert_data(X, X.dtype, params.data_order, params.data_type)
+y = convert_data(y, y.dtype, params.data_order, params.data_type)
+
 if params.gamma is None:
     params.gamma = 'auto'
 
@@ -78,8 +82,12 @@ clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
            'time')
-params.size = size_str(X.shape)
-params.dtype = X.dtype
+if params.data_type is "pandas":
+    params.size = size_str(X.values.shape)
+    params.dtype = X.values.dtype
+else:
+    params.size = size_str(X.shape)
+    params.dtype = X.dtype
 
 print_header(columns, params)
 
