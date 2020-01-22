@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    size_str, convert_data
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score

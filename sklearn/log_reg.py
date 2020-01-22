@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    size_str, convert_data
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -38,8 +39,10 @@ parser.add_argument('--tol', type=float, default=None,
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
-X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
-y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
+X = convert_data(np.load(params.filex.name),
+    params.dtype, params.data_order, params.data_format)
+y = convert_data(np.load(params.filey.name),
+    params.dtype, params.data_order, params.data_format)
 
 params.n_classes = len(np.unique(y))
 

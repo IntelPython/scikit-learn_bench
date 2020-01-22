@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    convert_data
 import numpy as np
 from sklearn.decomposition import PCA
 
