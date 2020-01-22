@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    size_str, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
@@ -41,12 +41,11 @@ else:
     except ImportError:
         from sklearn.ensemble import RandomForestClassifier
 
-# Load data
-X = np.load(params.filex.name)
-y = np.load(params.filey.name)
-
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-y = convert_data(y, y.dtype, params.data_order, params.data_type)
+# Load and convert data
+X = convert_data(np.load(params.filex.name),
+    params.dtype, params.data_order, params.data_format)
+y = convert_data(np.load(params.filey.name),
+    params.dtype, params.data_order, params.data_format)
 
 # Create our random forest classifier
 clf = RandomForestClassifier(n_estimators=params.num_trees,
@@ -57,25 +56,14 @@ clf = RandomForestClassifier(n_estimators=params.num_trees,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'n_classes', 'accuracy', 'time')
 params.n_classes = len(np.unique(y))
+params.size = size_str(X.shape)
 
-if params.data_type is "pandas":
-    params.size = size_str(X.values.shape)
-    params.dtype = X.values.dtype
-else:
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-print_header(columns, params)
-
-# Time fit and predict
 fit_time, _ = time_mean_min(clf.fit, X, y,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='df_clsf.fit', time=fit_time)
-
 predict_time, y_pred = time_mean_min(clf.predict, X,
                                      outer_loops=params.predict_outer_loops,
                                      inner_loops=params.predict_inner_loops,
@@ -83,5 +71,35 @@ predict_time, y_pred = time_mean_min(clf.predict, X,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
 acc = 100 * accuracy_score(y_pred, y)
-print_row(columns, params, function='df_clsf.predict', time=predict_time,
+
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='df_clsf.fit', time=fit_time)
+    print_row(columns, params, function='df_clsf.predict', time=predict_time,
           accuracy=acc)
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "decision_forest_classification",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "classes": params.n_classes,
+        "time[s]": fit_time,
+        "accuracy[%]": acc,
+        "algorithm_paramaters": dict(clf.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "stage": "prediction",
+        "time[s]": predict_time
+    })
+
+    print(json.dumps(res, indent=4))

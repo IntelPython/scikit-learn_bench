@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    size_str, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.cluster import KMeans
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
@@ -21,29 +21,19 @@ parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
-# Load generated data
-X = np.load(params.filex)
+# Load and convert generated data
+X = convert_data(np.load(params.filex), params.dtype, params.data_order, params.data_format)
 X_init = np.load(params.filei)
-X_mult = np.vstack((X,) * params.data_multiplier)
 
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-
-n_clusters = X_init.shape[0]
+params.n_clusters = X_init.shape[0]
 
 # Create our clustering object
-kmeans = KMeans(n_clusters=n_clusters, n_jobs=params.n_jobs, tol=params.tol,
+kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs, tol=params.tol,
                 max_iter=params.maxiter, n_init=1, init=X_init)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
-params.n_clusters = n_clusters
-if params.data_type is "pandas":
-    params.size = size_str(X.values.shape)
-    params.dtype = X.values.dtype
-else:
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-print_header(columns, params)
+params.size = size_str(X.shape)
 
 # Time fit
 fit_time, _ = time_mean_min(kmeans.fit, X,
@@ -52,7 +42,6 @@ fit_time, _ = time_mean_min(kmeans.fit, X,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='KMeans.fit', time=fit_time)
 
 # Time predict
 predict_time, _ = time_mean_min(kmeans.predict, X,
@@ -61,4 +50,34 @@ predict_time, _ = time_mean_min(kmeans.predict, X,
                                 goal_outer_loops=params.predict_goal,
                                 time_limit=params.predict_time_limit,
                                 verbose=params.verbose)
-print_row(columns, params, function='KMeans.predict', time=predict_time)
+
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='KMeans.fit', time=fit_time)
+    print_row(columns, params, function='KMeans.predict', time=predict_time)
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "kmeans",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "n_clusters": params.n_clusters,
+        "time[s]": fit_time,
+        "inertia": kmeans.inertia_,
+        "algorithm_paramaters": dict(kmeans.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "stage": "prediction",
+        "time[s]": predict_time
+    })
+
+    print(json.dumps(res, indent=4))

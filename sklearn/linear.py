@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, convert_data
+from bench import parse_args, time_mean_min, print_header, print_row,\
+    convert_data, rmse_score
 import numpy as np
-import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
@@ -13,17 +13,15 @@ parser = argparse.ArgumentParser(description='scikit-learn linear regression '
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
-params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
-                    loop_types=('fit', 'predict'))
+params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 
-# Generate random data
-X = np.random.rand(*params.shape).astype(params.dtype)
-Xp = np.random.rand(*params.shape).astype(params.dtype)
-y = np.random.rand(*params.shape).astype(params.dtype)
-
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-Xp = convert_data(Xp, Xp.dtype, params.data_order, params.data_type)
-y = convert_data(y, y.dtype, params.data_order, params.data_type)
+# Generate and convert random data
+X = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
+Xp = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
+y = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
@@ -31,7 +29,6 @@ regr = LinearRegression(fit_intercept=params.fit_intercept,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
-print_header(columns, params)
 
 # Time fit
 fit_time, _ = time_mean_min(regr.fit, X, y,
@@ -40,7 +37,6 @@ fit_time, _ = time_mean_min(regr.fit, X, y,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='Linear.fit', time=fit_time)
 
 # Time predict
 predict_time, yp = time_mean_min(regr.predict, Xp,
@@ -49,4 +45,37 @@ predict_time, yp = time_mean_min(regr.predict, Xp,
                                  goal_outer_loops=params.predict_goal,
                                  time_limit=params.predict_time_limit,
                                  verbose=params.verbose)
-print_row(columns, params, function='Linear.predict', time=predict_time)
+
+rmse = rmse_score(yp, y)
+
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='Linear.fit', time=fit_time)
+    print_row(columns, params, function='Linear.predict', time=predict_time)
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "linear_regression",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "time[s]": fit_time,
+        "algorithm_paramaters": dict(regr.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "rows": Xp.shape[0],
+        "columns": Xp.shape[1],
+        "stage": "prediction",
+        "time[s]": predict_time,
+        "rmse": rmse
+    })
+
+    print(json.dumps(res, indent=4))

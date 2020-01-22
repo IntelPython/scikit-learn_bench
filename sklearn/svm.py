@@ -5,7 +5,6 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
@@ -60,11 +59,8 @@ parser.add_argument('--no-shrinking', action='store_false', default=True,
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load data and cast to float64
-X = np.load(params.filex.name).astype('f8')
-y = np.load(params.filey.name).astype('f8')
-
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-y = convert_data(y, y.dtype, params.data_order, params.data_type)
+X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
+y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
 
 if params.gamma is None:
     params.gamma = 'auto'
@@ -82,14 +78,7 @@ clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
            'time')
-if params.data_type is "pandas":
-    params.size = size_str(X.values.shape)
-    params.dtype = X.values.dtype
-else:
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-print_header(columns, params)
+params.size = size_str(X.shape)
 
 # Time fit and predict
 fit_time, _ = time_mean_min(clf.fit, X, y,
@@ -99,7 +88,6 @@ fit_time, _ = time_mean_min(clf.fit, X, y,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
 params.sv_len = clf.support_.shape[0]
-print_row(columns, params, function='SVM.fit', time=fit_time)
 
 predict_time, y_pred = time_mean_min(clf.predict, X,
                                      outer_loops=params.predict_outer_loops,
@@ -108,5 +96,35 @@ predict_time, y_pred = time_mean_min(clf.predict, X,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
 acc = 100 * accuracy_score(y_pred, y)
-print_row(columns, params, function='SVM.predict', time=predict_time,
-          accuracy=acc)
+
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='SVM.fit', time=fit_time)
+    print_row(columns, params, function='SVM.predict', time=predict_time,
+              accuracy=acc)
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "svc",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "classes": params.n_classes,
+        "time[s]": fit_time,
+        "accuracy[%]": acc,
+        "algorithm_paramaters": dict(clf.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "stage": "prediction",
+        "time[s]": predict_time
+    })
+
+    print(json.dumps(res, indent=4))

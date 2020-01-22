@@ -5,25 +5,27 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.metrics.pairwise import pairwise_distances
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
                                              'benchmark')
 parser.add_argument('--metrics', nargs='*', default=['cosine', 'correlation'],
                     help='Metrics to test for pairwise_distances')
-params = parse_args(parser, size=(1000, 150000), dtypes=('f8', 'f4'))
+params = parse_args(parser, size=(1000, 150000))
 
-# Generate random data
-X = np.random.rand(*params.shape).astype(params.dtype)
+# Generate and convert random data
+X = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
 
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-if params.data_type is "pandas":
+# workaround for "dtype" property absense in pandas DataFrame
+if params.data_format is "pandas":
     X.dtype = X.values.dtype
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
-print_header(columns, params)
+
+if params.output_format == "csv":
+    print_header(columns, params)
 
 for metric in params.metrics:
     time, _ = time_mean_min(pairwise_distances, X, metric=metric,
@@ -33,4 +35,21 @@ for metric in params.metrics:
                             goal_outer_loops=params.goal,
                             time_limit=params.time_limit,
                             verbose=params.verbose)
-    print_row(columns, params, function=metric.capitalize(), time=time)
+    if params.output_format == "csv":
+        print_row(columns, params, function=metric.capitalize(), time=time)
+    elif params.output_format == "json":
+        import json
+
+        res = {
+            "lib": "sklearn",
+            "algorithm": "distances",
+            "metric": metric,
+            "data_format": params.data_format,
+            "data_type": str(params.dtype),
+            "data_order": params.data_order,
+            "rows": X.shape[0],
+            "columns": X.shape[1],
+            "time[s]": time
+        }
+
+        print(json.dumps(res, indent=4))

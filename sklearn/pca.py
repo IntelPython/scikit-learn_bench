@@ -5,7 +5,6 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.decomposition import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
@@ -15,16 +14,16 @@ parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
 parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
-params = parse_args(parser, size=(10000, 1000), dtypes=('f8', 'f4'),
+params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
 # Generate random data
 p, n = params.shape
-X = np.random.rand(*params.shape).astype(params.dtype)
-Xp = np.random.rand(*params.shape).astype(params.dtype)
 
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-Xp = convert_data(Xp, Xp.dtype, params.data_order, params.data_type)
+X = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
+Xp = convert_data(np.random.rand(*params.shape),
+    params.dtype, params.data_order, params.data_format)
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))
@@ -35,7 +34,6 @@ pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
-print_header(columns, params)
 
 # Time fit
 fit_time, _ = time_mean_min(pca.fit, X,
@@ -44,7 +42,6 @@ fit_time, _ = time_mean_min(pca.fit, X,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='PCA.fit', time=fit_time)
 
 # Time transform
 transform_time, _ = time_mean_min(pca.transform, Xp,
@@ -53,4 +50,35 @@ transform_time, _ = time_mean_min(pca.transform, Xp,
                                   goal_outer_loops=params.transform_goal,
                                   time_limit=params.transform_time_limit,
                                   verbose=params.verbose)
-print_row(columns, params, function='PCA.transform', time=transform_time)
+
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='PCA.fit', time=fit_time)
+    print_row(columns, params, function='PCA.transform', time=transform_time)
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "pca",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "n_components": params.n_components,
+        "time[s]": fit_time,
+        "algorithm_paramaters": dict(regr.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "rows": Xp.shape[0],
+        "columns": Xp.shape[1],
+        "stage": "transform",
+        "time[s]": transform_time
+    })
+
+    print(json.dumps(res, indent=4))

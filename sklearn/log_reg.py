@@ -5,7 +5,6 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, size_str, convert_data
 import numpy as np
-import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
@@ -39,13 +38,10 @@ parser.add_argument('--tol', type=float, default=None,
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
-X = np.load(params.filex.name)
-y = np.load(params.filey.name)
+X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
+y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
 
 params.n_classes = len(np.unique(y))
-
-X = convert_data(X, X.dtype, params.data_order, params.data_type)
-y = convert_data(y, y.dtype, params.data_order, params.data_type)
 
 if params.multiclass == 'auto':
     params.multiclass = 'ovr' if params.n_classes == 2 else 'multinomial'
@@ -62,14 +58,7 @@ clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
-if params.data_type is "pandas":
-    params.size = size_str(X.values.shape)
-    params.dtype = X.values.dtype
-else:
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-print_header(columns, params)
+params.size = size_str(X.shape)
 
 # Time fit and predict
 fit_time, _ = time_mean_min(clf.fit, X, y,
@@ -78,7 +67,6 @@ fit_time, _ = time_mean_min(clf.fit, X, y,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='LogReg.fit', time=fit_time)
 
 predict_time, y_pred = time_mean_min(clf.predict, X,
                                      outer_loops=params.predict_outer_loops,
@@ -87,13 +75,44 @@ predict_time, y_pred = time_mean_min(clf.predict, X,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
 acc = 100 * accuracy_score(y_pred, y)
-print_row(columns, params, function='LogReg.predict', time=predict_time,
-          accuracy=acc)
 
-if params.verbose:
-    print()
-    print("@ Number of iterations: {}".format(clf.n_iter_))
-    print("@ fit coefficients:")
-    print("@ {}".format(clf.coef_.tolist()))
-    print("@ fit intercept:")
-    print("@ {}".format(clf.intercept_.tolist()))
+if params.output_format == "csv":
+    print_header(columns, params)
+    print_row(columns, params, function='LogReg.fit', time=fit_time)
+    print_row(columns, params, function='LogReg.predict', time=predict_time,
+        accuracy=acc)
+    if params.verbose:
+        print()
+        print("@ Number of iterations: {}".format(clf.n_iter_))
+        print("@ fit coefficients:")
+        print("@ {}".format(clf.coef_.tolist()))
+        print("@ fit intercept:")
+        print("@ {}".format(clf.intercept_.tolist()))
+
+elif params.output_format == "json":
+    import json
+
+    res = {
+        "lib": "sklearn",
+        "algorithm": "logistic_regression",
+        "stage": "training",
+        "data_format": params.data_format,
+        "data_type": str(params.dtype),
+        "data_order": params.data_order,
+        "rows": X.shape[0],
+        "columns": X.shape[1],
+        "classes": params.n_classes,
+        "time[s]": fit_time,
+        "accuracy[%]": acc,
+        "algorithm_paramaters": dict(clf.get_params())
+    }
+
+    print(json.dumps(res, indent=4))
+
+    res.update({
+        "stage": "prediction",
+        "time[s]": predict_time,
+        "accuracy[%]": acc
+    })
+
+    print(json.dumps(res, indent=4))

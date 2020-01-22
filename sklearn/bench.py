@@ -5,7 +5,6 @@
 
 import argparse
 import numpy as np
-import pandas as pd
 import sklearn
 import timeit
 
@@ -27,7 +26,7 @@ def _parse_size(string, dim=2):
     return tup
 
 
-def parse_args(parser, size=None, dtypes=None, loop_types=(),
+def parse_args(parser, size=None, loop_types=(),
                n_jobs_supported=False, prefix='sklearn'):
     '''
     Add common arguments useful for most benchmarks and parse.
@@ -39,9 +38,6 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
     size : tuple of int, optional
         Enable '--size' argument with this default size.
         If None (default), no '--size' argument will be added.
-    dtypes : iterable of str, optional
-        Enable '--dtype' argument with the given acceptable dtypes.
-        The first one is used as the default.
     loop_types : iterable of str, optional
         Add arguments like '--fit-inner-loops' and '--fit-outer-loops',
         useful for tweaking runtime of the benchmark.
@@ -72,15 +68,16 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
                         help='Output CSV header')
     parser.add_argument('-v', '--verbose', default=False, action='store_true',
                         help='Output extra debug messages')
-    parser.add_argument("--data-type", type=str, default="pandas",
-                        help="Data type: numpy or pandas")
-    parser.add_argument("--data-order", type=str, default="F",
+    parser.add_argument("--data-format", type=str, default="numpy",
+                        help="Data format: numpy, pandas")
+    parser.add_argument("--data-order", type=str, default="C",
                         help="Data order: F (column-major) or C (row-major)")
-
-    if dtypes is not None:
-        parser.add_argument('-d', '--dtype', default=np.dtype(dtypes[0]),
-                            type=np.dtype, choices=dtypes,
-                            help='Data type to use (see numpy.dtype docs)')
+    parser.add_argument('-d', '--dtype', type=str, default="float64",
+                        help='Data type to use')
+    parser.add_argument("--assume-finite", type=bool, default=True,
+                        help="Assume finite in sklearn input check")
+    parser.add_argument("--output-format", type=str, default="csv",
+                        help="Output format: csv or json")
 
     if size is not None:
         parser.add_argument('-s', '--size', default=size, type=_parse_size,
@@ -117,6 +114,15 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
                                  f'decide number of inner loops.')
 
     params = parser.parse_args()
+
+    if params.dtype in ["float64", "double"]:
+        params.dtype = np.float64
+    else:
+        params.dtype = np.float32
+
+    # disable finiteness check (default)
+    if params.assume_finite:
+        sklearn_disable_finiteness_check()
 
     # Ask DAAL what it thinks about this number of threads
     num_threads, daal_version = prepare_daal(num_threads=params.threads)
@@ -168,7 +174,7 @@ def print_row(columns, params, **kwargs):
     print(','.join(values))
 
 
-def sklearn_set_no_input_check():
+def sklearn_disable_finiteness_check():
     try:
         sklearn.set_config(assume_finite=True)
     except AttributeError:
@@ -307,7 +313,11 @@ def accuracy_score(y, yp):
     return np.mean(y == yp)
 
 
-def convert_data(data, fptype=np.float64, data_order:str="F", data_type:str="pandas"):
+def rmse_score(y, yp):
+    return np.sqrt(np.mean((y - yp)**2))
+
+
+def convert_data(data, fptype=np.float64, data_order:str="C", data_format:str="numpy"):
     if data_order == "F":
         data = np.asfortranarray(data, fptype)
     elif data_order == "C":
@@ -315,14 +325,14 @@ def convert_data(data, fptype=np.float64, data_order:str="F", data_type:str="pan
     else:
         raise ValueError("Wrong data order")
 
-    if data_type == "numpy":
+    if data_format == "numpy":
         return data
-    elif data_type == "pandas":
+    elif data_format == "pandas":
+        import pandas as pd
+
         if len(data.shape) == 1:
             return pd.Series(data)
         else:
             return pd.DataFrame(data)
     else:
-        raise ValueError("Wrong data type")
-
-sklearn_set_no_input_check()
+        raise ValueError("Wrong data format")
