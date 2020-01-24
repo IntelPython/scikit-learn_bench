@@ -4,7 +4,7 @@
 
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row,\
-    convert_data, rmse_score
+    convert_data, rmse_score, get_dtype
 import numpy as np
 from sklearn.linear_model import Ridge
 
@@ -32,8 +32,7 @@ regr = Ridge(fit_intercept=params.fit_intercept,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
-
-
+params.dtype = get_dtype(X)
 
 # Time fit
 fit_time, _ = time_mean_min(regr.fit, X, y,
@@ -84,4 +83,3 @@ elif params.output_format == "json":
     })
 
     print(json.dumps(res, indent=4))
-

@@ -4,7 +4,7 @@
 
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row,\
-    convert_data
+    convert_data, get_dtype
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances
 
@@ -24,6 +24,7 @@ if params.data_format is "pandas":
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
+params.dtype = get_dtype(X)
 
 if params.output_format == "csv":
     print_header(columns, params)

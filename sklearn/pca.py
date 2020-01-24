@@ -4,7 +4,7 @@
 
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row,\
-    convert_data
+    convert_data, get_dtype
 import numpy as np
 from sklearn.decomposition import PCA
 
@@ -35,6 +35,7 @@ pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
+params.dtype = get_dtype(X)
 
 # Time fit
 fit_time, _ = time_mean_min(pca.fit, X,

@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row,\
-    size_str, convert_data, rmse_score
+from bench import (
+    parse_args, time_mean_min, print_header, print_row, size_str, convert_data,
+    rmse_score, get_dtype
+)
 import numpy as np
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
@@ -53,6 +55,7 @@ regr = RandomForestRegressor(n_estimators=params.num_trees,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'time')
+params.dtype = get_dtype(X)
 params.size = size_str(X.shape)
 
 fit_time, _ = time_mean_min(regr.fit, X, y,

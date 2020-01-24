@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row,\
-    size_str, convert_data
+from bench import (
+    parse_args, time_mean_min, print_header, print_row, size_str, convert_data,
+    get_dtype
+)
 import numpy as np
 from sklearn.metrics import accuracy_score
 
@@ -43,9 +45,9 @@ else:
 
 # Load and convert data
 X = convert_data(np.load(params.filex.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 y = convert_data(np.load(params.filey.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 
 # Create our random forest classifier
 clf = RandomForestClassifier(n_estimators=params.num_trees,
@@ -56,6 +58,7 @@ clf = RandomForestClassifier(n_estimators=params.num_trees,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'n_classes', 'accuracy', 'time')
 params.n_classes = len(np.unique(y))
+params.dtype = get_dtype(X)
 params.size = size_str(X.shape)
 
 fit_time, _ = time_mean_min(clf.fit, X, y,
@@ -85,7 +88,7 @@ elif params.output_format == "json":
         "algorithm": "decision_forest_classification",
         "stage": "training",
         "data_format": params.data_format,
-        "data_type": str(params.dtype),
+        "data_type": params.dtype,
         "data_order": params.data_order,
         "rows": X.shape[0],
         "columns": X.shape[1],

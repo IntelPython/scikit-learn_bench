@@ -4,7 +4,7 @@
 
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row,\
-    size_str, convert_data
+    size_str, convert_data, get_dtype
 import numpy as np
 from sklearn.cluster import KMeans
 
@@ -33,6 +33,7 @@ kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs, tol=params.t
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
+params.dtype = get_dtype(X)
 params.size = size_str(X.shape)
 
 # Time fit

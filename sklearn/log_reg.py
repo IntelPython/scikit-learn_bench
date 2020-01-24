@@ -4,7 +4,7 @@
 
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row,\
-    size_str, convert_data
+    size_str, convert_data, get_dtype
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -61,6 +61,7 @@ clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
+params.dtype = get_dtype(X)
 params.size = size_str(X.shape)
 
 # Time fit and predict

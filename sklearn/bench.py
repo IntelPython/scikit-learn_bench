@@ -9,6 +9,16 @@ import sklearn
 import timeit
 
 
+def sklearn_disable_finiteness_check():
+    try:
+        sklearn.set_config(assume_finite=True)
+    except AttributeError:
+        try:
+            sklearn._ASSUME_FINITE = True
+        except AttributeError:
+            sklearn.utils.validation._assert_all_finite = lambda X: None
+
+
 def _parse_size(string, dim=2):
     try:
         tup = tuple(int(n) for n in string.replace('x', ',').split(','))
@@ -69,14 +79,18 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('-v', '--verbose', default=False, action='store_true',
                         help='Output extra debug messages')
     parser.add_argument("--data-format", type=str, default="numpy",
-                        help="Data format: numpy, pandas")
+                        choices=("numpy", "pandas", "cudf"),
+                        help="Data format: numpy, pandas, cudf")
     parser.add_argument("--data-order", type=str, default="C",
+                        choices=("C", "F"),
                         help="Data order: F (column-major) or C (row-major)")
-    parser.add_argument('-d', '--dtype', type=str, default="float64",
+    parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
+                        choices=(np.float32, np.float64),
                         help='Data type to use')
-    parser.add_argument("--assume-finite", type=bool, default=True,
-                        help="Assume finite in sklearn input check")
+    parser.add_argument("--check-finiteness", default=False, action='store_true',
+                        help="Check finiteness in sklearn input check")
     parser.add_argument("--output-format", type=str, default="csv",
+                        choices=("csv", "json"),
                         help="Output format: csv or json")
 
     if size is not None:
@@ -115,13 +129,8 @@ def parse_args(parser, size=None, loop_types=(),
 
     params = parser.parse_args()
 
-    if params.dtype in ["float64", "double"]:
-        params.dtype = np.float64
-    else:
-        params.dtype = np.float32
-
     # disable finiteness check (default)
-    if params.assume_finite:
+    if not params.check_finiteness:
         sklearn_disable_finiteness_check()
 
     # Ask DAAL what it thinks about this number of threads
@@ -172,16 +181,6 @@ def print_row(columns, params, **kwargs):
             values.append('')
 
     print(','.join(values))
-
-
-def sklearn_disable_finiteness_check():
-    try:
-        sklearn.set_config(assume_finite=True)
-    except AttributeError:
-        try:
-            sklearn._ASSUME_FINITE = True
-        except AttributeError:
-            sklearn.utils.validation._assert_all_finite = lambda X: None
 
 
 def set_daal_num_threads(num_threads):
@@ -317,13 +316,11 @@ def rmse_score(y, yp):
     return np.sqrt(np.mean((y - yp)**2))
 
 
-def convert_data(data, fptype=np.float64, data_order:str="C", data_format:str="numpy"):
+def convert_data(data, dtype, data_order, data_format):
     if data_order == "F":
-        data = np.asfortranarray(data, fptype)
+        data = np.asfortranarray(data, dtype)
     elif data_order == "C":
-        data = np.ascontiguousarray(data, fptype)
-    else:
-        raise ValueError("Wrong data order")
+        data = np.ascontiguousarray(data, dtype)
 
     if data_format == "numpy":
         return data
@@ -334,5 +331,17 @@ def convert_data(data, fptype=np.float64, data_order:str="C", data_format:str="n
             return pd.Series(data)
         else:
             return pd.DataFrame(data)
-    else:
-        raise ValueError("Wrong data format")
+    elif data_format == "cudf":
+        import cudf
+        import pandas as pd
+
+        return cudf.DataFrame.from_pandas(pd.DataFrame(data))
+
+
+def get_dtype(data):
+    if hasattr(data, "dtype"):
+        return data.dtype
+    elif hasattr(data, "values"):
+        return data.values.dtype
+    elif hasattr(data, "dtypes"):
+        return str(data.dtypes[0])
