@@ -43,9 +43,9 @@ else:
 
 # Load and convert data
 X = convert_data(np.load(params.filex.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 y = convert_data(np.load(params.filey.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 
 # Create our random forest regressor
 regr = RandomForestRegressor(n_estimators=params.num_trees,
@@ -66,11 +66,11 @@ fit_time, _ = time_mean_min(regr.fit, X, y,
                             verbose=params.verbose)
 
 predict_time, yp = time_mean_min(regr.predict, X,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+                                 outer_loops=params.predict_outer_loops,
+                                 inner_loops=params.predict_inner_loops,
+                                 goal_outer_loops=params.predict_goal,
+                                 time_limit=params.predict_time_limit,
+                                 verbose=params.verbose)
 
 rmse = rmse_score(yp, y)
 

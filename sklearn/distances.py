@@ -16,10 +16,10 @@ params = parse_args(parser, size=(1000, 150000))
 
 # Generate and convert random data
 X = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 
 # workaround for "dtype" property absense in pandas DataFrame
-if params.data_format is "pandas":
+if params.data_format == "pandas":
     X.dtype = X.values.dtype
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',

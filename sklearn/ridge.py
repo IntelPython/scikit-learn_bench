@@ -20,11 +20,11 @@ params = parse_args(parser, size=(1000000, 50),
 
 # Generate random data
 X = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 Xp = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                  params.dtype, params.data_order, params.data_format)
 y = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 
 # Create our regression object
 regr = Ridge(fit_intercept=params.fit_intercept,

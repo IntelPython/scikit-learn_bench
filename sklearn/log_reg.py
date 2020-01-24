@@ -40,9 +40,9 @@ params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
 X = convert_data(np.load(params.filex.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 y = convert_data(np.load(params.filey.name),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 
 params.n_classes = len(np.unique(y))
 
@@ -84,7 +84,7 @@ if params.output_format == "csv":
     print_header(columns, params)
     print_row(columns, params, function='LogReg.fit', time=fit_time)
     print_row(columns, params, function='LogReg.predict', time=predict_time,
-        accuracy=acc)
+              accuracy=acc)
     if params.verbose:
         print()
         print("@ Number of iterations: {}".format(clf.n_iter_))

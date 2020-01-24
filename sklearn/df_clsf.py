@@ -79,7 +79,7 @@ if params.output_format == "csv":
     print_header(columns, params)
     print_row(columns, params, function='df_clsf.fit', time=fit_time)
     print_row(columns, params, function='df_clsf.predict', time=predict_time,
-          accuracy=acc)
+              accuracy=acc)
 elif params.output_format == "json":
     import json
 

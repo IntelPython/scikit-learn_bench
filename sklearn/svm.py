@@ -60,8 +60,10 @@ parser.add_argument('--no-shrinking', action='store_false', default=True,
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load data and cast to float64
-X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
-y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
+X = convert_data(np.load(params.filex.name),
+                 params.dtype, params.data_order, params.data_format)
+y = convert_data(np.load(params.filey.name),
+                 params.dtype, params.data_order, params.data_format)
 
 if params.gamma is None:
     params.gamma = 'auto'

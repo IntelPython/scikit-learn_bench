@@ -22,14 +22,16 @@ params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 # Generate and convert random data
 if params.filex is None or params.filey is None:
     X = convert_data(np.random.rand(*params.shape),
-        params.dtype, params.data_order, params.data_format)
+                     params.dtype, params.data_order, params.data_format)
     Xp = convert_data(np.random.rand(*params.shape),
-        params.dtype, params.data_order, params.data_format)
+                      params.dtype, params.data_order, params.data_format)
     y = convert_data(np.random.rand(*params.shape),
-        params.dtype, params.data_order, params.data_format)
+                     params.dtype, params.data_order, params.data_format)
 else:
-    X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
-    y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
+    X = convert_data(np.load(params.filex.name),
+                     params.dtype, params.data_order, params.data_format)
+    y = convert_data(np.load(params.filey.name),
+                     params.dtype, params.data_order, params.data_format)
     Xp = X
 
 # Create our regression object

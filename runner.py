@@ -5,12 +5,15 @@ import json
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", metavar="ConfigPath", type=str, default="config.json")
-parser.add_argument("--output", metavar="OutputPath", type=str, default="stdout")
+parser.add_argument("--config", metavar="ConfigPath", type=str,
+                    default="config.json")
+parser.add_argument("--output", metavar="OutputPath", type=str,
+                    default="stdout")
 args = parser.parse_args()
 
 with open(args.config, "r") as config_file:
     config = json.load(config_file)
+
 
 # generate benchmarking cases
 def gen_cases(params):
@@ -23,9 +26,11 @@ def gen_cases(params):
     cases = cases * n_param_values
     for i in range(n_param_values):
         for j in range(prev_lenght):
-            cases[prev_lenght * i + j] = cases[prev_lenght * i + j] + " --{} {}".format(param_name, params[param_name][i])
+            cases[prev_lenght * i + j] += " --{} {}".format(
+                param_name, params[param_name][i])
     del params[param_name]
     gen_cases(params)
+
 
 log = ""
 stderr_file = open("_stderr.log", "w")
@@ -48,8 +53,10 @@ for algorithm in config["algorithms"]:
                 os.system(command)
             elif dataset.startswith("synth_cls"):
                 _, _, classes, samples, features = dataset.split("_")
-                xfile = "data/{}/X-{}x{}.npy".format("two" if classes == 2 else "multi", samples, features)
-                yfile = "data/{}/y-{}x{}.npy".format("two" if classes == 2 else "multi", samples, features)
+                xfile = "data/{}/X-{}x{}.npy".format(
+                    "two" if classes == 2 else "multi", samples, features)
+                yfile = "data/{}/y-{}x{}.npy".format(
+                    "two" if classes == 2 else "multi", samples, features)
                 paths = "-x {} -y {}".format(xfile, yfile)
                 command = "python make_datasets.py -s {} -f {} classification -c {} -x {} -y {}".format(
                     samples, features, classes, xfile, yfile)
@@ -58,11 +65,13 @@ for algorithm in config["algorithms"]:
             else:
                 raise ValueError("Unknown dataset type")
         else:
-            raise ValueError("Unknown dataset. Only synthetics are supported now")
+            raise ValueError(
+                "Unknown dataset. Only synthetics are supported now")
 
         for lib in config["libs"]:
             for i, case in enumerate(cases):
-                command = "python {}/{}.py --output-format json{} {}".format(lib, algorithm, case, paths)
+                command = "python {}/{}.py --output-format json{} {}".format(
+                    lib, algorithm, case, paths)
                 print(command)
                 r = subprocess.run(command.split(" "), stdout=subprocess.PIPE,
                                    stderr=stderr_file, encoding="utf-8")

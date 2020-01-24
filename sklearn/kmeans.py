@@ -22,14 +22,15 @@ parser.add_argument('--maxiter', type=int, default=100,
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load and convert generated data
-X = convert_data(np.load(params.filex), params.dtype, params.data_order, params.data_format)
+X = convert_data(np.load(params.filex),
+                 params.dtype, params.data_order, params.data_format)
 X_init = np.load(params.filei)
 
 params.n_clusters = X_init.shape[0]
 
 # Create our clustering object
-kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs, tol=params.tol,
-                max_iter=params.maxiter, n_init=1, init=X_init)
+kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
+                tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')

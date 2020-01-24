@@ -87,7 +87,8 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
                         choices=(np.float32, np.float64),
                         help='Data type to use')
-    parser.add_argument("--check-finiteness", default=False, action='store_true',
+    parser.add_argument("--check-finiteness", default=False,
+                        action='store_true',
                         help="Check finiteness in sklearn input check")
     parser.add_argument("--output-format", type=str, default="csv",
                         choices=("csv", "json"),

@@ -22,9 +22,9 @@ params = parse_args(parser, size=(10000, 1000),
 p, n = params.shape
 
 X = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                 params.dtype, params.data_order, params.data_format)
 Xp = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+                  params.dtype, params.data_order, params.data_format)
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))
@@ -71,7 +71,7 @@ elif params.output_format == "json":
         "columns": X.shape[1],
         "n_components": params.n_components,
         "time[s]": fit_time,
-        "algorithm_paramaters": dict(regr.get_params())
+        "algorithm_paramaters": dict(pca.get_params())
     }
 
     print(json.dumps(res, indent=4))
