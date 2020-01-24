@@ -313,7 +313,7 @@ def accuracy_score(y, yp):
 
 
 def rmse_score(y, yp):
-    return np.sqrt(np.mean((y - yp)**2))
+    return float(np.sqrt(np.mean((y - yp)**2)))
 
 
 def convert_data(data, dtype, data_order, data_format):

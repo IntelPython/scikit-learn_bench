@@ -1,0 +1,25 @@
+{
+    "libs": ["sklearn"],
+    "algorithms": {
+        "log_reg": {
+            "data-format": ["pandas"],
+            "data-order": ["F"],
+            "dtype": ["float32"],
+            "dataset": [
+                "synth_cls_2_1000_20",
+                "synth_cls_5_1000_20"
+            ],
+            "maxiter": ["50"],
+            "tol": ["1e-6"]
+        },
+        "linear": {
+            "data-format": ["pandas"],
+            "data-order": ["F"],
+            "dtype": ["float32"],
+            "dataset": [
+                "synth_reg_1000_20",
+                "synth_reg_1000_20"
+            ]
+        }
+    }
+}

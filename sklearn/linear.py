@@ -10,18 +10,27 @@ from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
                                              'benchmark')
+parser.add_argument('-x', '--filex', '--fileX', type=argparse.FileType('r'),
+                    help='Input file with features, in NPY format')
+parser.add_argument('-y', '--filey', '--fileY', type=argparse.FileType('r'),
+                    help='Input file with labels, in NPY format')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 
 # Generate and convert random data
-X = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
-Xp = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
-y = convert_data(np.random.rand(*params.shape),
-    params.dtype, params.data_order, params.data_format)
+if params.filex is None or params.filey is None:
+    X = convert_data(np.random.rand(*params.shape),
+        params.dtype, params.data_order, params.data_format)
+    Xp = convert_data(np.random.rand(*params.shape),
+        params.dtype, params.data_order, params.data_format)
+    y = convert_data(np.random.rand(*params.shape),
+        params.dtype, params.data_order, params.data_format)
+else:
+    X = convert_data(np.load(params.filex.name), params.dtype, params.data_order, params.data_format)
+    y = convert_data(np.load(params.filey.name), params.dtype, params.data_order, params.data_format)
+    Xp = X
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
