@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row,\
-    size_str, convert_data, get_dtype
+from bench import (
+    parse_args, time_mean_min, print_header, print_row, size_str, convert_data,
+    get_dtype
+)
 import numpy as np
 from sklearn.cluster import KMeans
 

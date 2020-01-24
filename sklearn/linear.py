@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row,\
-    convert_data, rmse_score, get_dtype
+from bench import (
+    parse_args, time_mean_min, print_header, print_row, convert_data,
+    rmse_score, get_dtype
+)
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
