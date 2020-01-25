@@ -94,6 +94,13 @@ def parse_args(parser, size=None, loop_types=(),
                         choices=("csv", "json"),
                         help="Output format: csv or json")
 
+    for data in ["X", "y"]:
+        for stage in ["train", "test"]:
+            parser.add_argument(f"--file-{data}-{stage}",
+                                type=argparse.FileType('r'),
+                                help=f'Input file with {data}_{stage},'
+                                     'in NPY format')
+
     if size is not None:
         parser.add_argument('-s', '--size', default=size, type=_parse_size,
                             dest='shape',
@@ -346,3 +353,65 @@ def get_dtype(data):
         return data.values.dtype
     elif hasattr(data, "dtypes"):
         return str(data.dtypes[0])
+
+
+def load_data(params, generated_data=[]):
+    full_data = {
+        file: None for file in ["X_train", "X_test", "y_train", "y_test"]
+    }
+    param_vars = vars(params)
+    for element in full_data:
+        file_arg = f"file_{element}"
+        # load data from npy file if path is specified
+        if param_vars[file_arg] is not None:
+            full_data[element] = convert_data(
+                np.load(param_vars[file_arg].name),
+                params.dtype,
+                params.data_order,
+                params.data_format
+            )
+        # generate data if it's marked and path isn't specified
+        if full_data[element] is None and element in generated_data:
+            full_data[element] = convert_data(np.random.rand(*params.shape),
+                                              params.dtype, params.data_order,
+                                              params.data_format)
+
+    params.dtype = get_dtype(full_data["X_train"])
+    if not hasattr(params, "size"):
+        params.size = size_str(full_data["X_train"].shape)
+
+    # clone train data to test if test data is None
+    for data in ["X", "y"]:
+        if full_data[f"{data}_train"] is not None and full_data[f"{data}_test"] is None:
+            full_data[f"{data}_test"] = full_data[f"{data}_train"]
+    return tuple(full_data.values())
+
+
+def output_csv(columns, params, functions, times, accuracies=None):
+    print_header(columns, params)
+    if accuracies is None:
+        accuracies = [None]*len(functions)
+    for i in range(len(functions)):
+        if accuracies[i] is not None:
+            print_row(columns, params, function=functions[i], time=times[i],
+                      accuracy=accuracies[i])
+        else:
+            print_row(columns, params, function=functions[i], time=times[i])
+
+
+def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
+    result = {
+        "library": library,
+        "alogrithm": algorithm,
+        "stage": stage,
+        "input_data": {
+            "data_type": str(params.dtype),
+            "data_order": params.data_order,
+            "rows": data.shape[0],
+            "columns": data.shape[1],
+        }
+    }
+    if alg_instance is not None:
+        result.update(
+            {"algorithm_parameters": dict(alg_instance.get_params())})
+    return result

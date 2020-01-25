@@ -4,9 +4,9 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, convert_data, get_dtype
+    parse_args, time_mean_min, print_header, print_row, load_data,
+    gen_basic_dict
 )
-import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
@@ -16,8 +16,7 @@ parser.add_argument('--metrics', nargs='*', default=['cosine', 'correlation'],
 params = parse_args(parser, size=(1000, 150000))
 
 # Generate and convert random data
-X = convert_data(np.random.rand(*params.shape),
-                 params.dtype, params.data_order, params.data_format)
+X, _, _, _ = load_data(params, generated_data=["X_train"])
 
 # workaround for "dtype" property absense in pandas DataFrame
 if params.data_format == "pandas":
@@ -25,7 +24,6 @@ if params.data_format == "pandas":
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
-params.dtype = get_dtype(X)
 
 if params.output_format == "csv":
     print_header(columns, params)
@@ -43,16 +41,12 @@ for metric in params.metrics:
     elif params.output_format == "json":
         import json
 
-        res = {
-            "lib": "sklearn",
-            "algorithm": "distances",
-            "metric": metric,
-            "data_format": params.data_format,
-            "data_type": str(params.dtype),
-            "data_order": params.data_order,
-            "rows": X.shape[0],
-            "columns": X.shape[1],
-            "time[s]": time
-        }
+        result = gen_basic_dict("sklearn", "distances", "computation",
+                                params, X)
 
-        print(json.dumps(res, indent=4))
+        result.update({
+            "metric": metric,
+            "time[s]": time
+        })
+
+        print(json.dumps(result, indent=4))

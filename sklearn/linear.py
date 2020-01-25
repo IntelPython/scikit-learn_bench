@@ -4,37 +4,21 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, convert_data,
-    rmse_score, get_dtype
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
+    rmse_score
 )
-import numpy as np
 from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
                                              'benchmark')
-parser.add_argument('-x', '--filex', '--fileX', type=argparse.FileType('r'),
-                    help='Input file with features, in NPY format')
-parser.add_argument('-y', '--filey', '--fileY', type=argparse.FileType('r'),
-                    help='Input file with labels, in NPY format')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 
-# Generate and convert random data
-if params.filex is None or params.filey is None:
-    X = convert_data(np.random.rand(*params.shape),
-                     params.dtype, params.data_order, params.data_format)
-    Xp = convert_data(np.random.rand(*params.shape),
-                      params.dtype, params.data_order, params.data_format)
-    y = convert_data(np.random.rand(*params.shape),
-                     params.dtype, params.data_order, params.data_format)
-else:
-    X = convert_data(np.load(params.filex.name),
-                     params.dtype, params.data_order, params.data_format)
-    y = convert_data(np.load(params.filey.name),
-                     params.dtype, params.data_order, params.data_format)
-    Xp = X
+# Load data
+X_train, X_test, y_train, y_test = load_data(
+    params, generated_data=["X_train", "X_test", "y_train"])
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
@@ -42,54 +26,46 @@ regr = LinearRegression(fit_intercept=params.fit_intercept,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
-params.dtype = get_dtype(X)
 
 # Time fit
-fit_time, _ = time_mean_min(regr.fit, X, y,
+fit_time, _ = time_mean_min(regr.fit, X_train, y_train,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
 
-# Time predict
-predict_time, yp = time_mean_min(regr.predict, Xp,
-                                 outer_loops=params.predict_outer_loops,
-                                 inner_loops=params.predict_inner_loops,
-                                 goal_outer_loops=params.predict_goal,
-                                 time_limit=params.predict_time_limit,
-                                 verbose=params.verbose)
+y_pred = regr.predict(X_train)
+train_rmse = rmse_score(y_pred, y_train)
 
-rmse = rmse_score(yp, y)
+# Time predict
+predict_time, y_pred = time_mean_min(regr.predict, X_test,
+                                     outer_loops=params.predict_outer_loops,
+                                     inner_loops=params.predict_inner_loops,
+                                     goal_outer_loops=params.predict_goal,
+                                     time_limit=params.predict_time_limit,
+                                     verbose=params.verbose)
+
+test_rmse = rmse_score(y_pred, y_test)
 
 if params.output_format == "csv":
-    print_header(columns, params)
-    print_row(columns, params, function='Linear.fit', time=fit_time)
-    print_row(columns, params, function='Linear.predict', time=predict_time)
+    output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],
+               times=[fit_time, predict_time])
 elif params.output_format == "json":
     import json
 
-    res = {
-        "lib": "sklearn",
-        "algorithm": "linear_regression",
-        "stage": "training",
-        "data_format": params.data_format,
-        "data_type": str(params.dtype),
-        "data_order": params.data_order,
-        "rows": X.shape[0],
-        "columns": X.shape[1],
+    result = gen_basic_dict("sklearn", "linear_regression",
+                            "training", params, X_train, regr)
+    result.update({
         "time[s]": fit_time,
-        "algorithm_paramaters": dict(regr.get_params())
-    }
-
-    print(json.dumps(res, indent=4))
-
-    res.update({
-        "rows": Xp.shape[0],
-        "columns": Xp.shape[1],
-        "stage": "prediction",
-        "time[s]": predict_time,
-        "rmse": rmse
+        "rmse": train_rmse
     })
+    print(json.dumps(result, indent=4))
 
-    print(json.dumps(res, indent=4))
+    result = gen_basic_dict("sklearn", "linear_regression",
+                            "prediction", params, X_test, regr)
+    result.update({
+        "time[s]": predict_time,
+        "rmse": test_rmse
+    })
+    print(json.dumps(result, indent=4))

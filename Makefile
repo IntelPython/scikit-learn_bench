@@ -120,22 +120,22 @@ ARGS_SKLEARN_linear = 	--size "$(REGRESSION_SIZE)"
 ARGS_SKLEARN_pca_daal = --size "$(REGRESSION_SIZE)" --svd-solver daal
 ARGS_SKLEARN_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_SKLEARN_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
-			--filex data/clustering/kmeans_$(KMEANS_SIZE).npy \
-			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
-ARGS_SKLEARN_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
-			--fileY data/two/y-$(SVM_SIZE).npy
-ARGS_SKLEARN_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
-			--fileY data/multi/y-$(SVM_SIZE).npy
-ARGS_SKLEARN_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
-			--fileY data/two/y-$(LOGREG_SIZE).npy
-ARGS_SKLEARN_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
-			--fileY data/multi/y-$(LOGREG_SIZE).npy
-ARGS_SKLEARN_dfclf2 = 	--fileX data/two/X-$(DFCLF_SIZE).npy \
-			--fileY data/two/y-$(DFCLF_SIZE).npy
-ARGS_SKLEARN_dfclf5 = 	--fileX data/multi/X-$(DFCLF_SIZE).npy \
-			--fileY data/multi/y-$(DFCLF_SIZE).npy
-ARGS_SKLEARN_dfreg = 	--fileX data/reg/X-$(DFREG_SIZE).npy \
-			--fileY data/reg/y-$(DFREG_SIZE).npy
+						--file-X-train data/clustering/kmeans_$(KMEANS_SIZE).npy \
+						--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
+ARGS_SKLEARN_svm2 =		--file-X-train data/two/X-$(SVM_SIZE).npy \
+						--file-y-train data/two/y-$(SVM_SIZE).npy
+ARGS_SKLEARN_svm5 = 	--file-X-train data/multi/X-$(SVM_SIZE).npy \
+						--file-y-train data/multi/y-$(SVM_SIZE).npy
+ARGS_SKLEARN_logreg2 = 	--file-X-train data/two/X-$(LOGREG_SIZE).npy \
+						--file-y-train data/two/y-$(LOGREG_SIZE).npy
+ARGS_SKLEARN_logreg5 = 	--file-X-train data/multi/X-$(LOGREG_SIZE).npy \
+						--file-y-train data/multi/y-$(LOGREG_SIZE).npy
+ARGS_SKLEARN_dfclf2 = 	--file-X-train data/two/X-$(DFCLF_SIZE).npy \
+						--file-y-train data/two/y-$(DFCLF_SIZE).npy
+ARGS_SKLEARN_dfclf5 = 	--file-X-train data/multi/X-$(DFCLF_SIZE).npy \
+						--file-y-train data/multi/y-$(DFCLF_SIZE).npy
+ARGS_SKLEARN_dfreg = 	--file-X-train data/reg/X-$(DFREG_SIZE).npy \
+						--file-y-train data/reg/y-$(DFREG_SIZE).npy
 
 DAAL4PY_distances = distances
 DAAL4PY_ridge = ridge

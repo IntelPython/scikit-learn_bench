@@ -4,9 +4,8 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, convert_data, get_dtype
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
 )
-import numpy as np
 from sklearn.decomposition import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
@@ -22,10 +21,7 @@ params = parse_args(parser, size=(10000, 1000),
 # Generate random data
 p, n = params.shape
 
-X = convert_data(np.random.rand(*params.shape),
-                 params.dtype, params.data_order, params.data_format)
-Xp = convert_data(np.random.rand(*params.shape),
-                  params.dtype, params.data_order, params.data_format)
+X_train, X_test, _, _ = load_data(params, generated_data=["X_train", "X_test"])
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))
@@ -36,10 +32,9 @@ pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
-params.dtype = get_dtype(X)
 
 # Time fit
-fit_time, _ = time_mean_min(pca.fit, X,
+fit_time, _ = time_mean_min(pca.fit, X_train,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
@@ -47,7 +42,7 @@ fit_time, _ = time_mean_min(pca.fit, X,
                             verbose=params.verbose)
 
 # Time transform
-transform_time, _ = time_mean_min(pca.transform, Xp,
+transform_time, _ = time_mean_min(pca.transform, X_train,
                                   outer_loops=params.transform_outer_loops,
                                   inner_loops=params.transform_inner_loops,
                                   goal_outer_loops=params.transform_goal,
@@ -55,33 +50,21 @@ transform_time, _ = time_mean_min(pca.transform, Xp,
                                   verbose=params.verbose)
 
 if params.output_format == "csv":
-    print_header(columns, params)
-    print_row(columns, params, function='PCA.fit', time=fit_time)
-    print_row(columns, params, function='PCA.transform', time=transform_time)
+    output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
+               times=[fit_time, transform_time])
 elif params.output_format == "json":
     import json
 
-    res = {
-        "lib": "sklearn",
-        "algorithm": "pca",
-        "stage": "training",
-        "data_format": params.data_format,
-        "data_type": str(params.dtype),
-        "data_order": params.data_order,
-        "rows": X.shape[0],
-        "columns": X.shape[1],
-        "n_components": params.n_components,
-        "time[s]": fit_time,
-        "algorithm_paramaters": dict(pca.get_params())
-    }
+    result = gen_basic_dict("sklearn", "pca", "training", params, X_train, pca)
+    result["input_data"].update({"classes": params.n_classes})
+    result.update({
+        "time[s]": fit_time
+    })
+    print(json.dumps(result, indent=4))
 
-    print(json.dumps(res, indent=4))
-
-    res.update({
-        "rows": Xp.shape[0],
-        "columns": Xp.shape[1],
-        "stage": "transform",
+    result = gen_basic_dict("sklearn", "pca", "transform", params, X_test, pca)
+    result["input_data"].update({"classes": params.n_classes})
+    result.update({
         "time[s]": transform_time
     })
-
-    print(json.dumps(res, indent=4))
+    print(json.dumps(result, indent=4))

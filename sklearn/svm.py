@@ -4,8 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, size_str, convert_data,
-    get_dtype
+    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
 )
 import numpy as np
 from sklearn.svm import SVC
@@ -38,12 +37,6 @@ def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
 
 parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
 
-parser.add_argument('-x', '--filex', '--fileX', type=argparse.FileType('r'),
-                    required=True,
-                    help='Input file with features, in NPY format')
-parser.add_argument('-y', '--filey', '--fileY', type=argparse.FileType('r'),
-                    required=True,
-                    help='Input file with labels, in NPY format')
 parser.add_argument('-C', dest='C', type=float, default=0.01,
                     help='SVM slack parameter')
 parser.add_argument('--kernel', choices=('linear', 'rbf'),
@@ -61,19 +54,16 @@ parser.add_argument('--no-shrinking', action='store_false', default=True,
                     dest='shrinking', help="Don't use shrinking heuristic")
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
-# Load data and cast to float64
-X = convert_data(np.load(params.filex.name),
-                 params.dtype, params.data_order, params.data_format)
-y = convert_data(np.load(params.filey.name),
-                 params.dtype, params.data_order, params.data_format)
+# Load data
+X_train, X_test, y_train, y_test = load_data(params)
 
 if params.gamma is None:
     params.gamma = 'auto'
 
-cache_size_bytes = get_optimal_cache_size(X.shape[0],
+cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
-params.n_classes = len(np.unique(y))
+params.n_classes = len(np.unique(y_train))
 
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
@@ -83,54 +73,46 @@ clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
            'time')
-params.dtype = get_dtype(X)
-params.size = size_str(X.shape)
 
 # Time fit and predict
-fit_time, _ = time_mean_min(clf.fit, X, y,
+fit_time, _ = time_mean_min(clf.fit, X_train, y_train,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
 params.sv_len = clf.support_.shape[0]
+y_pred = clf.predict(X_train)
+train_acc = 100 * accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(clf.predict, X,
+predict_time, y_pred = time_mean_min(clf.predict, X_test,
                                      outer_loops=params.predict_outer_loops,
                                      inner_loops=params.predict_inner_loops,
                                      goal_outer_loops=params.predict_goal,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
-acc = 100 * accuracy_score(y_pred, y)
+test_acc = 100 * accuracy_score(y_pred, y_test)
 
 if params.output_format == "csv":
-    print_header(columns, params)
-    print_row(columns, params, function='SVM.fit', time=fit_time)
-    print_row(columns, params, function='SVM.predict', time=predict_time,
-              accuracy=acc)
+    output_csv(columns, params, functions=['SVM.fit', 'SVM.predict'],
+               times=[fit_time, predict_time], accuracies=[None, test_acc])
 elif params.output_format == "json":
     import json
 
-    res = {
-        "lib": "sklearn",
-        "algorithm": "svc",
-        "stage": "training",
-        "data_format": params.data_format,
-        "data_type": str(params.dtype),
-        "data_order": params.data_order,
-        "rows": X.shape[0],
-        "columns": X.shape[1],
-        "classes": params.n_classes,
+    result = gen_basic_dict(
+        "sklearn", "svc", "training", params, X_train, clf)
+    result["input_data"].update({"classes": params.n_classes})
+    result.update({
         "time[s]": fit_time,
-        "accuracy[%]": acc,
-        "algorithm_paramaters": dict(clf.get_params())
-    }
-
-    print(json.dumps(res, indent=4))
-
-    res.update({
-        "stage": "prediction",
-        "time[s]": predict_time
+        "accuracy[%]": train_acc
     })
+    print(json.dumps(result, indent=4))
 
-    print(json.dumps(res, indent=4))
+    result = gen_basic_dict(
+        "sklearn", "svc", "prediction", params, X_test, clf)
+    result["input_data"].update({"classes": params.n_classes})
+    result.update({
+        "time[s]": predict_time,
+        "accuracy[%]": test_acc
+    })
+    print(json.dumps(result, indent=4))
