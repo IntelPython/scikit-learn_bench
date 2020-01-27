@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, \
-                  size_str, accuracy_score
+from bench import (
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
+    accuracy_score
+)
 import numpy as np
 import daal4py
 from daal4py import math_logistic, math_softmax
@@ -180,12 +182,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='daal4py logistic '
                                                  'regression benchmark')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'),
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'),
-                        help='Input file with labels, in NPY format')
     parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                         action='store_false', default=True,
                         help="Don't fit intercept")
@@ -205,23 +201,20 @@ if __name__ == '__main__':
                         prefix='daal4py')
 
     # Load generated data
-    X = np.load(params.filex.name)
-    y = np.load(params.filey.name)
+    X_train, X_test, y_train, y_test = load_data(params, add_dtype=True,
+        label_2d=True)
 
-    params.n_classes = len(np.unique(y))
+    params.n_classes = len(np.unique(y_train))
     if not params.tol:
         params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'solver', 'C', 'multiclass', 'n_classes', 'accuracy',
                'time')
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-    print_header(columns, params)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(test_fit, X, y, penalty='l2', C=params.C,
+    fit_time, res = time_mean_min(test_fit, X_train, y_train, penalty='l2',
+                                  C=params.C,
                                   fit_intercept=params.fit_intercept,
                                   tol=params.tol,
                                   max_iter=params.maxiter,
@@ -233,9 +226,8 @@ if __name__ == '__main__':
                                   verbose=params.verbose)
 
     beta, intercept, solver_result, params.multiclass = res
-    print_row(columns, params, function='LogReg.fit', time=fit_time)
 
-    predict_time, yp = time_mean_min(test_predict, X, beta,
+    predict_time, yp = time_mean_min(test_predict, X_test, beta,
                                      intercept=intercept,
                                      multi_class=params.multiclass,
                                      outer_loops=params.predict_outer_loops,
@@ -244,14 +236,40 @@ if __name__ == '__main__':
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
     y_pred = np.argmax(yp, axis=1)
-    acc = 100 * accuracy_score(y_pred, y)
-    print_row(columns, params, function='LogReg.predict', time=predict_time,
-              accuracy=acc)
+    test_acc = 100 * accuracy_score(y_pred, y_test)
 
-    if params.verbose:
-        print()
-        print("@ Number of iterations: {}".format(solver_result.nit))
-        print("@ fit coefficients:")
-        print("@ {}".format(beta.tolist()))
-        print("@ fit intercept:")
-        print("@ {}".format(intercept.tolist()))
+    yp = test_predict(X_train, beta, multi_class=params.multiclass)
+    y_pred = np.argmax(yp, axis=1)
+    train_acc = 100 * accuracy_score(y_pred, y_train)
+
+    if params.output_format == "csv":
+        output_csv(columns, params, functions=['LogReg.fit', 'LogReg.predict'],
+                   times=[fit_time, predict_time], accuracies=[None, test_acc])
+        if params.verbose:
+            print()
+            print("@ Number of iterations: {}".format(clf.n_iter_))
+            print("@ fit coefficients:")
+            print("@ {}".format(clf.coef_.tolist()))
+            print("@ fit intercept:")
+            print("@ {}".format(clf.intercept_.tolist()))
+
+    elif params.output_format == "json":
+        import json
+
+        result = gen_basic_dict("sklearn", "logistic_regression",
+                                "training", params, X_train)
+        result["input_data"].update({"classes": params.n_classes})
+        result.update({
+            "time[s]": fit_time,
+            "accuracy[%]": train_acc
+        })
+        print(json.dumps(result, indent=4))
+
+        result = gen_basic_dict("sklearn", "logistic_regression",
+                                "prediction", params, X_test)
+        result["input_data"].update({"classes": params.n_classes})
+        result.update({
+            "time[s]": predict_time,
+            "accuracy[%]": test_acc
+        })
+        print(json.dumps(result, indent=4))

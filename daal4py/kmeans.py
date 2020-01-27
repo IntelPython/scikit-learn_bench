@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
 from daal4py import kmeans
 from daal4py.sklearn.utils import getFPType
 import numpy as np
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
-parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
-                    type=str, help='Points to cluster')
 parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
                     type=str, help='Initial clusters')
 parser.add_argument('-t', '--tol', default=0., type=float,
@@ -23,13 +21,10 @@ parser.add_argument('--maxiter', type=int, default=100,
 params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 
 # Load generated data
-X = np.load(params.filex)
-X_init = np.load(params.filei)
-X_mult = np.vstack((X,) * params.data_multiplier)
+X_train, X_test, _, _ = load_data(params, add_dtype=True)
+X_init = np.load(params.filei).astype(params.dtype)
 
-params.size = size_str(X.shape)
 params.n_clusters = X_init.shape[0]
-params.dtype = X.dtype
 
 
 # Define functions to time
@@ -57,22 +52,45 @@ def test_predict(X, X_init):
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
-print_header(columns, params)
 
 # Time fit
-fit_time, _ = time_mean_min(test_fit, X, X_init,
+fit_time, res = time_mean_min(test_fit, X_train, X_init,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-print_row(columns, params, function='KMeans.fit', time=fit_time)
+train_inertia = res.goalFunction[0,0]
 
 # Time predict
-predict_time, _ = time_mean_min(test_predict, X, X_init,
+predict_time, res = time_mean_min(test_predict, X_test, X_init,
                                 outer_loops=params.predict_outer_loops,
                                 inner_loops=params.predict_inner_loops,
                                 goal_outer_loops=params.predict_goal,
                                 time_limit=params.predict_time_limit,
                                 verbose=params.verbose)
-print_row(columns, params, function='KMeans.predict', time=predict_time)
+test_inertia = res.goalFunction[0,0]
+
+if params.output_format == "csv":
+    output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
+               times=[fit_time, predict_time])
+elif params.output_format == "json":
+    import json
+
+    result = gen_basic_dict("daal4py", "kmeans", "training", params,
+                            X_train)
+    result.update({
+        "n_clusters": params.n_clusters,
+        "time[s]": fit_time,
+        "inertia": train_inertia
+    })
+    print(json.dumps(result, indent=4))
+
+    result = gen_basic_dict("daal4py", "kmeans", "prediction", params,
+                            X_test)
+    result.update({
+        "n_clusters": params.n_clusters,
+        "time[s]": predict_time,
+        "inertia": test_inertia
+    })
+    print(json.dumps(result, indent=4))

@@ -4,7 +4,10 @@
 
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
+from bench import (
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
+    rmse_score
+)
 from daal4py import decision_forest_regression_training, \
                     decision_forest_regression_prediction, \
                     engines_mt2203
@@ -59,12 +62,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='daal4py random forest '
                                                  'regression benchmark')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with targets, in NPY format')
 
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
@@ -82,18 +79,15 @@ if __name__ == '__main__':
                         prefix='daal4py')
 
     # Load data
-    X = np.load(params.filex.name)
-    y = np.load(params.filey.name)[:, np.newaxis]
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'num_trees', 'time')
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
 
-    print_header(columns, params)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(df_regr_fit, X, y,
+    fit_time, res = time_mean_min(df_regr_fit, X_train, y_train,
                                   n_trees=params.num_trees,
                                   seed=params.seed,
                                   n_features_per_node=params.max_features,
@@ -103,12 +97,37 @@ if __name__ == '__main__':
                                   goal_outer_loops=params.fit_goal,
                                   time_limit=params.fit_time_limit,
                                   verbose=params.verbose)
-    print_row(columns, params, function='df_regr.fit', time=fit_time)
 
-    predict_time, yp = time_mean_min(df_regr_predict, X, res,
+    yp = df_regr_predict(X_train, res)
+    train_rmse = rmse_score(yp, y_train)
+
+    predict_time, yp = time_mean_min(df_regr_predict, X_test, res,
                                      outer_loops=params.predict_outer_loops,
                                      inner_loops=params.predict_inner_loops,
                                      goal_outer_loops=params.predict_goal,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
-    print_row(columns, params, function='df_regr.predict', time=predict_time)
+
+    test_rmse = rmse_score(yp, y_test)
+
+    if params.output_format == "csv":
+        output_csv(columns, params, functions=['df_regr.fit', 'df_regr.predict'],
+                   times=[fit_time, predict_time])
+    elif params.output_format == "json":
+        import json
+
+        result = gen_basic_dict("daal4py", "decision_forest_regression",
+                                "training", params, X_train)
+        result.update({
+            "time[s]": fit_time,
+            "rmse": train_rmse
+        })
+        print(json.dumps(result, indent=4))
+
+        result = gen_basic_dict("daal4py", "decision_forest_regression",
+                                "prediction", params, X_test)
+        result.update({
+            "time[s]": predict_time,
+            "rmse": test_rmse
+        })
+        print(json.dumps(result, indent=4))

@@ -316,11 +316,23 @@ def logverbose(msg, verbose):
         print('@', msg)
 
 
+def convert_to_numpy1d(data):
+    if "cudf" in str(type(data)):
+        data = data.to_pandas().values
+    if "pandas" in str(type(data)):
+        data = data.values
+    return data.reshape((data.shape[0],))
+
+
 def accuracy_score(y, yp):
+    y = convert_to_numpy1d(y)
+    yp = convert_to_numpy1d(yp)
     return np.mean(y == yp)
 
 
 def rmse_score(y, yp):
+    y = convert_to_numpy1d(y)
+    yp = convert_to_numpy1d(yp)
     return float(np.sqrt(np.mean((y - yp)**2)))
 
 
@@ -355,7 +367,7 @@ def get_dtype(data):
         return str(data.dtypes[0])
 
 
-def load_data(params, generated_data=[]):
+def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
     full_data = {
         file: None for file in ["X_train", "X_test", "y_train", "y_test"]
     }
@@ -375,6 +387,15 @@ def load_data(params, generated_data=[]):
             full_data[element] = convert_data(np.random.rand(*params.shape),
                                               params.dtype, params.data_order,
                                               params.data_format)
+        if full_data[element] is not None and "y" in element and label_2d and hasattr(full_data[element], "reshape"):
+            full_data[element] = full_data[element].reshape(
+                (full_data[element].shape[0], 1))
+        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], "dtype"):
+            if hasattr(full_data[element], "values"):
+                full_data[element].dtype = full_data[element].values.dtype
+            elif hasattr(full_data[element], "dtypes"):
+                full_data[element].dtype = full_data[element].dtypes[0].type
+
 
     params.dtype = get_dtype(full_data["X_train"])
     if not hasattr(params, "size"):
