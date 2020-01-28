@@ -1,0 +1,79 @@
+# Copyright (C) 2017-2019 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+
+import argparse
+from bench import (
+    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
+)
+import numpy as np
+from cuml import KMeans
+
+parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
+parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
+                    type=str, help='Initial clusters')
+parser.add_argument('-t', '--tol', type=float, default=0.,
+                    help='Absolute threshold')
+parser.add_argument('-m', '--data-multiplier', default=100,
+                    type=int, help='Data multiplier')
+parser.add_argument('--maxiter', type=int, default=100,
+                    help='Maximum number of iterations')
+parser.add_argument('--samples-per-batch', type=int, default=32768,
+                    help='Maximum number of iterations')
+params = parse_args(parser, prefix="cuml", loop_types=('fit', 'predict'))
+
+# Load and convert generated data
+X_train, X_test, _, _ = load_data(params)
+X_init = np.load(params.filei).astype(params.dtype)
+
+params.n_clusters = X_init.shape[0]
+
+# Create our clustering object
+kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
+                tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init,
+                max_samples_per_batch=samples_per_batch)
+
+columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+           'n_clusters', 'time')
+
+# Time fit
+fit_time, _ = time_mean_min(kmeans.fit, X_train,
+                            outer_loops=params.fit_outer_loops,
+                            inner_loops=params.fit_inner_loops,
+                            goal_outer_loops=params.fit_goal,
+                            time_limit=params.fit_time_limit,
+                            verbose=params.verbose)
+train_inertia = kmeans.inertia_
+
+# Time predict
+predict_time, _ = time_mean_min(kmeans.predict, X_test,
+                                outer_loops=params.predict_outer_loops,
+                                inner_loops=params.predict_inner_loops,
+                                goal_outer_loops=params.predict_goal,
+                                time_limit=params.predict_time_limit,
+                                verbose=params.verbose)
+test_inertia = kmeans.inertia_
+
+if params.output_format == "csv":
+    output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
+               times=[fit_time, predict_time])
+elif params.output_format == "json":
+    import json
+
+    result = gen_basic_dict("cuml", "kmeans", "training", params,
+                            X_train, kmeans)
+    result.update({
+        "n_clusters": params.n_clusters,
+        "time[s]": fit_time,
+        "inertia": train_inertia
+    })
+    print(json.dumps(result, indent=4))
+
+    result = gen_basic_dict("cuml", "kmeans", "prediction", params,
+                            X_test, kmeans)
+    result.update({
+        "n_clusters": params.n_clusters,
+        "time[s]": predict_time,
+        "inertia": test_inertia
+    })
+    print(json.dumps(result, indent=4))
