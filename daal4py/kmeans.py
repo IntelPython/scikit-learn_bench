@@ -10,22 +10,25 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
-parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
+parser.add_argument('-i', '--filei', '--fileI', '--init',
                     type=str, help='Initial clusters')
 parser.add_argument('-t', '--tol', default=0., type=float,
                     help='Absolute threshold')
-parser.add_argument('-m', '--data-multiplier', default=100,
-                    type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
+parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 
 # Load generated data
 X_train, X_test, _, _ = load_data(params, add_dtype=True)
-X_init = np.load(params.filei).astype(params.dtype)
 
-params.n_clusters = X_init.shape[0]
-
+if params.filei is not None:
+    X_init = np.load(params.filei).astype(params.dtype)
+    params.n_clusters = X_init.shape[0]
+else:
+    np.seed(params.seed)
+    centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
+    X_init = data[centroids_idx]
 
 # Define functions to time
 def test_fit(X, X_init):

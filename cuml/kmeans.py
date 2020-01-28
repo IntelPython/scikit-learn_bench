@@ -10,23 +10,27 @@ import numpy as np
 from cuml import KMeans
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
-parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
+parser.add_argument('-i', '--filei', '--fileI', '--init',
                     type=str, help='Initial clusters')
 parser.add_argument('-t', '--tol', type=float, default=0.,
                     help='Absolute threshold')
-parser.add_argument('-m', '--data-multiplier', default=100,
-                    type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--samples-per-batch', type=int, default=32768,
                     help='Maximum number of iterations')
+parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = parse_args(parser, prefix="cuml", loop_types=('fit', 'predict'))
 
 # Load and convert generated data
 X_train, X_test, _, _ = load_data(params)
-X_init = np.load(params.filei).astype(params.dtype)
 
-params.n_clusters = X_init.shape[0]
+if params.filei is not None:
+    X_init = np.load(params.filei).astype(params.dtype)
+    params.n_clusters = X_init.shape[0]
+else:
+    np.seed(params.seed)
+    centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
+    X_init = data[centroids_idx]
 
 # Create our clustering object
 kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,

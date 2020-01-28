@@ -73,8 +73,6 @@ if __name__ == '__main__':
     parser.add_argument('--use-sklearn-class', action='store_true',
                         help='Force use of '
                              'sklearn.ensemble.RandomForestRegressor')
-    parser.add_argument('--seed', type=int, default=12345,
-                        help='Seed to pass as random_state to the class')
     params = parse_args(parser, loop_types=('fit', 'predict'),
                         prefix='daal4py')
 

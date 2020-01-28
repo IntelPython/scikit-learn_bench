@@ -93,6 +93,8 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument("--output-format", type=str, default="csv",
                         choices=("csv", "json"),
                         help="Output format: csv or json")
+    parser.add_argument('--seed', type=int, default=12345,
+                        help='Seed to pass as random_state')
 
     for data in ["X", "y"]:
         for stage in ["train", "test"]:

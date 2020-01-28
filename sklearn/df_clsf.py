@@ -22,8 +22,6 @@ parser.add_argument('--max-depth',   type=int, default=None,
 parser.add_argument('--use-sklearn-class', action='store_true',
                     help='Force use of '
                          'sklearn.ensemble.RandomForestClassifier')
-parser.add_argument('--seed', type=int, default=12345,
-                    help='Seed to pass as random_state to the class')
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Get some RandomForestClassifier
