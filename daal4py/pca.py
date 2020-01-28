@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row
+from bench import (
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
+)
 import numpy as np
 from daal4py import pca, pca_transform, normalization_zscore
 from daal4py.sklearn.utils import getFPType
@@ -18,13 +20,14 @@ parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 parser.add_argument('--write-results', action='store_true', default=False,
                     help='Write results to disk for verification')
-params = parse_args(parser, size=(10000, 1000), dtypes=('f8', 'f4'),
+params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
-# Generate random data
+# Load data
 p, n = params.shape
-X = np.random.rand(*params.shape).astype(params.dtype)
-Xp = np.random.rand(*params.shape).astype(params.dtype)
+
+X_train, X_test, _, _ = load_data(params, generated_data=["X_train", "X_test"],
+                                  add_dtype=True)
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))
@@ -112,31 +115,46 @@ def test_fit(X):
 
 
 def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
-    return pca_transform_daal(pca_result, Xp, params.n_components, X.shape[0],
+    return pca_transform_daal(pca_result, Xp, params.n_components, X_train.shape[0],
                               eigenvalues, eigenvectors, whiten=params.whiten)
 
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
-print_header(columns, params)
 
 # Time fit
-fit_time, res = time_mean_min(test_fit, X,
+fit_time, res = time_mean_min(test_fit, X_train,
                               outer_loops=params.fit_outer_loops,
                               inner_loops=params.fit_inner_loops,
                               goal_outer_loops=params.fit_goal,
                               time_limit=params.fit_time_limit,
                               verbose=params.verbose)
-print_row(columns, params, function='PCA.fit', time=fit_time)
 
 # Time transform
-transform_time, tr = time_mean_min(test_transform, Xp, *res[:3],
+transform_time, tr = time_mean_min(test_transform, X_test, *res[:3],
                                    outer_loops=params.transform_outer_loops,
                                    inner_loops=params.transform_inner_loops,
                                    goal_outer_loops=params.transform_goal,
                                    time_limit=params.transform_time_limit,
                                    verbose=params.verbose)
-print_row(columns, params, function='PCA.transform', time=transform_time)
+
+if params.output_format == "csv":
+    output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
+               times=[fit_time, transform_time])
+elif params.output_format == "json":
+    import json
+
+    result = gen_basic_dict("daal4py", "pca", "training", params, X_train)
+    result.update({
+        "time[s]": fit_time
+    })
+    print(json.dumps(result, indent=4))
+
+    result = gen_basic_dict("daal4py", "pca", "transform", params, X_test)
+    result.update({
+        "time[s]": transform_time
+    })
+    print(json.dumps(result, indent=4))
 
 if params.write_results:
     np.save('pca_daal4py_X.npy', X)

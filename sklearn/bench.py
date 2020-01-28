@@ -426,8 +426,9 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
         "alogrithm": algorithm,
         "stage": stage,
         "input_data": {
-            "data_type": str(params.dtype),
+            "data_format": params.data_format,
             "data_order": params.data_order,
+            "data_type": str(params.dtype),
             "rows": data.shape[0],
             "columns": data.shape[1],
         }

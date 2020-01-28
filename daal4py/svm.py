@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, \
-                  size_str, accuracy_score
+from bench import (
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
+    accuracy_score
+)
 import numpy as np
 from daal4py import svm_training, svm_prediction, \
                     kernel_function_linear, kernel_function_rbf, \
@@ -289,12 +291,6 @@ def test_predict(X, training_result, params):
 def main():
     parser = argparse.ArgumentParser(description='daal4py SVC benchmark with '
                                                  'linear kernel')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with labels, in NPY format')
     parser.add_argument('-C', dest='C', type=float, default=0.01,
                         help='SVM slack parameter')
     parser.add_argument('--kernel', choices=('linear', 'rbf'),
@@ -316,9 +312,9 @@ def main():
     params = parse_args(parser, loop_types=('fit', 'predict'),
                         prefix='daal4py')
 
-    # Load data and cast to float64
-    X_train = np.load(params.filex.name).astype('f8')
-    y_train = np.load(params.filey.name).astype('f8')
+    # Load data
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     if params.gamma is None:
         params.gamma = 1 / X_train.shape[1]
@@ -331,15 +327,10 @@ def main():
 
     # This is necessary for daal
     y_train[y_train == 0] = -1
-    y_train = y_train[:, np.newaxis]
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes',
                'accuracy', 'time')
-    params.size = size_str(X_train.shape)
-    params.dtype = X_train.dtype
-
-    print_header(columns, params)
 
     # Time fit and predict
     fit_time, res = time_mean_min(test_fit, X_train, y_train, params,
@@ -350,17 +341,40 @@ def main():
                                   verbose=params.verbose)
     res, support, indices, n_support = res
     params.sv_len = support.shape[0]
-    print_row(columns, params, function='SVM.fit', time=fit_time)
 
-    predict_time, yp = time_mean_min(test_predict, X_train, res, params,
+    yp = test_predict(X_train, res, params)
+    train_acc = 100 * accuracy_score(yp, y_train)
+
+    predict_time, yp = time_mean_min(test_predict, X_test, res, params,
                                      outer_loops=params.predict_outer_loops,
                                      inner_loops=params.predict_inner_loops,
                                      goal_outer_loops=params.predict_goal,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
-    print_row(columns, params, function='SVM.predict', time=predict_time,
-              accuracy=f'{100*accuracy_score(yp, y_train):.3}')
 
+    test_acc = 100 * accuracy_score(yp, y_train)
+
+    if params.output_format == "csv":
+        output_csv(columns, params, functions=['SVM.fit', 'SVM.predict'],
+                   times=[fit_time, predict_time], accuracies=[None, test_acc])
+    elif params.output_format == "json":
+        import json
+
+        result = gen_basic_dict("daal4py", "svc", "training", params, X_train)
+        result["input_data"].update({"classes": params.n_classes})
+        result.update({
+            "time[s]": fit_time,
+            "accuracy[%]": train_acc
+        })
+        print(json.dumps(result, indent=4))
+
+        result = gen_basic_dict("daal4py", "svc", "prediction", params, X_test)
+        result["input_data"].update({"classes": params.n_classes})
+        result.update({
+            "time[s]": predict_time,
+            "accuracy[%]": test_acc
+        })
+        print(json.dumps(result, indent=4))
 
 if __name__ == '__main__':
     main()

@@ -201,8 +201,8 @@ if __name__ == '__main__':
                         prefix='daal4py')
 
     # Load generated data
-    X_train, X_test, y_train, y_test = load_data(params, add_dtype=True,
-        label_2d=True)
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     params.n_classes = len(np.unique(y_train))
     if not params.tol:
@@ -227,6 +227,10 @@ if __name__ == '__main__':
 
     beta, intercept, solver_result, params.multiclass = res
 
+    yp = test_predict(X_train, beta, multi_class=params.multiclass)
+    y_pred = np.argmax(yp, axis=1)
+    train_acc = 100 * accuracy_score(y_pred, y_train)
+
     predict_time, yp = time_mean_min(test_predict, X_test, beta,
                                      intercept=intercept,
                                      multi_class=params.multiclass,
@@ -237,10 +241,6 @@ if __name__ == '__main__':
                                      verbose=params.verbose)
     y_pred = np.argmax(yp, axis=1)
     test_acc = 100 * accuracy_score(y_pred, y_test)
-
-    yp = test_predict(X_train, beta, multi_class=params.multiclass)
-    y_pred = np.argmax(yp, axis=1)
-    train_acc = 100 * accuracy_score(y_pred, y_train)
 
     if params.output_format == "csv":
         output_csv(columns, params, functions=['LogReg.fit', 'LogReg.predict'],
@@ -256,7 +256,7 @@ if __name__ == '__main__':
     elif params.output_format == "json":
         import json
 
-        result = gen_basic_dict("sklearn", "logistic_regression",
+        result = gen_basic_dict("daal4py", "logistic_regression",
                                 "training", params, X_train)
         result["input_data"].update({"classes": params.n_classes})
         result.update({
@@ -265,7 +265,7 @@ if __name__ == '__main__':
         })
         print(json.dumps(result, indent=4))
 
-        result = gen_basic_dict("sklearn", "logistic_regression",
+        result = gen_basic_dict("daal4py", "logistic_regression",
                                 "prediction", params, X_test)
         result["input_data"].update({"classes": params.n_classes})
         result.update({

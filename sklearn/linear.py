@@ -35,9 +35,6 @@ fit_time, _ = time_mean_min(regr.fit, X_train, y_train,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
 
-y_pred = regr.predict(X_train)
-train_rmse = rmse_score(y_pred, y_train)
-
 # Time predict
 predict_time, y_pred = time_mean_min(regr.predict, X_test,
                                      outer_loops=params.predict_outer_loops,
@@ -46,13 +43,15 @@ predict_time, y_pred = time_mean_min(regr.predict, X_test,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
 
-test_rmse = rmse_score(y_pred, y_test)
-
 if params.output_format == "csv":
     output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],
                times=[fit_time, predict_time])
 elif params.output_format == "json":
     import json
+
+    test_rmse = rmse_score(y_pred, y_test)
+    y_pred = regr.predict(X_train)
+    train_rmse = rmse_score(y_pred, y_train)
 
     result = gen_basic_dict("sklearn", "linear_regression",
                             "training", params, X_train, regr)

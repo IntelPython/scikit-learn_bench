@@ -56,14 +56,12 @@ elif params.output_format == "json":
     import json
 
     result = gen_basic_dict("sklearn", "pca", "training", params, X_train, pca)
-    result["input_data"].update({"classes": params.n_classes})
     result.update({
         "time[s]": fit_time
     })
     print(json.dumps(result, indent=4))
 
     result = gen_basic_dict("sklearn", "pca", "transform", params, X_test, pca)
-    result["input_data"].update({"classes": params.n_classes})
     result.update({
         "time[s]": transform_time
     })
