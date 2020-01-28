@@ -28,7 +28,7 @@ if params.filei is not None:
     X_init = np.load(params.filei).astype(params.dtype)
     params.n_clusters = X_init.shape[0]
 else:
-    np.seed(params.seed)
+    np.random.seed(params.seed)
     centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
     X_init = data[centroids_idx]
 

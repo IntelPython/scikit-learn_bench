@@ -46,7 +46,7 @@ for algorithm in config["algorithms"]:
                 _, _, samples, features = dataset.split("_")
                 xfile = "data/reg/X-{}x{}.npy".format(samples, features)
                 yfile = "data/reg/y-{}x{}.npy".format(samples, features)
-                paths = "-x {} -y {}".format(xfile, yfile)
+                paths = "--file-X-train {} --file-y-train {}".format(xfile, yfile)
                 command = "python make_datasets.py -s {} -f {} regression -x {} -y {}".format(
                     samples, features, xfile, yfile)
                 print(command)
@@ -57,7 +57,7 @@ for algorithm in config["algorithms"]:
                     "two" if classes == 2 else "multi", samples, features)
                 yfile = "data/{}/y-{}x{}.npy".format(
                     "two" if classes == 2 else "multi", samples, features)
-                paths = "-x {} -y {}".format(xfile, yfile)
+                paths = "--file-X-train {} --file-y-train {}".format(xfile, yfile)
                 command = "python make_datasets.py -s {} -f {} classification -c {} -x {} -y {}".format(
                     samples, features, classes, xfile, yfile)
                 print(command)
