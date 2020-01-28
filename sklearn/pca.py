@@ -21,7 +21,7 @@ params = parse_args(parser, size=(10000, 1000),
 # Generate random data
 p, n = params.shape
 
-X_train, X_test, _, _ = load_data(params, generated_data=["X_train", "X_test"])
+X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'])
 
 if not params.n_components:
     params.n_components = min((n, (2 + min((n, p))) // 3))
@@ -49,20 +49,20 @@ transform_time, _ = time_mean_min(pca.transform, X_train,
                                   time_limit=params.transform_time_limit,
                                   verbose=params.verbose)
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
                times=[fit_time, transform_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("sklearn", "pca", "training", params, X_train, pca)
+    result = gen_basic_dict('sklearn', 'pca', 'training', params, X_train, pca)
     result.update({
-        "time[s]": fit_time
+        'time[s]': fit_time
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("sklearn", "pca", "transform", params, X_test, pca)
+    result = gen_basic_dict('sklearn', 'pca', 'transform', params, X_test, pca)
     result.update({
-        "time[s]": transform_time
+        'time[s]': transform_time
     })
     print(json.dumps(result, indent=4))

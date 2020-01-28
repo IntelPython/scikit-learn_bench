@@ -74,26 +74,26 @@ predict_time, res = time_mean_min(test_predict, X_test, X_init,
                                 verbose=params.verbose)
 test_inertia = res.goalFunction[0,0]
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("daal4py", "kmeans", "training", params,
+    result = gen_basic_dict('daal4py', 'kmeans', 'training', params,
                             X_train)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": fit_time,
-        "inertia": train_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': fit_time,
+        'inertia': train_inertia
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("daal4py", "kmeans", "prediction", params,
+    result = gen_basic_dict('daal4py', 'kmeans', 'prediction', params,
                             X_test)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": predict_time,
-        "inertia": test_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': predict_time,
+        'inertia': test_inertia
     })
     print(json.dumps(result, indent=4))

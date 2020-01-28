@@ -24,8 +24,8 @@ def _parse_size(string, dim=2):
         tup = tuple(int(n) for n in string.replace('x', ',').split(','))
     except Exception as e:
         msg = (
-            f"Invalid size '{string}': sizes must be integers separated by "
-            f"'x' or ','."
+            f'Invalid size '{string}': sizes must be integers separated by '
+            f'"x" or ",".'
         )
         raise argparse.ArgumentTypeError(msg) from e
 
@@ -78,27 +78,27 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Output CSV header')
     parser.add_argument('-v', '--verbose', default=False, action='store_true',
                         help='Output extra debug messages')
-    parser.add_argument("--data-format", type=str, default="numpy",
-                        choices=("numpy", "pandas", "cudf"),
-                        help="Data format: numpy, pandas, cudf")
-    parser.add_argument("--data-order", type=str, default="C",
-                        choices=("C", "F"),
-                        help="Data order: F (column-major) or C (row-major)")
+    parser.add_argument('--data-format', type=str, default='numpy',
+                        choices=('numpy', 'pandas', 'cudf'),
+                        help='Data format: numpy, pandas, cudf')
+    parser.add_argument('--data-order', type=str, default='C',
+                        choices=('C', 'F'),
+                        help='Data order: F (column-major) or C (row-major)')
     parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
                         choices=(np.float32, np.float64),
                         help='Data type to use')
-    parser.add_argument("--check-finiteness", default=False,
+    parser.add_argument('--check-finiteness', default=False,
                         action='store_true',
-                        help="Check finiteness in sklearn input check")
-    parser.add_argument("--output-format", type=str, default="csv",
-                        choices=("csv", "json"),
-                        help="Output format: csv or json")
+                        help='Check finiteness in sklearn input check')
+    parser.add_argument('--output-format', type=str, default='csv',
+                        choices=('csv', 'json'),
+                        help='Output format: csv or json')
     parser.add_argument('--seed', type=int, default=12345,
                         help='Seed to pass as random_state')
 
-    for data in ["X", "y"]:
-        for stage in ["train", "test"]:
-            parser.add_argument(f"--file-{data}-{stage}",
+    for data in ['X', 'y']:
+        for stage in ['train', 'test']:
+            parser.add_argument(f'--file-{data}-{stage}',
                                 type=argparse.FileType('r'),
                                 help=f'Input file with {data}_{stage},'
                                      'in NPY format')
@@ -106,7 +106,7 @@ def parse_args(parser, size=None, loop_types=(),
     if size is not None:
         parser.add_argument('-s', '--size', default=size, type=_parse_size,
                             dest='shape',
-                            help="Problem size, delimited by 'x' or ','")
+                            help='Problem size, delimited by "x" or ","')
 
     if len(loop_types) == 0:
         loop_types = (None,)
@@ -199,8 +199,8 @@ def set_daal_num_threads(num_threads):
         if num_threads:
             daal4py.daalinit(nthreads=num_threads)
     except ImportError:
-        print("@ Package 'daal4py' was not found. Number of threads "
-              "is being ignored")
+        print('@ Package "daal4py" was not found. Number of threads '
+              'is being ignored')
 
 
 def prepare_daal(num_threads=-1):
@@ -319,9 +319,9 @@ def logverbose(msg, verbose):
 
 
 def convert_to_numpy1d(data):
-    if "cudf" in str(type(data)):
+    if 'cudf' in str(type(data)):
         data = data.to_pandas().values
-    if "pandas" in str(type(data)):
+    if 'pandas' in str(type(data)):
         data = data.values
     return data.reshape((data.shape[0],))
 
@@ -339,21 +339,21 @@ def rmse_score(y, yp):
 
 
 def convert_data(data, dtype, data_order, data_format):
-    if data_order == "F":
+    if data_order == 'F':
         data = np.asfortranarray(data, dtype)
-    elif data_order == "C":
+    elif data_order == 'C':
         data = np.ascontiguousarray(data, dtype)
 
-    if data_format == "numpy":
+    if data_format == 'numpy':
         return data
-    elif data_format == "pandas":
+    elif data_format == 'pandas':
         import pandas as pd
 
         if len(data.shape) == 1:
             return pd.Series(data)
         else:
             return pd.DataFrame(data)
-    elif data_format == "cudf":
+    elif data_format == 'cudf':
         import cudf
         import pandas as pd
 
@@ -361,21 +361,21 @@ def convert_data(data, dtype, data_order, data_format):
 
 
 def get_dtype(data):
-    if hasattr(data, "dtype"):
+    if hasattr(data, 'dtype'):
         return data.dtype
-    elif hasattr(data, "values"):
+    elif hasattr(data, 'values'):
         return data.values.dtype
-    elif hasattr(data, "dtypes"):
+    elif hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
 
 
 def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
     full_data = {
-        file: None for file in ["X_train", "X_test", "y_train", "y_test"]
+        file: None for file in ['X_train', 'X_test', 'y_train', 'y_test']
     }
     param_vars = vars(params)
     for element in full_data:
-        file_arg = f"file_{element}"
+        file_arg = f'file_{element}'
         # load data from npy file if path is specified
         if param_vars[file_arg] is not None:
             full_data[element] = convert_data(
@@ -389,24 +389,24 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
             full_data[element] = convert_data(np.random.rand(*params.shape),
                                               params.dtype, params.data_order,
                                               params.data_format)
-        if full_data[element] is not None and "y" in element and label_2d and hasattr(full_data[element], "reshape"):
+        if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
             full_data[element] = full_data[element].reshape(
                 (full_data[element].shape[0], 1))
-        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], "dtype"):
-            if hasattr(full_data[element], "values"):
+        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
+            if hasattr(full_data[element], 'values'):
                 full_data[element].dtype = full_data[element].values.dtype
-            elif hasattr(full_data[element], "dtypes"):
+            elif hasattr(full_data[element], 'dtypes'):
                 full_data[element].dtype = full_data[element].dtypes[0].type
 
 
-    params.dtype = get_dtype(full_data["X_train"])
-    if not hasattr(params, "size"):
-        params.size = size_str(full_data["X_train"].shape)
+    params.dtype = get_dtype(full_data['X_train'])
+    if not hasattr(params, 'size'):
+        params.size = size_str(full_data['X_train'].shape)
 
     # clone train data to test if test data is None
-    for data in ["X", "y"]:
-        if full_data[f"{data}_train"] is not None and full_data[f"{data}_test"] is None:
-            full_data[f"{data}_test"] = full_data[f"{data}_train"]
+    for data in ['X', 'y']:
+        if full_data[f'{data}_train'] is not None and full_data[f'{data}_test'] is None:
+            full_data[f'{data}_test'] = full_data[f'{data}_train']
     return tuple(full_data.values())
 
 
@@ -424,18 +424,18 @@ def output_csv(columns, params, functions, times, accuracies=None):
 
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
     result = {
-        "library": library,
-        "alogrithm": algorithm,
-        "stage": stage,
-        "input_data": {
-            "data_format": params.data_format,
-            "data_order": params.data_order,
-            "data_type": str(params.dtype),
-            "rows": data.shape[0],
-            "columns": data.shape[1],
+        'library': library,
+        'alogrithm': algorithm,
+        'stage': stage,
+        'input_data': {
+            'data_format': params.data_format,
+            'data_order': params.data_order,
+            'data_type': str(params.dtype),
+            'rows': data.shape[0],
+            'columns': data.shape[1],
         }
     }
     if alg_instance is not None:
         result.update(
-            {"algorithm_parameters": dict(alg_instance.get_params())})
+            {'algorithm_parameters': dict(alg_instance.get_params())})
     return result

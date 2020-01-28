@@ -55,26 +55,26 @@ predict_time, _ = time_mean_min(kmeans.predict, X_test,
                                 verbose=params.verbose)
 test_inertia = kmeans.inertia_
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("sklearn", "kmeans", "training", params,
+    result = gen_basic_dict('sklearn', 'kmeans', 'training', params,
                             X_train, kmeans)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": fit_time,
-        "inertia": train_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': fit_time,
+        'inertia': train_inertia
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("sklearn", "kmeans", "prediction", params,
+    result = gen_basic_dict('sklearn', 'kmeans', 'prediction', params,
                             X_test, kmeans)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": predict_time,
-        "inertia": test_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': predict_time,
+        'inertia': test_inertia
     })
     print(json.dumps(result, indent=4))

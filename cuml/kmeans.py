@@ -19,7 +19,7 @@ parser.add_argument('--maxiter', type=int, default=100,
 parser.add_argument('--samples-per-batch', type=int, default=32768,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser, prefix="cuml", loop_types=('fit', 'predict'))
+params = parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
 
 # Load and convert generated data
 X_train, X_test, _, _ = load_data(params)
@@ -58,26 +58,26 @@ predict_time, _ = time_mean_min(kmeans.predict, X_test,
                                 verbose=params.verbose)
 test_inertia = kmeans.inertia_
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("cuml", "kmeans", "training", params,
+    result = gen_basic_dict('cuml', 'kmeans', 'training', params,
                             X_train, kmeans)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": fit_time,
-        "inertia": train_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': fit_time,
+        'inertia': train_inertia
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("cuml", "kmeans", "prediction", params,
+    result = gen_basic_dict('cuml', 'kmeans', 'prediction', params,
                             X_test, kmeans)
     result.update({
-        "n_clusters": params.n_clusters,
-        "time[s]": predict_time,
-        "inertia": test_inertia
+        'n_clusters': params.n_clusters,
+        'time[s]': predict_time,
+        'inertia': test_inertia
     })
     print(json.dumps(result, indent=4))

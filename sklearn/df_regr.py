@@ -62,24 +62,24 @@ predict_time, y_pred = time_mean_min(regr.predict, X_test,
                                      verbose=params.verbose)
 test_rmse = rmse_score(y_pred, y_test)
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['df_regr.fit', 'df_regr.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("sklearn", "decision_forest_regression",
-                            "training", params, X_train, regr)
+    result = gen_basic_dict('sklearn', 'decision_forest_regression',
+                            'training', params, X_train, regr)
     result.update({
-        "time[s]": fit_time,
-        "rmse": train_rmse
+        'time[s]': fit_time,
+        'rmse': train_rmse
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("sklearn", "decision_forest_regression",
-                            "prediction", params, X_test, regr)
+    result = gen_basic_dict('sklearn', 'decision_forest_regression',
+                            'prediction', params, X_test, regr)
     result.update({
-        "time[s]": predict_time,
-        "rmse": test_rmse
+        'time[s]': predict_time,
+        'rmse': test_rmse
     })
     print(json.dumps(result, indent=4))

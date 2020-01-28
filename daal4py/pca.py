@@ -26,7 +26,7 @@ params = parse_args(parser, size=(10000, 1000),
 # Load data
 p, n = params.shape
 
-X_train, X_test, _, _ = load_data(params, generated_data=["X_train", "X_test"],
+X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'],
                                   add_dtype=True)
 
 if not params.n_components:
@@ -138,21 +138,21 @@ transform_time, tr = time_mean_min(test_transform, X_test, *res[:3],
                                    time_limit=params.transform_time_limit,
                                    verbose=params.verbose)
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
                times=[fit_time, transform_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("daal4py", "pca", "training", params, X_train)
+    result = gen_basic_dict('daal4py', 'pca', 'training', params, X_train)
     result.update({
-        "time[s]": fit_time
+        'time[s]': fit_time
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("daal4py", "pca", "transform", params, X_test)
+    result = gen_basic_dict('daal4py', 'pca', 'transform', params, X_test)
     result.update({
-        "time[s]": transform_time
+        'time[s]': transform_time
     })
     print(json.dumps(result, indent=4))
 

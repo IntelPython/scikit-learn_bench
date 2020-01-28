@@ -108,24 +108,24 @@ if __name__ == '__main__':
 
     test_rmse = rmse_score(yp, y_test)
 
-    if params.output_format == "csv":
+    if params.output_format == 'csv':
         output_csv(columns, params, functions=['df_regr.fit', 'df_regr.predict'],
                    times=[fit_time, predict_time])
-    elif params.output_format == "json":
+    elif params.output_format == 'json':
         import json
 
-        result = gen_basic_dict("daal4py", "decision_forest_regression",
-                                "training", params, X_train)
+        result = gen_basic_dict('daal4py', 'decision_forest_regression',
+                                'training', params, X_train)
         result.update({
-            "time[s]": fit_time,
-            "rmse": train_rmse
+            'time[s]': fit_time,
+            'rmse': train_rmse
         })
         print(json.dumps(result, indent=4))
 
-        result = gen_basic_dict("daal4py", "decision_forest_regression",
-                                "prediction", params, X_test)
+        result = gen_basic_dict('daal4py', 'decision_forest_regression',
+                                'prediction', params, X_test)
         result.update({
-            "time[s]": predict_time,
-            "rmse": test_rmse
+            'time[s]': predict_time,
+            'rmse': test_rmse
         })
         print(json.dumps(result, indent=4))

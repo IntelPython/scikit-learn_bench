@@ -18,15 +18,15 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--method', default='normEqDense',
                     choices=('normEqDense', 'qrDense'),
-                    help="Training method used by DAAL. 'normEqDense' selects"
-                         "the normal equations method, while 'qrDense' selects"
-                         "the method based on QR decomposition.")
+                    help='Training method used by DAAL. "normEqDense" selects'
+                         'the normal equations method, while "qrDense" selects'
+                         'the method based on QR decomposition.')
 params = parse_args(parser, size=(1000000, 50),
                     loop_types=('fit', 'predict'), prefix='daal4py')
 
 # Generate random data
 X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=["X_train", "X_test", "y_train"], add_dtype=True,
+    params, generated_data=['X_train', 'X_test', 'y_train'], add_dtype=True,
     label_2d=True if params.file_X_train is not None else False)
 
 
@@ -62,28 +62,28 @@ predict_time, pres = time_mean_min(test_predict, X_test, res.model,
                                   time_limit=params.predict_time_limit,
                                   verbose=params.verbose)
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
     test_rmse = rmse_score(pres.prediction, y_test)
     pres = test_predict(X_train, res.model)
     train_rmse = rmse_score(pres.prediction, y_train)
 
-    result = gen_basic_dict("daal4py", "linear_regression",
-                            "training", params, X_train)
+    result = gen_basic_dict('daal4py', 'linear_regression',
+                            'training', params, X_train)
     result.update({
-        "time[s]": fit_time,
-        "rmse": train_rmse
+        'time[s]': fit_time,
+        'rmse': train_rmse
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("daal4py", "linear_regression",
-                            "prediction", params, X_test)
+    result = gen_basic_dict('daal4py', 'linear_regression',
+                            'prediction', params, X_test)
     result.update({
-        "time[s]": predict_time,
-        "rmse": test_rmse
+        'time[s]': predict_time,
+        'rmse': test_rmse
     })
     print(json.dumps(result, indent=4))

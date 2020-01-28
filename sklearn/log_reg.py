@@ -17,9 +17,9 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                     help="Don't fit intercept")
 parser.add_argument('--multiclass', default='auto',
                     choices=('auto', 'ovr', 'multinomial'),
-                    help="How to treat multi class data. "
-                         "'auto' picks 'ovr' for binary classification, and "
-                         "'multinomial' otherwise.")
+                    help='How to treat multi class data. '
+                         '"auto" picks "ovr" for binary classification, and '
+                         '"multinomial" otherwise.')
 parser.add_argument('--solver', default='lbfgs',
                     choices=('lbfgs', 'newton-cg', 'saga'),
                     help='Solver to use.')
@@ -28,9 +28,9 @@ parser.add_argument('--maxiter', type=int, default=100,
 parser.add_argument('-C', dest='C', type=float, default=1.0,
                     help='Regularization parameter')
 parser.add_argument('--tol', type=float, default=None,
-                    help="Tolerance for solver. If solver == 'newton-cg', "
-                         "then the default is 1e-3. Otherwise, the default "
-                         "is 1e-10.")
+                    help='Tolerance for solver. If solver == "newton-cg", '
+                         'then the default is 1e-3. Otherwise, the default '
+                         'is 1e-10.')
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
@@ -72,34 +72,34 @@ predict_time, y_pred = time_mean_min(clf.predict, X_test,
                                      verbose=params.verbose)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['LogReg.fit', 'LogReg.predict'],
                times=[fit_time, predict_time], accuracies=[None, test_acc])
     if params.verbose:
         print()
-        print("@ Number of iterations: {}".format(clf.n_iter_))
-        print("@ fit coefficients:")
-        print("@ {}".format(clf.coef_.tolist()))
-        print("@ fit intercept:")
-        print("@ {}".format(clf.intercept_.tolist()))
+        print('@ Number of iterations: {}'.format(clf.n_iter_))
+        print('@ fit coefficients:')
+        print('@ {}'.format(clf.coef_.tolist()))
+        print('@ fit intercept:')
+        print('@ {}'.format(clf.intercept_.tolist()))
 
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
-    result = gen_basic_dict("sklearn", "logistic_regression",
-                            "training", params, X_train, clf)
-    result["input_data"].update({"classes": params.n_classes})
+    result = gen_basic_dict('sklearn', 'logistic_regression',
+                            'training', params, X_train, clf)
+    result['input_data'].update({'classes': params.n_classes})
     result.update({
-        "time[s]": fit_time,
-        "accuracy[%]": train_acc
+        'time[s]': fit_time,
+        'accuracy[%]': train_acc
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("sklearn", "logistic_regression",
-                            "prediction", params, X_test, clf)
-    result["input_data"].update({"classes": params.n_classes})
+    result = gen_basic_dict('sklearn', 'logistic_regression',
+                            'prediction', params, X_test, clf)
+    result['input_data'].update({'classes': params.n_classes})
     result.update({
-        "time[s]": predict_time,
-        "accuracy[%]": test_acc
+        'time[s]': predict_time,
+        'accuracy[%]': test_acc
     })
     print(json.dumps(result, indent=4))

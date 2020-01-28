@@ -21,7 +21,7 @@ params = parse_args(parser, size=(1000000, 50),
 
 # Generate random data
 X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=["X_train", "X_test", "y_train"], add_dtype=True,
+    params, generated_data=['X_train', 'X_test', 'y_train'], add_dtype=True,
     label_2d=True if params.file_X_train is not None else False)
 
 
@@ -57,28 +57,28 @@ predict_time, yp = time_mean_min(test_predict, X_test, res.model,
                                  verbose=params.verbose)
 
 
-if params.output_format == "csv":
+if params.output_format == 'csv':
     output_csv(columns, params, functions=['Ridge.fit', 'Ridge.predict'],
                times=[fit_time, predict_time])
-elif params.output_format == "json":
+elif params.output_format == 'json':
     import json
 
     test_rmse = rmse_score(yp.prediction, y_test)
     pres = test_predict(X_train, res.model)
     train_rmse = rmse_score(pres.prediction, y_train)
 
-    result = gen_basic_dict("daal4py", "ridge_regression",
-                            "training", params, X_train)
+    result = gen_basic_dict('daal4py', 'ridge_regression',
+                            'training', params, X_train)
     result.update({
-        "time[s]": fit_time,
-        "rmse": train_rmse
+        'time[s]': fit_time,
+        'rmse': train_rmse
     })
     print(json.dumps(result, indent=4))
 
-    result = gen_basic_dict("daal4py", "ridge_regression",
-                            "prediction", params, X_test)
+    result = gen_basic_dict('daal4py', 'ridge_regression',
+                            'prediction', params, X_test)
     result.update({
-        "time[s]": predict_time,
-        "rmse": test_rmse
+        'time[s]': predict_time,
+        'rmse': test_rmse
     })
     print(json.dumps(result, indent=4))

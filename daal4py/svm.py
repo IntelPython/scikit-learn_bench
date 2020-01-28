@@ -83,7 +83,7 @@ def map_to_lexicographic(n):
 
 
 def permute_list(li, perm):
-    "Rearrange `li` according to `perm`"
+    'Rearrange `li` according to `perm`'
     return [li[i] for i in perm]
 
 
@@ -296,7 +296,7 @@ def main():
     parser.add_argument('--kernel', choices=('linear', 'rbf'),
                         default='linear', help='SVM kernel function')
     parser.add_argument('--gamma', type=float, default=None,
-                        help="Parameter for kernel='rbf'")
+                        help='Parameter for kernel="rbf"')
     parser.add_argument('--maxiter', type=int, default=2000,
                         help='Maximum iterations for the iterative solver. '
                              '-1 means no limit.')
@@ -354,25 +354,25 @@ def main():
 
     test_acc = 100 * accuracy_score(yp, y_train)
 
-    if params.output_format == "csv":
+    if params.output_format == 'csv':
         output_csv(columns, params, functions=['SVM.fit', 'SVM.predict'],
                    times=[fit_time, predict_time], accuracies=[None, test_acc])
-    elif params.output_format == "json":
+    elif params.output_format == 'json':
         import json
 
-        result = gen_basic_dict("daal4py", "svc", "training", params, X_train)
-        result["input_data"].update({"classes": params.n_classes})
+        result = gen_basic_dict('daal4py', 'svc', 'training', params, X_train)
+        result['input_data'].update({'classes': params.n_classes})
         result.update({
-            "time[s]": fit_time,
-            "accuracy[%]": train_acc
+            'time[s]': fit_time,
+            'accuracy[%]': train_acc
         })
         print(json.dumps(result, indent=4))
 
-        result = gen_basic_dict("daal4py", "svc", "prediction", params, X_test)
-        result["input_data"].update({"classes": params.n_classes})
+        result = gen_basic_dict('daal4py', 'svc', 'prediction', params, X_test)
+        result['input_data'].update({'classes': params.n_classes})
         result.update({
-            "time[s]": predict_time,
-            "accuracy[%]": test_acc
+            'time[s]': predict_time,
+            'accuracy[%]': test_acc
         })
         print(json.dumps(result, indent=4))
 
