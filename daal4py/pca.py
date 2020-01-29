@@ -156,8 +156,8 @@ elif params.output_format == 'json':
     print(json.dumps(result, indent=4))
 
 if params.write_results:
-    np.save('pca_daal4py_X.npy', X)
-    np.save('pca_daal4py_Xp.npy', Xp)
+    np.save('pca_daal4py_X_train.npy', X_train)
+    np.save('pca_daal4py_X_test.npy', X_test)
     np.save('pca_daal4py_eigvals.npy', res[1])
     np.save('pca_daal4py_eigvecs.npy', res[2])
     np.save('pca_daal4py_tr.npy', tr)
