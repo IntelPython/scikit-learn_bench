@@ -28,7 +28,10 @@ if params.filei is not None:
 else:
     np.random.seed(params.seed)
     centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
-    X_init = data[centroids_idx]
+    if hasattr(X_train, "iloc"):
+        X_init = X_train.iloc[centroids_idx].values
+    else:
+        X_init = X_train[centroids_idx]
 
 # Create our clustering object
 kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
@@ -68,6 +71,9 @@ elif params.output_format == 'json':
         'time[s]': fit_time,
         'inertia': train_inertia
     })
+    if 'init' in result['algorithm_parameters'].keys():
+        if not isinstance(result['algorithm_parameters']['init'], str):
+            result['algorithm_parameters']['init'] = 'random'
     print(json.dumps(result, indent=4))
 
     result = gen_basic_dict('sklearn', 'kmeans', 'prediction', params,
@@ -77,4 +83,7 @@ elif params.output_format == 'json':
         'time[s]': predict_time,
         'inertia': test_inertia
     })
+    if 'init' in result['algorithm_parameters'].keys():
+        if not isinstance(result['algorithm_parameters']['init'], str):
+            result['algorithm_parameters']['init'] = 'random'
     print(json.dumps(result, indent=4))

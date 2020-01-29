@@ -28,7 +28,10 @@ if params.filei is not None:
 else:
     np.random.seed(params.seed)
     centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
-    X_init = data[centroids_idx]
+    if hasattr(X_train, "iloc"):
+        X_init = X_train.iloc[centroids_idx].values
+    else:
+        X_init = X_train[centroids_idx]
 
 # Define functions to time
 def test_fit(X, X_init):

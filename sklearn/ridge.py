@@ -21,7 +21,7 @@ params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=['X_train', 'X_test', 'y_train'])
+    params, generated_data=['X_train', 'y_train'])
 
 # Create our regression object
 regr = Ridge(fit_intercept=params.fit_intercept,

@@ -24,12 +24,11 @@ params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
 # Load data
-p, n = params.shape
-
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'],
                                   add_dtype=True)
 
 if not params.n_components:
+    p, n = X_train.shape
     params.n_components = min((n, (2 + min((n, p))) // 3))
 
 

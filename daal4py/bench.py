@@ -24,7 +24,7 @@ def _parse_size(string, dim=2):
         tup = tuple(int(n) for n in string.replace('x', ',').split(','))
     except Exception as e:
         msg = (
-            f'Invalid size '{string}': sizes must be integers separated by '
+            f'Invalid size "{string}": sizes must be integers separated by '
             f'"x" or ",".'
         )
         raise argparse.ArgumentTypeError(msg) from e
@@ -425,7 +425,7 @@ def output_csv(columns, params, functions, times, accuracies=None):
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
     result = {
         'library': library,
-        'alogrithm': algorithm,
+        'algorithm': algorithm,
         'stage': stage,
         'input_data': {
             'data_format': params.data_format,

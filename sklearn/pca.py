@@ -18,12 +18,11 @@ parser.add_argument('--whiten', action='store_true', default=False,
 params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
-# Generate random data
-p, n = params.shape
-
+# Load random data
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'])
 
-if not params.n_components:
+if not params.n_components is None:
+    p, n = X_train.shape
     params.n_components = min((n, (2 + min((n, p))) // 3))
 
 # Create our PCA object

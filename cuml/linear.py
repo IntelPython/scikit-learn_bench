@@ -21,7 +21,7 @@ params = parse_args(parser, prefix='cuml', size=(1000000, 50),
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=['X_train', 'X_test', 'y_train'])
+    params, generated_data=['X_train', 'y_train'])
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,

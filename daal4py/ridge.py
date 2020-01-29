@@ -21,7 +21,7 @@ params = parse_args(parser, size=(1000000, 50),
 
 # Generate random data
 X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=['X_train', 'X_test', 'y_train'], add_dtype=True,
+    params, generated_data=['X_train', 'y_train'], add_dtype=True,
     label_2d=True if params.file_X_train is not None else False)
 
 
