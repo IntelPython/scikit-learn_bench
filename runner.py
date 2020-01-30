@@ -3,6 +3,23 @@ import os
 import subprocess
 import json
 
+# generate benchmarking cases
+def gen_cases(params):
+    global cases
+    if len(params) == 0:
+        return cases
+    prev_lenght = len(cases)
+    param_name = list(params.keys())[0]
+    n_param_values = len(params[param_name])
+    cases = cases * n_param_values
+    for i in range(n_param_values):
+        for j in range(prev_lenght):
+            cases[prev_lenght * i + j] += ' {}{} {}'.format(
+                '-' if len(param_name) == 1 else '--',
+                param_name, params[param_name][i])
+    del params[param_name]
+    gen_cases(params)
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', metavar='ConfigPath', type=str,
@@ -16,23 +33,6 @@ with open(args.config, 'r') as config_file:
     config = json.load(config_file)
 
 os.system("mkdir -p data")
-
-# generate benchmarking cases
-def gen_cases(params):
-    global cases
-    if len(params) == 0:
-        return cases
-    prev_lenght = len(cases)
-    param_name = list(params.keys())[0]
-    n_param_values = len(params[param_name])
-    cases = cases * n_param_values
-    for i in range(n_param_values):
-        for j in range(prev_lenght):
-            cases[prev_lenght * i + j] += ' --{} {}'.format(
-                param_name, params[param_name][i])
-    del params[param_name]
-    gen_cases(params)
-
 
 result = {}
 # get CPU information
@@ -50,11 +50,14 @@ result['HW'] = {'CPU': {line[0]: line[1] for line in lscpu_info}}
 log = ''
 stderr_file = open('_stderr.log', 'w')
 
+common_params = config['common']
 for params_set in config['cases']:
     cases = ['']
-    params = params_set.copy()
+    params = common_params.copy()
+    params.update(params_set.copy())
     algorithm = params['algorithm']
-    del params['dataset'], params['algorithm']
+    libs = params['lib']
+    del params['dataset'], params['algorithm'], params['lib']
     gen_cases(params)
     print('\n{} algorithm: {} case(s)\n'.format(algorithm, len(cases)))
     for dataset in params_set['dataset']:
@@ -118,7 +121,7 @@ for params_set in config['cases']:
         else:
             raise ValueError(
                 'Unknown dataset. Only synthetics are supported now')
-        for lib in config['libs']:
+        for lib in libs:
             for i, case in enumerate(cases):
                 command = 'python {}/{}.py --output-format json{} {}'.format(
                     lib, algorithm, case, paths)
