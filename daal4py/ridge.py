@@ -16,6 +16,8 @@ parser = argparse.ArgumentParser(description='daal4py ridge regression '
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
+parser.add_argument('--alpha', type=float, default=1.0,
+                    help='Regularization strength')
 params = parse_args(parser, size=(1000000, 50),
                     loop_types=('fit', 'predict'), prefix='daal4py')
 
@@ -27,8 +29,9 @@ X_train, X_test, y_train, y_test = load_data(
 
 # Create our regression objects
 def test_fit(X, y):
-    regr_train = ridge_regression_training(fptype=getFPType(X),
-                                           interceptFlag=params.fit_intercept)
+    regr_train = ridge_regression_training(
+        fptype=getFPType(X), ridgeParameters=np.array([[params.alpha]]),
+        interceptFlag=params.fit_intercept)
     return regr_train.compute(X, y)
 
 

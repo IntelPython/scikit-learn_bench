@@ -36,8 +36,8 @@ else:
         X_init = X_train[centroids_idx]
 
 # Create our clustering object
-kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
-                tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init,
+kmeans = KMeans(n_clusters=params.n_clusters, tol=params.tol,
+                max_iter=params.maxiter, n_init=1, init=X_init,
                 max_samples_per_batch=params.samples_per_batch)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',

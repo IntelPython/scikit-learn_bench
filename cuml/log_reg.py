@@ -33,7 +33,7 @@ params = parse_args(parser, loop_types=('fit', 'predict'))
 # Load generated data
 X_train, X_test, y_train, y_test = load_data(params)
 
-params.n_classes = len(np.unique(y_train))
+params.n_classes = y_train[y_train.columns[0]].nunique()
 
 if not params.tol:
     params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10

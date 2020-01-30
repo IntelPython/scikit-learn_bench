@@ -25,7 +25,7 @@ X_train, X_test, y_train, y_test = load_data(
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
-                        solver=params.solver)
+                        algorithm=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')

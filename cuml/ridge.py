@@ -8,7 +8,7 @@ from bench import (
     rmse_score
 )
 import numpy as np
-from sklearn.linear_model import Ridge
+from cuml import Ridge
 
 parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
                                              'benchmark')
@@ -17,6 +17,8 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--solver', default='eig', choices=('eig', 'cd', 'svd'),
                     help='Solver used for training')
+parser.add_argument('--alpha', type=float, default=1.0,
+                    help='Regularization strength')
 params = parse_args(parser, size=(1000000, 50), loop_types=('fit', 'predict'))
 
 # Load data
@@ -24,7 +26,7 @@ X_train, X_test, y_train, y_test = load_data(
     params, generated_data=['X_train', 'y_train'])
 
 # Create our regression object
-regr = Ridge(fit_intercept=params.fit_intercept,
+regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,
              solver=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',

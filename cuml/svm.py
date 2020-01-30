@@ -61,7 +61,7 @@ if params.gamma is None:
 cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
-params.n_classes = len(np.unique(y_train))
+params.n_classes = y_train[y_train.columns[0]].nunique()
 
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
