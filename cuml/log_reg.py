@@ -4,11 +4,11 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
+    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
+    accuracy_score
 )
 import numpy as np
 from cuml import LogisticRegression
-from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(description='scikit-learn logistic '
                                              'regression benchmark')

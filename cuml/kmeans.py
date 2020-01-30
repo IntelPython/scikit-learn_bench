@@ -29,22 +29,29 @@ if params.filei is not None:
     params.n_clusters = X_init.shape[0]
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
+    centroids_idx = np.random.randint(0, X_train.shape[0],
+                                      size=params.n_clusters)
     if hasattr(X_train, "iloc"):
-        X_init = X_train.iloc[centroids_idx].values
+        X_init = X_train.iloc[centroids_idx].to_pandas().values
     else:
         X_init = X_train[centroids_idx]
-
-# Create our clustering object
-kmeans = KMeans(n_clusters=params.n_clusters, tol=params.tol,
-                max_iter=params.maxiter, n_init=1, init=X_init,
-                max_samples_per_batch=params.samples_per_batch)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
+
+# Workaround for cuML kmeans fail
+# when second call of 'fit' method causes AttributeError
+def kmeans_fit(X):
+    alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
+                         max_iter=params.maxiter, init=X_init,
+                         max_samples_per_batch=params.samples_per_batch)
+    alg.fit(X)
+    return alg
+
+
 # Time fit
-fit_time, _ = time_mean_min(kmeans.fit, X_train,
+fit_time, kmeans = time_mean_min(kmeans_fit, X_train,
                             outer_loops=params.fit_outer_loops,
                             inner_loops=params.fit_inner_loops,
                             goal_outer_loops=params.fit_goal,
