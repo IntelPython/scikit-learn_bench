@@ -59,7 +59,8 @@ for params_set in config['cases']:
     libs = params['lib']
     del params['dataset'], params['algorithm'], params['lib']
     gen_cases(params)
-    print('\n{} algorithm: {} case(s)\n'.format(algorithm, len(cases)))
+    print('\n{} algorithm: {} case(s), {} dataset(s)\n'.format(
+        algorithm, len(cases), len(params_set['dataset'])))
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
             if dataset['training'].startswith('synth_reg'):
