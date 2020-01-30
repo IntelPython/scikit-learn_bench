@@ -7,7 +7,6 @@ from bench import (
     parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
     accuracy_score
 )
-import numpy as np
 from cuml import LogisticRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn logistic '

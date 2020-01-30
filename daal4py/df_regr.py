@@ -12,7 +12,6 @@ from daal4py import decision_forest_regression_training, \
                     decision_forest_regression_prediction, \
                     engines_mt2203
 from daal4py.sklearn.utils import getFPType
-import numpy as np
 
 
 def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,
@@ -83,7 +82,6 @@ if __name__ == '__main__':
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'num_trees', 'time')
 
-
     # Time fit and predict
     fit_time, res = time_mean_min(df_regr_fit, X_train, y_train,
                                   n_trees=params.num_trees,
@@ -109,7 +107,8 @@ if __name__ == '__main__':
     test_rmse = rmse_score(yp, y_test)
 
     if params.output_format == 'csv':
-        output_csv(columns, params, functions=['df_regr.fit', 'df_regr.predict'],
+        output_csv(columns, params,
+                   functions=['df_regr.fit', 'df_regr.predict'],
                    times=[fit_time, predict_time])
     elif params.output_format == 'json':
         import json

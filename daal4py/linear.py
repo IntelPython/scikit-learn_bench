@@ -9,7 +9,7 @@ from bench import (
 )
 from daal4py import linear_regression_training, linear_regression_prediction
 from daal4py.sklearn.utils import getFPType
-import numpy as np
+
 
 parser = argparse.ArgumentParser(description='daal4py linear regression '
                                              'benchmark')
@@ -56,11 +56,11 @@ fit_time, res = time_mean_min(test_fit, X_train, y_train,
 
 # Time predict
 predict_time, pres = time_mean_min(test_predict, X_test, res.model,
-                                  outer_loops=params.predict_outer_loops,
-                                  inner_loops=params.predict_inner_loops,
-                                  goal_outer_loops=params.predict_goal,
-                                  time_limit=params.predict_time_limit,
-                                  verbose=params.verbose)
+                                   outer_loops=params.predict_outer_loops,
+                                   inner_loops=params.predict_inner_loops,
+                                   goal_outer_loops=params.predict_goal,
+                                   time_limit=params.predict_time_limit,
+                                   verbose=params.verbose)
 
 if params.output_format == 'csv':
     output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],

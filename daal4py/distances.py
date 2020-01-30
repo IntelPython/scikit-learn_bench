@@ -9,7 +9,6 @@ from bench import (
 )
 import daal4py
 from daal4py.sklearn.utils import getFPType
-import numpy as np
 
 parser = argparse.ArgumentParser(description='daal4py pairwise distances '
                                              'benchmark')

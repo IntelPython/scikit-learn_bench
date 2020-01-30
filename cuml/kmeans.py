@@ -44,19 +44,19 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # when second call of 'fit' method causes AttributeError
 def kmeans_fit(X):
     alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
-                         max_iter=params.maxiter, init=X_init,
-                         max_samples_per_batch=params.samples_per_batch)
+                 max_iter=params.maxiter, init=X_init,
+                 max_samples_per_batch=params.samples_per_batch)
     alg.fit(X)
     return alg
 
 
 # Time fit
 fit_time, kmeans = time_mean_min(kmeans_fit, X_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+                                 outer_loops=params.fit_outer_loops,
+                                 inner_loops=params.fit_inner_loops,
+                                 goal_outer_loops=params.fit_goal,
+                                 time_limit=params.fit_time_limit,
+                                 verbose=params.verbose)
 train_inertia = kmeans.inertia_
 
 # Time predict

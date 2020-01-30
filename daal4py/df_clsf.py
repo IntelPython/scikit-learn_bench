@@ -88,7 +88,8 @@ if __name__ == '__main__':
     params.n_classes = len(np.unique(y_train))
 
     # Time fit and predict
-    fit_time, res = time_mean_min(df_clsf_fit, X_train, y_train, params.n_classes,
+    fit_time, res = time_mean_min(df_clsf_fit, X_train, y_train,
+                                  params.n_classes,
                                   n_trees=params.num_trees,
                                   seed=params.seed,
                                   n_features_per_node=params.max_features,
@@ -112,7 +113,8 @@ if __name__ == '__main__':
     test_acc = 100 * accuracy_score(yp, y_test)
 
     if params.output_format == 'csv':
-        output_csv(columns, params, functions=['df_clsf.fit', 'df_clsf.predict'],
+        output_csv(columns, params,
+                   functions=['df_clsf.fit', 'df_clsf.predict'],
                    times=[fit_time, predict_time], accuracies=[None, test_acc])
 
     elif params.output_format == 'json':
@@ -135,4 +137,3 @@ if __name__ == '__main__':
             'accuracy[%]': test_acc
         })
         print(json.dumps(result, indent=4))
-

@@ -27,7 +27,8 @@ if params.filei is not None:
     params.n_clusters = X_init.shape[0]
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
+    centroids_idx = np.random.randint(0, X_train.shape[0],
+                                      size=params.n_clusters)
     if hasattr(X_train, "iloc"):
         X_init = X_train.iloc[centroids_idx].values
     else:

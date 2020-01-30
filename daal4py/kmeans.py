@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
+from bench import (
+    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
+)
 from daal4py import kmeans
 from daal4py.sklearn.utils import getFPType
 import numpy as np
@@ -27,11 +29,13 @@ if params.filei is not None:
     params.n_clusters = X_init.shape[0]
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0], size=params.n_clusters)
+    centroids_idx = np.random.randint(0, X_train.shape[0],
+                                      size=params.n_clusters)
     if hasattr(X_train, "iloc"):
         X_init = X_train.iloc[centroids_idx].values
     else:
         X_init = X_train[centroids_idx]
+
 
 # Define functions to time
 def test_fit(X, X_init):
@@ -61,21 +65,21 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 
 # Time fit
 fit_time, res = time_mean_min(test_fit, X_train, X_init,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
-train_inertia = res.goalFunction[0,0]
+                              outer_loops=params.fit_outer_loops,
+                              inner_loops=params.fit_inner_loops,
+                              goal_outer_loops=params.fit_goal,
+                              time_limit=params.fit_time_limit,
+                              verbose=params.verbose)
+train_inertia = res.goalFunction[0, 0]
 
 # Time predict
 predict_time, res = time_mean_min(test_predict, X_test, X_init,
-                                outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops,
-                                goal_outer_loops=params.predict_goal,
-                                time_limit=params.predict_time_limit,
-                                verbose=params.verbose)
-test_inertia = res.goalFunction[0,0]
+                                  outer_loops=params.predict_outer_loops,
+                                  inner_loops=params.predict_inner_loops,
+                                  goal_outer_loops=params.predict_goal,
+                                  time_limit=params.predict_time_limit,
+                                  verbose=params.verbose)
+test_inertia = res.goalFunction[0, 0]
 
 if params.output_format == 'csv':
     output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],

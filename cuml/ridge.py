@@ -7,7 +7,6 @@ from bench import (
     parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
     rmse_score
 )
-import numpy as np
 from cuml import Ridge
 
 parser = argparse.ArgumentParser(description='scikit-learn ridge regression '

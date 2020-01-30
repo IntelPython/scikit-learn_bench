@@ -114,8 +114,9 @@ def test_fit(X):
 
 
 def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
-    return pca_transform_daal(pca_result, Xp, params.n_components, X_train.shape[0],
-                              eigenvalues, eigenvectors, whiten=params.whiten)
+    return pca_transform_daal(pca_result, Xp, params.n_components,
+                              X_train.shape[0], eigenvalues,
+                              eigenvectors, whiten=params.whiten)
 
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
