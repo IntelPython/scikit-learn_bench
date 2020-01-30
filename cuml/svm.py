@@ -4,11 +4,11 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
+    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv,
+    accuracy_score
 )
 import numpy as np
 from cuml.svm import SVC
-from sklearn.metrics import accuracy_score
 
 
 def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):

@@ -15,10 +15,11 @@ def gen_regression(args):
                            random_state=rs)
 
     if args.test_samples != 0:
-        np.save(args.filex, X[:args.test_samples])
-        np.save(args.filey, y[:args.test_samples])
-        np.save(args.filextest, X[args.test_samples:])
-        np.save(args.fileytest, y[args.test_samples:])
+        train_samples = args.samples - args.test_samples
+        np.save(args.filex, X[:train_samples])
+        np.save(args.filey, y[:train_samples])
+        np.save(args.filextest, X[train_samples:])
+        np.save(args.fileytest, y[train_samples:])
     else:
         np.save(args.filex, X)
         np.save(args.filey, y)
@@ -35,10 +36,11 @@ def gen_classification(args):
                                n_classes=args.classes,
                                random_state=args.seed)
     if args.test_samples != 0:
-        np.save(args.filex, X[:args.test_samples])
-        np.save(args.filey, y[:args.test_samples])
-        np.save(args.filextest, X[args.test_samples:])
-        np.save(args.fileytest, y[args.test_samples:])
+        train_samples = args.samples - args.test_samples
+        np.save(args.filex, X[:train_samples])
+        np.save(args.filey, y[:train_samples])
+        np.save(args.filextest, X[train_samples:])
+        np.save(args.fileytest, y[train_samples:])
     else:
         np.save(args.filex, X)
         np.save(args.filey, y)
@@ -99,8 +101,9 @@ def gen_kmeans(args):
           f'takes {min(times)} seconds')
 
     if args.test_samples != 0:
-        np.save(args.filex, X[:args.test_samples])
-        np.save(args.filextest, X[args.test_samples:])
+        train_samples = args.samples - args.test_samples
+        np.save(args.filex, X[:train_samples])
+        np.save(args.filextest, X[train_samples:])
     else:
         np.save(args.filex, X)
     np.save(args.filei, X_init)
