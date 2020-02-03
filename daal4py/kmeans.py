@@ -24,9 +24,11 @@ params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
 # Load generated data
 X_train, X_test, _, _ = load_data(params, add_dtype=True)
 
+# Load initial centroids from specified path
 if params.filei is not None:
     X_init = np.load(params.filei).astype(params.dtype)
     params.n_clusters = X_init.shape[0]
+# or choose random centroids from training data
 else:
     np.random.seed(params.seed)
     centroids_idx = np.random.randint(0, X_train.shape[0],

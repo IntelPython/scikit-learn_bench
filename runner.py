@@ -35,7 +35,9 @@ parser.add_argument('--config', metavar='ConfigPath', type=str,
                     default='config.json',
                     help='Path to config with configuration'
                          'for benchmarks')
-parser.add_argument('--dummy-run', default=False, action='store_true')
+parser.add_argument('--dummy-run', default=False, action='store_true',
+                    help='Run configuration parser and datasets generation'
+                         'without benchmarks running')
 args = parser.parse_args()
 
 with open(args.config, 'r') as config_file:
@@ -96,7 +98,7 @@ for params_set in config['cases']:
                         test_samples, features)
                     paths += ' --file-X-test {} --file-y-test {}'.format(
                         x_test_file, y_test_file)
-                    command = 'python make_datasets.py -s {} -ts {} -f {} regression -x {} -y {} -xt {} -yt {}'.format(
+                    command = 'python make_datasets.py -s {} --ts {} -f {} regression -x {} -y {} --xt {} --yt {}'.format(
                         int(train_samples)+int(test_samples),
                         test_samples, features, x_train_file, y_train_file,
                         x_test_file, y_test_file)
@@ -126,7 +128,7 @@ for params_set in config['cases']:
                         classes, test_samples, features)
                     paths += ' --file-X-test {} --file-y-test {}'.format(
                         x_test_file, y_test_file)
-                    command = 'python make_datasets.py -s {} -ts {} -f {} classification -c {} -x {} -y {} -xt {} -yt {}'.format(
+                    command = 'python make_datasets.py -s {} --ts {} -f {} classification -c {} -x {} -y {} --xt {} --yt {}'.format(
                         int(train_samples)+int(test_samples),
                         test_samples, features, classes,
                         x_train_file, y_train_file,
