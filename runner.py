@@ -8,8 +8,12 @@ import os
 import subprocess
 import json
 
-# generate benchmarking cases
-def gen_cases(params):
+
+def generate_cases(params):
+    '''
+    Generate cases for benchmarking by iterating of
+    parameters values
+    '''
     global cases
     if len(params) == 0:
         return cases
@@ -23,28 +27,30 @@ def gen_cases(params):
                 '-' if len(param_name) == 1 else '--',
                 param_name, params[param_name][i])
     del params[param_name]
-    gen_cases(params)
+    generate_cases(params)
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', metavar='ConfigPath', type=str,
-                    default='config.json')
-parser.add_argument('--output', metavar='OutputPath', type=str,
-                    default='stdout')
+                    default='config.json',
+                    help='Path to config with configuration'
+                         'for benchmarks')
 parser.add_argument('--dummy-run', default=False, action='store_true')
 args = parser.parse_args()
 
 with open(args.config, 'r') as config_file:
     config = json.load(config_file)
 
+# make directory for data if it doesn't exist
 os.system("mkdir -p data")
 
 result = {}
 # get CPU information
 lscpu_info = subprocess.run(
     ['lscpu'], stdout=subprocess.PIPE, encoding='utf-8').stdout
+# remove excess spaces in CPU info output
 while '  ' in lscpu_info:
-    lscpu_info = lscpu_info.replace('  ',' ') # remove additional spaces
+    lscpu_info = lscpu_info.replace('  ',' ')
 lscpu_info = lscpu_info.split('\n')
 if '' in lscpu_info:
     lscpu_info.remove('')
@@ -53,8 +59,10 @@ for i in range(len(lscpu_info)):
 result['HW'] = {'CPU': {line[0]: line[1] for line in lscpu_info}}
 
 log = ''
+# open file for stderr listening
 stderr_file = open('_stderr.log', 'w')
 
+# get parameters that are common for all cases
 common_params = config['common']
 for params_set in config['cases']:
     cases = ['']
@@ -63,12 +71,16 @@ for params_set in config['cases']:
     algorithm = params['algorithm']
     libs = params['lib']
     del params['dataset'], params['algorithm'], params['lib']
-    gen_cases(params)
+    generate_cases(params)
     print('\n{} algorithm: {} case(s), {} dataset(s)\n'.format(
         algorithm, len(cases), len(params_set['dataset'])))
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
+            # generate synthetic dataset for regression task
             if dataset['training'].startswith('synth_reg'):
+                # get data parameters and data file names
+                # for training and (optionally) testing
+                # and generate data
                 _, _, train_samples, features = dataset['training'].split('_')
                 x_train_file = 'data/synth-reg-X-train-{}x{}.npy'.format(
                     train_samples, features)
@@ -94,7 +106,11 @@ for params_set in config['cases']:
                 if not os.path.isfile(x_train_file) and not args.dummy_run:
                     print(command)
                     os.system(command)
+            # generate synthetic dataset for classification task
             elif dataset['training'].startswith('synth_cls'):
+                # get data parameters and data file names
+                # for training and (optionally) testing
+                # and generate data
                 _, _, classes, train_samples, features = dataset['training'].split('_')
                 x_train_file = 'data/synth-cls-{}-X-train-{}x{}.npy'.format(
                     classes, train_samples, features)
@@ -138,6 +154,7 @@ for params_set in config['cases']:
                         stderr=stderr_file, encoding='utf-8')
                     log += r.stdout
 
+# add commas to correct JSON output
 while '}\n{' in log:
     log = log.replace('}\n{', '},\n{')
 
@@ -148,7 +165,5 @@ result = json.dumps(result, indent=4)
 
 if args.output == 'stdout':
     print(result, end='\n')
-else:
-    with open(args.output, 'w') as output:
-        output.write(result)
+
 stderr_file.close()

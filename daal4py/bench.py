@@ -80,19 +80,21 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Output extra debug messages')
     parser.add_argument('--data-format', type=str, default='numpy',
                         choices=('numpy', 'pandas', 'cudf'),
-                        help='Data format: numpy, pandas, cudf')
+                        help='Data format: numpy (default), pandas, cudf')
     parser.add_argument('--data-order', type=str, default='C',
                         choices=('C', 'F'),
-                        help='Data order: F (column-major) or C (row-major)')
+                        help='Data order: C (row-major, default) or'
+                             'F (column-major)')
     parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
                         choices=(np.float32, np.float64),
-                        help='Data type to use')
+                        help='Data type: float64 (default) or float32')
     parser.add_argument('--check-finiteness', default=False,
                         action='store_true',
-                        help='Check finiteness in sklearn input check')
+                        help='Check finiteness in sklearn input check'
+                             '(disabled by default)')
     parser.add_argument('--output-format', type=str, default='csv',
                         choices=('csv', 'json'),
-                        help='Output format: csv or json')
+                        help='Output format: csv (default) or json')
     parser.add_argument('--seed', type=int, default=12345,
                         help='Seed to pass as random_state')
 
@@ -319,6 +321,9 @@ def logverbose(msg, verbose):
 
 
 def convert_to_numpy1d(data):
+    '''
+    Convert input data to 1-dimensional numpy array
+    '''
     if 'cudf' in str(type(data)):
         data = data.to_pandas().values
     if 'pandas' in str(type(data)):
@@ -339,11 +344,16 @@ def rmse_score(y, yp):
 
 
 def convert_data(data, dtype, data_order, data_format):
+    '''
+    Convert input data (numpy array) to needed format, type and order
+    '''
+    # Firstly, change order and type of data
     if data_order == 'F':
         data = np.asfortranarray(data, dtype)
     elif data_order == 'C':
         data = np.ascontiguousarray(data, dtype)
 
+    # Secondly, change format of data
     if data_format == 'numpy':
         return data
     elif data_format == 'pandas':
@@ -361,6 +371,9 @@ def convert_data(data, dtype, data_order, data_format):
 
 
 def get_dtype(data):
+    '''
+    Get type of input data as numpy.dtype
+    '''
     if hasattr(data, 'dtype'):
         return data.dtype
     elif hasattr(data, 'values'):
@@ -376,7 +389,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
     param_vars = vars(params)
     for element in full_data:
         file_arg = f'file_{element}'
-        # load data from npy file if path is specified
+        # load and convert data from npy file if path is specified
         if param_vars[file_arg] is not None:
             full_data[element] = convert_data(
                 np.load(param_vars[file_arg].name),
@@ -384,14 +397,17 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
                 params.data_order,
                 params.data_format
             )
-        # generate data if it's marked and path isn't specified
+        # generate and convert data if it's marked and path isn't specified
         if full_data[element] is None and element in generated_data:
             full_data[element] = convert_data(np.random.rand(*params.shape),
                                               params.dtype, params.data_order,
                                               params.data_format)
+        # convert existing labels from 1- to 2-dimensional
+        # if it's forced and possible
         if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
             full_data[element] = full_data[element].reshape(
                 (full_data[element].shape[0], 1))
+        # add dtype property to data if it's needed and doesn't exist
         if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
             if hasattr(full_data[element], 'values'):
                 full_data[element].dtype = full_data[element].values.dtype
@@ -400,6 +416,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
 
 
     params.dtype = get_dtype(full_data['X_train'])
+    # add size to parameters which is need for some cases
     if not hasattr(params, 'size'):
         params.size = size_str(full_data['X_train'].shape)
 
