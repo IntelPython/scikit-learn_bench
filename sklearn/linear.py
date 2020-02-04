@@ -36,11 +36,11 @@ fit_time, _ = time_mean_min(regr.fit, X_train, y_train,
 
 # Time predict
 predict_time, yp = time_mean_min(regr.predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+                                 outer_loops=params.predict_outer_loops,
+                                 inner_loops=params.predict_inner_loops,
+                                 goal_outer_loops=params.predict_goal,
+                                 time_limit=params.predict_time_limit,
+                                 verbose=params.verbose)
 
 if params.output_format == 'json':
     test_rmse = rmse_score(yp, y_test)
