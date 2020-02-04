@@ -5,8 +5,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
-    rmse_score
+    parse_args, time_mean_min, load_data, print_output, rmse_score
 )
 from daal4py import decision_forest_regression_training, \
                     decision_forest_regression_prediction, \
@@ -106,25 +105,9 @@ if __name__ == '__main__':
 
     test_rmse = rmse_score(yp, y_test)
 
-    if params.output_format == 'csv':
-        output_csv(columns, params,
-                   functions=['df_regr.fit', 'df_regr.predict'],
-                   times=[fit_time, predict_time])
-    elif params.output_format == 'json':
-        import json
+    print_output(library='daal4py', algorithm='decision_forest_regression',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['df_regr.fit', 'df_regr.predict'],
+                 times=[fit_time, predict_time], accuracy_type='rmse',
+                 accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
 
-        result = gen_basic_dict('daal4py', 'decision_forest_regression',
-                                'training', params, X_train)
-        result.update({
-            'time[s]': fit_time,
-            'rmse': train_rmse
-        })
-        print(json.dumps(result, indent=4))
-
-        result = gen_basic_dict('daal4py', 'decision_forest_regression',
-                                'prediction', params, X_test)
-        result.update({
-            'time[s]': predict_time,
-            'rmse': test_rmse
-        })
-        print(json.dumps(result, indent=4))

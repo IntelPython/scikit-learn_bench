@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
+    parse_args, time_mean_min, load_data, print_output
 )
 import numpy as np
 from sklearn.metrics import accuracy_score
@@ -63,27 +63,9 @@ predict_time, y_pred = time_mean_min(clf.predict, X_test,
                                      verbose=params.verbose)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['df_clsf.fit', 'df_clsf.predict'],
-               times=[fit_time, predict_time], accuracies=[None, test_acc])
-
-elif params.output_format == 'json':
-    import json
-
-    result = gen_basic_dict('sklearn', 'decision_forest_classification',
-                            'training', params, X_train, clf)
-    result['input_data'].update({'classes': params.n_classes})
-    result.update({
-        'time[s]': fit_time,
-        'accuracy[%]': train_acc
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('sklearn', 'decision_forest_classification',
-                            'prediction', params, X_test, clf)
-    result['input_data'].update({'classes': params.n_classes})
-    result.update({
-        'time[s]': predict_time,
-        'accuracy[%]': test_acc
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='sklearn', algorithm='decision_forest_classification',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
+             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+             accuracies=[train_acc, test_acc], data=[X_train, X_test],
+             alg_instance=clf)

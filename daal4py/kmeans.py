@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, gen_basic_dict, output_csv
+    parse_args, time_mean_min, load_data, print_output
 )
 from daal4py import kmeans
 from daal4py.sklearn.utils import getFPType
@@ -83,26 +83,8 @@ predict_time, res = time_mean_min(test_predict, X_test, X_init,
                                   verbose=params.verbose)
 test_inertia = res.goalFunction[0, 0]
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['KMeans.fit', 'KMeans.predict'],
-               times=[fit_time, predict_time])
-elif params.output_format == 'json':
-    import json
-
-    result = gen_basic_dict('daal4py', 'kmeans', 'training', params,
-                            X_train)
-    result.update({
-        'n_clusters': params.n_clusters,
-        'time[s]': fit_time,
-        'inertia': train_inertia
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('daal4py', 'kmeans', 'prediction', params,
-                            X_test)
-    result.update({
-        'n_clusters': params.n_clusters,
-        'time[s]': predict_time,
-        'inertia': test_inertia
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='daal4py', algorithm='kmeans',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['KMeans.fit', 'KMeans.predict'],
+             times=[fit_time, predict_time], accuracy_type='inertia',
+             accuracies=[train_inertia, test_inertia], data=[X_train, X_test])

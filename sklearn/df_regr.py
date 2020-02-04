@@ -4,8 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
-    rmse_score
+    parse_args, time_mean_min, load_data, print_output, rmse_score
 )
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
@@ -62,24 +61,9 @@ predict_time, y_pred = time_mean_min(regr.predict, X_test,
                                      verbose=params.verbose)
 test_rmse = rmse_score(y_pred, y_test)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['df_regr.fit', 'df_regr.predict'],
-               times=[fit_time, predict_time])
-elif params.output_format == 'json':
-    import json
-
-    result = gen_basic_dict('sklearn', 'decision_forest_regression',
-                            'training', params, X_train, regr)
-    result.update({
-        'time[s]': fit_time,
-        'rmse': train_rmse
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('sklearn', 'decision_forest_regression',
-                            'prediction', params, X_test, regr)
-    result.update({
-        'time[s]': predict_time,
-        'rmse': test_rmse
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='sklearn', algorithm='decision_forest_regression',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['df_regr.fit', 'df_regr.predict'],
+             times=[fit_time, predict_time], accuracy_type='rmse',
+             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+             alg_instance=regr)

@@ -4,8 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
-    accuracy_score
+    parse_args, time_mean_min, load_data, print_output, accuracy_score
 )
 import numpy as np
 from daal4py import svm_training, svm_prediction, \
@@ -354,27 +353,11 @@ def main():
 
     test_acc = 100 * accuracy_score(yp, y_train)
 
-    if params.output_format == 'csv':
-        output_csv(columns, params, functions=['SVM.fit', 'SVM.predict'],
-                   times=[fit_time, predict_time], accuracies=[None, test_acc])
-    elif params.output_format == 'json':
-        import json
-
-        result = gen_basic_dict('daal4py', 'svc', 'training', params, X_train)
-        result['input_data'].update({'classes': params.n_classes})
-        result.update({
-            'time[s]': fit_time,
-            'accuracy[%]': train_acc
-        })
-        print(json.dumps(result, indent=4))
-
-        result = gen_basic_dict('daal4py', 'svc', 'prediction', params, X_test)
-        result['input_data'].update({'classes': params.n_classes})
-        result.update({
-            'time[s]': predict_time,
-            'accuracy[%]': test_acc
-        })
-        print(json.dumps(result, indent=4))
+    print_output(library='sklearn', algorithm='svc',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['SVM.fit', 'SVM.predict'],
+                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                 accuracies=[train_acc, test_acc], data=[X_train, X_test])
 
 
 if __name__ == '__main__':

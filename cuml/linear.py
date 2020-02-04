@@ -4,8 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
-    rmse_score
+    parse_args, time_mean_min, load_data, print_output, rmse_score
 )
 from cuml import LinearRegression
 
@@ -46,28 +45,16 @@ predict_time, y_pred = time_mean_min(regr.predict, X_test,
                                      time_limit=params.predict_time_limit,
                                      verbose=params.verbose)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],
-               times=[fit_time, predict_time])
-elif params.output_format == 'json':
-    import json
+if params.output_format == 'json':
+    test_rmse = rmse_score(yp, y_test)
+    yp = regr.predict(X_train)
+    train_rmse = rmse_score(yp, y_train)
+else:
+    train_rmse, test_rmse = None, None
 
-    test_rmse = rmse_score(y_pred, y_test)
-    y_pred = regr.predict(X_train)
-    train_rmse = rmse_score(y_pred, y_train)
-
-    result = gen_basic_dict('cuml', 'linear_regression',
-                            'training', params, X_train, regr)
-    result.update({
-        'time[s]': fit_time,
-        'rmse': train_rmse
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('cuml', 'linear_regression',
-                            'prediction', params, X_test, regr)
-    result.update({
-        'time[s]': predict_time,
-        'rmse': test_rmse
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='cuml', algorithm='linear_regression',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['Linear.fit', 'Linear.predict'],
+             times=[fit_time, predict_time], accuracy_type='rmse',
+             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+             alg_instance=regr)

@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
+    parse_args, time_mean_min, load_data, print_output
 )
 from sklearn.decomposition import PCA
 
@@ -48,20 +48,9 @@ transform_time, _ = time_mean_min(pca.transform, X_train,
                                   time_limit=params.transform_time_limit,
                                   verbose=params.verbose)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
-               times=[fit_time, transform_time])
-elif params.output_format == 'json':
-    import json
-
-    result = gen_basic_dict('sklearn', 'pca', 'training', params, X_train, pca)
-    result.update({
-        'time[s]': fit_time
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('sklearn', 'pca', 'transform', params, X_test, pca)
-    result.update({
-        'time[s]': transform_time
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='sklearn', algorithm='pca',
+             stages=['training', 'transformation'], columns=columns,
+             params=params, functions=['PCA.fit', 'PCA.transform'],
+             times=[fit_time, transform_time], accuracy_type=None,
+             accuracies=[None, None], data=[X_train, X_test],
+             alg_instance=pca)

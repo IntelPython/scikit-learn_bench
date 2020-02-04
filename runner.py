@@ -165,7 +165,6 @@ log = '{"results":[\n' + log + '\n]}'
 result.update(json.loads(log))
 result = json.dumps(result, indent=4)
 
-if args.output == 'stdout':
-    print(result, end='\n')
+print(result, end='\n')
 
 stderr_file.close()

@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 import sklearn
 import timeit
+import json
 
 
 def sklearn_disable_finiteness_check():
@@ -456,3 +457,27 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
         result.update(
             {'algorithm_parameters': dict(alg_instance.get_params())})
     return result
+
+
+def print_output(library, algorithm, stages, columns, params, functions,
+                 times, accuracy_type, accuracies, data, alg_instance=None):
+    if params.output_format == 'csv':
+        output_csv(columns, params, functions, times, [None, accuracies[1]])
+    elif params.output_format == 'json':
+        for i in range(len(stages)):
+            result = gen_basic_dict(library, algorithm, stages[i], params,
+                                    data[i], alg_instance)
+            result.update({'time[s]': times[i]})
+            if accuracy_type is not None:
+                result.update({f'{accuracy_type}': accuracies[i]})
+            if hasattr(params, 'n_classes'):
+                result['input_data'].update({'classes': params.n_classes})
+            if hasattr(params, 'n_clusters'):
+                result['input_data'].update({'n_clusters': params.n_clusters})
+            # replace non-string init with string for kmeans benchmarks
+            if alg_instance is not None:
+                if 'init' in result['algorithm_parameters'].keys():
+                    if not isinstance(
+                        result['algorithm_parameters']['init'], str):
+                        result['algorithm_parameters']['init'] = 'random'
+            print(json.dumps(result, indent=4))

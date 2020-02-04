@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict
+    parse_args, time_mean_min, load_data, print_output
 )
 import numpy as np
 from daal4py import pca, pca_transform, normalization_zscore
@@ -138,23 +138,11 @@ transform_time, tr = time_mean_min(test_transform, X_test, *res[:3],
                                    time_limit=params.transform_time_limit,
                                    verbose=params.verbose)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['PCA.fit', 'PCA.transform'],
-               times=[fit_time, transform_time])
-elif params.output_format == 'json':
-    import json
-
-    result = gen_basic_dict('daal4py', 'pca', 'training', params, X_train)
-    result.update({
-        'time[s]': fit_time
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('daal4py', 'pca', 'transform', params, X_test)
-    result.update({
-        'time[s]': transform_time
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='daal4py', algorithm='pca',
+             stages=['training', 'transformation'], columns=columns,
+             params=params, functions=['PCA.fit', 'PCA.transform'],
+             times=[fit_time, transform_time], accuracy_type=None,
+             accuracies=[None, None], data=[X_train, X_test])
 
 if params.write_results:
     np.save('pca_daal4py_X_train.npy', X_train)

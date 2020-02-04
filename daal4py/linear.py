@@ -4,8 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, output_csv, load_data, gen_basic_dict,
-    rmse_score
+    parse_args, time_mean_min, load_data, print_output, rmse_score
 )
 from daal4py import linear_regression_training, linear_regression_prediction
 from daal4py.sklearn.utils import getFPType
@@ -62,28 +61,15 @@ predict_time, pres = time_mean_min(test_predict, X_test, res.model,
                                    time_limit=params.predict_time_limit,
                                    verbose=params.verbose)
 
-if params.output_format == 'csv':
-    output_csv(columns, params, functions=['Linear.fit', 'Linear.predict'],
-               times=[fit_time, predict_time])
-elif params.output_format == 'json':
-    import json
-
+if params.output_format == 'json':
     test_rmse = rmse_score(pres.prediction, y_test)
     pres = test_predict(X_train, res.model)
     train_rmse = rmse_score(pres.prediction, y_train)
+else:
+    train_rmse, test_rmse = None, None
 
-    result = gen_basic_dict('daal4py', 'linear_regression',
-                            'training', params, X_train)
-    result.update({
-        'time[s]': fit_time,
-        'rmse': train_rmse
-    })
-    print(json.dumps(result, indent=4))
-
-    result = gen_basic_dict('daal4py', 'linear_regression',
-                            'prediction', params, X_test)
-    result.update({
-        'time[s]': predict_time,
-        'rmse': test_rmse
-    })
-    print(json.dumps(result, indent=4))
+print_output(library='daal4py', algorithm='linear_regression',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['Linear.fit', 'Linear.predict'],
+             times=[fit_time, predict_time], accuracy_type='rmse',
+             accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
