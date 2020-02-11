@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2020 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -17,13 +17,13 @@ def generate_cases(params):
     global cases
     if len(params) == 0:
         return cases
-    prev_lenght = len(cases)
+    prev_length = len(cases)
     param_name = list(params.keys())[0]
     n_param_values = len(params[param_name])
     cases = cases * n_param_values
     for i in range(n_param_values):
-        for j in range(prev_lenght):
-            cases[prev_lenght * i + j] += ' {}{} {}'.format(
+        for j in range(prev_length):
+            cases[prev_length * i + j] += ' {}{} {}'.format(
                 '-' if len(param_name) == 1 else '--',
                 param_name, params[param_name][i])
     del params[param_name]
@@ -31,20 +31,19 @@ def generate_cases(params):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', metavar='ConfigPath', type=str,
-                    default='config.json',
-                    help='Path to config with configuration'
-                         'for benchmarks')
+parser.add_argument('--config', metavar='ConfigPath',
+                    type=argparse.FileType('r'), default='config_example.json',
+                    help='Path to configuration file')
 parser.add_argument('--dummy-run', default=False, action='store_true',
                     help='Run configuration parser and datasets generation'
                          'without benchmarks running')
 args = parser.parse_args()
 
-with open(args.config, 'r') as config_file:
+with open(args.config.name, 'r') as config_file:
     config = json.load(config_file)
 
 # make directory for data if it doesn't exist
-os.system("mkdir -p data")
+os.makedirs('data', exist_ok=True)
 
 result = {}
 # get CPU information
