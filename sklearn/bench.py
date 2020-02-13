@@ -121,7 +121,7 @@ def parse_args(parser, size=None, dtypes=None, loop_types=(),
 
     n_jobs = None
     if n_jobs_supported and not daal_version:
-        n_jobs = num_threads = params.num_threads
+        n_jobs = num_threads = params.threads
 
     # Set threading and DAAL related params here
     setattr(params, 'threads', num_threads)
