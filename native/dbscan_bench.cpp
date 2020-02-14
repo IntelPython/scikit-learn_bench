@@ -110,7 +110,8 @@ int main(int argc, char *argv[]) {
     int n_clusters = n_clusters_block.getBlockPtr()[0];
     n_clusters_nt->releaseBlockOfRows(n_clusters_block);
 
-    std::cout << meta_info << "DBSCAN," << n_clusters << time << std::endl;
+    std::cout << meta_info << "DBSCAN," << n_clusters << ',' << time
+              << std::endl;
 
     return 0;
 }
