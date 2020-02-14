@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2019 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -12,18 +12,15 @@ parser = argparse.ArgumentParser(description='daal4py DBSCAN clustering '
                                              'benchmark')
 parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
-parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10,
+parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
                     help='Radius of neighborhood of a point')
-parser.add_argument('-m', '--data-multiplier', default=100,
-                    type=int, help='Data multiplier')
-parser.add_argument('-M', '--min-samples', default=5, type=int,
+parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
 params = parse_args(parser, prefix='daal4py')
 
 # Load generated data
 X = np.load(params.filex)
-X_mult = np.vstack((X,) * params.data_multiplier)
 
 params.size = size_str(X.shape)
 params.dtype = X.dtype

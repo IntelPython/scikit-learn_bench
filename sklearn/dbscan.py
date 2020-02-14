@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2019 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -10,18 +10,15 @@ from sklearn.cluster import DBSCAN
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
 parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
                     type=str, help='Points to cluster')
-parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10,
+parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
                     help='Radius of neighborhood of a point')
-parser.add_argument('-m', '--data-multiplier', default=100,
-                    type=int, help='Data multiplier')
-parser.add_argument('-M', '--min-samples', default=5, type=int,
+parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
 params = parse_args(parser, n_jobs_supported=True)
 
 # Load generated data
 X = np.load(params.filex)
-X_mult = np.vstack((X,) * params.data_multiplier)
 
 # Create our clustering object
 dbscan = DBSCAN(eps=params.eps, n_jobs=params.n_jobs,
@@ -29,7 +26,8 @@ dbscan = DBSCAN(eps=params.eps, n_jobs=params.n_jobs,
                 algorithm='auto')
 
 # N.B. algorithm='auto' will select DAAL's brute force method when running
-# daal4py-patched scikit-learn.
+# daal4py-patched scikit-learn, and probably 'kdtree' when running unpatched
+# scikit-learn.
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
