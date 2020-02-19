@@ -1,9 +1,9 @@
-# Copyright (C) 2018 Intel Corporation
+# Copyright (C) 2018-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 BENCHMARKS += distances kmeans linear ridge pca svm log_reg_lbfgs \
-	      decision_forest_regr decision_forest_clsf
+	      decision_forest_regr decision_forest_clsf dbscan
 FOBJ = $(addprefix lbfgsb/,lbfgsb.o linpack.o timer.o)
 CXXSRCS = $(addsuffix _bench.cpp,$(BENCHMARKS))
 

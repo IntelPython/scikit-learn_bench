@@ -420,7 +420,8 @@ void print_numeric_table(dm::NumericTablePtr X_nt, std::string label) {
         }
         std::cout << std::endl;
     }
-	std::cout << std::setprecision(prec) << std::defaultfloat;
+    std::cout << std::setprecision(prec);
+    std::cout.unsetf(std::ios_base::floatfield);
 
     X_nt->releaseBlockOfRows(blockX);
 
