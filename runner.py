@@ -60,8 +60,6 @@ for i in range(len(lscpu_info)):
 result['HW'] = {'CPU': {line[0]: line[1] for line in lscpu_info}}
 
 log = ''
-# open file for stderr listening
-stderr_file = open('_stderr.log', 'w')
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -152,8 +150,9 @@ for params_set in config['cases']:
                 if not args.dummy_run:
                     r = subprocess.run(
                         command.split(' '), stdout=subprocess.PIPE,
-                        stderr=stderr_file, encoding='utf-8')
+                        stderr=subprocess.PIPE, encoding='utf-8')
                     log += r.stdout
+                    print(r.stderr)
 
 # add commas to correct JSON output
 while '}\n{' in log:
@@ -165,5 +164,3 @@ result.update(json.loads(log))
 result = json.dumps(result, indent=4)
 
 print(result, end='\n')
-
-stderr_file.close()
