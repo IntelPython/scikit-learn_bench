@@ -14,14 +14,14 @@ from daal4py import svm_training, svm_prediction, \
 from daal4py.sklearn.utils import getFPType
 
 
-def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
+def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
-    Get an optimal cache size for sklearn.svm.SVC.
+    Get an optimal cache size for daal4py.svm_training.
 
     Parameters
     ----------
-    n_features : int
-        Number of features in the dataset
+    n_rows : int
+        Number of rows in the dataset
     dtype : dtype-like, optional (default np.double)
         dtype to use for computing cache size
     max_cache : int, optional (default 64)
@@ -29,7 +29,7 @@ def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
     '''
 
     byte_size = np.empty(0, dtype=dtype).itemsize
-    optimal_cache_size_bytes = byte_size * (n_features ** 2)
+    optimal_cache_size_bytes = byte_size * (n_rows ** 2)
     one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
     if optimal_cache_size_bytes > max_cache_bytes:
