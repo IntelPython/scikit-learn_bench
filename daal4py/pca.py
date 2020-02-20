@@ -24,7 +24,7 @@ params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
 # Load data
-X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'],
+X_train, X_test, _, _ = load_data(params, generated_data=['X_train'],
                                   add_dtype=True)
 
 if not params.n_components:
@@ -142,7 +142,8 @@ print_output(library='daal4py', algorithm='pca',
              stages=['training', 'transformation'], columns=columns,
              params=params, functions=['PCA.fit', 'PCA.transform'],
              times=[fit_time, transform_time], accuracy_type=None,
-             accuracies=[None, None], data=[X_train, X_test])
+             accuracies=[None, None], data=[X_train, X_test],
+             alg_params={'svd_solver': params.svd_solver})
 
 if params.write_results:
     np.save('pca_daal4py_X_train.npy', X_train)

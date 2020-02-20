@@ -383,6 +383,25 @@ def get_dtype(data):
         return str(data.dtypes[0])
 
 
+def read_csv(filename, params):
+    from string import ascii_lowercase, ascii_uppercase
+
+    # find out header existance
+    header_letters = set(
+        ascii_lowercase.replace('e', '') + ascii_lowercase.replace('E', ''))
+    with open(filename, 'r') as file:
+        first_line = file.readline()
+        header = 0 if len(header_letters & first_line) != 0 else None
+    # try to read csv with pandas and fall back to numpy reader if failed
+    try:
+        import pandas as pd
+        data = pd.read_csv(filename, header=header, dtype=params.dtype)
+    except:
+        data = np.genfromtxt(filename, delimiter=',', dtype=params.dtype,
+                             skip_header=0 if header is None else 1)
+    return data
+
+
 def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
     full_data = {
         file: None for file in ['X_train', 'X_test', 'y_train', 'y_test']
@@ -392,8 +411,12 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
         file_arg = f'file_{element}'
         # load and convert data from npy file if path is specified
         if param_vars[file_arg] is not None:
+            if param_vars[file_arg].name.endswith('.npy'):
+                data = np.load(param_vars[file_arg].name)
+            else:
+                data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(
-                np.load(param_vars[file_arg].name),
+                data,
                 params.dtype,
                 params.data_order,
                 params.data_format
@@ -440,7 +463,8 @@ def output_csv(columns, params, functions, times, accuracies=None):
             print_row(columns, params, function=functions[i], time=times[i])
 
 
-def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
+def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
+                   alg_params=None):
     result = {
         'library': library,
         'algorithm': algorithm,
@@ -450,23 +474,26 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None):
             'data_order': params.data_order,
             'data_type': str(params.dtype),
             'rows': data.shape[0],
-            'columns': data.shape[1],
+            'columns': data.shape[1]
         }
     }
+    result['algorithm_parameters'] = {}
     if alg_instance is not None:
-        result.update(
-            {'algorithm_parameters': dict(alg_instance.get_params())})
+        result['algorithm_parameters'].update(dict(alg_instance.get_params()))
+    if alg_params is not None:
+        result['algorithm_parameters'].update(alg_params)
     return result
 
 
 def print_output(library, algorithm, stages, columns, params, functions,
-                 times, accuracy_type, accuracies, data, alg_instance=None):
+                 times, accuracy_type, accuracies, data, alg_instance=None,
+                 alg_params=None):
     if params.output_format == 'csv':
         output_csv(columns, params, functions, times, [None, accuracies[1]])
     elif params.output_format == 'json':
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
-                                    data[i], alg_instance)
+                                    data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
             if accuracy_type is not None:
                 result.update({f'{accuracy_type}': accuracies[i]})

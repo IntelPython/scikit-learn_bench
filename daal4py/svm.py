@@ -353,7 +353,7 @@ def main():
 
     test_acc = 100 * accuracy_score(yp, y_train)
 
-    print_output(library='sklearn', algorithm='svc',
+    print_output(library='daal4py', algorithm='svc',
                  stages=['training', 'prediction'], columns=columns,
                  params=params, functions=['SVM.fit', 'SVM.predict'],
                  times=[fit_time, predict_time], accuracy_type='accuracy[%]',

@@ -19,7 +19,7 @@ params = parse_args(parser, size=(10000, 1000),
                     loop_types=('fit', 'transform'))
 
 # Load random data
-X_train, X_test, _, _ = load_data(params, generated_data=['X_train', 'X_test'])
+X_train, X_test, _, _ = load_data(params, generated_data=['X_train'])
 
 if params.n_components is not None:
     p, n = X_train.shape

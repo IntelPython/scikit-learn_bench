@@ -37,6 +37,8 @@ parser.add_argument('--config', metavar='ConfigPath',
 parser.add_argument('--dummy-run', default=False, action='store_true',
                     help='Run configuration parser and datasets generation'
                          'without benchmarks running')
+parser.add_argument('--output-type', default='json', choices=('json', 'csv'),
+                    help='Output type of benchmarks to use with their runner')
 args = parser.parse_args()
 
 with open(args.config.name, 'r') as config_file:
@@ -81,12 +83,9 @@ for params_set in config['cases']:
                 # for training and (optionally) testing
                 # and generate data
                 _, _, train_samples, features = dataset['training'].split('_')
-                x_train_file = 'data/synth-reg-X-train-{}x{}.npy'.format(
-                    train_samples, features)
-                y_train_file = 'data/synth-reg-y-train-{}x{}.npy'.format(
-                    train_samples, features)
-                paths = '--file-X-train {} --file-y-train {}'.format(
-                    x_train_file, y_train_file)
+                x_train_file = f'data/synth-reg-X-train-{train_samples}x{features}.npy'
+                y_train_file = f'data/synth-reg-y-train-{train_samples}x{features}.npy'
+                paths = f'--file-X-train {x_train_file} --file-y-train {y_train_file}'
                 if 'testing' in dataset.keys():
                     _, _, test_samples, _ = dataset['testing'].split('_')
                     x_test_file = 'data/synth-reg-X-test-{}x{}.npy'.format(
