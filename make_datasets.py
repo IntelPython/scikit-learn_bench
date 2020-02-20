@@ -13,36 +13,33 @@ from sklearn.utils import check_random_state
 
 def gen_regression(args):
     rs = check_random_state(args.seed)
-    X, y = make_regression(n_targets=1, n_samples=args.samples,
+    X, y = make_regression(n_targets=1,
+                           n_samples=args.samples + args.test_samples,
                            n_features=args.features,
                            n_informative=args.features,
                            bias=rs.normal(0, 3),
                            random_state=rs)
-
-    train_samples = args.samples - args.test_samples
-    np.save(args.filex, X[:train_samples])
-    np.save(args.filey, y[:train_samples])
+    np.save(args.filex, X[:args.samples])
+    np.save(args.filey, y[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[train_samples:])
-        np.save(args.fileytest, y[train_samples:])
+        np.save(args.filextest, X[args.samples:])
+        np.save(args.fileytest, y[args.samples:])
     return 0
 
 
 def gen_classification(args):
-
-    X, y = make_classification(n_samples=args.samples,
+    X, y = make_classification(n_samples=args.samples + args.test_samples,
                                n_features=args.features,
                                n_informative=args.features,
                                n_repeated=0,
                                n_redundant=0,
                                n_classes=args.classes,
                                random_state=args.seed)
-    train_samples = args.samples - args.test_samples
-    np.save(args.filex, X[:train_samples])
-    np.save(args.filey, y[:train_samples])
+    np.save(args.filex, X[:args.samples])
+    np.save(args.filey, y[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[train_samples:])
-        np.save(args.fileytest, y[train_samples:])
+        np.save(args.filextest, X[args.samples:])
+        np.save(args.fileytest, y[args.samples:])
     return 0
 
 
@@ -78,7 +75,7 @@ def gen_kmeans(args):
     sz = 0.5
     ch = rs.uniform(low=-sz, high=sz, size=(_ch_size(args.features),))
     data = rs.multinormal_cholesky(cluster_centers[0], ch,
-                                   size=(args.samples,))
+                                   size=(args.samples + args.test_samples,))
     diff_i0 = np.empty_like(cluster_centers[0])
     for i in range(1, args.clusters):
         np.subtract(cluster_centers[i], cluster_centers[0], out=diff_i0)
@@ -99,10 +96,9 @@ def gen_kmeans(args):
     print(f'Computing absolute threshold on this machine '
           f'takes {min(times)} seconds')
 
-    train_samples = args.samples - args.test_samples
-    np.save(args.filex, X[:train_samples])
+    np.save(args.filex, X[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[train_samples:])
+        np.save(args.filextest, X[args.samples:])
     np.save(args.filei, X_init)
     np.save(args.filet, absTol)
     return 0

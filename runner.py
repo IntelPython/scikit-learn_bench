@@ -7,6 +7,7 @@ import argparse
 import os
 import subprocess
 import json
+from make_datasets import gen_regression, gen_classification, gen_kmeans
 
 
 def generate_cases(params):
@@ -37,7 +38,7 @@ parser.add_argument('--config', metavar='ConfigPath',
 parser.add_argument('--dummy-run', default=False, action='store_true',
                     help='Run configuration parser and datasets generation'
                          'without benchmarks running')
-parser.add_argument('--output-type', default='json', choices=('json', 'csv'),
+parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
                     help='Output type of benchmarks to use with their runner')
 args = parser.parse_args()
 
@@ -78,73 +79,66 @@ for params_set in config['cases']:
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
             # generate synthetic dataset for regression task
-            if dataset['training'].startswith('synth_reg'):
-                # get data parameters and data file names
-                # for training and (optionally) testing
-                # and generate data
-                _, _, train_samples, features = dataset['training'].split('_')
-                x_train_file = f'data/synth-reg-X-train-{train_samples}x{features}.npy'
-                y_train_file = f'data/synth-reg-y-train-{train_samples}x{features}.npy'
-                paths = f'--file-X-train {x_train_file} --file-y-train {y_train_file}'
-                if 'testing' in dataset.keys():
-                    _, _, test_samples, _ = dataset['testing'].split('_')
-                    x_test_file = 'data/synth-reg-X-test-{}x{}.npy'.format(
-                        test_samples, features)
-                    y_test_file = 'data/synth-reg-y-test-{}x{}.npy'.format(
-                        test_samples, features)
-                    paths += ' --file-X-test {} --file-y-test {}'.format(
-                        x_test_file, y_test_file)
-                    command = 'python make_datasets.py -s {} --ts {} -f {} regression -x {} -y {} --xt {} --yt {}'.format(
-                        int(train_samples)+int(test_samples),
-                        test_samples, features, x_train_file, y_train_file,
-                        x_test_file, y_test_file)
-                else:
-                    command = 'python make_datasets.py -s {} -f {} regression -x {} -y {}'.format(
-                        train_samples, features, x_train_file, y_train_file)
-                if not os.path.isfile(x_train_file) and not args.dummy_run:
-                    print(command)
-                    os.system(command)
-            # generate synthetic dataset for classification task
-            elif dataset['training'].startswith('synth_cls'):
-                # get data parameters and data file names
-                # for training and (optionally) testing
-                # and generate data
-                _, _, classes, train_samples, features = dataset['training'].split('_')
-                x_train_file = 'data/synth-cls-{}-X-train-{}x{}.npy'.format(
-                    classes, train_samples, features)
-                y_train_file = 'data/synth-cls-{}-y-train-{}x{}.npy'.format(
-                    classes, train_samples, features)
-                paths = '--file-X-train {} --file-y-train {}'.format(
-                    x_train_file, y_train_file)
-                if 'testing' in dataset.keys():
-                    _, _, classes, test_samples, _ = dataset['testing'].split('_')
-                    x_test_file = 'data/synth-cls-{}-X-test-{}x{}.npy'.format(
-                        classes, test_samples, features)
-                    y_test_file = 'data/synth-cls-{}-y-test-{}x{}.npy'.format(
-                        classes, test_samples, features)
-                    paths += ' --file-X-test {} --file-y-test {}'.format(
-                        x_test_file, y_test_file)
-                    command = 'python make_datasets.py -s {} --ts {} -f {} classification -c {} -x {} -y {} --xt {} --yt {}'.format(
-                        int(train_samples)+int(test_samples),
-                        test_samples, features, classes,
-                        x_train_file, y_train_file,
-                        x_test_file, y_test_file)
-                else:
-                    command = 'python make_datasets.py -s {} -f {} classification -c {} -x {} -y {}'.format(
-                        train_samples, features, classes,
-                        x_train_file, y_train_file)
-                if not os.path.isfile(x_train_file) and not args.dummy_run:
-                    print(command)
-                    os.system(command)
+            class GenerationArgs: pass
+            gen_args = GenerationArgs()
+            paths = ''
+
+            if 'seed' in params_set.keys():
+                gen_args.seed = params_set['seed']
             else:
-                raise ValueError('Unknown dataset type')
+                gen_args.seed = 777
+
+            dataset_params = dataset['training'].split('_')
+            _, gen_args.task, gen_args.samples, gen_args.features = dataset_params[:4]
+            gen_args.samples = int(gen_args.samples)
+            gen_args.features = int(gen_args.features)
+            if gen_args.task in ['clsf', 'clust']:
+                cls_num_for_file = '-' + dataset_params[4]
+                gen_args.classes = int(dataset_params[4])
+                if gen_args.task == 'clust':
+                    gen_args.clusters = int(dataset_params[4])
+                    gen_args.node_id = 0
+                    gen_args.filei = f'data/synth-clust-{gen_args.clusters}-init-{gen_args.samples}x{gen_args.features}.npy'
+                    paths += f'--filei {gen_args.filei}'
+                    gen_args.filet = f'data/synth-clust-{gen_args.clusters}-threshold-{gen_args.samples}x{gen_args.features}.npy'
+            else:
+                cls_num_for_file = ''
+
+            gen_args.filex = f'data/synth-{gen_args.task}{cls_num_for_file}-X-train-{gen_args.samples}x{gen_args.features}.npy'
+            paths += f' --file-X-train {gen_args.filex}'
+            if gen_args.task != 'clust':
+                    gen_args.filey = f'data/synth-{gen_args.task}{cls_num_for_file}-y-train-{gen_args.samples}x{gen_args.features}.npy'
+                    paths += f' --file-y-train {gen_args.filey}'
+
+            if 'testing' in dataset.keys():
+                dataset_params = dataset['testing'].split('_')
+                _, _, gen_args.test_samples, _ = dataset_params[:4]
+                gen_args.filextest = f'data/synth-{gen_args.task}{cls_num_for_file}-X-test-{gen_args.test_samples}x{gen_args.features}.npy'
+                paths += f' --file-X-test {gen_args.filextest}'
+                if gen_args.task != 'clust':
+                    gen_args.fileytest = f'data/synth-{gen_args.task}{cls_num_for_file}-y-test-{gen_args.test_samples}x{gen_args.features}.npy'
+                    paths += f' --file-y-test {gen_args.fileytest}'
+            else:
+                gen_args.test_samples = 0
+                gen_args.filextest = gen_args.filex
+                if gen_args.task != 'clust':
+                    gen_args.fileytest = gen_args.filey
+
+            if not args.dummy_run and not os.path.isfile(gen_args.filex):
+                if gen_args.task == 'reg':
+                    gen_regression(gen_args)
+                elif gen_args.task == 'clsf':
+                    gen_classification(gen_args)
+                elif gen_args.task == 'clust':
+                    gen_kmeans(gen_args)
         else:
             raise ValueError(
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = 'python {}/{}.py --output-format json{} {}'.format(
-                    lib, algorithm, case, paths)
+                command = f'python {lib}/{algorithm}.py --output-format {args.output_format}{case} {paths}'
+                while '  ' in command:
+                    command = command.replace('  ', ' ')
                 print(command)
                 if not args.dummy_run:
                     r = subprocess.run(
@@ -153,13 +147,16 @@ for params_set in config['cases']:
                     log += r.stdout
                     print(r.stderr)
 
-# add commas to correct JSON output
-while '}\n{' in log:
-    log = log.replace('}\n{', '},\n{')
+if args.output_format == 'json':
+    # add commas to correct JSON output
+    while '}\n{' in log:
+        log = log.replace('}\n{', '},\n{')
 
-log = '{"results":[\n' + log + '\n]}'
+    log = '{"results":[\n' + log + '\n]}'
 
-result.update(json.loads(log))
-result = json.dumps(result, indent=4)
+    result.update(json.loads(log))
+    result = json.dumps(result, indent=4)
 
-print(result, end='\n')
+    print(result, end='\n')
+elif args.output_format == 'csv':
+    print(log)
