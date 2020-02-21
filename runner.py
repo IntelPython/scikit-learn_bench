@@ -79,8 +79,8 @@ for params_set in config['cases']:
     libs = params['lib']
     del params['dataset'], params['algorithm'], params['lib']
     generate_cases(params)
-    print('\n{} algorithm: {} case(s), {} dataset(s)\n'.format(
-        algorithm, len(cases), len(params_set['dataset'])))
+    print('\n{} algorithm: {} case(s) X {} dataset(s)\n'.format(
+        algorithm, len(libs) * len(cases), len(params_set['dataset'])))
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
             class GenerationArgs: pass
@@ -96,21 +96,21 @@ for params_set in config['cases']:
             _, gen_args.task, gen_args.samples, gen_args.features = dataset_params[:4]
             gen_args.samples = int(gen_args.samples)
             gen_args.features = int(gen_args.features)
-            if gen_args.task in ['clsf', 'clust']:
+            if gen_args.task in ['clsf', 'kmeans']:
                 cls_num_for_file = '-' + dataset_params[4]
                 gen_args.classes = int(dataset_params[4])
-                if gen_args.task == 'clust':
+                if gen_args.task == 'kmeans':
                     gen_args.clusters = int(dataset_params[4])
                     gen_args.node_id = 0
-                    gen_args.filei = f'data/synth-clust-{gen_args.clusters}-init-{gen_args.samples}x{gen_args.features}.npy'
+                    gen_args.filei = f'data/synth-kmeans-{gen_args.clusters}-init-{gen_args.samples}x{gen_args.features}.npy'
                     paths += f'--filei {gen_args.filei}'
-                    gen_args.filet = f'data/synth-clust-{gen_args.clusters}-threshold-{gen_args.samples}x{gen_args.features}.npy'
+                    gen_args.filet = f'data/synth-kmeans-{gen_args.clusters}-threshold-{gen_args.samples}x{gen_args.features}.npy'
             else:
                 cls_num_for_file = ''
 
             gen_args.filex = f'data/synth-{gen_args.task}{cls_num_for_file}-X-train-{gen_args.samples}x{gen_args.features}.npy'
             paths += f' --file-X-train {gen_args.filex}'
-            if gen_args.task != 'clust':
+            if gen_args.task != 'kmeans':
                     gen_args.filey = f'data/synth-{gen_args.task}{cls_num_for_file}-y-train-{gen_args.samples}x{gen_args.features}.npy'
                     paths += f' --file-y-train {gen_args.filey}'
 
@@ -119,13 +119,13 @@ for params_set in config['cases']:
                 _, _, gen_args.test_samples, _ = dataset_params[:4]
                 gen_args.filextest = f'data/synth-{gen_args.task}{cls_num_for_file}-X-test-{gen_args.test_samples}x{gen_args.features}.npy'
                 paths += f' --file-X-test {gen_args.filextest}'
-                if gen_args.task != 'clust':
+                if gen_args.task != 'kmeans':
                     gen_args.fileytest = f'data/synth-{gen_args.task}{cls_num_for_file}-y-test-{gen_args.test_samples}x{gen_args.features}.npy'
                     paths += f' --file-y-test {gen_args.fileytest}'
             else:
                 gen_args.test_samples = 0
                 gen_args.filextest = gen_args.filex
-                if gen_args.task != 'clust':
+                if gen_args.task != 'kmeans':
                     gen_args.fileytest = gen_args.filey
 
             if not args.dummy_run and not os.path.isfile(gen_args.filex):
@@ -133,14 +133,14 @@ for params_set in config['cases']:
                     gen_regression(gen_args)
                 elif gen_args.task == 'clsf':
                     gen_classification(gen_args)
-                elif gen_args.task == 'clust':
+                elif gen_args.task == 'kmeans':
                     gen_kmeans(gen_args)
         else:
             raise ValueError(
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = f'python {lib}/{algorithm}.py --batch {batch} --arch {hostname} --output-format {args.output_format}{case} {paths}'
+                command = f'python {lib}/{algorithm}.py --batch {batch} --arch {hostname} --header --output-format {args.output_format}{case} {paths}'
                 while '  ' in command:
                     command = command.replace('  ', ' ')
                 print(command)
@@ -151,11 +151,11 @@ for params_set in config['cases']:
                     if args.output_format == 'json':
                         json_result['results'] += json.loads(f'[{r.stdout}]')
                     elif args.output_format == 'csv':
-                        csv_result += r.stdout
+                        csv_result += r.stdout + '\n'
                     print(r.stderr, file=sys.stderr)
 
 if args.output_format == 'json':
     json_result = json.dumps(json_result, indent=4)
     print(json_result, end='\n')
 elif args.output_format == 'csv':
-    print(csv_result)
+    print(csv_result, end='')

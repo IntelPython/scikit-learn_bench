@@ -50,4 +50,4 @@ for metric in params.metrics:
         })
 
         print(json.dumps(result, indent=4),
-              end=',\n' if metric == params.metrics[-1] else '\n')
+              end=',\n' if metric != params.metrics[-1] else '\n')

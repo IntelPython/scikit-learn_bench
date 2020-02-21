@@ -489,7 +489,7 @@ def print_output(library, algorithm, stages, columns, params, functions,
                  times, accuracy_type, accuracies, data, alg_instance=None,
                  alg_params=None):
     if params.output_format == 'csv':
-        output_csv(columns, params, functions, times, [None, accuracies[1]])
+        output_csv(columns, params, functions, times, accuracies)
     elif params.output_format == 'json':
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
@@ -500,7 +500,10 @@ def print_output(library, algorithm, stages, columns, params, functions,
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
-                result['input_data'].update({'n_clusters': params.n_clusters})
+                if algorithm == 'kmeans':
+                    result['input_data'].update({'n_clusters': params.n_clusters})
+                elif algorithm == 'dbscan':
+                    result.update({'n_clusters': params.n_clusters})
             # replace non-string init with string for kmeans benchmarks
             if alg_instance is not None:
                 if 'init' in result['algorithm_parameters'].keys():
