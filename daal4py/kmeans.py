@@ -72,7 +72,7 @@ fit_time, res = time_mean_min(test_fit, X_train, X_init,
                               goal_outer_loops=params.fit_goal,
                               time_limit=params.fit_time_limit,
                               verbose=params.verbose)
-train_inertia = res.goalFunction[0, 0]
+train_inertia = float(res.goalFunction[0, 0])
 
 # Time predict
 predict_time, res = time_mean_min(test_predict, X_test, X_init,
@@ -81,7 +81,7 @@ predict_time, res = time_mean_min(test_predict, X_test, X_init,
                                   goal_outer_loops=params.predict_goal,
                                   time_limit=params.predict_time_limit,
                                   verbose=params.verbose)
-test_inertia = res.goalFunction[0, 0]
+test_inertia = float(res.goalFunction[0, 0])
 
 print_output(library='daal4py', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,

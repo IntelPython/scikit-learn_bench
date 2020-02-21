@@ -50,7 +50,7 @@ fit_time, _ = time_mean_min(kmeans.fit, X_train,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-train_inertia = kmeans.inertia_
+train_inertia = float(kmeans.inertia_)
 
 # Time predict
 predict_time, _ = time_mean_min(kmeans.predict, X_test,
@@ -59,7 +59,7 @@ predict_time, _ = time_mean_min(kmeans.predict, X_test,
                                 goal_outer_loops=params.predict_goal,
                                 time_limit=params.predict_time_limit,
                                 verbose=params.verbose)
-test_inertia = kmeans.inertia_
+test_inertia = float(kmeans.inertia_)
 
 
 print_output(library='sklearn', algorithm='kmeans',
