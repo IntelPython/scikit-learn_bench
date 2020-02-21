@@ -507,4 +507,5 @@ def print_output(library, algorithm, stages, columns, params, functions,
                     if not isinstance(
                         result['algorithm_parameters']['init'], str):
                         result['algorithm_parameters']['init'] = 'random'
-            print(json.dumps(result, indent=4))
+            print(json.dumps(result, indent=4),
+                  end=',\n' if i != len(stages) - 1 else '\n')

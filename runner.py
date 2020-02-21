@@ -5,8 +5,10 @@
 
 import argparse
 import os
+import sys
 import subprocess
 import json
+from platform import platform
 from make_datasets import gen_regression, gen_classification, gen_kmeans
 
 
@@ -31,6 +33,9 @@ def generate_cases(params):
     generate_cases(params)
 
 
+read_stdout_from_command = lambda command: subprocess.run(
+    command.split(' '), stdout=subprocess.PIPE, encoding='utf-8').stdout[:-1]
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', metavar='ConfigPath',
                     type=argparse.FileType('r'), default='config_example.json',
@@ -48,21 +53,21 @@ with open(args.config.name, 'r') as config_file:
 # make directory for data if it doesn't exist
 os.makedirs('data', exist_ok=True)
 
-result = {}
-# get CPU information
-lscpu_info = subprocess.run(
-    ['lscpu'], stdout=subprocess.PIPE, encoding='utf-8').stdout
-# remove excess spaces in CPU info output
-while '  ' in lscpu_info:
-    lscpu_info = lscpu_info.replace('  ',' ')
-lscpu_info = lscpu_info.split('\n')
-if '' in lscpu_info:
-    lscpu_info.remove('')
-for i in range(len(lscpu_info)):
-    lscpu_info[i] = lscpu_info[i].split(': ')
-result['HW'] = {'CPU': {line[0]: line[1] for line in lscpu_info}}
-
-log = ''
+csv_result = ''
+json_result = {'hardware': {}, 'results':[]}
+if 'Linux' in platform():
+    hostname = read_stdout_from_command('hostname')
+    batch = read_stdout_from_command('date -Iseconds')
+    # get CPU information (only on Linux)
+    lscpu_info = read_stdout_from_command('lscpu')
+    # remove excess spaces in CPU info output
+    while '  ' in lscpu_info:
+        lscpu_info = lscpu_info.replace('  ',' ')
+    lscpu_info = lscpu_info.split('\n')
+    for i in range(len(lscpu_info)):
+        lscpu_info[i] = lscpu_info[i].split(': ')
+    json_result['hardware'].update(
+        {'CPU': {line[0]: line[1] for line in lscpu_info}})
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -78,7 +83,6 @@ for params_set in config['cases']:
         algorithm, len(cases), len(params_set['dataset'])))
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
-            # generate synthetic dataset for regression task
             class GenerationArgs: pass
             gen_args = GenerationArgs()
             paths = ''
@@ -136,7 +140,7 @@ for params_set in config['cases']:
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = f'python {lib}/{algorithm}.py --output-format {args.output_format}{case} {paths}'
+                command = f'python {lib}/{algorithm}.py --batch {batch} --arch {hostname} --output-format {args.output_format}{case} {paths}'
                 while '  ' in command:
                     command = command.replace('  ', ' ')
                 print(command)
@@ -144,19 +148,14 @@ for params_set in config['cases']:
                     r = subprocess.run(
                         command.split(' '), stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE, encoding='utf-8')
-                    log += r.stdout
-                    print(r.stderr)
+                    if args.output_format == 'json':
+                        json_result['results'] += json.loads(f'[{r.stdout}]')
+                    elif args.output_format == 'csv':
+                        csv_result += r.stdout
+                    print(r.stderr, file=sys.stderr)
 
 if args.output_format == 'json':
-    # add commas to correct JSON output
-    while '}\n{' in log:
-        log = log.replace('}\n{', '},\n{')
-
-    log = '{"results":[\n' + log + '\n]}'
-
-    result.update(json.loads(log))
-    result = json.dumps(result, indent=4)
-
-    print(result, end='\n')
+    json_result = json.dumps(json_result, indent=4)
+    print(json_result, end='\n')
 elif args.output_format == 'csv':
-    print(log)
+    print(csv_result)
