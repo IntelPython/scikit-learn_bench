@@ -18,10 +18,18 @@
             "algorithm": "kmeans",
             "dataset": [
                 {
-                    "training": "synth_clust_1000000_50_10"
+                    "training": "synth_kmeans_1000000_50_10"
                 }
             ],
             "n-clusters": ["10"]
+        },
+        {
+            "algorithm": "dbscan",
+            "dataset": [
+                {
+                    "training": "synth_clsf_1000000_50_10"
+                }
+            ]
         },
         {
             "algorithm": "linear",
