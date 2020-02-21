@@ -26,9 +26,7 @@ def generate_cases(params):
     cases = cases * n_param_values
     for i in range(n_param_values):
         for j in range(prev_length):
-            cases[prev_length * i + j] += ' {}{} {}'.format(
-                '-' if len(param_name) == 1 else '--',
-                param_name, params[param_name][i])
+            cases[prev_length * i + j] += f' {"-" if len(param_name) == 1 else "--"}{param_name} {params[param_name][i]}'
     del params[param_name]
     generate_cases(params)
 
@@ -79,8 +77,7 @@ for params_set in config['cases']:
     libs = params['lib']
     del params['dataset'], params['algorithm'], params['lib']
     generate_cases(params)
-    print('\n{} algorithm: {} case(s) X {} dataset(s)\n'.format(
-        algorithm, len(libs) * len(cases), len(params_set['dataset'])))
+    print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s), {len(params_set["dataset"])} dataset(s)\n')
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
             class GenerationArgs: pass
