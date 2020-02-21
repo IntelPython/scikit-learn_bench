@@ -1,0 +1,93 @@
+{
+    "common": {
+        "lib": ["sklearn", "daal4py"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "distances",
+            "dataset": [
+                {
+                    "training": "synth_clsf_1000_15000_2"
+                }
+            ]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "training": "synth_clust_1000000_50_10"
+                }
+            ],
+            "n-clusters": ["10"]
+        },
+        {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "training": "synth_reg_1000000_50"
+                }
+            ]
+        },
+        {
+            "algorithm": "ridge",
+            "dataset": [
+                {
+                    "training": "synth_reg_1000000_50"
+                }
+            ]
+        },
+        {
+            "algorithm": "df_clsf",
+            "dataset": [
+                {
+                    "training": "synth_clsf_10000_100_2"
+                },
+                {
+                    "training": "synth_clsf_10000_100_5"
+                }
+            ]
+        },
+        {
+            "algorithm": "df_regr",
+            "dataset": [
+                {
+                    "training": "synth_reg_10000_100"
+                }
+            ]
+        },
+        {
+            "algorithm": "log_reg",
+            "dataset": [
+                {
+                    "training": "synth_clsf_100000_100_2"
+                },
+                {
+                    "training": "synth_clsf_100000_100_5"
+                }
+            ]
+        },
+        {
+            "algorithm": "pca",
+            "dataset": [
+                {
+                    "training": "synth_clsf_10000_100_2"
+                }
+            ],
+            "svd-solver": ["daal", "full"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "training": "synth_clsf_100000_100_2"
+                },
+                {
+                    "training": "synth_clsf_100000_100_5"
+                }
+            ]
+        }
+    ]
+}
