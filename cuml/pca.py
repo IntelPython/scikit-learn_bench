@@ -9,8 +9,9 @@ from bench import (
 from cuml import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
-parser.add_argument('--svd-solver', type=str, choices=['auto', 'full', 'jacobi'],
-                    default='full', help='SVD solver to use')
+parser.add_argument('--svd-solver', type=str, default='full',
+                    choices=['auto', 'full', 'jacobi'],
+                    help='SVD solver to use')
 parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
 parser.add_argument('--whiten', action='store_true', default=False,

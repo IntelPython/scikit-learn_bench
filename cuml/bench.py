@@ -388,7 +388,7 @@ def read_csv(filename, params):
 
     # find out header existance
     header_letters = set(
-        ascii_lowercase.replace('e', '') + ascii_lowercase.replace('E', ''))
+        ascii_lowercase.replace('e', '') + ascii_uppercase.replace('E', ''))
     with open(filename, 'r') as file:
         first_line = file.readline()
         header = 0 if len(header_letters & first_line) != 0 else None
@@ -396,7 +396,7 @@ def read_csv(filename, params):
     try:
         import pandas as pd
         data = pd.read_csv(filename, header=header, dtype=params.dtype)
-    except:
+    except ImportError:
         data = np.genfromtxt(filename, delimiter=',', dtype=params.dtype,
                              skip_header=0 if header is None else 1)
     return data
@@ -437,7 +437,6 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
                 full_data[element].dtype = full_data[element].values.dtype
             elif hasattr(full_data[element], 'dtypes'):
                 full_data[element].dtype = full_data[element].dtypes[0].type
-
 
     params.dtype = get_dtype(full_data['X_train'])
     # add size to parameters which is need for some cases
@@ -501,14 +500,14 @@ def print_output(library, algorithm, stages, columns, params, functions,
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
                 if algorithm == 'kmeans':
-                    result['input_data'].update({'n_clusters': params.n_clusters})
+                    result['input_data'].update(
+                        {'n_clusters': params.n_clusters})
                 elif algorithm == 'dbscan':
                     result.update({'n_clusters': params.n_clusters})
             # replace non-string init with string for kmeans benchmarks
             if alg_instance is not None:
                 if 'init' in result['algorithm_parameters'].keys():
-                    if not isinstance(
-                        result['algorithm_parameters']['init'], str):
+                    if not isinstance(result['algorithm_parameters']['init'], str):
                         result['algorithm_parameters']['init'] = 'random'
             print(json.dumps(result, indent=4),
                   end=',\n' if i != len(stages) - 1 else '\n')

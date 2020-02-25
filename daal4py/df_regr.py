@@ -110,4 +110,3 @@ if __name__ == '__main__':
                  params=params, functions=['df_regr.fit', 'df_regr.predict'],
                  times=[fit_time, predict_time], accuracy_type='rmse',
                  accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
-

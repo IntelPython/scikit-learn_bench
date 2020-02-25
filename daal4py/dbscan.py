@@ -19,6 +19,7 @@ params = parse_args(parser, prefix='daal4py')
 # Load generated data
 X, _, _, _ = load_data(params, add_dtype=True)
 
+
 # Define functions to time
 def test_dbscan(X):
     algorithm = dbscan(

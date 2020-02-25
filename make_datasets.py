@@ -75,7 +75,6 @@ def gen_kmeans(args):
         raise ImportError('numpy.random_intel not found. '
                           'Please use Intel Distribution for Python.')
 
-
     rs = nri.RandomState(args.seed, brng=('MT2203', args.node_id))
 
     # generate centers

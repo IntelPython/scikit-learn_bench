@@ -79,7 +79,7 @@ with open(args.config.name, 'r') as config_file:
 os.makedirs('data', exist_ok=True)
 
 csv_result = ''
-json_result = {'hardware': {}, 'results':[]}
+json_result = {'hardware': {}, 'results': []}
 if 'Linux' in platform():
     hostname, _ = read_output_from_command('hostname')
     batch, _ = read_output_from_command('date -Iseconds')
@@ -87,7 +87,7 @@ if 'Linux' in platform():
     lscpu_info, _ = read_output_from_command('lscpu')
     # remove excess spaces in CPU info output
     while '  ' in lscpu_info:
-        lscpu_info = lscpu_info.replace('  ',' ')
+        lscpu_info = lscpu_info.replace('  ', ' ')
     lscpu_info = lscpu_info.split('\n')
     for i in range(len(lscpu_info)):
         lscpu_info[i] = lscpu_info[i].split(': ')
@@ -104,11 +104,12 @@ for params_set in config['cases']:
     libs = params['lib']
     del params['dataset'], params['algorithm'], params['lib']
     generate_cases(params)
-    verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),' \
+    verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                   + f' {len(params_set["dataset"])} dataset(s)\n')
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
-            class GenerationArgs: pass
+            class GenerationArgs:
+                pass
             gen_args = GenerationArgs()
             paths = ''
 
@@ -118,9 +119,9 @@ for params_set in config['cases']:
                 gen_args.seed = 777
 
             dataset_params = dataset['training'].split('_')
-            _, gen_args.task, gen_args.samples, gen_args.features = dataset_params[:4]
-            gen_args.samples = int(gen_args.samples)
-            gen_args.features = int(gen_args.features)
+            gen_args.task = dataset_params[1]
+            gen_args.samples = int(dataset_params[2])
+            gen_args.features = int(dataset_params[3])
             if gen_args.task in ['clsf', 'kmeans', 'blobs']:
                 cls_num_for_file = '-' + dataset_params[4]
                 gen_args.classes = int(dataset_params[4])
@@ -140,8 +141,8 @@ for params_set in config['cases']:
             gen_args.filex = f'{file_prefix}X-train{file_postfix}'
             paths += f' --file-X-train {gen_args.filex}'
             if gen_args.task not in ['kmeans', 'blobs']:
-                    gen_args.filey = f'{file_prefix}y-train{file_postfix}'
-                    paths += f' --file-y-train {gen_args.filey}'
+                gen_args.filey = f'{file_prefix}y-train{file_postfix}'
+                paths += f' --file-y-train {gen_args.filey}'
 
             if 'testing' in dataset.keys():
                 dataset_params = dataset['testing'].split('_')
@@ -171,7 +172,9 @@ for params_set in config['cases']:
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = f'python {lib}/{algorithm}.py --batch {batch} --arch {hostname} --header --output-format {args.output_format}{case} {paths}'
+                command = f'python {lib}/{algorithm}.py --batch {batch} ' \
+                          + f'--arch {hostname} --header --output-format ' \
+                          + f'{args.output_format}{case} {paths}'
                 while '  ' in command:
                     command = command.replace('  ', ' ')
                 verbose_print(command)
