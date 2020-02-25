@@ -21,15 +21,17 @@
                     "training": "synth_kmeans_1000000_50_10"
                 }
             ],
-            "n-clusters": ["10"]
+            "n-clusters": [10]
         },
         {
             "algorithm": "dbscan",
             "dataset": [
                 {
-                    "training": "synth_clsf_1000000_50_10"
+                    "training": "synth_blobs_100000_50_10"
                 }
-            ]
+            ],
+            "min-samples": [5000],
+            "eps": [1]
         },
         {
             "algorithm": "linear",
@@ -95,7 +97,8 @@
                 {
                     "training": "synth_clsf_100000_100_5"
                 }
-            ]
+            ],
+            "max-cache-size": [96]
         }
     ]
 }
