@@ -248,8 +248,8 @@ if __name__ == '__main__':
                  accuracies=[train_acc, test_acc], data=[X_train, X_test])
     if params.verbose:
         print()
-        print("@ Number of iterations: {}".format(solver_result.nit))
+        print(f"@ Number of iterations: {solver_result.nit}")
         print("@ fit coefficients:")
-        print("@ {}".format(beta.tolist()))
+        print(f"@ {beta.tolist()}")
         print("@ fit intercept:")
-        print("@ {}".format(intercept.tolist()))
+        print(f"@ {intercept.tolist()}")

@@ -66,8 +66,8 @@ print_output(library='cuml', algorithm='logistic_regression',
              alg_instance=clf)
 if params.verbose:
     print()
-    print('@ Number of iterations: {}'.format(clf.n_iter_))
+    print(f'@ Number of iterations: {clf.n_iter_}')
     print('@ fit coefficients:')
-    print('@ {}'.format(clf.coef_.tolist()))
+    print(f'@ {clf.coef_.tolist()}')
     print('@ fit intercept:')
-    print('@ {}'.format(clf.intercept_.tolist()))
+    print(f'@ {clf.intercept_.tolist()}')
