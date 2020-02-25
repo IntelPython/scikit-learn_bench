@@ -12,7 +12,8 @@ from daal4py.sklearn.utils import getFPType
 from sklearn.utils.extmath import svd_flip
 
 parser = argparse.ArgumentParser(description='daal4py PCA benchmark')
-parser.add_argument('--svd-solver', type=str, choices=['daal', 'full'],
+parser.add_argument('--svd-solver', type=str,
+                    choices=['daal', 'full', 'correlation'],
                     default='daal', help='SVD solver to use')
 parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
@@ -27,13 +28,13 @@ params = parse_args(parser, size=(10000, 1000),
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train'],
                                   add_dtype=True)
 
-if not params.n_components:
+if params.n_components is None:
     p, n = X_train.shape
     params.n_components = min((n, (2 + min((n, p))) // 3))
 
 
 # Define how to do our scikit-learn PCA using DAAL...
-def pca_fit_daal(X, n_components):
+def pca_fit_daal(X, n_components, method):
 
     if n_components < 1:
         n_components = min(X.shape)
@@ -47,7 +48,7 @@ def pca_fit_daal(X, n_components):
 
     pca_algorithm = pca(
         fptype=fptype,
-        method='svdDense',
+        method=method,
         normalization=centering_algo,
         resultsToCompute='mean|variance|eigenvalue',
         isDeterministic=True,
@@ -92,7 +93,8 @@ def pca_transform_daal(pca_result, X, n_components, fit_n_samples,
 
 def pca_fit_full_daal(X, n_components):
 
-    fit_result, eigenvalues, eigenvectors, S = pca_fit_daal(X, min(X.shape))
+    fit_result, eigenvalues, eigenvectors, S = pca_fit_daal(
+      X, min(X.shape), 'svdDense')
     U = pca_transform_daal(fit_result, X, min(X.shape), X.shape[0],
                            eigenvalues, eigenvectors,
                            whiten=True, scale_eigenvalues=True)
@@ -110,7 +112,8 @@ def test_fit(X):
     if params.svd_solver == 'full':
         return pca_fit_full_daal(X, params.n_components)
     else:
-        return pca_fit_daal(X, params.n_components)
+        method = 'correlationDense' if params.svd_solver == 'correlation' else 'svdDense'
+        return pca_fit_daal(X, params.n_components, method)
 
 
 def test_transform(Xp, pca_result, eigenvalues, eigenvectors):

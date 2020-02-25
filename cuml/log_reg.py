@@ -13,8 +13,7 @@ parser = argparse.ArgumentParser(description='scikit-learn logistic '
 parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                     action='store_false', default=True,
                     help="Don't fit intercept")
-parser.add_argument('--solver', default='lbfgs',
-                    choices=('lbfgs', 'qn', 'owl'),
+parser.add_argument('--solver', default='qn', choices=('qn', 'owl'),
                     help='Solver to use.')
 parser.add_argument('--linesearch-max-iter', type=int, default=50,
                     help='Maximum iterations per solver outer iteration')
@@ -22,19 +21,14 @@ parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum iterations for the iterative solver')
 parser.add_argument('-C', dest='C', type=float, default=1.0,
                     help='Regularization parameter')
-parser.add_argument('--tol', type=float, default=None,
-                    help='Tolerance for solver. If solver == "newton-cg", '
-                         'then the default is 1e-3. Otherwise, the default '
-                         'is 1e-10.')
+parser.add_argument('--tol', type=float, default=1e-10,
+                    help='Tolerance for solver. Default is 1e-10.')
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load generated data
 X_train, X_test, y_train, y_test = load_data(params)
 
 params.n_classes = y_train[y_train.columns[0]].nunique()
-
-if not params.tol:
-    params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
 # Create our classifier object
 clf = LogisticRegression(penalty='l2', C=params.C,

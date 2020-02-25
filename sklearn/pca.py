@@ -21,7 +21,7 @@ params = parse_args(parser, size=(10000, 1000),
 # Load random data
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train'])
 
-if params.n_components is not None:
+if params.n_components is None:
     p, n = X_train.shape
     params.n_components = min((n, (2 + min((n, p))) // 3))
 

@@ -8,7 +8,10 @@ from bench import (
 )
 import numpy as np
 from cuml import KMeans
+import warnings
 
+
+warnings.filterwarnings('ignore', category=FutureWarning)
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
 parser.add_argument('-i', '--filei', '--fileI', '--init',
                     type=str, help='Initial clusters')

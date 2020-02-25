@@ -7,8 +7,21 @@ import argparse
 import sys
 
 import numpy as np
-from sklearn.datasets import make_classification, make_regression
+from sklearn.datasets import make_classification, make_regression, make_blobs
 from sklearn.utils import check_random_state
+
+
+def gen_blobs(args):
+    X, y = make_blobs(n_samples=args.samples + args.test_samples,
+                      n_features=args.features,
+                      centers=None,
+                      center_box=(-32, 32),
+                      shuffle=True,
+                      random_state=args.seed)
+    np.save(args.filex, X[:args.samples])
+    if args.test_samples != 0:
+        np.save(args.filextest, X[args.samples:])
+    return 0
 
 
 def gen_regression(args):

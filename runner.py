@@ -9,7 +9,9 @@ import sys
 import subprocess
 import json
 from platform import platform
-from make_datasets import gen_regression, gen_classification, gen_kmeans
+from make_datasets import (
+    gen_regression, gen_classification, gen_kmeans, gen_blobs
+)
 
 
 def generate_cases(params):
@@ -24,9 +26,10 @@ def generate_cases(params):
     param_name = list(params.keys())[0]
     n_param_values = len(params[param_name])
     cases = cases * n_param_values
+    dashes = '-' if len(param_name) == 1 else '--'
     for i in range(n_param_values):
         for j in range(prev_length):
-            cases[prev_length * i + j] += f' {"-" if len(param_name) == 1 else "--"}{param_name} {params[param_name][i]}'
+            cases[prev_length * i + j] += f' {dashes}{param_name} {params[param_name][i]}'
     del params[param_name]
     generate_cases(params)
 
@@ -56,7 +59,7 @@ json_result = {'hardware': {}, 'results':[]}
 if 'Linux' in platform():
     hostname = read_stdout_from_command('hostname')
     batch = read_stdout_from_command('date -Iseconds')
-    # get CPU information (only on Linux)
+    # get CPU information
     lscpu_info = read_stdout_from_command('lscpu')
     # remove excess spaces in CPU info output
     while '  ' in lscpu_info:
@@ -93,21 +96,21 @@ for params_set in config['cases']:
             _, gen_args.task, gen_args.samples, gen_args.features = dataset_params[:4]
             gen_args.samples = int(gen_args.samples)
             gen_args.features = int(gen_args.features)
-            if gen_args.task in ['clsf', 'kmeans']:
+            if gen_args.task in ['clsf', 'kmeans', 'blobs']:
                 cls_num_for_file = '-' + dataset_params[4]
                 gen_args.classes = int(dataset_params[4])
+                gen_args.clusters = gen_args.classes
                 if gen_args.task == 'kmeans':
-                    gen_args.clusters = int(dataset_params[4])
                     gen_args.node_id = 0
-                    gen_args.filei = f'data/synth-kmeans-{gen_args.clusters}-init-{gen_args.samples}x{gen_args.features}.npy'
+                    gen_args.filei = f'data/synth-{gen_args.task}-{gen_args.clusters}-init-{gen_args.samples}x{gen_args.features}.npy'
                     paths += f'--filei {gen_args.filei}'
-                    gen_args.filet = f'data/synth-kmeans-{gen_args.clusters}-threshold-{gen_args.samples}x{gen_args.features}.npy'
+                    gen_args.filet = f'data/synth-{gen_args.task}-{gen_args.clusters}-threshold-{gen_args.samples}x{gen_args.features}.npy'
             else:
                 cls_num_for_file = ''
 
             gen_args.filex = f'data/synth-{gen_args.task}{cls_num_for_file}-X-train-{gen_args.samples}x{gen_args.features}.npy'
             paths += f' --file-X-train {gen_args.filex}'
-            if gen_args.task != 'kmeans':
+            if gen_args.task not in ['kmeans', 'blobs']:
                     gen_args.filey = f'data/synth-{gen_args.task}{cls_num_for_file}-y-train-{gen_args.samples}x{gen_args.features}.npy'
                     paths += f' --file-y-train {gen_args.filey}'
 
@@ -116,13 +119,13 @@ for params_set in config['cases']:
                 _, _, gen_args.test_samples, _ = dataset_params[:4]
                 gen_args.filextest = f'data/synth-{gen_args.task}{cls_num_for_file}-X-test-{gen_args.test_samples}x{gen_args.features}.npy'
                 paths += f' --file-X-test {gen_args.filextest}'
-                if gen_args.task != 'kmeans':
+                if gen_args.task not in ['kmeans', 'blobs']:
                     gen_args.fileytest = f'data/synth-{gen_args.task}{cls_num_for_file}-y-test-{gen_args.test_samples}x{gen_args.features}.npy'
                     paths += f' --file-y-test {gen_args.fileytest}'
             else:
                 gen_args.test_samples = 0
                 gen_args.filextest = gen_args.filex
-                if gen_args.task != 'kmeans':
+                if gen_args.task not in ['kmeans', 'blobs']:
                     gen_args.fileytest = gen_args.filey
 
             if not args.dummy_run and not os.path.isfile(gen_args.filex):
@@ -132,6 +135,8 @@ for params_set in config['cases']:
                     gen_classification(gen_args)
                 elif gen_args.task == 'kmeans':
                     gen_kmeans(gen_args)
+                elif gen_args.task == 'blobs':
+                    gen_blobs(gen_args)
         else:
             raise ValueError(
                 'Unknown dataset. Only synthetics are supported now')

@@ -41,4 +41,5 @@ params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 
 print_output(library='sklearn', algorithm='dbscan', stages=['training'],
              columns=columns, params=params, functions=['DBSCAN'],
-             times=[time], accuracies=[None], accuracy_type=None, data=[X])
+             times=[time], accuracies=[None], accuracy_type=None, data=[X],
+             alg_instance=dbscan)
