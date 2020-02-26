@@ -146,7 +146,7 @@ for params_set in config['cases']:
 
             if 'testing' in dataset.keys():
                 dataset_params = dataset['testing'].split('_')
-                _, _, gen_args.test_samples, _ = dataset_params[:4]
+                gen_args.test_samples = int(dataset_params[2])
                 gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
                 paths += f' --file-X-test {gen_args.filextest}'
                 if gen_args.task not in ['kmeans', 'blobs']:
