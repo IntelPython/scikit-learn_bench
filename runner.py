@@ -8,6 +8,8 @@ import os
 import sys
 import subprocess
 import json
+import time
+import socket
 from platform import platform
 from make_datasets import (
     gen_regression, gen_classification, gen_kmeans, gen_blobs
@@ -81,8 +83,6 @@ os.makedirs('data', exist_ok=True)
 csv_result = ''
 json_result = {'hardware': {}, 'results': []}
 if 'Linux' in platform():
-    hostname, _ = read_output_from_command('hostname')
-    batch, _ = read_output_from_command('date -Iseconds')
     # get CPU information
     lscpu_info, _ = read_output_from_command('lscpu')
     # remove excess spaces in CPU info output
@@ -93,6 +93,39 @@ if 'Linux' in platform():
         lscpu_info[i] = lscpu_info[i].split(': ')
     json_result['hardware'].update(
         {'CPU': {line[0]: line[1] for line in lscpu_info}})
+    # get RAM size
+    mem_info, _ = read_output_from_command('free -b')
+    mem_info = mem_info.split('\n')[1]
+    while '  ' in mem_info:
+        mem_info = mem_info.replace('  ', ' ')
+    mem_info = int(mem_info.split(' ')[1]) / 2 ** 30
+    json_result['hardware'].update({'RAM size[GB]': mem_info})
+    # get GPU information
+    try:
+        gpu_info, _ = read_output_from_command(
+            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
+            '--format=csv,noheader')
+        gpu_info = gpu_info.split(', ')
+        json_result['hardware'].update({
+            'GPU': {
+                'Name': gpu_info[0],
+                'Memory size': gpu_info[1],
+                'Driver version': gpu_info[2],
+                'Performance mode': gpu_info[3]
+            }
+        })
+        # alert if GPU is already running any processes
+        gpu_processes, _ = read_output_from_command(
+            'nvidia-smi --query-compute-apps=name,pid,used_memory '
+            '--format=csv,noheader')
+        if gpu_processes != '':
+            print(f'There are running processes on GPU:\n{gpu_processes}',
+                  file=sys.stderr)
+    except FileNotFoundError:
+        pass
+
+batch = time.strftime('%Y-%m-%dT-%H:%M:%S%z')
+hostname = socket.gethostname()
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -105,7 +138,7 @@ for params_set in config['cases']:
     del params['dataset'], params['algorithm'], params['lib']
     generate_cases(params)
     verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
-                  + f' {len(params_set["dataset"])} dataset(s)\n')
+                  f' {len(params_set["dataset"])} dataset(s)\n')
     for dataset in params_set['dataset']:
         if dataset['training'].startswith('synth'):
             class GenerationArgs:
