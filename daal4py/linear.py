@@ -61,12 +61,9 @@ predict_time, pres = time_mean_min(test_predict, X_test, res.model,
                                    time_limit=params.predict_time_limit,
                                    verbose=params.verbose)
 
-if params.output_format == 'json':
-    test_rmse = rmse_score(pres.prediction, y_test)
-    pres = test_predict(X_train, res.model)
-    train_rmse = rmse_score(pres.prediction, y_train)
-else:
-    train_rmse, test_rmse = None, None
+test_rmse = rmse_score(pres.prediction, y_test)
+pres = test_predict(X_train, res.model)
+train_rmse = rmse_score(pres.prediction, y_train)
 
 print_output(library='daal4py', algorithm='linear_regression',
              stages=['training', 'prediction'], columns=columns,

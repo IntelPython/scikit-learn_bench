@@ -42,12 +42,9 @@ predict_time, yp = time_mean_min(regr.predict, X_test,
                                  time_limit=params.predict_time_limit,
                                  verbose=params.verbose)
 
-if params.output_format == 'json':
-    test_rmse = rmse_score(yp, y_test)
-    yp = regr.predict(X_train)
-    train_rmse = rmse_score(yp, y_train)
-else:
-    train_rmse, test_rmse = None, None
+test_rmse = rmse_score(yp, y_test)
+yp = regr.predict(X_train)
+train_rmse = rmse_score(yp, y_train)
 
 print_output(library='sklearn', algorithm='linear_regression',
              stages=['training', 'prediction'], columns=columns,

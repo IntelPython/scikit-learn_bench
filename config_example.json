@@ -98,7 +98,8 @@
                     "training": "synth_clsf_100000_100_5"
                 }
             ],
-            "max-cache-size": [96]
+            "max-cache-size": [96],
+            "kernel": ["rbf"]
         }
     ]
 }

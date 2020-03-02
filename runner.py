@@ -124,7 +124,7 @@ if 'Linux' in platform():
     except FileNotFoundError:
         pass
 
-batch = time.strftime('%Y-%m-%dT-%H:%M:%S%z')
+batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
 hostname = socket.gethostname()
 
 # get parameters that are common for all cases

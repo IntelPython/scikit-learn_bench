@@ -321,27 +321,40 @@ def logverbose(msg, verbose):
         print('@', msg)
 
 
-def convert_to_numpy1d(data):
+def convert_to_numpy(data):
     '''
-    Convert input data to 1-dimensional numpy array
+    Convert input data to numpy array
     '''
     if 'cudf' in str(type(data)):
         data = data.to_pandas().values
-    if 'pandas' in str(type(data)):
+    elif 'pandas' in str(type(data)):
         data = data.values
-    return data.reshape((data.shape[0],))
+    elif isinstance(data, np.ndarray):
+        return data
+    else:
+        raise TypeError('Unknown data format for convertion to np.ndarray')
+    return data
+
+
+def columnwise_score(y, yp, score_func):
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    if len(y.shape) == 2:
+        if y.shape[1] == 1:
+            y = y[:,0]
+            yp = yp[:,0]
+        else:
+            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
+    return score_func(y, yp)
 
 
 def accuracy_score(y, yp):
-    y = convert_to_numpy1d(y)
-    yp = convert_to_numpy1d(yp)
-    return np.mean(y == yp)
+    return columnwise_score(y, yp, lambda y1, y2: np.mean(y1 == y2))
 
 
 def rmse_score(y, yp):
-    y = convert_to_numpy1d(y)
-    yp = convert_to_numpy1d(yp)
-    return float(np.sqrt(np.mean((y - yp)**2)))
+    return columnwise_score(
+        y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
 
 
 def convert_data(data, dtype, data_order, data_format):

@@ -5,7 +5,7 @@ Python*. See benchmark results [here](https://intelpython.github.io/scikit-learn
 
 ## Prerequisites
 - python and scikit-learn to run python versions
-- pandas when using it's DataFrame as input data format
+- pandas when using its DataFrame as input data format
 - `icc`, `ifort`, `mkl`, `daal` to compile and run native benchmarks
 
 ## How to create conda environment for benchmarking
@@ -14,7 +14,7 @@ Python*. See benchmark results [here](https://intelpython.github.io/scikit-learn
 ## Running Python benchmarks with runner script
 `python runner --config config_example.json [--output-format json --verbose]`
 
-## Legacy automatical building and running
+## Legacy automatic building and running
 - Run `make`. This will generate data, compile benchmarks, and run them.
   - To run only scikit-learn benchmarks, use `make sklearn`.
   - To run only native benchmarks, use `make native`.
