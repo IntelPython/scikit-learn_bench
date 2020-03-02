@@ -81,7 +81,7 @@ with open(args.config.name, 'r') as config_file:
 os.makedirs('data', exist_ok=True)
 
 csv_result = ''
-json_result = {'hardware': {}, 'results': []}
+json_result = {'hardware': {}, 'software': {}, 'results': []}
 if 'Linux' in platform():
     # get CPU information
     lscpu_info, _ = read_output_from_command('lscpu')
@@ -110,10 +110,10 @@ if 'Linux' in platform():
             'GPU': {
                 'Name': gpu_info[0],
                 'Memory size': gpu_info[1],
-                'Driver version': gpu_info[2],
                 'Performance mode': gpu_info[3]
             }
         })
+        json_result['software'].update({'GPU_driver': {'version': gpu_info[2]}})
         # alert if GPU is already running any processes
         gpu_processes, _ = read_output_from_command(
             'nvidia-smi --query-compute-apps=name,pid,used_memory '
@@ -123,6 +123,24 @@ if 'Linux' in platform():
                   file=sys.stderr)
     except FileNotFoundError:
         pass
+
+# get python packages info from conda
+try:
+    conda_list, _ = read_output_from_command('conda list')
+    conda_list = conda_list.split('\n')
+    for line in conda_list:
+        if line.startswith('#'):
+            continue
+        while '  ' in line:
+            line = line.replace('  ', ' ')
+        pkg_info = line.split(' ')
+        json_result['software'].update({pkg_info[0]: {
+            'version': pkg_info[1],
+            'build': pkg_info[2],
+            'channel': pkg_info[3]
+        }})
+except FileNotFoundError:
+    pass
 
 batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
 hostname = socket.gethostname()

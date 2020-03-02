@@ -341,8 +341,10 @@ def columnwise_score(y, yp, score_func):
     yp = convert_to_numpy(yp)
     if len(y.shape + yp.shape) > 2:
         if 1 in (y.shape + yp.shape)[1:]:
-            y = y[:,0]
-            yp = yp[:,0]
+            if len(y.shape) > 1:
+                y = y[:,0]
+            if len(yp.shape) > 1:
+                yp = yp[:,0]
         else:
             return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
     return score_func(y, yp)
