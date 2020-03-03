@@ -339,11 +339,11 @@ def convert_to_numpy(data):
 def columnwise_score(y, yp, score_func):
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    if len(y.shape + yp.shape) > 2:
+    if y.ndim + yp.ndim > 2:
         if 1 in (y.shape + yp.shape)[1:]:
-            if len(y.shape) > 1:
+            if y.ndim > 1:
                 y = y[:,0]
-            if len(yp.shape) > 1:
+            if yp.ndim > 1:
                 yp = yp[:,0]
         else:
             return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
