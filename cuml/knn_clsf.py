@@ -24,7 +24,7 @@ params = parse_args(parser)
 
 # Load generated data
 X_train, X_test, y_train, y_test = load_data(params)
-params.n_classes = len(np.unique(y_train))
+params.n_classes = y_train[y_train.columns[0]].nunique()
 
 # Create classification object
 knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
