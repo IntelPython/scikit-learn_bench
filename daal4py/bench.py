@@ -342,9 +342,9 @@ def columnwise_score(y, yp, score_func):
     if y.ndim + yp.ndim > 2:
         if 1 in (y.shape + yp.shape)[1:]:
             if y.ndim > 1:
-                y = y[:,0]
+                y = y[:, 0]
             if yp.ndim > 1:
-                yp = yp[:,0]
+                yp = yp[:, 0]
         else:
             return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
     return score_func(y, yp)

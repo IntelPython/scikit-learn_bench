@@ -113,7 +113,8 @@ if 'Linux' in platform():
                 'Performance mode': gpu_info[3]
             }
         })
-        json_result['software'].update({'GPU_driver': {'version': gpu_info[2]}})
+        json_result['software'].update(
+            {'GPU_driver': {'version': gpu_info[2]}})
         # alert if GPU is already running any processes
         gpu_processes, _ = read_output_from_command(
             'nvidia-smi --query-compute-apps=name,pid,used_memory '
