@@ -12,7 +12,7 @@ import warnings
 
 
 warnings.filterwarnings('ignore', category=FutureWarning)
-parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
+parser = argparse.ArgumentParser(description='cuML K-means benchmark')
 parser.add_argument('-i', '--filei', '--fileI', '--init',
                     type=str, help='Initial clusters')
 parser.add_argument('-t', '--tol', type=float, default=0.,

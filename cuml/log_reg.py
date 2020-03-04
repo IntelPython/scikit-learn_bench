@@ -8,7 +8,7 @@ from bench import (
 )
 from cuml import LogisticRegression
 
-parser = argparse.ArgumentParser(description='scikit-learn logistic '
+parser = argparse.ArgumentParser(description='cuML logistic '
                                              'regression benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                     action='store_false', default=True,

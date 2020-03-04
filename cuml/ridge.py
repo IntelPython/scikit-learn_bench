@@ -8,7 +8,7 @@ from bench import (
 )
 from cuml import Ridge
 
-parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
+parser = argparse.ArgumentParser(description='cuML ridge regression '
                                              'benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',

@@ -8,7 +8,7 @@ from bench import (
 )
 from cuml import PCA
 
-parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
+parser = argparse.ArgumentParser(description='cuML PCA benchmark')
 parser.add_argument('--svd-solver', type=str, default='full',
                     choices=['auto', 'full', 'jacobi'],
                     help='SVD solver to use')

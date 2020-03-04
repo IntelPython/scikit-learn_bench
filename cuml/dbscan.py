@@ -6,7 +6,7 @@ import argparse
 from bench import parse_args, time_mean_min, load_data, print_output
 from cuml import DBSCAN
 
-parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
+parser = argparse.ArgumentParser(description='cuML DBSCAN benchmark')
 parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
                     help='Radius of neighborhood of a point')
 parser.add_argument('-m', '--min-samples', default=5, type=int,

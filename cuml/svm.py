@@ -34,7 +34,7 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
         return optimal_cache_size_bytes
 
 
-parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
+parser = argparse.ArgumentParser(description='cuML SVM benchmark')
 
 parser.add_argument('-C', dest='C', type=float, default=0.01,
                     help='SVM slack parameter')

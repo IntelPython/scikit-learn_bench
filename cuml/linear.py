@@ -8,7 +8,7 @@ from bench import (
 )
 from cuml import LinearRegression
 
-parser = argparse.ArgumentParser(description='scikit-learn linear regression '
+parser = argparse.ArgumentParser(description='cuML linear regression '
                                              'benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
