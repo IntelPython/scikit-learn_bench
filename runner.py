@@ -159,7 +159,15 @@ for params_set in config['cases']:
     verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                   f' {len(params_set["dataset"])} dataset(s)\n')
     for dataset in params_set['dataset']:
-        if dataset['training'].startswith('synth'):
+        if isinstance(dataset['training'], dict):
+            paths = f'--file-X-train {dataset["training"]["x"]}'
+            if 'y' in dataset['training'].keys():
+                paths += f' --file-y-train {dataset["training"]["y"]}'
+            if 'testing' in dataset.keys():
+                paths += f' --file-X-test {dataset["testing"]["x"]}'
+                if 'y' in dataset['testing'].keys():
+                    paths += f' --file-y-test {dataset["testing"]["y"]}'
+        elif dataset['training'].startswith('synth'):
             class GenerationArgs:
                 pass
             gen_args = GenerationArgs()

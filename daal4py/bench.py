@@ -406,7 +406,7 @@ def read_csv(filename, params):
         ascii_lowercase.replace('e', '') + ascii_uppercase.replace('E', ''))
     with open(filename, 'r') as file:
         first_line = file.readline()
-        header = 0 if len(header_letters & first_line) != 0 else None
+        header = 0 if len(header_letters & set(first_line)) != 0 else None
     # try to read csv with pandas and fall back to numpy reader if failed
     try:
         import pandas as pd
