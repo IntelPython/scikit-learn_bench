@@ -37,6 +37,13 @@ def _parse_size(string, dim=2):
     return tup
 
 
+def float_or_int(string):
+    if '.' in string:
+        return float(string)
+    else:
+        return int(string)
+
+
 def parse_args(parser, size=None, loop_types=(),
                n_jobs_supported=False, prefix='sklearn'):
     '''
@@ -330,9 +337,12 @@ def convert_to_numpy(data):
     elif 'pandas' in str(type(data)):
         data = data.values
     elif isinstance(data, np.ndarray):
-        return data
+        pass
+    elif 'numba.cuda.cudadrv.devicearray.DeviceNDArray' in str(type(data)):
+        data = np.array(data)
     else:
-        raise TypeError('Unknown data format for convertion to np.ndarray')
+        raise TypeError(
+            f'Unknown data format "{type(data)}" for convertion to np.ndarray')
     return data
 
 
@@ -375,7 +385,7 @@ def convert_data(data, dtype, data_order, data_format):
     elif data_format == 'pandas':
         import pandas as pd
 
-        if len(data.shape) == 1:
+        if data.ndim == 1:
             return pd.Series(data)
         else:
             return pd.DataFrame(data)
@@ -410,21 +420,28 @@ def read_csv(filename, params):
     # try to read csv with pandas and fall back to numpy reader if failed
     try:
         import pandas as pd
-        data = pd.read_csv(filename, header=header, dtype=params.dtype)
+        data = pd.read_csv(filename, header=header, dtype=params.dtype).values
     except ImportError:
         data = np.genfromtxt(filename, delimiter=',', dtype=params.dtype,
                              skip_header=0 if header is None else 1)
+
+    if data.ndim == 2:
+        if data.shape[1] == 1:
+            data = data.reshape((data.shape[0],))
+
     return data
 
 
-def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
+def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
+              int_label=False):
     full_data = {
         file: None for file in ['X_train', 'X_test', 'y_train', 'y_test']
     }
     param_vars = vars(params)
+    int_dtype = np.int32 if '32' in str(params.dtype) else np.int64
     for element in full_data:
         file_arg = f'file_{element}'
-        # load and convert data from npy file if path is specified
+        # load and convert data from npy/csv file if path is specified
         if param_vars[file_arg] is not None:
             if param_vars[file_arg].name.endswith('.npy'):
                 data = np.load(param_vars[file_arg].name)
@@ -432,15 +449,15 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False):
                 data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(
                 data,
-                params.dtype,
-                params.data_order,
-                params.data_format
+                int_dtype if 'y' in element and int_label else params.dtype,
+                params.data_order, params.data_format
             )
         # generate and convert data if it's marked and path isn't specified
         if full_data[element] is None and element in generated_data:
-            full_data[element] = convert_data(np.random.rand(*params.shape),
-                                              params.dtype, params.data_order,
-                                              params.data_format)
+            full_data[element] = convert_data(
+                np.random.rand(*params.shape),
+                int_dtype if 'y' in element and int_label else params.dtype,
+                params.data_order, params.data_format)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
         if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):

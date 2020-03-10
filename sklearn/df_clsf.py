@@ -4,25 +4,37 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    float_or_int, parse_args, time_mean_min, load_data, print_output,
+    accuracy_score
 )
 import numpy as np
-from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
                                              'classification benchmark')
 
+parser.add_argument('--criterion', type=str, default='gini',
+                    choices=('gini', 'entropy'),
+                    help='The function to measure the quality of a split')
 parser.add_argument('--num-trees', type=int, default=100,
                     help='Number of trees in the forest')
-parser.add_argument('--max-features',   type=int, default=None,
+parser.add_argument('--max-features', type=float_or_int, default=None,
                     help='Upper bound on features used at each split')
-parser.add_argument('--max-depth',   type=int, default=None,
+parser.add_argument('--max-depth', type=int, default=None,
                     help='Upper bound on depth of constructed trees')
+parser.add_argument('--min-samples-split', type=float_or_int, default=2,
+                    help='Minimum samples number for node splitting')
+parser.add_argument('--max-leaf-nodes', type=int, default=None,
+                    help='Maximum leaf nodes per tree')
+parser.add_argument('--min-impurity-decrease', type=float, default=0.,
+                    help='Needed impurity decrease for node splitting')
+parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
+                    action='store_false', help="Don't control bootstraping")
 
 parser.add_argument('--use-sklearn-class', action='store_true',
                     help='Force use of '
                          'sklearn.ensemble.RandomForestClassifier')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(
+    parser, loop_types=('fit', 'predict'), n_jobs_supported=True)
 
 # Get some RandomForestClassifier
 if params.use_sklearn_class:
@@ -37,10 +49,16 @@ else:
 X_train, X_test, y_train, y_test = load_data(params)
 
 # Create our random forest classifier
-clf = RandomForestClassifier(n_estimators=params.num_trees,
+clf = RandomForestClassifier(criterion=params.criterion,
+                             n_estimators=params.num_trees,
                              max_depth=params.max_depth,
                              max_features=params.max_features,
-                             random_state=params.seed)
+                             min_samples_split=params.min_samples_split,
+                             max_leaf_nodes=params.max_leaf_nodes,
+                             min_impurity_decrease=params.min_impurity_decrease,
+                             bootstrap=params.bootstrap,
+                             random_state=params.seed,
+                             n_jobs=params.n_jobs)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'n_classes', 'accuracy', 'time')
