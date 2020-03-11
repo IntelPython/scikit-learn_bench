@@ -93,6 +93,8 @@ if 'Linux' in platform():
         lscpu_info[i] = lscpu_info[i].split(': ')
     json_result['hardware'].update(
         {'CPU': {line[0]: line[1] for line in lscpu_info}})
+    if 'CPU MHz' in json_result['hardware']['CPU'].keys():
+        del json_result['hardware']['CPU']['CPU MHz']
     # get RAM size
     mem_info, _ = read_output_from_command('free -b')
     mem_info = mem_info.split('\n')[1]
