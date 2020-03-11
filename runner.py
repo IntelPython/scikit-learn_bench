@@ -144,6 +144,7 @@ except FileNotFoundError:
     pass
 
 batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
+json_result.update({'measurement_time': time.time()})
 hostname = socket.gethostname()
 
 # get parameters that are common for all cases
