@@ -35,7 +35,10 @@ parser.add_argument('--tol', type=float, default=None,
                     help="Tolerance for solver. If solver == 'newton-cg', "
                          "then the default is 1e-3. Otherwise, the default "
                          "is 1e-10.")
-params = parse_args(parser, loop_types=('fit', 'predict'))
+parser.add_argument('--tile', type=int, default=100, help="Create (tile)x size dataset"
+                    )
+params = parse_args(parser, loop_types=('fit', 'predict'),
+                    n_jobs_supported=True)
 
 # Load generated data
 X = np.load(params.filex.name)
@@ -70,6 +73,10 @@ fit_time, _ = time_mean_min(clf.fit, X, y,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
 print_row(columns, params, function='LogReg.fit', time=fit_time)
+
+X = np.tile(X, (params.tile, 1))
+y = np.tile(y, params.tile)
+params.size = size_str(X.shape)
 
 predict_time, y_pred = time_mean_min(clf.predict, X,
                                      outer_loops=params.predict_outer_loops,

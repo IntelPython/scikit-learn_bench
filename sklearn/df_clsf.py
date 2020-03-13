@@ -29,7 +29,8 @@ parser.add_argument('--use-sklearn-class', action='store_true',
                          'sklearn.ensemble.RandomForestClassifier')
 parser.add_argument('--seed', type=int, default=12345,
                     help='Seed to pass as random_state to the class')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser, loop_types=('fit', 'predict'),
+                    n_jobs_supported=True)
 
 # Get some RandomForestClassifier
 if params.use_sklearn_class:

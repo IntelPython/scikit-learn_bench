@@ -4,7 +4,7 @@ REGRESSION_SIZE = 1000000x50
 KMEANS_SAMPLES = 1000000
 KMEANS_FEATURES = 50
 KMEANS_SIZE = $(KMEANS_SAMPLES)x$(KMEANS_FEATURES)
-SVM_SAMPLES = 100000
+SVM_SAMPLES = 10000
 SVM_FEATURES = 100
 SVM_SIZE = $(SVM_SAMPLES)x$(SVM_FEATURES)
 LOGREG_SAMPLES = 100000
@@ -26,10 +26,14 @@ HOST = $(shell hostname)
 # This makes the makefile exit on failed benchmarks. We pipe the
 # benchmark outputs to "tee", which results in unexpected successes.
 SHELL = bash -o pipefail
+export USE_DAAL4PY_SKLEARN = yes
 
 # Other options
-NUM_THREADS = -1
-SVM_NUM_THREADS = 0
+NUM_THREADS = 1
+SVM_NUM_THREADS = 1
+
+OMP_NUM_THREADS = $(NUM_THREADS)
+export OMP_NUM_THREADS
 LOGREG_NUM_THREADS = $(SVM_NUM_THREADS)
 DFCLF_NUM_THREADS = $(SVM_NUM_THREADS)
 DFREG_NUM_THREADS = $(SVM_NUM_THREADS)
@@ -80,10 +84,12 @@ ARGS_NATIVE_kmeans = 	--num-threads "$(NUM_THREADS)" --header \
 			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
 ARGS_NATIVE_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
 			--fileY data/two/y-$(SVM_SIZE).npy \
-			--num-threads $(SVM_NUM_THREADS) --header
+			--num-threads $(SVM_NUM_THREADS) --header \
+			--kernel rbf
 ARGS_NATIVE_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
 			--fileY data/multi/y-$(SVM_SIZE).npy \
-			--num-threads $(SVM_NUM_THREADS) --header
+			--num-threads $(SVM_NUM_THREADS) --header \
+			--kernel rbf
 ARGS_NATIVE_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
 			--fileY data/two/y-$(LOGREG_SIZE).npy \
 			--num-threads $(LOGREG_NUM_THREADS) --header
@@ -106,6 +112,7 @@ SKLEARN_linear = linear
 SKLEARN_pca_full = pca
 SKLEARN_pca_daal = pca
 SKLEARN_kmeans = kmeans
+SKLEARN_dbscan = dbscan
 SKLEARN_svm2 = svm
 SKLEARN_svm5 = svm
 SKLEARN_logreg2 = log_reg
@@ -122,10 +129,13 @@ ARGS_SKLEARN_pca_full = --size "$(REGRESSION_SIZE)" --svd-solver full
 ARGS_SKLEARN_kmeans = 	--data-multiplier "$(MULTIPLIER)" \
 			--filex data/clustering/kmeans_$(KMEANS_SIZE).npy \
 			--filei data/clustering/kmeans_$(KMEANS_SIZE).init.npy
+ARGS_SKLEARN_dbscan = 	--filex data/clustering/kmeans_$(KMEANS_SIZE).npy
 ARGS_SKLEARN_svm2 =	--fileX data/two/X-$(SVM_SIZE).npy \
-			--fileY data/two/y-$(SVM_SIZE).npy
+			--fileY data/two/y-$(SVM_SIZE).npy \
+			--kernel rbf
 ARGS_SKLEARN_svm5 = 	--fileX data/multi/X-$(SVM_SIZE).npy \
-			--fileY data/multi/y-$(SVM_SIZE).npy
+			--fileY data/multi/y-$(SVM_SIZE).npy \
+			--kernel rbf
 ARGS_SKLEARN_logreg2 =	--fileX data/two/X-$(LOGREG_SIZE).npy \
 			--fileY data/two/y-$(LOGREG_SIZE).npy
 ARGS_SKLEARN_logreg5 =	--fileX data/multi/X-$(LOGREG_SIZE).npy \
@@ -196,7 +206,7 @@ output/native/%.out: | DATA_% output/native/
 	native/bin/$(NATIVE_$*) $(ARGS_NATIVE_$*) | tee $@
 
 output/sklearn/%.out: | DATA_% output/sklearn/
-	python sklearn/$(SKLEARN_$*).py $(COMMON_ARGS) $(ARGS_SKLEARN_$*) | tee $@
+	taskset -c 28-56 python sklearn/$(SKLEARN_$*).py $(COMMON_ARGS) $(ARGS_SKLEARN_$*) | tee $@
 
 output/daal4py/%.out: | DATA_% output/daal4py/
 	python daal4py/$(DAAL4PY_$*).py $(COMMON_ARGS) $(ARGS_DAAL4PY_$*) | tee $@

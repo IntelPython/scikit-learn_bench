@@ -13,7 +13,7 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
-                    loop_types=('fit', 'predict'))
+                    loop_types=('fit', 'predict'), n_jobs_supported=True)
 
 # Generate random data
 X = np.random.rand(*params.shape).astype(params.dtype)
