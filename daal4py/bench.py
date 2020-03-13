@@ -416,6 +416,8 @@ def read_csv(filename, params):
         ascii_lowercase.replace('e', '') + ascii_uppercase.replace('E', ''))
     with open(filename, 'r') as file:
         first_line = file.readline()
+        while 'nan' in first_line:
+            first_line = first_line.replace('nan', '')
         header = 0 if len(header_letters & set(first_line)) != 0 else None
     # try to read csv with pandas and fall back to numpy reader if failed
     try:
@@ -510,7 +512,11 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
     }
     result['algorithm_parameters'] = {}
     if alg_instance is not None:
-        result['algorithm_parameters'].update(dict(alg_instance.get_params()))
+        if 'Booster' in str(type(alg_instance)):
+            alg_instance_params = dict(alg_instance.attributes())
+        else:
+            alg_instance_params = dict(alg_instance.get_params())
+        result['algorithm_parameters'].update(alg_instance_params)
     if alg_params is not None:
         result['algorithm_parameters'].update(alg_params)
     return result
