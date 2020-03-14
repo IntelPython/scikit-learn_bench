@@ -5,7 +5,7 @@
 import argparse
 from bench import parse_args, time_mean_min, print_header, print_row, size_str
 import numpy as np
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 from sklearn.metrics import accuracy_score
 
 
@@ -71,9 +71,15 @@ params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = len(np.unique(y))
 
 # Create our C-SVM classifier
-clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
-          cache_size=params.cache_size_mb, tol=params.tol,
-          shrinking=params.shrinking, gamma=params.gamma)
+if params.using_daal or params.kernel != 'linear':
+    clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
+              cache_size=params.cache_size_mb, tol=params.tol,
+              shrinking=params.shrinking, gamma=params.gamma)
+else:
+    clf = LinearSVC(C=params.C, max_iter=params.maxiter, tol=params.tol)
+
+if params.verbose:
+    print(clf)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
@@ -90,7 +96,10 @@ fit_time, _ = time_mean_min(clf.fit, X, y,
                             goal_outer_loops=params.fit_goal,
                             time_limit=params.fit_time_limit,
                             verbose=params.verbose)
-params.sv_len = clf.support_.shape[0]
+if hasattr(clf, 'support_'):
+    params.sv_len = clf.support_.shape[0]
+else:
+    params.sv_len = '?'
 print_row(columns, params, function='SVM.fit', time=fit_time)
 
 predict_time, y_pred = time_mean_min(clf.predict, X,

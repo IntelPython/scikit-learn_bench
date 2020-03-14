@@ -18,7 +18,8 @@ parser.add_argument('-m', '--data-multiplier', default=100,
                     type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser, loop_types=('fit', 'predict'),
+                    n_jobs_supported=True)
 
 # Load generated data
 X = np.load(params.filex)

@@ -11,7 +11,8 @@ parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
                                              'benchmark')
 parser.add_argument('--metrics', nargs='*', default=['cosine', 'correlation'],
                     help='Metrics to test for pairwise_distances')
-params = parse_args(parser, size=(1000, 150000), dtypes=('f8', 'f4'))
+params = parse_args(parser, size=(1000, 150000), dtypes=('f8', 'f4'),
+                    n_jobs_supported=True)
 
 # Generate random data
 X = np.random.rand(*params.shape).astype(params.dtype)
