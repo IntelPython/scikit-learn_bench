@@ -402,10 +402,10 @@ def get_dtype(data):
     '''
     if hasattr(data, 'dtype'):
         return data.dtype
-    elif hasattr(data, 'values'):
-        return data.values.dtype
     elif hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
+    elif hasattr(data, 'values'):
+        return data.values.dtype
 
 
 def read_csv(filename, params):

@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    float_or_int, parse_args, time_mean_min, load_data, print_output,
+    parse_args, time_mean_min, load_data, print_output,
     accuracy_score, rmse_score
 )
 import numpy as np
@@ -24,7 +24,7 @@ def convert_xgb_predictions(y_pred, objective):
 
 
 parser = argparse.ArgumentParser(description='xgboost gradient boosted trees '
-                                            'benchmark')
+                                             'benchmark')
 
 parser.add_argument('--n-estimators', type=int, default=100,
                     help='Number of gradient boosted trees')
@@ -63,7 +63,7 @@ parser.add_argument('--max-bin', type=int, default=256,
 parser.add_argument('--objective', type=str, required=True,
                     choices=('reg:squarederror', 'binary:logistic',
                              'multi:softmax', 'multi:softprob'),
-                    help='Control the balance of positive and negative weights')
+                    help='Control a balance of positive and negative weights')
 
 params = parse_args(parser, loop_types=('fit', 'predict'))
 
@@ -104,7 +104,7 @@ if params.objective.startswith('reg'):
 else:
     task = 'classification'
     metric_name = 'accuracy[%]'
-    metric_func = lambda x1, x2: 100 * accuracy_score(x1, x2)
+    metric_func = lambda y1, y2: 100 * accuracy_score(y1, y2)
     columns += ('n_classes', 'accuracy', 'time')
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
