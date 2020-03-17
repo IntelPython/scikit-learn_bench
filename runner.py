@@ -55,8 +55,9 @@ def generate_cases(params):
 
 
 def read_output_from_command(command):
+    global env
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, encoding='utf-8')
+                         stderr=subprocess.PIPE, encoding='utf-8', env=env)
     return res.stdout[:-1], res.stderr[:-1]
 
 
@@ -90,6 +91,7 @@ parser.add_argument('--verbose', default=False, action='store_true',
 parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
                     help='Output type of benchmarks to use with their runner')
 args = parser.parse_args()
+env = os.environ.copy()
 verbose_mode = args.verbose
 
 with open(args.config.name, 'r') as config_file:
@@ -169,9 +171,9 @@ hostname = socket.gethostname()
 
 cpu_count = multiprocessing.cpu_count()
 if is_ht_enabled():
-    omp_vars = f'OMP_NUM_THREADS={cpu_count//2} '
+    env['OMP_NUM_THREADS'] = str(cpu_count//2)
 else:
-    omp_vars = f'OMP_NUM_THREADS={cpu_count} '
+    env['OMP_NUM_THREADS'] = str(cpu_count)
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -259,8 +261,7 @@ for params_set in config['cases']:
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = (omp_vars if lib == 'xgboost' else '') \
-                          + f'python {lib}/{algorithm}.py --batch {batch} ' \
+                command = f'python {lib}/{algorithm}.py --batch {batch} ' \
                           + f'--arch {hostname} --header --output-format ' \
                           + f'{args.output_format}{case} {paths}'
                 while '  ' in command:
