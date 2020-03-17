@@ -7,6 +7,7 @@ import argparse
 import os
 import sys
 import subprocess
+import multiprocessing
 import json
 import time
 import socket
@@ -57,6 +58,23 @@ def read_output_from_command(command):
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, encoding='utf-8')
     return res.stdout[:-1], res.stderr[:-1]
+
+
+def is_ht_enabled():
+    try:
+        cpu_info, _ = read_output_from_command('lscpu')
+        cpu_info = cpu_info.split('\n')
+        for el in cpu_info:
+            if 'Thread(s) per core' in el:
+                threads_per_core = int(el[-1])
+                if threads_per_core > 1:
+                    return True
+                else:
+                    return False
+        return False
+    except FileNotFoundError:
+        print('Impossible to check hyperthreading via lscpu')
+        return False
 
 
 parser = argparse.ArgumentParser()
@@ -149,6 +167,12 @@ batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
 json_result.update({'measurement_time': time.time()})
 hostname = socket.gethostname()
 
+cpu_count = multiprocessing.cpu_count()
+if is_ht_enabled():
+    omp_vars = f'OMP_NUM_THREADS={cpu_count//2} '
+else:
+    omp_vars = f'OMP_NUM_THREADS={cpu_count} '
+
 # get parameters that are common for all cases
 common_params = config['common']
 for params_set in config['cases']:
@@ -235,7 +259,8 @@ for params_set in config['cases']:
                 'Unknown dataset. Only synthetics are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
-                command = f'python {lib}/{algorithm}.py --batch {batch} ' \
+                command = (omp_vars if lib == 'xgboost' else '') \
+                          + f'python {lib}/{algorithm}.py --batch {batch} ' \
                           + f'--arch {hostname} --header --output-format ' \
                           + f'{args.output_format}{case} {paths}'
                 while '  ' in command:
