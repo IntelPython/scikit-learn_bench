@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    float_or_int, parse_args, time_mean_min, load_data, print_output,
+    float_or_int, parse_args, measure_function_time, load_data, print_output,
     accuracy_score
 )
 from cuml.ensemble import RandomForestClassifier
@@ -34,8 +34,7 @@ parser.add_argument('--min-impurity-decrease', type=float, default=0.,
 parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
                     action='store_false', help="Don't control bootstraping")
 
-params = parse_args(
-    parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load and convert data
 X_train, X_test, y_train, y_test = load_data(params, int_label=True)
@@ -74,21 +73,11 @@ def predict(X):
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'n_classes', 'accuracy', 'time')
 
-fit_time, _ = time_mean_min(fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(fit, X_train, y_train, params=params)
 y_pred = predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(predict, X_test, params=params)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='cuml', algorithm='decision_forest_classification',

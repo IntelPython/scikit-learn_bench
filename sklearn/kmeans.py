@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 import numpy as np
 from sklearn.cluster import KMeans
@@ -17,7 +17,7 @@ parser.add_argument('-t', '--tol', type=float, default=0.,
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load and convert generated data
 X_train, X_test, _, _ = load_data(params)
@@ -44,21 +44,11 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
 # Time fit
-fit_time, _ = time_mean_min(kmeans.fit, X_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(kmeans.fit, X_train, params=params)
 train_inertia = float(kmeans.inertia_)
 
 # Time predict
-predict_time, _ = time_mean_min(kmeans.predict, X_test,
-                                outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops,
-                                goal_outer_loops=params.predict_goal,
-                                time_limit=params.predict_time_limit,
-                                verbose=params.verbose)
+predict_time, _ = measure_function_time(kmeans.predict, X_test, params=params)
 test_inertia = float(kmeans.inertia_)
 
 

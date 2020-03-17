@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, load_data, print_output
+from bench import parse_args, measure_function_time, load_data, print_output
 from cuml import DBSCAN
 
 parser = argparse.ArgumentParser(description='cuML DBSCAN benchmark')
@@ -25,12 +25,7 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
 # Time fit
-time, _ = time_mean_min(dbscan.fit, X,
-                        outer_loops=params.outer_loops,
-                        inner_loops=params.inner_loops,
-                        goal_outer_loops=params.goal,
-                        time_limit=params.time_limit,
-                        verbose=params.verbose)
+time, _ = measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
 params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 

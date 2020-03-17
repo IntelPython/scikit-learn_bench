@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, rmse_score
+    parse_args, measure_function_time, load_data, print_output, rmse_score
 )
 from daal4py import ridge_regression_training, ridge_regression_prediction
 from daal4py.sklearn.utils import getFPType
@@ -17,8 +17,7 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--alpha', type=float, default=1.0,
                     help='Regularization strength')
-params = parse_args(parser, size=(1000000, 50),
-                    loop_types=('fit', 'predict'), prefix='daal4py')
+params = parse_args(parser, size=(1000000, 50), prefix='daal4py')
 
 # Generate random data
 X_train, X_test, y_train, y_test = load_data(
@@ -43,20 +42,12 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
 
 # Time fit
-fit_time, res = time_mean_min(test_fit, X_train, y_train,
-                              outer_loops=params.fit_outer_loops,
-                              inner_loops=params.fit_inner_loops,
-                              goal_outer_loops=params.fit_goal,
-                              time_limit=params.fit_time_limit,
-                              verbose=params.verbose)
+fit_time, res = measure_function_time(
+    test_fit, X_train, y_train, params=params)
 
 # Time predict
-predict_time, yp = time_mean_min(test_predict, X_test, res.model,
-                                 outer_loops=params.predict_outer_loops,
-                                 inner_loops=params.predict_inner_loops,
-                                 goal_outer_loops=params.predict_goal,
-                                 time_limit=params.predict_time_limit,
-                                 verbose=params.verbose)
+predict_time, yp = measure_function_time(
+    test_predict, X_test, res.model, params=params)
 
 test_rmse = rmse_score(yp.prediction, y_test)
 pres = test_predict(X_train, res.model)

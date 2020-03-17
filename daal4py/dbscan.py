@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, load_data, print_output
+from bench import parse_args, measure_function_time, load_data, print_output
 from daal4py import dbscan
 from daal4py.sklearn.utils import getFPType
 
@@ -35,12 +35,7 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
 # Time clustering
-time, result = time_mean_min(test_dbscan, X,
-                             outer_loops=params.outer_loops,
-                             inner_loops=params.inner_loops,
-                             goal_outer_loops=params.goal,
-                             time_limit=params.time_limit,
-                             verbose=params.verbose)
+time, result = measure_function_time(test_dbscan, X, params=params)
 params.n_clusters = int(result.nClusters[0, 0])
 
 print_output(library='daal4py', algorithm='dbscan', stages=['training'],

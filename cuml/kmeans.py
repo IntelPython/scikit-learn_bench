@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 import numpy as np
 from cuml import KMeans
@@ -56,21 +56,11 @@ def kmeans_fit(X):
 
 
 # Time fit
-fit_time, kmeans = time_mean_min(kmeans_fit, X_train,
-                                 outer_loops=params.fit_outer_loops,
-                                 inner_loops=params.fit_inner_loops,
-                                 goal_outer_loops=params.fit_goal,
-                                 time_limit=params.fit_time_limit,
-                                 verbose=params.verbose)
+fit_time, kmeans = measure_function_time(kmeans_fit, X_train, params=params)
 train_inertia = float(kmeans.inertia_)
 
 # Time predict
-predict_time, _ = time_mean_min(kmeans.predict, X_test,
-                                outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops,
-                                goal_outer_loops=params.predict_goal,
-                                time_limit=params.predict_time_limit,
-                                verbose=params.verbose)
+predict_time, _ = measure_function_time(kmeans.predict, X_test, params=params)
 test_inertia = float(kmeans.inertia_)
 
 print_output(library='cuml', algorithm='kmeans',

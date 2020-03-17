@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    float_or_int, parse_args, time_mean_min, load_data, print_output,
+    float_or_int, parse_args, measure_function_time, load_data, print_output,
     rmse_score
 )
 
@@ -33,8 +33,7 @@ parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
 parser.add_argument('--use-sklearn-class', action='store_true',
                     help='Force use of '
                          'sklearn.ensemble.RandomForestRegressor')
-params = parse_args(
-    parser, loop_types=('fit', 'predict'), n_jobs_supported=True)
+params = parse_args(parser)
 
 # Get some RandomForestRegressor
 if params.use_sklearn_class:
@@ -63,22 +62,13 @@ regr = RandomForestRegressor(criterion=params.criterion,
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'time')
 
-fit_time, _ = time_mean_min(regr.fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
 
 y_pred = regr.predict(X_train)
 train_rmse = rmse_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(regr.predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(
+    regr.predict, X_test, params=params)
 test_rmse = rmse_score(y_pred, y_test)
 
 print_output(library='sklearn', algorithm='decision_forest_regression',

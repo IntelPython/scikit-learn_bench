@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, rmse_score
+    parse_args, measure_function_time, load_data, print_output, rmse_score
 )
 from cuml import LinearRegression
 
@@ -15,8 +15,7 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--solver', default='eig', choices=('eig', 'svd'),
                     help='Solver used for training')
-params = parse_args(parser, prefix='cuml', size=(1000000, 50),
-                    loop_types=('fit', 'predict'))
+params = parse_args(parser, prefix='cuml', size=(1000000, 50))
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(
@@ -30,20 +29,10 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
 
 # Time fit
-fit_time, _ = time_mean_min(regr.fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
 
 # Time predict
-predict_time, yp = time_mean_min(regr.predict, X_test,
-                                 outer_loops=params.predict_outer_loops,
-                                 inner_loops=params.predict_inner_loops,
-                                 goal_outer_loops=params.predict_goal,
-                                 time_limit=params.predict_time_limit,
-                                 verbose=params.verbose)
+predict_time, yp = measure_function_time(regr.predict, X_test, params=params)
 
 test_rmse = rmse_score(yp, y_test)
 yp = regr.predict(X_train)

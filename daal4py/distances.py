@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, load_data,
+    parse_args, measure_function_time, print_header, print_row, load_data,
     gen_basic_dict
 )
 import daal4py
@@ -33,12 +33,8 @@ for metric in params.metrics:
         algorithm = pairwise_distances(fptype=getFPType(X))
         return algorithm.compute(X)
 
-    time, _ = time_mean_min(test_distances, pairwise_distances, X,
-                            outer_loops=params.outer_loops,
-                            inner_loops=params.inner_loops,
-                            goal_outer_loops=params.goal,
-                            time_limit=params.time_limit,
-                            verbose=params.verbose)
+    time, _ = measure_function_time(
+        test_distances, pairwise_distances, X, params=params)
 
     if params.output_format == 'csv':
         print_row(columns, params, function=metric.capitalize(), time=time)

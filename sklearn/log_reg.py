@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -55,21 +55,12 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
 
 # Time fit and predict
-fit_time, _ = time_mean_min(clf.fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 y_pred = clf.predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(clf.predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(
+    clf.predict, X_test, params=params)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='sklearn', algorithm='logistic_regression',

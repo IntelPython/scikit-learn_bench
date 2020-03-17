@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, accuracy_score
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 import numpy as np
 from cuml.svm import SVC
@@ -49,7 +49,7 @@ parser.add_argument('--max-cache-size', type=int, default=64,
                     help='Maximum cache size, in gigabytes, for SVM.')
 parser.add_argument('--tol', type=float, default=1e-16,
                     help='Tolerance passed to sklearn.svm.SVC')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(params)
@@ -72,22 +72,13 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
 
 # Time fit and predict
-fit_time, _ = time_mean_min(clf.fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 params.sv_len = clf.support_.shape[0]
 y_pred = clf.predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(clf.predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(
+    clf.predict, X_test, params=params)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='cuml', algorithm='svc',

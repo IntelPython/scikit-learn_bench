@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output,
+    parse_args, measure_function_time, load_data, print_output,
     accuracy_score, rmse_score
 )
 import numpy as np
@@ -65,7 +65,7 @@ parser.add_argument('--objective', type=str, required=True,
                              'multi:softmax', 'multi:softprob'),
                     help='Control a balance of positive and negative weights')
 
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load and convert data
 X_train, X_test, y_train, y_test = load_data(params)
@@ -116,22 +116,13 @@ else:
 dtrain = xgb.DMatrix(X_train, y_train)
 dtest = xgb.DMatrix(X_test, y_test)
 
-fit_time, booster = time_mean_min(xgb.train, xgb_params, dtrain,
-                                  params.n_estimators,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+fit_time, booster = measure_function_time(
+    xgb.train, xgb_params, dtrain, params.n_estimators, params=params)
 y_pred = convert_xgb_predictions(booster.predict(dtrain), params.objective)
 train_metric = metric_func(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(booster.predict, dtest,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(
+    booster.predict, dtest, params=params)
 test_metric = metric_func(
     convert_xgb_predictions(y_pred, params.objective), y_test)
 

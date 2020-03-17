@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 import numpy as np
 from daal4py import pca, pca_transform, normalization_zscore
@@ -21,8 +21,7 @@ parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 parser.add_argument('--write-results', action='store_true', default=False,
                     help='Write results to disk for verification')
-params = parse_args(parser, size=(10000, 1000),
-                    loop_types=('fit', 'transform'))
+params = parse_args(parser, size=(10000, 1000))
 
 # Load data
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train'],
@@ -126,20 +125,11 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
 
 # Time fit
-fit_time, res = time_mean_min(test_fit, X_train,
-                              outer_loops=params.fit_outer_loops,
-                              inner_loops=params.fit_inner_loops,
-                              goal_outer_loops=params.fit_goal,
-                              time_limit=params.fit_time_limit,
-                              verbose=params.verbose)
+fit_time, res = measure_function_time(test_fit, X_train, params=params)
 
 # Time transform
-transform_time, tr = time_mean_min(test_transform, X_test, *res[:3],
-                                   outer_loops=params.transform_outer_loops,
-                                   inner_loops=params.transform_inner_loops,
-                                   goal_outer_loops=params.transform_goal,
-                                   time_limit=params.transform_time_limit,
-                                   verbose=params.verbose)
+transform_time, tr = measure_function_time(
+    test_transform, X_test, *res[:3], params=params)
 
 print_output(library='daal4py', algorithm='pca',
              stages=['training', 'transformation'], columns=columns,

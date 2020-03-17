@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, accuracy_score
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 import numpy as np
 from daal4py import svm_training, svm_prediction, \
@@ -308,8 +308,7 @@ def main():
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',
                         help="Don't use shrinking heuristic")
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load data
     X_train, X_test, y_train, y_test = load_data(
@@ -332,24 +331,16 @@ def main():
                'accuracy', 'time')
 
     # Time fit and predict
-    fit_time, res = time_mean_min(test_fit, X_train, y_train, params,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+    fit_time, res = measure_function_time(
+        test_fit, X_train, y_train, params, params=params)
     res, support, indices, n_support = res
     params.sv_len = support.shape[0]
 
     yp = test_predict(X_train, res, params)
     train_acc = 100 * accuracy_score(yp, y_train)
 
-    predict_time, yp = time_mean_min(test_predict, X_test, res, params,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+    predict_time, yp = measure_function_time(
+        test_predict, X_test, res, params, params=params)
 
     test_acc = 100 * accuracy_score(yp, y_train)
 

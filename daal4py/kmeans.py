@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 from daal4py import kmeans
 from daal4py.sklearn.utils import getFPType
@@ -19,7 +19,7 @@ parser.add_argument('-t', '--tol', default=0., type=float,
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
+params = parse_args(parser, prefix='daal4py')
 
 # Load generated data
 X_train, X_test, _, _ = load_data(params, add_dtype=True)
@@ -66,21 +66,12 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
 # Time fit
-fit_time, res = time_mean_min(test_fit, X_train, X_init,
-                              outer_loops=params.fit_outer_loops,
-                              inner_loops=params.fit_inner_loops,
-                              goal_outer_loops=params.fit_goal,
-                              time_limit=params.fit_time_limit,
-                              verbose=params.verbose)
+fit_time, res = measure_function_time(test_fit, X_train, X_init, params=params)
 train_inertia = float(res.goalFunction[0, 0])
 
 # Time predict
-predict_time, res = time_mean_min(test_predict, X_test, X_init,
-                                  outer_loops=params.predict_outer_loops,
-                                  inner_loops=params.predict_inner_loops,
-                                  goal_outer_loops=params.predict_goal,
-                                  time_limit=params.predict_time_limit,
-                                  verbose=params.verbose)
+predict_time, res = measure_function_time(
+    test_predict, X_test, X_init, params=params)
 test_inertia = float(res.goalFunction[0, 0])
 
 print_output(library='daal4py', algorithm='kmeans',

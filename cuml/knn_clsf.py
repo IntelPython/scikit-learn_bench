@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, accuracy_score
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 import numpy as np
 from cuml.neighbors import KNeighborsClassifier
@@ -34,12 +34,7 @@ knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
 
 knn_clsf.fit(X_train, y_train)
 # Time predict
-time, yp = time_mean_min(knn_clsf.predict, X_test,
-                         outer_loops=params.outer_loops,
-                         inner_loops=params.inner_loops,
-                         goal_outer_loops=params.goal,
-                         time_limit=params.time_limit,
-                         verbose=params.verbose)
+time, yp = measure_function_time(knn_clsf.predict, X_test, params=params)
 
 acc = 100 * accuracy_score(yp, y_test)
 

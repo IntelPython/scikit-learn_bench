@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, accuracy_score
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 from cuml import LogisticRegression
 
@@ -23,7 +23,7 @@ parser.add_argument('-C', dest='C', type=float, default=1.0,
                     help='Regularization parameter')
 parser.add_argument('--tol', type=float, default=1e-10,
                     help='Tolerance for solver. Default is 1e-10.')
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load generated data
 X_train, X_test, y_train, y_test = load_data(params)
@@ -41,21 +41,12 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
 
 # Time fit and predict
-fit_time, _ = time_mean_min(clf.fit, X_train, y_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 y_pred = clf.predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = time_mean_min(clf.predict, X_test,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+predict_time, y_pred = measure_function_time(
+    clf.predict, X_test, params=params)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='cuml', algorithm='logistic_regression',
@@ -64,6 +55,7 @@ print_output(library='cuml', algorithm='logistic_regression',
              times=[fit_time, predict_time], accuracy_type='accuracy[%]',
              accuracies=[train_acc, test_acc], data=[X_train, X_test],
              alg_instance=clf)
+
 if params.verbose:
     print()
     print(f'@ Number of iterations: {clf.n_iter_}')

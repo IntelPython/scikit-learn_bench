@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, accuracy_score
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 import numpy as np
 import daal4py
@@ -196,8 +196,7 @@ if __name__ == '__main__':
                         help='Tolerance for solver. If solver == "newton-cg", '
                              'then the default is 1e-3. Otherwise the default '
                              'is 1e-10.')
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load generated data
     X_train, X_test, y_train, y_test = load_data(
@@ -212,17 +211,15 @@ if __name__ == '__main__':
                'time')
 
     # Time fit and predict
-    fit_time, res = time_mean_min(test_fit, X_train, y_train, penalty='l2',
-                                  C=params.C,
-                                  fit_intercept=params.fit_intercept,
-                                  tol=params.tol,
-                                  max_iter=params.maxiter,
-                                  solver=params.solver,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+    fit_time, res = measure_function_time(
+        test_fit, X_train, y_train,
+        penalty='l2',
+        C=params.C,
+        fit_intercept=params.fit_intercept,
+        tol=params.tol,
+        max_iter=params.maxiter,
+        solver=params.solver,
+        params=params)
 
     beta, intercept, solver_result, params.multiclass = res
 
@@ -230,14 +227,11 @@ if __name__ == '__main__':
     y_pred = np.argmax(yp, axis=1)
     train_acc = 100 * accuracy_score(y_pred, y_train)
 
-    predict_time, yp = time_mean_min(test_predict, X_test, beta,
-                                     intercept=intercept,
-                                     multi_class=params.multiclass,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+    predict_time, yp = measure_function_time(
+        test_predict, X_test, beta,
+        intercept=intercept,
+        multi_class=params.multiclass,
+        params=params)
     y_pred = np.argmax(yp, axis=1)
     test_acc = 100 * accuracy_score(y_pred, y_test)
 

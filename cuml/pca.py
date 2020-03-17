@@ -1,10 +1,10 @@
-# Copyright (C) 2017-2020 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output
 )
 from cuml import PCA
 
@@ -16,8 +16,7 @@ parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
 parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
-params = parse_args(parser, size=(10000, 1000),
-                    loop_types=('fit', 'transform'))
+params = parse_args(parser, size=(10000, 1000))
 
 # Load random data
 X_train, X_test, _, _ = load_data(params, generated_data=['X_train'])
@@ -34,20 +33,11 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
 
 # Time fit
-fit_time, _ = time_mean_min(pca.fit, X_train,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
+fit_time, _ = measure_function_time(pca.fit, X_train, params=params)
 
 # Time transform
-transform_time, _ = time_mean_min(pca.transform, X_train,
-                                  outer_loops=params.transform_outer_loops,
-                                  inner_loops=params.transform_inner_loops,
-                                  goal_outer_loops=params.transform_goal,
-                                  time_limit=params.transform_time_limit,
-                                  verbose=params.verbose)
+transform_time, _ = measure_function_time(
+    pca.transform, X_train, params=params)
 
 print_output(library='cuml', algorithm='pca',
              stages=['training', 'transformation'], columns=columns,

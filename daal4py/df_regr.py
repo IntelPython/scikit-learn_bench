@@ -5,7 +5,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, load_data, print_output, rmse_score,
+    parse_args, measure_function_time, load_data, print_output, rmse_score,
     float_or_int
 )
 from daal4py import decision_forest_regression_training, \
@@ -84,8 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--use-sklearn-class', action='store_true',
                         help='Force use of '
                              'sklearn.ensemble.RandomForestRegressor')
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load data
     X_train, X_test, y_train, y_test = load_data(
@@ -97,28 +96,21 @@ if __name__ == '__main__':
         params.max_features = int(X_train.shape[1] * params.max_features)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(df_regr_fit, X_train, y_train,
-                                  n_trees=params.num_trees,
-                                  n_features_per_node=params.max_features,
-                                  max_depth=params.max_depth,
-                                  min_impurity=params.min_impurity_decrease,
-                                  bootstrap=params.bootstrap,
-                                  seed=params.seed,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+    fit_time, res = measure_function_time(
+        df_regr_fit, X_train, y_train,
+        n_trees=params.num_trees,
+        n_features_per_node=params.max_features,
+        max_depth=params.max_depth,
+        min_impurity=params.min_impurity_decrease,
+        bootstrap=params.bootstrap,
+        seed=params.seed,
+        params=params)
 
     yp = df_regr_predict(X_train, res)
     train_rmse = rmse_score(yp, y_train)
 
-    predict_time, yp = time_mean_min(df_regr_predict, X_test, res,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+    predict_time, yp = measure_function_time(
+        df_regr_predict, X_test, res, params=params)
 
     test_rmse = rmse_score(yp, y_test)
 

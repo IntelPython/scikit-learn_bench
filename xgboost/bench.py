@@ -103,6 +103,25 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--output-format', type=str, default='csv',
                         choices=('csv', 'json'),
                         help='Output format: csv (default) or json')
+    parser.add_argument('--time-method', type=str, default='mean_min',
+                        choices=('box_filter', 'mean_min'),
+                        help='Method used for time mesurements')
+    parser.add_argument('--n-meas', type=int, default=100,
+                        help='Maximum number of measurements in box filter')
+    parser.add_argument('--inner-loops', default=100, type=int,
+                        help='Maximum inner loop iterations '
+                             '(we take the mean over inner iterations)')
+    parser.add_argument('--outer-loops', default=100, type=int,
+                        help='Maximum outer loop iterations '
+                             '(we take the min over outer iterations)')
+    parser.add_argument('--time-limit', default=10., type=float,
+                        help='Target time to spend to benchmark')
+    parser.add_argument('--goal-outer-loops', default=10,
+                        type=int, dest='goal',
+                        help='Number of outer loops to aim '
+                             'while automatically picking number of '
+                             'inner loops. If zero, do not automatically '
+                             'decide number of inner loops.')
     parser.add_argument('--seed', type=int, default=12345,
                         help='Seed to pass as random_state')
 
@@ -117,35 +136,6 @@ def parse_args(parser, size=None, loop_types=(),
         parser.add_argument('-s', '--size', default=size, type=_parse_size,
                             dest='shape',
                             help='Problem size, delimited by "x" or ","')
-
-    if len(loop_types) == 0:
-        loop_types = (None,)
-
-    for loop in loop_types:
-
-        if loop is not None:
-            loop_dash = f'{loop}-'
-            loop_for = f'for {loop} '
-        else:
-            loop_dash = loop_for = ''
-
-        parser.add_argument(f'--{loop_dash}inner-loops', default=100, type=int,
-                            help=f'Maximum inner loop iterations {loop_for}'
-                                 f'(we take the mean over inner iterations)')
-        parser.add_argument(f'--{loop_dash}outer-loops', default=100, type=int,
-                            help=f'Maximum outer loop iterations {loop_for}'
-                                 f'(we take the min over outer iterations)')
-        parser.add_argument(f'--{loop_dash}time-limit', default=10.,
-                            type=float,
-                            help=f'Target time to spend to benchmark '
-                                 f'{loop_for}')
-        parser.add_argument(f'--{loop_dash}goal-outer-loops', default=10,
-                            type=int,
-                            dest=f'{loop_dash.replace("-", "_")}goal',
-                            help=f'Number of outer loops to aim {loop_for} '
-                                 f'while automatically picking number of '
-                                 f'inner loops. If zero, do not automatically '
-                                 f'decide number of inner loops.')
 
     params = parser.parse_args()
 
@@ -225,6 +215,44 @@ def prepare_daal(num_threads=-1):
         daal_version = None
 
     return num_threads, daal_version
+
+
+def measure_function_time(func, *args, params, **kwargs):
+    if params.time_method == 'mean_min':
+        return time_mean_min(func, *args,
+                             outer_loops=params.outer_loops,
+                             inner_loops=params.inner_loops,
+                             goal_outer_loops=params.goal,
+                             time_limit=params.time_limit,
+                             verbose=params.verbose)
+    else:
+        return time_box_filter(func, *args, n_meas=params.n_meas,
+                               time_limit=params.time_limit)
+
+
+def time_box_filter(func, *args, n_meas, time_limit, **kwargs):
+    times = []
+    while len(times) < n_meas:
+        t0 = timeit.default_timer()
+        val = func(*args, **kwargs)
+        t1 = timeit.default_timer()
+        times.append(t1-t0)
+        if sum(times) > time_limit:
+            break
+
+    def box_filter(timing, left=0.25, right=0.75):
+        timing.sort()
+        size = len(timing)
+        if size == 1:
+            return timing[0]
+        Q1, Q2 = timing[int(size * left)], timing[int(size * right)]
+        IQ = Q2 - Q1
+        lower = Q1 - 1.5 * IQ
+        upper = Q2 + 1.5 * IQ
+        result = np.array([item for item in timing if lower < item < upper])
+        return np.mean(result)
+
+    return box_filter(times), val
 
 
 def time_mean_min(func, *args, inner_loops=1, outer_loops=1, time_limit=10.,

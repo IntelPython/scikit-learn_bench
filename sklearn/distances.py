@@ -4,7 +4,7 @@
 
 import argparse
 from bench import (
-    parse_args, time_mean_min, print_header, print_row, load_data,
+    parse_args, measure_function_time, print_header, print_row, load_data,
     gen_basic_dict
 )
 from sklearn.metrics.pairwise import pairwise_distances
@@ -29,13 +29,8 @@ if params.output_format == 'csv':
     print_header(columns, params)
 
 for metric in params.metrics:
-    time, _ = time_mean_min(pairwise_distances, X, metric=metric,
-                            n_jobs=params.n_jobs,
-                            outer_loops=params.outer_loops,
-                            inner_loops=params.inner_loops,
-                            goal_outer_loops=params.goal,
-                            time_limit=params.time_limit,
-                            verbose=params.verbose)
+    time, _ = measure_function_time(pairwise_distances, X, metric=metric,
+                                    n_jobs=params.n_jobs, params=params)
     if params.output_format == 'csv':
         print_row(columns, params, function=metric.capitalize(), time=time)
     elif params.output_format == 'json':
