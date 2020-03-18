@@ -38,6 +38,7 @@ else:
 
 
 def fit_kmeans(X):
+    global X_init, params
     alg = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
                     tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init)
     alg.fit(X)
