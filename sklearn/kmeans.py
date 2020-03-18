@@ -36,15 +36,19 @@ else:
     else:
         X_init = X_train[centroids_idx]
 
-# Create our clustering object
-kmeans = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
-                tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init)
+
+def fit_kmeans(X):
+    alg = KMeans(n_clusters=params.n_clusters, n_jobs=params.n_jobs,
+                    tol=params.tol, max_iter=params.maxiter, n_init=1, init=X_init)
+    alg.fit(X)
+    return alg
+
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
 
 # Time fit
-fit_time, _ = measure_function_time(kmeans.fit, X_train, params=params)
+fit_time, kmeans = measure_function_time(fit_kmeans, X_train, params=params)
 train_inertia = float(kmeans.inertia_)
 
 # Time predict
