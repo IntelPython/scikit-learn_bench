@@ -124,6 +124,8 @@ def parse_args(parser, size=None, loop_types=(),
                              'decide number of inner loops.')
     parser.add_argument('--seed', type=int, default=12345,
                         help='Seed to pass as random_state')
+    parser.add_argument('--dataset-name', type=str, default=None,
+                        help='Dataset name')
 
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
@@ -534,6 +536,7 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
             'data_format': params.data_format,
             'data_order': params.data_order,
             'data_type': str(params.dtype),
+            'dataset_name': params.dataset_name,
             'rows': data.shape[0],
             'columns': data.shape[1]
         }

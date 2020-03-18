@@ -196,6 +196,10 @@ for params_set in config['cases']:
                 paths += f' --file-X-test {dataset["testing"]["x"]}'
                 if 'y' in dataset['testing'].keys():
                     paths += f' --file-y-test {dataset["testing"]["y"]}'
+            if 'name' in dataset.keys():
+                dataset_name = dataset['name']
+            else:
+                dataset_name = 'unknown'
         elif dataset['training'].startswith('synth'):
             class GenerationArgs:
                 pass
@@ -256,14 +260,17 @@ for params_set in config['cases']:
                     gen_kmeans(gen_args)
                 elif gen_args.task == 'blobs':
                     gen_blobs(gen_args)
+            dataset_name = f'synthetic_{gen_args.task}'
         else:
             raise ValueError(
-                'Unknown dataset. Only synthetics are supported now')
+                'Unknown dataset. Only synthetics datasets '
+                'and csv/npy files are supported now')
         for lib in libs:
             for i, case in enumerate(cases):
                 command = f'python {lib}/{algorithm}.py --batch {batch} ' \
                           + f'--arch {hostname} --header --output-format ' \
-                          + f'{args.output_format}{case} {paths}'
+                          + f'{args.output_format}{case} {paths} ' \
+                          + f'--dataset-name {dataset_name}'
                 while '  ' in command:
                     command = command.replace('  ', ' ')
                 verbose_print(command)
