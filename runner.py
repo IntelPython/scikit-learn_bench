@@ -149,19 +149,15 @@ if 'Linux' in platform():
 
 # get python packages info from conda
 try:
-    conda_list, _ = read_output_from_command('conda list')
-    conda_list = conda_list.split('\n')
-    for line in conda_list:
-        if line.startswith('#'):
-            continue
-        while '  ' in line:
-            line = line.replace('  ', ' ')
-        pkg_info = line.split(' ')
-        json_result['software'].update({pkg_info[0]: {
-            'version': pkg_info[1],
-            'build': pkg_info[2],
-            'channel': pkg_info[3]
-        }})
+    conda_list, _ = read_output_from_command('conda list --json')
+    needed_columns = ['version', 'build_string', 'channel']
+    conda_list = json.loads(conda_list)
+    for pkg in conda_list:
+        pkg_info = {}
+        for col in needed_columns:
+            if col in pkg.keys():
+                pkg_info.update({col: pkg[col]})
+        json_result['software'].update({pkg['name']: pkg_info})
 except FileNotFoundError:
     pass
 
