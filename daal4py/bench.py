@@ -228,7 +228,8 @@ def measure_function_time(func, *args, params, **kwargs):
                              time_limit=params.time_limit,
                              verbose=params.verbose, **kwargs)
     else:
-        return time_box_filter(func, *args, n_meas=params.n_meas,
+        return time_box_filter(func, *args,
+                               n_meas=params.box_filter_measurements,
                                time_limit=params.time_limit, **kwargs)
 
 
