@@ -5,14 +5,14 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output, accuracy_score,
-    float_or_int
+    float_or_int, import_fptype_getter
 )
 import numpy as np
 from daal4py import (
     decision_forest_classification_training,
     decision_forest_classification_prediction, engines_mt2203
 )
-from daal4py.sklearn.utils import getFPType
+getFPType = import_fptype_getter()
 
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,

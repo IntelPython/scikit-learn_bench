@@ -92,14 +92,36 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "training": "synth_clsf_100000_100_2"
+                    "training": "synth_clsf_20000_100_2"
                 },
                 {
-                    "training": "synth_clsf_100000_100_5"
+                    "training": "synth_clsf_20000_100_5"
                 }
             ],
-            "max-cache-size": [96],
+            "max-cache-size": [4],
             "kernel": ["rbf"]
+        },
+        {
+            "lib": ["xgboost"],
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "training": "synth_clsf_10000_100_2"
+                }
+            ],
+            "tree-method": ["hist"],
+            "objective": ["binary:logistic"]
+        },
+        {
+            "lib": ["xgboost"],
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "training": "synth_reg_10000_100"
+                }
+            ],
+            "tree-method": ["hist"],
+            "objective": ["reg:squarederror"]
         }
     ]
 }

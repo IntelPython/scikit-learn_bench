@@ -4,11 +4,13 @@
 
 import argparse
 from bench import (
-    parse_args, measure_function_time, load_data, print_output, rmse_score
+    parse_args, measure_function_time, load_data, print_output, rmse_score,
+    import_fptype_getter
 )
-from daal4py import ridge_regression_training, ridge_regression_prediction
-from daal4py.sklearn.utils import getFPType
 import numpy as np
+from daal4py import ridge_regression_training, ridge_regression_prediction
+getFPType = import_fptype_getter()
+
 
 parser = argparse.ArgumentParser(description='daal4py ridge regression '
                                              'benchmark')

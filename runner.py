@@ -274,7 +274,7 @@ for params_set in config['cases']:
                     stdout, stderr = read_output_from_command(command)
                     stderr = filter_stderr(stderr)
                     if args.output_format == 'json':
-                        json_result['results'] += json.loads(f'[{stdout}]')
+                        json_result['results'].extend(json.loads(stdout))
                     elif args.output_format == 'csv':
                         csv_result += stdout + '\n'
                     if stderr != '':

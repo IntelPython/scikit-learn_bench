@@ -3,9 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, measure_function_time, load_data, print_output
+from bench import (
+    parse_args, measure_function_time, load_data, print_output,
+    import_fptype_getter
+)
 from daal4py import dbscan
-from daal4py.sklearn.utils import getFPType
+getFPType = import_fptype_getter()
+
 
 parser = argparse.ArgumentParser(description='daal4py DBSCAN clustering '
                                              'benchmark')

@@ -106,7 +106,7 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--time-method', type=str, default='mean_min',
                         choices=('box_filter', 'mean_min'),
                         help='Method used for time mesurements')
-    parser.add_argument('--n-meas', type=int, default=100,
+    parser.add_argument('--box-filter-measurements', type=int, default=100,
                         help='Maximum number of measurements in box filter')
     parser.add_argument('--inner-loops', default=100, type=int,
                         help='Maximum inner loop iterations '
@@ -226,10 +226,10 @@ def measure_function_time(func, *args, params, **kwargs):
                              inner_loops=params.inner_loops,
                              goal_outer_loops=params.goal,
                              time_limit=params.time_limit,
-                             verbose=params.verbose)
+                             verbose=params.verbose, **kwargs)
     else:
         return time_box_filter(func, *args, n_meas=params.n_meas,
-                               time_limit=params.time_limit)
+                               time_limit=params.time_limit, **kwargs)
 
 
 def time_box_filter(func, *args, n_meas, time_limit, **kwargs):
@@ -559,6 +559,7 @@ def print_output(library, algorithm, stages, columns, params, functions,
     if params.output_format == 'csv':
         output_csv(columns, params, functions, times, accuracies)
     elif params.output_format == 'json':
+        output = []
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
                                     data[i], alg_instance, alg_params)
@@ -580,5 +581,13 @@ def print_output(library, algorithm, stages, columns, params, functions,
                         result['algorithm_parameters']['init'] = 'random'
                 if 'handle' in result['algorithm_parameters'].keys():
                     del result['algorithm_parameters']['handle']
-            print(json.dumps(result, indent=4),
-                  end=',\n' if i != len(stages) - 1 else '\n')
+            output.append(result)
+        print(json.dumps(output, indent=4))
+
+
+def import_fptype_getter():
+    try:
+        from daal4py.sklearn._utils import getFPType
+    except:
+        from daal4py.sklearn.utils import getFPType
+    return getFPType
