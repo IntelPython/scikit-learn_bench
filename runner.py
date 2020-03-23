@@ -167,9 +167,11 @@ hostname = socket.gethostname()
 
 cpu_count = multiprocessing.cpu_count()
 if is_ht_enabled():
-    env['OMP_NUM_THREADS'] = str(cpu_count//2)
+    omp_num_threads = str(cpu_count // 2)
+    omp_places = f'0:{cpu_count}:1'
 else:
-    env['OMP_NUM_THREADS'] = str(cpu_count)
+    omp_num_threads = str(cpu_count)
+    omp_places = ''
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -262,6 +264,13 @@ for params_set in config['cases']:
                 'Unknown dataset. Only synthetics datasets '
                 'and csv/npy files are supported now')
         for lib in libs:
+            if lib == 'xgboost':
+                env['OMP_NUM_THREADS'] = omp_num_threads
+                env['OMP_PLACES'] = omp_places
+            else:
+                env['OMP_NUM_THREADS'] = ''
+                env['OMP_PLACES'] = ''
+
             for i, case in enumerate(cases):
                 command = f'python {lib}/{algorithm}.py --batch {batch} ' \
                           + f'--arch {hostname} --header --output-format ' \
@@ -274,7 +283,10 @@ for params_set in config['cases']:
                     stdout, stderr = read_output_from_command(command)
                     stderr = filter_stderr(stderr)
                     if args.output_format == 'json':
-                        json_result['results'].extend(json.loads(stdout))
+                        try:
+                            json_result['results'].extend(json.loads(stdout))
+                        except json.JSONDecodeError:
+                            pass
                     elif args.output_format == 'csv':
                         csv_result += stdout + '\n'
                     if stderr != '':
