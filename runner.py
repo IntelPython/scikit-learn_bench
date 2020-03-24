@@ -166,12 +166,7 @@ json_result.update({'measurement_time': time.time()})
 hostname = socket.gethostname()
 
 cpu_count = multiprocessing.cpu_count()
-if is_ht_enabled():
-    omp_num_threads = str(cpu_count // 2)
-    omp_places = f'0:{cpu_count}:1'
-else:
-    omp_num_threads = str(cpu_count)
-    omp_places = ''
+omp_num_threads = str(cpu_count // 2) if is_ht_enabled() else str(cpu_count)
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -267,7 +262,6 @@ for params_set in config['cases']:
             env = os.environ.copy()
             if lib == 'xgboost':
                 env['OMP_NUM_THREADS'] = omp_num_threads
-                env['OMP_PLACES'] = omp_places
 
             for i, case in enumerate(cases):
                 command = f'python {lib}/{algorithm}.py --batch {batch} ' \
