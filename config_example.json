@@ -10,7 +10,13 @@
             "algorithm": "distances",
             "dataset": [
                 {
-                    "training": "synth_clsf_1000_15000_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 15000,
+                    "training": {
+                        "n_samples": 1000
+                    }
                 }
             ]
         },
@@ -18,7 +24,13 @@
             "algorithm": "kmeans",
             "dataset": [
                 {
-                    "training": "synth_kmeans_1000000_50_10"
+                    "source": "synthetic",
+                    "type": "kmeans",
+                    "n_clusters": 10,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
                 }
             ],
             "n-clusters": [10]
@@ -27,7 +39,13 @@
             "algorithm": "dbscan",
             "dataset": [
                 {
-                    "training": "synth_blobs_100000_50_10"
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 10,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 100000
+                    }
                 }
             ],
             "min-samples": [5000],
@@ -37,7 +55,12 @@
             "algorithm": "linear",
             "dataset": [
                 {
-                    "training": "synth_reg_1000000_50"
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
                 }
             ]
         },
@@ -45,7 +68,12 @@
             "algorithm": "ridge",
             "dataset": [
                 {
-                    "training": "synth_reg_1000000_50"
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
                 }
             ]
         },
@@ -53,10 +81,22 @@
             "algorithm": "df_clsf",
             "dataset": [
                 {
-                    "training": "synth_clsf_10000_100_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 },
                 {
-                    "training": "synth_clsf_10000_100_5"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 }
             ]
         },
@@ -64,7 +104,12 @@
             "algorithm": "df_regr",
             "dataset": [
                 {
-                    "training": "synth_reg_10000_100"
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 }
             ]
         },
@@ -72,10 +117,22 @@
             "algorithm": "log_reg",
             "dataset": [
                 {
-                    "training": "synth_clsf_100000_100_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 100000
+                    }
                 },
                 {
-                    "training": "synth_clsf_100000_100_5"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 100000
+                    }
                 }
             ]
         },
@@ -83,7 +140,13 @@
             "algorithm": "pca",
             "dataset": [
                 {
-                    "training": "synth_clsf_10000_100_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 }
             ],
             "svd-solver": ["daal", "full"]
@@ -92,10 +155,22 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "training": "synth_clsf_20000_100_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 20000
+                    }
                 },
                 {
-                    "training": "synth_clsf_20000_100_5"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 20000
+                    }
                 }
             ],
             "max-cache-size": [4],
@@ -106,7 +181,13 @@
             "algorithm": "gbt",
             "dataset": [
                 {
-                    "training": "synth_clsf_10000_100_2"
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 }
             ],
             "tree-method": ["hist"],
@@ -117,7 +198,12 @@
             "algorithm": "gbt",
             "dataset": [
                 {
-                    "training": "synth_reg_10000_100"
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
                 }
             ],
             "tree-method": ["hist"],

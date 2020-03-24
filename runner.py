@@ -74,7 +74,7 @@ def is_ht_enabled():
                     return False
         return False
     except FileNotFoundError:
-        print('Impossible to check hyperthreading via lscpu')
+        verbose_print('Impossible to check hyperthreading via lscpu')
         return False
 
 
@@ -186,7 +186,7 @@ for params_set in config['cases']:
     verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                   f' {len(params_set["dataset"])} dataset(s)\n')
     for dataset in params_set['dataset']:
-        if isinstance(dataset['training'], dict):
+        if dataset['source'] in ['csv', 'npy']:
             paths = f'--file-X-train {dataset["training"]["x"]}'
             if 'y' in dataset['training'].keys():
                 paths += f' --file-y-train {dataset["training"]["y"]}'
@@ -198,7 +198,7 @@ for params_set in config['cases']:
                 dataset_name = dataset['name']
             else:
                 dataset_name = 'unknown'
-        elif dataset['training'].startswith('synth'):
+        elif dataset['source'] == 'synthetic':
             class GenerationArgs:
                 pass
             gen_args = GenerationArgs()
@@ -209,21 +209,22 @@ for params_set in config['cases']:
             else:
                 gen_args.seed = 777
 
-            dataset_params = dataset['training'].split('_')
-            gen_args.task = dataset_params[1]
-            gen_args.samples = int(dataset_params[2])
-            gen_args.features = int(dataset_params[3])
-            if gen_args.task in ['clsf', 'kmeans', 'blobs']:
-                cls_num_for_file = '-' + dataset_params[4]
-                gen_args.classes = int(dataset_params[4])
-                gen_args.clusters = gen_args.classes
+            gen_args.type = dataset['type']
+            gen_args.samples = dataset['training']['n_samples']
+            gen_args.features = dataset['n_features']
+            if 'n_classes' in dataset.keys():
+                gen_args.classes = dataset['n_classes']
+                cls_num_for_file = f'-{dataset["n_classes"]}'
+            elif 'n_clusters' in dataset.keys():
+                gen_args.clusters = dataset['n_clusters']
+                cls_num_for_file = f'-{dataset["n_clusters"]}'
             else:
                 cls_num_for_file = ''
 
-            file_prefix = f'data/synth-{gen_args.task}{cls_num_for_file}-'
+            file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
             file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
-            if gen_args.task == 'kmeans':
+            if gen_args.type == 'kmeans':
                 gen_args.node_id = 0
                 gen_args.filei = f'{file_prefix}init{file_postfix}'
                 paths += f'--filei {gen_args.filei}'
@@ -231,45 +232,42 @@ for params_set in config['cases']:
 
             gen_args.filex = f'{file_prefix}X-train{file_postfix}'
             paths += f' --file-X-train {gen_args.filex}'
-            if gen_args.task not in ['kmeans', 'blobs']:
+            if gen_args.type not in ['kmeans', 'blobs']:
                 gen_args.filey = f'{file_prefix}y-train{file_postfix}'
                 paths += f' --file-y-train {gen_args.filey}'
 
             if 'testing' in dataset.keys():
-                dataset_params = dataset['testing'].split('_')
-                gen_args.test_samples = int(dataset_params[2])
+                gen_args.test_samples = dataset['testing']['n_samples']
                 gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
                 paths += f' --file-X-test {gen_args.filextest}'
-                if gen_args.task not in ['kmeans', 'blobs']:
+                if gen_args.type not in ['kmeans', 'blobs']:
                     gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
                     paths += f' --file-y-test {gen_args.fileytest}'
             else:
                 gen_args.test_samples = 0
                 gen_args.filextest = gen_args.filex
-                if gen_args.task not in ['kmeans', 'blobs']:
+                if gen_args.type not in ['kmeans', 'blobs']:
                     gen_args.fileytest = gen_args.filey
 
             if not args.dummy_run and not os.path.isfile(gen_args.filex):
-                if gen_args.task == 'reg':
+                if gen_args.type == 'regression':
                     gen_regression(gen_args)
-                elif gen_args.task == 'clsf':
+                elif gen_args.type == 'classification':
                     gen_classification(gen_args)
-                elif gen_args.task == 'kmeans':
+                elif gen_args.type == 'kmeans':
                     gen_kmeans(gen_args)
-                elif gen_args.task == 'blobs':
+                elif gen_args.type == 'blobs':
                     gen_blobs(gen_args)
-            dataset_name = f'synthetic_{gen_args.task}'
+            dataset_name = f'synthetic_{gen_args.type}'
         else:
             raise ValueError(
-                'Unknown dataset. Only synthetics datasets '
+                'Unknown dataset source. Only synthetics datasets '
                 'and csv/npy files are supported now')
         for lib in libs:
+            env = os.environ.copy()
             if lib == 'xgboost':
                 env['OMP_NUM_THREADS'] = omp_num_threads
                 env['OMP_PLACES'] = omp_places
-            else:
-                env['OMP_NUM_THREADS'] = ''
-                env['OMP_PLACES'] = ''
 
             for i, case in enumerate(cases):
                 command = f'python {lib}/{algorithm}.py --batch {batch} ' \
