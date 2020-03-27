@@ -94,6 +94,9 @@ xgb_params = {
     'seed': params.seed
 }
 
+if params.threads != -1:
+    xgb_params.update({'nthread': params.threads})
+
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees')
 
