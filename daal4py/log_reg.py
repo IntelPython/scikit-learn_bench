@@ -5,14 +5,14 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output, accuracy_score,
-    import_fptype_getter
+    getFPType
 )
 import numpy as np
 import daal4py
 from daal4py import math_logistic, math_softmax
 from daal4py.sklearn.utils import make2d
 import scipy.optimize
-getFPType = import_fptype_getter()
+
 
 _logistic_loss = daal4py.optimization_solver_logistic_loss
 _cross_entropy_loss = daal4py.optimization_solver_cross_entropy_loss

@@ -4,11 +4,9 @@
 
 import argparse
 from bench import (
-    parse_args, measure_function_time, load_data, print_output,
-    import_fptype_getter
+    parse_args, measure_function_time, load_data, print_output, getFPType
 )
 from daal4py import dbscan
-getFPType = import_fptype_getter()
 
 
 parser = argparse.ArgumentParser(description='daal4py DBSCAN clustering '

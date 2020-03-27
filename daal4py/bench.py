@@ -10,6 +10,33 @@ import timeit
 import json
 
 
+def get_dtype(data):
+    '''
+    Get type of input data as numpy.dtype
+    '''
+    if hasattr(data, 'dtype'):
+        return data.dtype
+    elif hasattr(data, 'dtypes'):
+        return str(data.dtypes[0])
+    elif hasattr(data, 'values'):
+        return data.values.dtype
+    else:
+        raise ValueError(f'Impossible to get data type of {type(data)}')
+
+
+try:
+    from daal4py.sklearn._utils import getFPType
+except ImportError:
+    def getFPType(X):
+        dtype = str(get_dtype(X))
+        if 'float32' in dtype:
+            return 'float'
+        elif 'float64' in dtype:
+            return 'double'
+        else:
+            ValueError('Unknown type')
+
+
 def sklearn_disable_finiteness_check():
     try:
         sklearn.set_config(assume_finite=True)
@@ -425,18 +452,6 @@ def convert_data(data, dtype, data_order, data_format):
         import pandas as pd
 
         return cudf.DataFrame.from_pandas(pd.DataFrame(data))
-
-
-def get_dtype(data):
-    '''
-    Get type of input data as numpy.dtype
-    '''
-    if hasattr(data, 'dtype'):
-        return data.dtype
-    elif hasattr(data, 'dtypes'):
-        return str(data.dtypes[0])
-    elif hasattr(data, 'values'):
-        return data.values.dtype
 
 
 def read_csv(filename, params):

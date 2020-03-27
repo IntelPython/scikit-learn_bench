@@ -5,12 +5,12 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output,
-    import_fptype_getter
+    getFPType
 )
 import numpy as np
 from daal4py import pca, pca_transform, normalization_zscore
 from sklearn.utils.extmath import svd_flip
-getFPType = import_fptype_getter()
+
 
 parser = argparse.ArgumentParser(description='daal4py PCA benchmark')
 parser.add_argument('--svd-solver', type=str,

@@ -5,14 +5,13 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output, accuracy_score,
-    import_fptype_getter
+    getFPType
 )
 import numpy as np
 from daal4py import (
     svm_training, svm_prediction, kernel_function_linear, kernel_function_rbf,
     multi_class_classifier_training, multi_class_classifier_prediction
 )
-getFPType = import_fptype_getter()
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):

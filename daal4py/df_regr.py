@@ -6,14 +6,13 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output, rmse_score,
-    float_or_int, import_fptype_getter
+    float_or_int, getFPType
 )
 from daal4py import (
     decision_forest_regression_training,
     decision_forest_regression_prediction,
     engines_mt2203
 )
-getFPType = import_fptype_getter()
 
 
 def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,

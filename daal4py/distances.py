@@ -5,10 +5,9 @@
 import argparse
 from bench import (
     parse_args, measure_function_time, print_output, load_data,
-    import_fptype_getter
+    getFPType
 )
 import daal4py
-getFPType = import_fptype_getter()
 
 
 def compute_distances(pairwise_distances, X):
