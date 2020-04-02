@@ -56,8 +56,7 @@ regr = RandomForestRegressor(criterion=params.criterion,
                              max_leaf_nodes=params.max_leaf_nodes,
                              min_impurity_decrease=params.min_impurity_decrease,
                              bootstrap=params.bootstrap,
-                             random_state=params.seed,
-                             n_jobs=params.n_jobs)
+                             random_state=params.seed)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees', 'time')
