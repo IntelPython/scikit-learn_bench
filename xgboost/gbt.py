@@ -65,6 +65,8 @@ parser.add_argument('--objective', type=str, required=True,
                     choices=('reg:squarederror', 'binary:logistic',
                              'multi:softmax', 'multi:softprob'),
                     help='Control a balance of positive and negative weights')
+parser.add_argument('--count-dmatrix', default=False, action='store_true',
+                    help='Count DMatrix creation in time measurements')
 
 params = parse_args(parser)
 
@@ -122,14 +124,26 @@ else:
 
 dtrain = xgb.DMatrix(X_train, y_train)
 dtest = xgb.DMatrix(X_test, y_test)
+if params.count_dmatrix:
+    def fit():
+        dtrain = xgb.DMatrix(X_train, y_train)
+        return xgb.train(xgb_params, dtrain, params.n_estimators)
 
-fit_time, booster = measure_function_time(
-    xgb.train, xgb_params, dtrain, params.n_estimators, params=params)
+    def predict():
+        dtest = xgb.DMatrix(X_test, y_test)
+        return booster.predict(dtest)
+else:
+    def fit():
+        return xgb.train(xgb_params, dtrain, params.n_estimators)
+
+    def predict():
+        return booster.predict(dtest)
+
+fit_time, booster = measure_function_time(fit, params=params)
 y_pred = convert_xgb_predictions(booster.predict(dtrain), params.objective)
 train_metric = metric_func(y_pred, y_train)
 
-predict_time, y_pred = measure_function_time(
-    booster.predict, dtest, params=params)
+predict_time, y_pred = measure_function_time(predict, params=params)
 test_metric = metric_func(
     convert_xgb_predictions(y_pred, params.objective), y_test)
 
