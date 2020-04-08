@@ -9,6 +9,7 @@ from bench import (
 )
 import numpy as np
 import xgboost as xgb
+import os
 
 
 def convert_probs_to_classes(y_prob):
@@ -96,6 +97,9 @@ xgb_params = {
 
 if params.threads != -1:
     xgb_params.update({'nthread': params.threads})
+
+if 'OMP_NUM_THREADS' in os.environ.keys():
+    xgb_params['nthread'] = int(os.environ['OMP_NUM_THREADS'])
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'num_trees')

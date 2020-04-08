@@ -97,6 +97,9 @@ verbose_mode = args.verbose
 with open(args.config.name, 'r') as config_file:
     config = json.load(config_file)
 
+if 'omp_env' not in config.keys():
+    config['omp_env'] = []
+
 # make directory for data if it doesn't exist
 os.makedirs('data', exist_ok=True)
 
@@ -167,6 +170,11 @@ hostname = socket.gethostname()
 
 cpu_count = multiprocessing.cpu_count()
 omp_num_threads = str(cpu_count // 2) if is_ht_enabled() else str(cpu_count)
+
+omp_env = {
+    'OMP_PLACES': f'{{0}}:{cpu_count}:1',
+    'OMP_NUM_THREADS': omp_num_threads
+}
 
 # get parameters that are common for all cases
 common_params = config['common']
@@ -261,8 +269,8 @@ for params_set in config['cases']:
         for lib in libs:
             env = os.environ.copy()
             if lib == 'xgboost':
-                env['OMP_NUM_THREADS'] = omp_num_threads
-
+                for var in config['omp_env']:
+                    env[var] = omp_env[var]
             for i, case in enumerate(cases):
                 command = f'python {lib}/{algorithm}.py --batch {batch} ' \
                           + f'--arch {hostname} --header --output-format ' \
