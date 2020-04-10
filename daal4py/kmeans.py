@@ -1,35 +1,42 @@
-# Copyright (C) 2017-2019 Intel Corporation
+# Copyright (C) 2017-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
-from daal4py import kmeans
-from daal4py.sklearn.utils import getFPType
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, getFPType
+)
 import numpy as np
+from daal4py import kmeans
+
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
-parser.add_argument('-x', '--filex', '--fileX', '--input', required=True,
-                    type=str, help='Points to cluster')
-parser.add_argument('-i', '--filei', '--fileI', '--init', required=True,
+parser.add_argument('-i', '--filei', '--fileI', '--init',
                     type=str, help='Initial clusters')
 parser.add_argument('-t', '--tol', default=0., type=float,
                     help='Absolute threshold')
-parser.add_argument('-m', '--data-multiplier', default=100,
-                    type=int, help='Data multiplier')
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
-params = parse_args(parser, loop_types=('fit', 'predict'), prefix='daal4py')
+parser.add_argument('--n-clusters', type=int, help='Number of clusters')
+params = parse_args(parser, prefix='daal4py')
 
 # Load generated data
-X = np.load(params.filex)
-X_init = np.load(params.filei)
-X_mult = np.vstack((X,) * params.data_multiplier)
+X_train, X_test, _, _ = load_data(params, add_dtype=True)
 
-params.size = size_str(X.shape)
-params.n_clusters = X_init.shape[0]
-params.dtype = X.dtype
+# Load initial centroids from specified path
+if params.filei is not None:
+    X_init = np.load(params.filei).astype(params.dtype)
+    params.n_clusters = X_init.shape[0]
+# or choose random centroids from training data
+else:
+    np.random.seed(params.seed)
+    centroids_idx = np.random.randint(0, X_train.shape[0],
+                                      size=params.n_clusters)
+    if hasattr(X_train, "iloc"):
+        X_init = X_train.iloc[centroids_idx].values
+    else:
+        X_init = X_train[centroids_idx]
 
 
 # Define functions to time
@@ -57,22 +64,18 @@ def test_predict(X, X_init):
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_clusters', 'time')
-print_header(columns, params)
 
 # Time fit
-fit_time, _ = time_mean_min(test_fit, X, X_init,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
-print_row(columns, params, function='KMeans.fit', time=fit_time)
+fit_time, res = measure_function_time(test_fit, X_train, X_init, params=params)
+train_inertia = float(res.goalFunction[0, 0])
 
 # Time predict
-predict_time, _ = time_mean_min(test_predict, X, X_init,
-                                outer_loops=params.predict_outer_loops,
-                                inner_loops=params.predict_inner_loops,
-                                goal_outer_loops=params.predict_goal,
-                                time_limit=params.predict_time_limit,
-                                verbose=params.verbose)
-print_row(columns, params, function='KMeans.predict', time=predict_time)
+predict_time, res = measure_function_time(
+    test_predict, X_test, X_init, params=params)
+test_inertia = float(res.goalFunction[0, 0])
+
+print_output(library='daal4py', algorithm='kmeans',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['KMeans.fit', 'KMeans.predict'],
+             times=[fit_time, predict_time], accuracy_type='inertia',
+             accuracies=[train_inertia, test_inertia], data=[X_train, X_test])

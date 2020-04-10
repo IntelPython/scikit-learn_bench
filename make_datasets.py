@@ -1,35 +1,58 @@
+# Copyright (C) 2018-2020 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+
+
 import argparse
 import sys
 
 import numpy as np
-from sklearn.datasets import make_classification, make_regression
+from sklearn.datasets import make_classification, make_regression, make_blobs
 from sklearn.utils import check_random_state
+
+
+def gen_blobs(args):
+    X, y = make_blobs(n_samples=args.samples + args.test_samples,
+                      n_features=args.features,
+                      centers=None,
+                      center_box=(-32, 32),
+                      shuffle=True,
+                      random_state=args.seed)
+    np.save(args.filex, X[:args.samples])
+    if args.test_samples != 0:
+        np.save(args.filextest, X[args.samples:])
+    return 0
 
 
 def gen_regression(args):
     rs = check_random_state(args.seed)
-    X, y = make_regression(n_targets=1, n_samples=args.samples,
+    X, y = make_regression(n_targets=1,
+                           n_samples=args.samples + args.test_samples,
                            n_features=args.features,
                            n_informative=args.features,
                            bias=rs.normal(0, 3),
                            random_state=rs)
-
-    np.save(args.filex, X)
-    np.save(args.filey, y)
+    np.save(args.filex, X[:args.samples])
+    np.save(args.filey, y[:args.samples])
+    if args.test_samples != 0:
+        np.save(args.filextest, X[args.samples:])
+        np.save(args.fileytest, y[args.samples:])
     return 0
 
 
 def gen_classification(args):
-
-    X, y = make_classification(n_samples=args.samples,
+    X, y = make_classification(n_samples=args.samples + args.test_samples,
                                n_features=args.features,
                                n_informative=args.features,
                                n_repeated=0,
                                n_redundant=0,
                                n_classes=args.classes,
                                random_state=args.seed)
-    np.save(args.filex, X)
-    np.save(args.filey, y)
+    np.save(args.filex, X[:args.samples])
+    np.save(args.filey, y[:args.samples])
+    if args.test_samples != 0:
+        np.save(args.filextest, X[args.samples:])
+        np.save(args.fileytest, y[args.samples:])
     return 0
 
 
@@ -52,7 +75,6 @@ def gen_kmeans(args):
         raise ImportError('numpy.random_intel not found. '
                           'Please use Intel Distribution for Python.')
 
-
     rs = nri.RandomState(args.seed, brng=('MT2203', args.node_id))
 
     # generate centers
@@ -65,7 +87,7 @@ def gen_kmeans(args):
     sz = 0.5
     ch = rs.uniform(low=-sz, high=sz, size=(_ch_size(args.features),))
     data = rs.multinormal_cholesky(cluster_centers[0], ch,
-                                   size=(args.samples,))
+                                   size=(args.samples + args.test_samples,))
     diff_i0 = np.empty_like(cluster_centers[0])
     for i in range(1, args.clusters):
         np.subtract(cluster_centers[i], cluster_centers[0], out=diff_i0)
@@ -86,7 +108,9 @@ def gen_kmeans(args):
     print(f'Computing absolute threshold on this machine '
           f'takes {min(times)} seconds')
 
-    np.save(args.filex, X)
+    np.save(args.filex, X[:args.samples])
+    if args.test_samples != 0:
+        np.save(args.filextest, X[args.samples:])
     np.save(args.filei, X_init)
     np.save(args.filet, absTol)
     return 0
@@ -100,6 +124,9 @@ def main():
                         help='Number of features in dataset')
     parser.add_argument('-s', '--samples', type=int, default=10000,
                         help='Number of samples in dataset')
+    parser.add_argument('--ts', '--test-samples', type=int, default=0,
+                        dest='test_samples',
+                        help='Number of test samples in dataset')
     parser.add_argument('-d', '--seed', type=int, default=0,
                         help='Seed for random state')
     subparsers = parser.add_subparsers(dest='problem')
@@ -112,6 +139,12 @@ def main():
                              required=True, help='Path to save matrix X')
     regr_parser.add_argument('-y', '--filey', '--fileY', type=str,
                              required=True, help='Path to save vector y')
+    regr_parser.add_argument('--xt', '--filextest', '--fileXtest', type=str,
+                             dest='filextest',
+                             help='Path to save test matrix X')
+    regr_parser.add_argument('--yt', '--fileytest', '--fileYtest', type=str,
+                             dest='fileytest',
+                             help='Path to save test vector y')
 
     clsf_parser = subparsers.add_parser('classification',
                                         help='Classification data')
@@ -123,6 +156,12 @@ def main():
     clsf_parser.add_argument('-y', '--filey', '--fileY', type=str,
                              required=True,
                              help='Path to save label vector y')
+    clsf_parser.add_argument('--xt', '--filextest', '--fileXtest', type=str,
+                             dest='filextest',
+                             help='Path to save test matrix X')
+    clsf_parser.add_argument('--yt', '--fileytest', '--fileYtest', type=str,
+                             dest='fileytest',
+                             help='Path to save test vector y')
 
     kmeans_parser = subparsers.add_parser('kmeans',
                                           help='KMeans clustering data')
@@ -133,6 +172,9 @@ def main():
                                help='ID of member of MKL BRNG')
     kmeans_parser.add_argument('-x', '--filex', '--fileX', type=str,
                                required=True, help='Path to save matrix X')
+    kmeans_parser.add_argument('--xt', '--filextest', '--fileXtest', type=str,
+                               dest='filextest',
+                               help='Path to test save matrix X')
     kmeans_parser.add_argument('-i', '--filei', '--fileI', type=str,
                                required=True,
                                help='Path to save initial cluster centers')

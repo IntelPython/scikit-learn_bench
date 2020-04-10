@@ -1,26 +1,27 @@
-# Copyright (C) 2018-2019 Intel Corporation
+# Copyright (C) 2018-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, \
-                  size_str, accuracy_score
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, accuracy_score,
+    getFPType
+)
 import numpy as np
-from daal4py import svm_training, svm_prediction, \
-                    kernel_function_linear, kernel_function_rbf, \
-                    multi_class_classifier_training, \
-                    multi_class_classifier_prediction
-from daal4py.sklearn.utils import getFPType
+from daal4py import (
+    svm_training, svm_prediction, kernel_function_linear, kernel_function_rbf,
+    multi_class_classifier_training, multi_class_classifier_prediction
+)
 
 
-def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
+def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
-    Get an optimal cache size for sklearn.svm.SVC.
+    Get an optimal cache size for daal4py.svm_training.
 
     Parameters
     ----------
-    n_features : int
-        Number of features in the dataset
+    n_rows : int
+        Number of rows in the dataset
     dtype : dtype-like, optional (default np.double)
         dtype to use for computing cache size
     max_cache : int, optional (default 64)
@@ -28,7 +29,7 @@ def get_optimal_cache_size(n_features, dtype=np.double, max_cache=64):
     '''
 
     byte_size = np.empty(0, dtype=dtype).itemsize
-    optimal_cache_size_bytes = byte_size * (n_features ** 2)
+    optimal_cache_size_bytes = byte_size * (n_rows ** 2)
     one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
     if optimal_cache_size_bytes > max_cache_bytes:
@@ -81,7 +82,7 @@ def map_to_lexicographic(n):
 
 
 def permute_list(li, perm):
-    "Rearrange `li` according to `perm`"
+    'Rearrange `li` according to `perm`'
     return [li[i] for i in perm]
 
 
@@ -289,18 +290,12 @@ def test_predict(X, training_result, params):
 def main():
     parser = argparse.ArgumentParser(description='daal4py SVC benchmark with '
                                                  'linear kernel')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with labels, in NPY format')
     parser.add_argument('-C', dest='C', type=float, default=0.01,
                         help='SVM slack parameter')
     parser.add_argument('--kernel', choices=('linear', 'rbf'),
                         default='linear', help='SVM kernel function')
     parser.add_argument('--gamma', type=float, default=None,
-                        help="Parameter for kernel='rbf'")
+                        help='Parameter for kernel="rbf"')
     parser.add_argument('--maxiter', type=int, default=2000,
                         help='Maximum iterations for the iterative solver. '
                              '-1 means no limit.')
@@ -313,12 +308,11 @@ def main():
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',
                         help="Don't use shrinking heuristic")
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
-    # Load data and cast to float64
-    X_train = np.load(params.filex.name).astype('f8')
-    y_train = np.load(params.filey.name).astype('f8')
+    # Load data
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     if params.gamma is None:
         params.gamma = 1 / X_train.shape[1]
@@ -331,35 +325,30 @@ def main():
 
     # This is necessary for daal
     y_train[y_train == 0] = -1
-    y_train = y_train[:, np.newaxis]
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes',
                'accuracy', 'time')
-    params.size = size_str(X_train.shape)
-    params.dtype = X_train.dtype
-
-    print_header(columns, params)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(test_fit, X_train, y_train, params,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+    fit_time, res = measure_function_time(
+        test_fit, X_train, y_train, params, params=params)
     res, support, indices, n_support = res
     params.sv_len = support.shape[0]
-    print_row(columns, params, function='SVM.fit', time=fit_time)
 
-    predict_time, yp = time_mean_min(test_predict, X_train, res, params,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
-    print_row(columns, params, function='SVM.predict', time=predict_time,
-              accuracy=f'{100*accuracy_score(yp, y_train):.3}')
+    yp = test_predict(X_train, res, params)
+    train_acc = 100 * accuracy_score(yp, y_train)
+
+    predict_time, yp = measure_function_time(
+        test_predict, X_test, res, params, params=params)
+
+    test_acc = 100 * accuracy_score(yp, y_train)
+
+    print_output(library='daal4py', algorithm='svc',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['SVM.fit', 'SVM.predict'],
+                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                 accuracies=[train_acc, test_acc], data=[X_train, X_test])
 
 
 if __name__ == '__main__':

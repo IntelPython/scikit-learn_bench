@@ -1,0 +1,213 @@
+{
+    "common": {
+        "lib": ["sklearn", "daal4py"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "distances",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 15000,
+                    "training": {
+                        "n_samples": 1000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "kmeans",
+                    "n_clusters": 10,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ],
+            "n-clusters": [10]
+        },
+        {
+            "algorithm": "dbscan",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 10,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                }
+            ],
+            "min-samples": [5000],
+            "eps": [1]
+        },
+        {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "ridge",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "df_clsf",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "df_regr",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "log_reg",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "pca",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ],
+            "svd-solver": ["daal", "full"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 20000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 20000
+                    }
+                }
+            ],
+            "max-cache-size": [4],
+            "kernel": ["rbf"]
+        },
+        {
+            "lib": ["xgboost"],
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ],
+            "tree-method": ["hist"],
+            "objective": ["binary:logistic"]
+        },
+        {
+            "lib": ["xgboost"],
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ],
+            "tree-method": ["hist"],
+            "objective": ["reg:squarederror"]
+        }
+    ]
+}

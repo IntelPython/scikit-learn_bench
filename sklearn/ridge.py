@@ -1,10 +1,11 @@
-# Copyright (C) 2017-2019 Intel Corporation
+# Copyright (C) 2017-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row
-import numpy as np
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, rmse_score
+)
 from sklearn.linear_model import Ridge
 
 parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
@@ -14,37 +15,34 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     help="Don't fit intercept (assume data already centered)")
 parser.add_argument('--solver', default='auto',
                     help='Solver used for training')
-params = parse_args(parser, size=(1000000, 50), dtypes=('f8', 'f4'),
-                    loop_types=('fit', 'predict'))
+parser.add_argument('--alpha', type=float, default=1.0,
+                    help='Regularization strength')
+params = parse_args(parser, size=(1000000, 50))
 
-# Generate random data
-X = np.random.rand(*params.shape).astype(params.dtype)
-Xp = np.random.rand(*params.shape).astype(params.dtype)
-y = np.random.rand(*params.shape).astype(params.dtype)
+# Load data
+X_train, X_test, y_train, y_test = load_data(
+    params, generated_data=['X_train', 'y_train'])
 
 # Create our regression object
-regr = Ridge(fit_intercept=params.fit_intercept,
+regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,
              solver=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
 
-print_header(columns, params)
-
 # Time fit
-fit_time, _ = time_mean_min(regr.fit, X, y,
-                            outer_loops=params.fit_outer_loops,
-                            inner_loops=params.fit_inner_loops,
-                            goal_outer_loops=params.fit_goal,
-                            time_limit=params.fit_time_limit,
-                            verbose=params.verbose)
-print_row(columns, params, function='Ridge.fit', time=fit_time)
+fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
 
 # Time predict
-predict_time, yp = time_mean_min(regr.predict, Xp,
-                                 outer_loops=params.predict_outer_loops,
-                                 inner_loops=params.predict_inner_loops,
-                                 goal_outer_loops=params.predict_goal,
-                                 time_limit=params.predict_time_limit,
-                                 verbose=params.verbose)
-print_row(columns, params, function='Ridge.predict', time=predict_time)
+predict_time, yp = measure_function_time(regr.predict, X_test, params=params)
+
+test_rmse = rmse_score(yp, y_test)
+yp = regr.predict(X_train)
+train_rmse = rmse_score(yp, y_train)
+
+print_output(library='sklearn', algorithm='ridge_regression',
+             stages=['training', 'prediction'], columns=columns,
+             params=params, functions=['Ridge.fit', 'Ridge.predict'],
+             times=[fit_time, predict_time], accuracy_type='rmse',
+             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+             alg_instance=regr)

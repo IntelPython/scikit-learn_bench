@@ -1,15 +1,18 @@
-# Copyright (C) 2018-2019 Intel Corporation
+# Copyright (C) 2018-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, size_str
-from daal4py import decision_forest_regression_training, \
-                    decision_forest_regression_prediction, \
-                    engines_mt2203
-from daal4py.sklearn.utils import getFPType
-import numpy as np
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, rmse_score,
+    float_or_int, getFPType
+)
+from daal4py import (
+    decision_forest_regression_training,
+    decision_forest_regression_prediction,
+    engines_mt2203
+)
 
 
 def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,
@@ -59,56 +62,61 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='daal4py random forest '
                                                  'regression benchmark')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with targets, in NPY format')
 
+    parser.add_argument('--criterion', type=str, default='mse',
+                        choices=('mse'),
+                        help='The function to measure the quality of a split')
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
-    parser.add_argument('--max-features', type=int, default=0,
+    parser.add_argument('--max-features', type=float_or_int, default=0,
                         help='Upper bound on features used at each split')
     parser.add_argument('--max-depth', type=int, default=0,
                         help='Upper bound on depth of constructed trees')
+    parser.add_argument('--min-samples-split', type=float_or_int, default=2,
+                        help='Minimum samples number for node splitting')
+    parser.add_argument('--max-leaf-nodes', type=int, default=None,
+                        help='Grow trees with max_leaf_nodes in best-first fashion'
+                             'if it is not None')
+    parser.add_argument('--min-impurity-decrease', type=float, default=0.,
+                        help='Needed impurity decrease for node splitting')
+    parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
+                        action='store_false', help="Don't control bootstraping")
 
     parser.add_argument('--use-sklearn-class', action='store_true',
                         help='Force use of '
                              'sklearn.ensemble.RandomForestRegressor')
-    parser.add_argument('--seed', type=int, default=12345,
-                        help='Seed to pass as random_state to the class')
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load data
-    X = np.load(params.filex.name)
-    y = np.load(params.filey.name)[:, np.newaxis]
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'num_trees', 'time')
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-    print_header(columns, params)
+    if isinstance(params.max_features, float):
+        params.max_features = int(X_train.shape[1] * params.max_features)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(df_regr_fit, X, y,
-                                  n_trees=params.num_trees,
-                                  seed=params.seed,
-                                  n_features_per_node=params.max_features,
-                                  max_depth=params.max_depth,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
-    print_row(columns, params, function='df_regr.fit', time=fit_time)
+    fit_time, res = measure_function_time(
+        df_regr_fit, X_train, y_train,
+        n_trees=params.num_trees,
+        n_features_per_node=params.max_features,
+        max_depth=params.max_depth,
+        min_impurity=params.min_impurity_decrease,
+        bootstrap=params.bootstrap,
+        seed=params.seed,
+        params=params)
 
-    predict_time, yp = time_mean_min(df_regr_predict, X, res,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
-    print_row(columns, params, function='df_regr.predict', time=predict_time)
+    yp = df_regr_predict(X_train, res)
+    train_rmse = rmse_score(yp, y_train)
+
+    predict_time, yp = measure_function_time(
+        df_regr_predict, X_test, res, params=params)
+
+    test_rmse = rmse_score(yp, y_test)
+
+    print_output(library='daal4py', algorithm='decision_forest_regression',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['df_regr.fit', 'df_regr.predict'],
+                 times=[fit_time, predict_time], accuracy_type='rmse',
+                 accuracies=[train_rmse, test_rmse], data=[X_train, X_test])

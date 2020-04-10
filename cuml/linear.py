@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
@@ -6,14 +6,16 @@ import argparse
 from bench import (
     parse_args, measure_function_time, load_data, print_output, rmse_score
 )
-from sklearn.linear_model import LinearRegression
+from cuml import LinearRegression
 
-parser = argparse.ArgumentParser(description='scikit-learn linear regression '
+parser = argparse.ArgumentParser(description='cuML linear regression '
                                              'benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
-params = parse_args(parser, size=(1000000, 50))
+parser.add_argument('--solver', default='eig', choices=('eig', 'svd'),
+                    help='Solver used for training')
+params = parse_args(parser, prefix='cuml', size=(1000000, 50))
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(
@@ -21,7 +23,7 @@ X_train, X_test, y_train, y_test = load_data(
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
-                        n_jobs=params.n_jobs)
+                        algorithm=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')
@@ -36,7 +38,7 @@ test_rmse = rmse_score(yp, y_test)
 yp = regr.predict(X_train)
 train_rmse = rmse_score(yp, y_train)
 
-print_output(library='sklearn', algorithm='linear_regression',
+print_output(library='cuml', algorithm='linear_regression',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['Linear.fit', 'Linear.predict'],
              times=[fit_time, predict_time], accuracy_type='rmse',

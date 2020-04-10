@@ -1,15 +1,18 @@
-# Copyright (C) 2018-2019 Intel Corporation
+# Copyright (C) 2018-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, \
-                  size_str, accuracy_score
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, accuracy_score,
+    getFPType
+)
 import numpy as np
 import daal4py
 from daal4py import math_logistic, math_softmax
-from daal4py.sklearn.utils import getFPType, make2d
+from daal4py.sklearn.utils import make2d
 import scipy.optimize
+
 
 _logistic_loss = daal4py.optimization_solver_logistic_loss
 _cross_entropy_loss = daal4py.optimization_solver_cross_entropy_loss
@@ -180,12 +183,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='daal4py logistic '
                                                  'regression benchmark')
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'),
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'),
-                        help='Input file with labels, in NPY format')
     parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                         action='store_false', default=True,
                         help="Don't fit intercept")
@@ -198,60 +195,57 @@ if __name__ == '__main__':
     parser.add_argument('-C', dest='C', type=float, default=1.0,
                         help='Regularization parameter')
     parser.add_argument('--tol', type=float, default=None,
-                        help="Tolerance for solver. If solver == 'newton-cg', "
-                             "then the default is 1e-3. Otherwise the default "
-                             "is 1e-10.")
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+                        help='Tolerance for solver. If solver == "newton-cg", '
+                             'then the default is 1e-3. Otherwise the default '
+                             'is 1e-10.')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load generated data
-    X = np.load(params.filex.name)
-    y = np.load(params.filey.name)
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
-    params.n_classes = len(np.unique(y))
+    params.n_classes = len(np.unique(y_train))
     if not params.tol:
         params.tol = 1e-3 if params.solver == 'newton-cg' else 1e-10
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'solver', 'C', 'multiclass', 'n_classes', 'accuracy',
                'time')
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-    print_header(columns, params)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(test_fit, X, y, penalty='l2', C=params.C,
-                                  fit_intercept=params.fit_intercept,
-                                  tol=params.tol,
-                                  max_iter=params.maxiter,
-                                  solver=params.solver,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
+    fit_time, res = measure_function_time(
+        test_fit, X_train, y_train,
+        penalty='l2',
+        C=params.C,
+        fit_intercept=params.fit_intercept,
+        tol=params.tol,
+        max_iter=params.maxiter,
+        solver=params.solver,
+        params=params)
 
     beta, intercept, solver_result, params.multiclass = res
-    print_row(columns, params, function='LogReg.fit', time=fit_time)
 
-    predict_time, yp = time_mean_min(test_predict, X, beta,
-                                     intercept=intercept,
-                                     multi_class=params.multiclass,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
+    yp = test_predict(X_train, beta, multi_class=params.multiclass)
     y_pred = np.argmax(yp, axis=1)
-    acc = 100 * accuracy_score(y_pred, y)
-    print_row(columns, params, function='LogReg.predict', time=predict_time,
-              accuracy=acc)
+    train_acc = 100 * accuracy_score(y_pred, y_train)
 
+    predict_time, yp = measure_function_time(
+        test_predict, X_test, beta,
+        intercept=intercept,
+        multi_class=params.multiclass,
+        params=params)
+    y_pred = np.argmax(yp, axis=1)
+    test_acc = 100 * accuracy_score(y_pred, y_test)
+
+    print_output(library='daal4py', algorithm='logistic_regression',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['LogReg.fit', 'LogReg.predict'],
+                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                 accuracies=[train_acc, test_acc], data=[X_train, X_test])
     if params.verbose:
         print()
-        print("@ Number of iterations: {}".format(solver_result.nit))
+        print(f"@ Number of iterations: {solver_result.nit}")
         print("@ fit coefficients:")
-        print("@ {}".format(beta.tolist()))
+        print(f"@ {beta.tolist()}")
         print("@ fit intercept:")
-        print("@ {}".format(intercept.tolist()))
+        print(f"@ {intercept.tolist()}")

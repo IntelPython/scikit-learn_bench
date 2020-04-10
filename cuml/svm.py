@@ -1,19 +1,18 @@
-# Copyright (C) 2018-2020 Intel Corporation
+# Copyright (C) 2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
 from bench import (
-    parse_args, measure_function_time, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 import numpy as np
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+from cuml.svm import SVC
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
-    Get an optimal cache size for sklearn.svm.SVC.
+    Get an optimal cache size for cuml.svm.SVC.
 
     Parameters
     ----------
@@ -35,7 +34,7 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
         return optimal_cache_size_bytes
 
 
-parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
+parser = argparse.ArgumentParser(description='cuML SVM benchmark')
 
 parser.add_argument('-C', dest='C', type=float, default=0.01,
                     help='SVM slack parameter')
@@ -50,9 +49,7 @@ parser.add_argument('--max-cache-size', type=int, default=64,
                     help='Maximum cache size, in gigabytes, for SVM.')
 parser.add_argument('--tol', type=float, default=1e-16,
                     help='Tolerance passed to sklearn.svm.SVC')
-parser.add_argument('--no-shrinking', action='store_false', default=True,
-                    dest='shrinking', help="Don't use shrinking heuristic")
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = parse_args(parser)
 
 # Load data
 X_train, X_test, y_train, y_test = load_data(params)
@@ -63,12 +60,12 @@ if params.gamma is None:
 cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
-params.n_classes = len(np.unique(y_train))
+params.n_classes = y_train[y_train.columns[0]].nunique()
 
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
           cache_size=params.cache_size_mb, tol=params.tol,
-          shrinking=params.shrinking, gamma=params.gamma)
+          gamma=params.gamma)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes', 'accuracy',
@@ -84,7 +81,7 @@ predict_time, y_pred = measure_function_time(
     clf.predict, X_test, params=params)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
-print_output(library='sklearn', algorithm='svc',
+print_output(library='cuml', algorithm='svc',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['SVM.fit', 'SVM.predict'],
              times=[fit_time, predict_time], accuracy_type='accuracy[%]',

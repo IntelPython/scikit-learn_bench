@@ -1,15 +1,17 @@
-# Copyright (C) 2018-2019 Intel Corporation
+# Copyright (C) 2018-2020 Intel Corporation
 #
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, time_mean_min, print_header, print_row, \
-                  size_str, accuracy_score
+from bench import (
+    parse_args, measure_function_time, load_data, print_output, accuracy_score,
+    float_or_int, getFPType
+)
 import numpy as np
-from daal4py import decision_forest_classification_training, \
-                    decision_forest_classification_prediction, \
-                    engines_mt2203
-from daal4py.sklearn.utils import getFPType
+from daal4py import (
+    decision_forest_classification_training,
+    decision_forest_classification_prediction, engines_mt2203
+)
 
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,
@@ -63,60 +65,61 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='daal4py random forest '
                                                  'classification benchmark')
 
-    parser.add_argument('-x', '--filex', '--fileX',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with features, in NPY format')
-    parser.add_argument('-y', '--filey', '--fileY',
-                        type=argparse.FileType('r'), required=True,
-                        help='Input file with labels, in NPY format')
-
+    parser.add_argument('--criterion', type=str, default='gini',
+                        choices=('gini'),
+                        help='The function to measure the quality of a split')
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
-    parser.add_argument('--max-features',   type=int, default=0,
+    parser.add_argument('--max-features', type=float_or_int, default=0,
                         help='Upper bound on features used at each split')
-    parser.add_argument('--max-depth',   type=int, default=0,
+    parser.add_argument('--max-depth', type=int, default=0,
                         help='Upper bound on depth of constructed trees')
+    parser.add_argument('--min-samples-split', type=float_or_int, default=2,
+                        help='Minimum samples number for node splitting')
+    parser.add_argument('--max-leaf-nodes', type=int, default=None,
+                        help='Maximum leaf nodes per tree')
+    parser.add_argument('--min-impurity-decrease', type=float, default=0.,
+                        help='Needed impurity decrease for node splitting')
+    parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
+                        action='store_false',
+                        help="Don't control bootstraping")
 
     parser.add_argument('--use-sklearn-class', action='store_true',
                         help='Force use of '
                              'sklearn.ensemble.RandomForestClassifier')
-    parser.add_argument('--seed', type=int, default=12345,
-                        help='Seed to pass as random_state to the class')
-    params = parse_args(parser, loop_types=('fit', 'predict'),
-                        prefix='daal4py')
+    params = parse_args(parser, prefix='daal4py')
 
     # Load data
-    X = np.load(params.filex.name)
-    y = np.load(params.filey.name)[:, np.newaxis]
+    X_train, X_test, y_train, y_test = load_data(
+        params, add_dtype=True, label_2d=True)
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'num_trees', 'n_classes', 'accuracy', 'time')
-    params.n_classes = len(np.unique(y))
-    params.size = size_str(X.shape)
-    params.dtype = X.dtype
-
-    print_header(columns, params)
+    params.n_classes = len(np.unique(y_train))
+    if isinstance(params.max_features, float):
+        params.max_features = int(X_train.shape[1] * params.max_features)
 
     # Time fit and predict
-    fit_time, res = time_mean_min(df_clsf_fit, X, y, params.n_classes,
-                                  n_trees=params.num_trees,
-                                  seed=params.seed,
-                                  n_features_per_node=params.max_features,
-                                  max_depth=params.max_depth,
-                                  outer_loops=params.fit_outer_loops,
-                                  inner_loops=params.fit_inner_loops,
-                                  goal_outer_loops=params.fit_goal,
-                                  time_limit=params.fit_time_limit,
-                                  verbose=params.verbose)
-    print_row(columns, params, function='df_clsf.fit', time=fit_time)
+    fit_time, res = measure_function_time(
+        df_clsf_fit, X_train, y_train,
+        params.n_classes,
+        n_trees=params.num_trees,
+        n_features_per_node=params.max_features,
+        max_depth=params.max_depth,
+        min_impurity=params.min_impurity_decrease,
+        bootstrap=params.bootstrap,
+        seed=params.seed,
+        params=params)
 
-    predict_time, yp = time_mean_min(df_clsf_predict, X, res,
-                                     params.n_classes,
-                                     outer_loops=params.predict_outer_loops,
-                                     inner_loops=params.predict_inner_loops,
-                                     goal_outer_loops=params.predict_goal,
-                                     time_limit=params.predict_time_limit,
-                                     verbose=params.verbose)
-    acc = 100 * accuracy_score(yp, y)
-    print_row(columns, params, function='df_clsf.predict', time=predict_time,
-              accuracy=acc)
+    yp = df_clsf_predict(X_train, res, params.n_classes)
+    train_acc = 100 * accuracy_score(yp, y_train)
+
+    predict_time, yp = measure_function_time(
+        df_clsf_predict, X_test, res, params.n_classes, params=params)
+    test_acc = 100 * accuracy_score(yp, y_test)
+
+    print_output(library='daal4py', algorithm='decision_forest_classification',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
+                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                 accuracies=[train_acc, test_acc], data=[X_train, X_test])
