@@ -12,7 +12,7 @@ Python*. See benchmark results [here](https://intelpython.github.io/scikit-learn
 `conda create -n skl_bench -c intel python=3.7 scikit-learn pandas`
 
 ## Running Python benchmarks with runner script
-`python runner --config config_example.json [--output-format json --verbose]`
+`python runner.py --config config_example.json [--output-format json --verbose]`
 
 ## Legacy automatic building and running
 - Run `make`. This will generate data, compile benchmarks, and run them.
