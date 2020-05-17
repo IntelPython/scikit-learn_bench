@@ -624,10 +624,13 @@ def patch_sklearn():
 
     if args.patch_sklearn is not None and args.patch_sklearn != 'None':
         from daal4py.sklearn import patch_sklearn, unpatch_sklearn
-        if bool(args.patch_sklearn):
+        if args.patch_sklearn == "True":
             patch_sklearn()
-        else:
+        elif args.patch_sklearn == "False":
             unpatch_sklearn()
+        else:
+            raise ValueError('Parameter "patch_sklearn" must be '
+                             '"None", "True" or "False", got {}.'.format(args.patch_sklearn))
 
 
 def run_with_context(function):
