@@ -2,43 +2,50 @@
 #
 # SPDX-License-Identifier: MIT
 
-import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output, rmse_score
-)
-from sklearn.linear_model import LinearRegression
+from bench import (measure_function_time, parse_args, load_data, print_output, rmse_score,
+                  run_with_context, patch_sklearn)
 
-parser = argparse.ArgumentParser(description='scikit-learn linear regression '
-                                             'benchmark')
-parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
-                    action='store_false',
-                    help="Don't fit intercept (assume data already centered)")
-params = parse_args(parser, size=(1000000, 50))
 
-# Load data
-X_train, X_test, y_train, y_test = load_data(
-    params, generated_data=['X_train', 'y_train'])
+def main():
+    import argparse
+    from sklearn.linear_model import LinearRegression
 
-# Create our regression object
-regr = LinearRegression(fit_intercept=params.fit_intercept,
-                        n_jobs=params.n_jobs)
+    parser = argparse.ArgumentParser(description='scikit-learn linear regression '
+                                                 'benchmark')
+    parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                        action='store_false',
+                        help="Don't fit intercept (assume data already centered)")
+    params = parse_args(parser, size=(1000000, 50))
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'time')
+    # Load data
+    X_train, X_test, y_train, y_test = load_data(
+        params, generated_data=['X_train', 'y_train'])
 
-# Time fit
-fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
+    # Create our regression object
+    regr = LinearRegression(fit_intercept=params.fit_intercept,
+                            n_jobs=params.n_jobs)
 
-# Time predict
-predict_time, yp = measure_function_time(regr.predict, X_test, params=params)
+    columns = ('batch', 'arch', 'prefix', 'function', 'patch_sklearn', 'device', 'threads', 'dtype', 'size',
+               'time')
 
-test_rmse = rmse_score(yp, y_test)
-yp = regr.predict(X_train)
-train_rmse = rmse_score(yp, y_train)
+    # Time fit
+    fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
 
-print_output(library='sklearn', algorithm='linear_regression',
-             stages=['training', 'prediction'], columns=columns,
-             params=params, functions=['Linear.fit', 'Linear.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-             alg_instance=regr)
+    # Time predict
+    predict_time, yp = measure_function_time(regr.predict, X_test, params=params)
+
+    test_rmse = rmse_score(yp, y_test)
+    yp = regr.predict(X_train)
+    train_rmse = rmse_score(yp, y_train)
+
+    print_output(library='sklearn', algorithm='linear_regression',
+                 stages=['training', 'prediction'], columns=columns,
+                 params=params, functions=['Linear.fit', 'Linear.predict'],
+                 times=[fit_time, predict_time], accuracy_type='rmse',
+                 accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                 alg_instance=regr)
+
+
+if __name__ == "__main__":
+    patch_sklearn()
+    run_with_context(main)
