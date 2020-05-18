@@ -67,12 +67,12 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 
 # Time fit
 fit_time, res = measure_function_time(test_fit, X_train, X_init, params=params)
-train_inertia = float(res.goalFunction[0, 0])
+train_inertia = float(res.objectiveFunction[0, 0])
 
 # Time predict
 predict_time, res = measure_function_time(
     test_predict, X_test, X_init, params=params)
-test_inertia = float(res.goalFunction[0, 0])
+test_inertia = float(res.objectiveFunction[0, 0])
 
 print_output(library='daal4py', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,
