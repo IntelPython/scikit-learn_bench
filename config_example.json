@@ -177,6 +177,43 @@
             "kernel": ["rbf"]
         },
         {
+            "lib": ["sklearn"],
+            "algorithm": "train_test_split",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 5000,
+                    "training": {
+                        "n_samples": 5000
+                    }
+                }
+            ],
+            "shuffle": [""],
+            "include-y": [""],
+            "train-size": [0.75],
+            "test-size": [0.25]
+        },
+        {
             "lib": ["xgboost"],
             "algorithm": "gbt",
             "dataset": [
