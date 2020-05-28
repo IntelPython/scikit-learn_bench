@@ -208,7 +208,6 @@
                     }
                 }
             ],
-            "shuffle": [""],
             "include-y": [""],
             "train-size": [0.75],
             "test-size": [0.25]

@@ -12,8 +12,8 @@ parser.add_argument('--train-size', type=float, default=0.75,
                     help='Size of training subset')
 parser.add_argument('--test-size', type=float, default=0.25,
                     help='Size of testing subset')
-parser.add_argument('--shuffle', default=False, action='store_true',
-                    help='Perform data shuffle before splitting')
+parser.add_argument('--do-not-shuffle', default=False, action='store_true',
+                    help='Do not perform data shuffle before splitting')
 params = parse_args(parser)
 
 # Load generated data
@@ -22,7 +22,7 @@ X, y, _, _ = load_data(params)
 tts_params = {
     'train_size': params.train_size,
     'test_size': params.test_size,
-    'shuffle': params.shuffle,
+    'shuffle': not params.do_not_shuffle,
     'random_state': params.seed
 }
 
