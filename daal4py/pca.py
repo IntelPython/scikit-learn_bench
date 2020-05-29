@@ -137,7 +137,7 @@ print_output(library='daal4py', algorithm='pca',
              params=params, functions=['PCA.fit', 'PCA.transform'],
              times=[fit_time, transform_time], accuracy_type=None,
              accuracies=[None, None], data=[X_train, X_test],
-             alg_params={'svd_solver': params.svd_solver})
+             alg_params={'svd_solver': params.svd_solver, 'n_components': params.n_components})
 
 if params.write_results:
     np.save('pca_daal4py_X_train.npy', X_train)
