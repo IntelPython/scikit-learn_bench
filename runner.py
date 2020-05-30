@@ -77,6 +77,11 @@ def is_ht_enabled():
         verbose_print('Impossible to check hyperthreading via lscpu')
         return False
 
+def dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', metavar='ConfigPath',
@@ -88,6 +93,8 @@ parser.add_argument('--dummy-run', default=False, action='store_true',
 parser.add_argument('--verbose', default=False, action='store_true',
                     help='Print additional information during'
                          'benchmarks running')
+parser.add_argument('--dataset_root', type=dir_path, default='.',
+                    help='Dataset root for get data')
 parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
                     help='Output type of benchmarks to use with their runner')
 args = parser.parse_args()
@@ -160,7 +167,7 @@ try:
         for col in needed_columns:
             if col in pkg.keys():
                 pkg_info.update({col: pkg[col]})
-        json_result['software'].update({pkg['name']: pkg_info})
+        # json_result['software'].update({pkg['name']: pkg_info})
 except FileNotFoundError:
     pass
 
@@ -188,15 +195,17 @@ for params_set in config['cases']:
     generate_cases(params)
     verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                   f' {len(params_set["dataset"])} dataset(s)\n')
+
+    dataset_root = args.dataset_root + '/'
     for dataset in params_set['dataset']:
         if dataset['source'] in ['csv', 'npy']:
-            paths = f'--file-X-train {dataset["training"]["x"]}'
+            paths = f'--file-X-train {dataset_root + dataset["training"]["x"]}'
             if 'y' in dataset['training'].keys():
-                paths += f' --file-y-train {dataset["training"]["y"]}'
+                paths += f' --file-y-train {dataset_root + dataset["training"]["y"]}'
             if 'testing' in dataset.keys():
-                paths += f' --file-X-test {dataset["testing"]["x"]}'
+                paths += f' --file-X-test {dataset_root + dataset["testing"]["x"]}'
                 if 'y' in dataset['testing'].keys():
-                    paths += f' --file-y-test {dataset["testing"]["y"]}'
+                    paths += f' --file-y-test {dataset_root + dataset["testing"]["y"]}'
             if 'name' in dataset.keys():
                 dataset_name = dataset['name']
             else:
