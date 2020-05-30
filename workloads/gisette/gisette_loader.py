@@ -56,9 +56,9 @@ def gisette(root_dir=None):
     except FileExistsError:
         pass
 
-    filename_gisette_X_train = os.path.join(dataset_dir, 'gisette_X_train.csv')
+    filename_gisette_X_train = os.path.join(dataset_dir, 'gisette_x_train.csv')
     filename_gisette_y_train = os.path.join(dataset_dir, 'gisette_y_train.csv')
-    filename_gisette_X_test = os.path.join(dataset_dir, 'gisette_X_test.csv')
+    filename_gisette_X_test = os.path.join(dataset_dir, 'gisette_x_test.csv')
     filename_gisette_y_test = os.path.join(dataset_dir, 'gisette_y_test.csv')
 
     gisette_train_data_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'
