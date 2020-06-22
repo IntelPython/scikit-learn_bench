@@ -100,6 +100,9 @@ def parse_args(parser, size=None, loop_types=(),
         This is the same parser that was passed to this function.
     '''
 
+    import cuml
+    cuml.common.logger = cuml.common.logger.level_critical
+
     parser.add_argument('-n', '--num-threads', '--core-number', default=-1,
                         dest='threads', type=int,
                         help='Number of threads to use')
