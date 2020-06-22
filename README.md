@@ -23,7 +23,7 @@ This repository contains benchmarks for various implementations of machine learn
 
 ## Running Python benchmarks with runner script
 
-Rub `python runner.py --config config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --config config_example.json [--output-format json --verbose]` to launch benchmarks.
 
 runner options:
 * ``config`` : path to configuration file
