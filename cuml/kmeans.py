@@ -8,7 +8,10 @@ from bench import (
 )
 import numpy as np
 from cuml import KMeans
+import cuml
 import warnings
+
+cuml.common.logger = cuml.common.logger.level_critical
 
 
 warnings.filterwarnings('ignore', category=FutureWarning)
