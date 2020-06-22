@@ -7,6 +7,9 @@ from bench import (
     parse_args, measure_function_time, load_data, print_output, accuracy_score
 )
 from cuml import LogisticRegression
+import cuml
+
+cuml.common.logger = cuml.common.logger.level_critical
 
 parser = argparse.ArgumentParser(description='cuML logistic '
                                              'regression benchmark')
