@@ -520,7 +520,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             full_data[element] = convert_data(
                 np.random.rand(*params.shape),
                 int_dtype if 'y' in element and int_label else params.dtype,
-                params.data_order, params.data_forma, params.heterogeneoust)
+                params.data_order, params.data_format, params.heterogeneous)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
         if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
