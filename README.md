@@ -51,7 +51,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
  You can configure benchmarks by editing a config file. Check  [config.json schema](#config-json-schema) for more details.
 
-## Supported algorithms
+## Benchmark supported algorithms
 
 | algorithm  | benchmark name | sklearn | daal4py | cuml | xgboost |
 |---|---|---|---|---|---|
