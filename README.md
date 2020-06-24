@@ -24,14 +24,14 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
  You must create a suitable conda environment for each framework you want to test.
 Below is a list of supported frameworks and a link to instructions how to create appropriate conda environment.
 
-* **scikit-learn**
-* **daal4py**
-* **cuml**
-* **xgboost**
+* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
 
 ## Running Python benchmarks with runner script
 
-Run `python runner.py --config config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --config configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
 
 runner options:
 * ``config`` : path to configuration file
@@ -83,16 +83,16 @@ and run the following command
 
 The list of supported parameters for each algorithm you can find here:
 
-* **scikit-learn**
-* **daal4py**
-* **cuml**
-* **xgboost**
+* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#algorithms-parameters)
+* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
+* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
+* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)
 
 ##  Config JSON Schema
 
 Benchmarks are configured by editing the config.json file.
 In the benchmarks settings can be configured: some algorithms parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
-Check config tab for more details.
+Check [config tab](https://github.com/PivovarA/scikit-learn_bench/blob/master/configs/README.md) for more details.
 
 ## Legacy automatic building and running
 - Run `make`. This will generate data, compile benchmarks, and run them.
