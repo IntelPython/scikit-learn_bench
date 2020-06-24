@@ -18,6 +18,7 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 - `python` and `scikit-learn` to run python versions
 - pandas when using its DataFrame as input data format
 - `icc`, `ifort`, `mkl`, `daal` to compile and run native benchmarks
+- machine learning frameworks, that you want to test. Check [this item](#how-to-create-conda-environment-for-benchmarking) to get additional information how to set environment.
 
 ## How to create conda environment for benchmarking
 
