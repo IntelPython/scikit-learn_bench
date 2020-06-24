@@ -7,11 +7,11 @@ If you want to test stock sklearn, then use
 
 If you want to test scikit-learn in the Intel(R) Distribution for Python*, then use 
 
-conda create -n skl_bench -c intel python=3.7 scikit-learn pandas
+`conda create -n skl_bench -c intel python=3.7 scikit-learn pandas`
 
 and set the appropriate environment variable
 
-export USE_DAAL4PY_SKLEARN=YES
+`export USE_DAAL4PY_SKLEARN=YES`
 
 ##  Algorithms parameters
 
