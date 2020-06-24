@@ -17,8 +17,7 @@ def get_dtype(data):
     if hasattr(data, 'dtype'):
         return data.dtype
     elif hasattr(data, 'dtypes'):
-        from pandas.core.dtypes.cast import find_common_type
-        return str(find_common_type(data.dtypes))
+        return str(data.dtypes[0])
     elif hasattr(data, 'values'):
         return data.values.dtype
     else:
