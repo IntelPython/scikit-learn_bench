@@ -1,8 +1,10 @@
 
 # scikit-learn_bench
 
-This repository contains benchmarks for various implementations of machine learning algorithms.
+**scikit-learn_bench** benchmarks various implementations of machine learning algorithms across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks and algorithms.  It currently support the [scikit-learn](https://scikit-learn.org/), [DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml), and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used [machine learning algorithms](#supported-algorithms).
+
 See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
+
 
 ## Table of content
 
@@ -11,7 +13,6 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Supported algorithms](#supported-algorithms)
 * [Algorithms parameters](#algorithms-parameters)
-* [Config JSON Schema](#config-json-schema)
 * [Legacy automatic building and running](#legacy-automatic-building-and-running)
 
 ## Prerequisites
@@ -22,13 +23,13 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 
 ## How to create conda environment for benchmarking
 
- You must create a suitable conda environment for each framework you want to test.
-Below is a list of supported frameworks and a link to instructions how to create appropriate conda environment.
+Create a suitable conda environment for each framework to test. Each item in the list below links to instructions to create an appropriate conda environment for the framework.
 
 * [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
 * [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
 * [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
 * [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
+
 
 ## Running Python benchmarks with runner script
 
@@ -46,11 +47,9 @@ Benchmarks currently support the following frameworks:
 * **cuml**
 * **xgboost**
 
-To select frameworks just specify them in the configuration file in *general* in *lib*.
-
 The configuration of benchmarks allows you to select the frameworks to run, select datasets for measurements and configure the parameters of the algorithms.
 
- You can configure benchmarks by editing a config file. Check  [config.json schema](#config-json-schema) for more details.
+ You can configure benchmarks by editing a config file. Check  [config.json schema](https://github.com/PivovarA/scikit-learn_bench/blob/master/configs/README.md) for more details.
 
 ## Benchmark supported algorithms
 
@@ -88,12 +87,6 @@ The list of supported parameters for each algorithm you can find here:
 * [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
 * [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
 * [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)
-
-##  Config JSON Schema
-
-Benchmarks are configured by editing the config.json file.
-In the benchmarks settings can be configured: some algorithms parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
-Check [config tab](https://github.com/PivovarA/scikit-learn_bench/blob/master/configs/README.md) for more details.
 
 ## Legacy automatic building and running
 - Run `make`. This will generate data, compile benchmarks, and run them.
