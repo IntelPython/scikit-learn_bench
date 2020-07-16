@@ -72,7 +72,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
 ##  Algorithms parameters
 
-Benchmarks can be launched for each algorithm separately.
+You can launch benchmarks for each algorithm separately.
 To do this just go to the directory with the benchmark
 
 `cd <framework>`
