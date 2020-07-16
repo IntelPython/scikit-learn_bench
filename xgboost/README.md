@@ -9,8 +9,8 @@ You can launch benchmarks for each algorithm separately. The table below lists a
 #### General
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-|num-threads|int|-1| Number of threads to use|
-|arch|str|?|achine architecture, for bookkeeping|
+|num-threads|int|-1| The number of threads to use|
+|arch|str|?|Achine architecture, for bookkeeping|
 |batch|str|?|Batch ID, for bookkeeping|
 |prefix|str|sklearn|Prefix string, for bookkeeping|
 |header|action|False|Output CSV header|
@@ -25,7 +25,7 @@ You can launch benchmarks for each algorithm separately. The table below lists a
 |inner-loops|int|100|Maximum inner loop iterations. (we take the mean over inner iterations)|
 |outer-loops|int|100|Maximum outer loop iterations. (we take the min over outer iterations)|
 |time-limit|float|10|Target time to spend to benchmark|
-|goal-outer-loops|int|10|Number of outer loops to aim while automatically picking number of inner loops. If zero, do not automatically decide number of inner loops.|
+|goal-outer-loops|int|10|The number of outer loops to aim while automatically picking number of inner loops. If zero, do not automatically decide number of inner loops.|
 |seed|int|12345|Seed to pass as random_state|
 |dataset-name|str|None|Dataset name|
 
@@ -33,7 +33,7 @@ You can launch benchmarks for each algorithm separately. The table below lists a
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-| n-estimators | int | 100 | Number of gradient boosted trees |
+| n-estimators | int | 100 | The number of gradient boosted trees |
 | learning-rate | float | 0.3 | Step size shrinkage used in update to prevents overfitting|
 | min-split-loss | float | 0 | Minimum loss reduction required to make partition on a leaf node |
 | max-depth | int | 6 | Maximum depth of a tree |

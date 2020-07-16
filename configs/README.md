@@ -14,7 +14,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 ###  Root Config Object
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-|omp_env| array[string] | for xgboost only. Specify an environment variable to set the number of omp threads |
+|omp_env| array[string] | For xgboost only. Specify an environment variable to set the number of omp threads |
 |common| [Common Object](#common-object)| **REQUIRED** common benchmarks setting: frameworks and input data settings |
 |cases| array[[Case Object](#case-object)] | **REQUIRED**  list of algorithms, their parameters and training data |
 
@@ -43,8 +43,8 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 | ----- | ---- |------------ |
 |source| string | **REQUIRED** data source. It can be *synthetic* or *csv* |
 |type| string | **REQUIRED**  for synthetic data only. The type of task for which the dataset is generated. It can be *classification*, *blobs* or *regression* |
-|n_classes| int | for *synthetic* data and for *classification* type only. The number of classes (or labels) of the classification problem |
-|n_clusters| int | for *synthetic* data and for *blobs* type only. The number of centers to generate |
+|n_classes| int | For *synthetic* data and for *classification* type only. The number of classes (or labels) of the classification problem |
+|n_clusters| int | For *synthetic* data and for *blobs* type only. The number of centers to generate |
 |n_features| int | **REQUIRED**  For *synthetic* data only. The number of features to generate |
 |name| string | Name of dataset |
 |training| [Training Object](#training-object) | **REQUIRED** algorithm parameters. a list of supported parameters can be found here |

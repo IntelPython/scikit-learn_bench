@@ -24,8 +24,8 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 #### General
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-|num-threads|int|-1| Number of threads to use|
-|arch|str|?|achine architecture, for bookkeeping|
+|num-threads|int|-1| The number of threads to use|
+|arch|str|?|Achine architecture, for bookkeeping|
 |batch|str|?|Batch ID, for bookkeeping|
 |prefix|str|sklearn|Prefix string, for bookkeeping|
 |header|action|False|Output CSV header|
@@ -40,7 +40,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 |inner-loops|int|100|Maximum inner loop iterations. (we take the mean over inner iterations)|
 |outer-loops|int|100|Maximum outer loop iterations. (we take the min over outer iterations)|
 |time-limit|float|10|Target time to spend to benchmark|
-|goal-outer-loops|int|10|Number of outer loops to aim while automatically picking number of inner loops. If zero, do not automatically decide number of inner loops.|
+|goal-outer-loops|int|10|The number of outer loops to aim while automatically picking number of inner loops. If zero, do not automatically decide number of inner loops|
 |seed|int|12345|Seed to pass as random_state|
 |dataset-name|str|None|Dataset name|
 
@@ -56,7 +56,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
-| num-trees | int | 100 | Number of trees in the forest |
+| num-trees | int | 100 | The number of trees in the forest |
 | max-features | float_or_int | None | Upper bound on features used at each split |
 | max-depth | int | None | Upper bound on depth of constructed trees |
 | min-samples-split | float_or_int | 2 | Minimum samples number for node splitting |
@@ -70,7 +70,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
-| num-trees | int | 100 | Number of trees in the forest |
+| num-trees | int | 100 | The number of trees in the forest |
 | max-features | float_or_int | None | Upper bound on features used at each split |
 | max-depth | int | None | Upper bound on depth of constructed trees |
 | min-samples-split | float_or_int | 2 | Minimum samples number for node splitting |
@@ -92,13 +92,13 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | init | str |  | Initial clusters |
 | tol | float | 0 | Absolute threshold |
 | maxiter | inte | 100 | Maximum number of iterations |
-| n-clusters | int |  | Number of clusters |
+| n-clusters | int |  | The number of clusters |
 
 #### KNeighborsClassifier
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-| n-neighbors | int | 5 | Number of neighbors to use |
+| n-neighbors | int | 5 | The number of neighbors to use |
 | weights | str | uniform | Weight function used in prediction |
 | method | str | brute | Algorithm used to compute the nearest neighbors |
 | metric | str | euclidean | Distance metric to use |
@@ -125,7 +125,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | svd-solver | str | daal | *daal*, *full*. SVD solver to use |
-| n-components | int | None | Number of components to find |
+| n-components | int | None | The number of components to find |
 | whiten | action | False | Perform whitening |
 
 #### Ridge
