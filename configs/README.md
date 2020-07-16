@@ -1,8 +1,15 @@
 ##  Config JSON Schema
 
-Benchmarks are configured by editing the config.json file.
-In the benchmarks settings can be configured: some algorithms parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
-Below is a list and description of all fields in the configuration file.
+Configure benchmarks by editing the `config.json` file.
+You can configure some algorithm parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
+Refer to the tables below for descriptions of all fields in the configuration file.
+
+- [Root Config Object](#root-config-object)
+- [Common Object](#common-object)
+- [Case Object](#case-object)
+- [Dataset Object](#dataset-object)
+- [Training Object](#training-object)
+- [Testing Object](#testing-object)
 
 ###  Root Config Object
 | Field Name  | Type | Description |
@@ -55,6 +62,6 @@ Below is a list and description of all fields in the configuration file.
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-| n_samples | int | the total number of testing points |
-| x | str | path to testing samples |
-| y | str | path to testing labels |
+| n_samples | int | The total number of the testing points |
+| x | str | The path to the testing samples |
+| y | str | The path to the testing labels |

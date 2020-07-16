@@ -1,9 +1,10 @@
 ## How to create conda environment for benchmarking
-`conda create -n skl_bench -c conda-forge python=3.7 xgboost pandas`
+
+    conda create -n skl_bench -c conda-forge python=3.7 xgboost pandas
 
 ##  Algorithms parameters
 
-Benchmarks can be launched for each algorithm separately. The list of supported parameters for each algorithm provided below.
+You can launch benchmarks for each algorithm separately. The table below lists all supported parameters for each algorithm.
 
 #### General
 | parameter Name  | Type | default value | description |

@@ -4,10 +4,24 @@
 
 ##  Algorithms parameters
 
-Benchmarks can be launched for each algorithm separately. The list of supported parameters for each algorithm provided below.
+You can launch benchmarks for each algorithm separately. The tables below list all supported parameters for each algorithm:
+
+- [General](#general)
+- [DBSCAN](#dbscan)
+- [RandomForestClassifier](#randomforestclassifier)
+- [RandomForestRegressor](#randomforestregressor)
+- [pairwise_distances](#pairwise_distances)
+- [KMeans](#kmeans)
+- [KNeighborsClassifier](#kneighborsclassifier)
+- [LinearRegression](#linearregression)
+- [LogisticRegression](#logisticregression)
+- [PCA](#pca)
+- [Ridge Regression](#ridge)
+- [SVC](#svc)
+- [train_test_split](#train_test_split)
 
 #### General
-| parameter Name  | Type | default value | description |
+| Parameter Name  | Type | Default Value | Description |
 | ----- | ---- |---- |---- |
 |num-threads|int|-1| Number of threads to use|
 |arch|str|?|achine architecture, for bookkeeping|
@@ -135,4 +149,3 @@ Benchmarks can be launched for each algorithm separately. The list of supported 
 | train-size | float | 0.75 | Size of training subset |
 | test-size | float | 0.25 | Size of testing subset |
 | do-not-shuffle | action | False | Do not perform data shuffle before splitting |
-

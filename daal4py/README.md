@@ -5,7 +5,21 @@
 
 ##  Algorithms parameters
 
-Benchmarks can be launched for each algorithm separately. The list of supported parameters for each algorithm provided below.
+You can launch benchmarks for each algorithm separately. The tables below list all supported parameters for each algorithm:
+
+- [General](#general)
+- [DBSCAN](#dbscan)
+- [RandomForestClassifier](#randomforestclassifier)
+- [RandomForestRegressor](#randomforestregressor)
+- [pairwise_distances](#pairwise_distances)
+- [KMeans](#kmeans)
+- [KNeighborsClassifier](#kneighborsclassifier)
+- [LinearRegression](#linearregression)
+- [LogisticRegression](#logisticregression)
+- [PCA](#pca)
+- [Ridge Regression](#ridge)
+- [SVC](#svc)
+- [train_test_split](#train_test_split)
 
 #### General
 | parameter Name  | Type | default value | description |

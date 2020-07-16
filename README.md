@@ -73,13 +73,13 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 ##  Algorithms parameters
 
 You can launch benchmarks for each algorithm separately.
-To do this just go to the directory with the benchmark
+To do this, go to the directory with the benchmark:
 
-`cd <framework>`
+    cd <framework>
 
-and run the following command
+Run the following command:
 
-`python <benchmark_file> --dataset-name <path to the dataset> <other algorithm parameters>`
+    python <benchmark_file> --dataset-name <path to the dataset> <other algorithm parameters>
 
 The list of supported parameters for each algorithm you can find here:
 
