@@ -47,9 +47,9 @@ Below is a list and description of all fields in the configuration file.
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-| n_samples | int | the total number of training points |
-| x | str | path to training samples |
-| y | str | path to training labels |
+| n_samples | int | The total number of the training points |
+| x | str | The path to the training samples |
+| y | str | The path to the training labels |
 
 ###  Testing Object
 
