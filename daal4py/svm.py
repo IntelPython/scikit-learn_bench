@@ -269,6 +269,7 @@ def test_predict(X, training_result, params):
     else:
         prdct = multi_class_classifier_prediction(
                 nClasses=params.n_classes,
+                method='thunder',
                 fptype=fptype,
                 maxIterations=params.maxiter,
                 accuracyThreshold=params.tol,
@@ -290,20 +291,19 @@ def test_predict(X, training_result, params):
 def main():
     parser = argparse.ArgumentParser(description='daal4py SVC benchmark with '
                                                  'linear kernel')
-    parser.add_argument('-C', dest='C', type=float, default=0.01,
-                        help='SVM slack parameter')
+    parser.add_argument('-C', dest='C', type=float, default=1.0,
+                        help='SVM regularization parameter')
     parser.add_argument('--kernel', choices=('linear', 'rbf'),
                         default='linear', help='SVM kernel function')
     parser.add_argument('--gamma', type=float, default=None,
                         help='Parameter for kernel="rbf"')
-    parser.add_argument('--maxiter', type=int, default=2000,
-                        help='Maximum iterations for the iterative solver. '
-                             '-1 means no limit.')
-    parser.add_argument('--max-cache-size', type=int, default=64,
+    parser.add_argument('--maxiter', type=int, default=100000,
+                        help='Maximum iterations for the iterative solver. ')
+    parser.add_argument('--max-cache-size', type=int, default=8,
                         help='Maximum cache size, in gigabytes, for SVM.')
     parser.add_argument('--tau', type=float, default=1e-12,
                         help='Tau parameter for working set selection scheme')
-    parser.add_argument('--tol', type=float, default=1e-16,
+    parser.add_argument('--tol', type=float, default=1e-3,
                         help='Tolerance')
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',

@@ -36,18 +36,18 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
 
 parser = argparse.ArgumentParser(description='cuML SVM benchmark')
 
-parser.add_argument('-C', dest='C', type=float, default=0.01,
-                    help='SVM slack parameter')
+parser.add_argument('-C', dest='C', type=float, default=1.0,
+                    help='SVM regularization parameter')
 parser.add_argument('--kernel', choices=('linear', 'rbf'),
                     default='linear', help='SVM kernel function')
-parser.add_argument('--gamma', type=float, default=None,
-                    help='Parameter for kernel="rbf"')
-parser.add_argument('--maxiter', type=int, default=2000,
+parser.add_argument('--maxiter', type=int, default=-1,
                     help='Maximum iterations for the iterative solver. '
                          '-1 means no limit.')
-parser.add_argument('--max-cache-size', type=int, default=64,
+parser.add_argument('--gamma', type=float, default=None,
+                    help='Parameter for kernel="rbf"')
+parser.add_argument('--max-cache-size', type=int, default=8,
                     help='Maximum cache size, in gigabytes, for SVM.')
-parser.add_argument('--tol', type=float, default=1e-16,
+parser.add_argument('--tol', type=float, default=1e-3,
                     help='Tolerance passed to sklearn.svm.SVC')
 params = parse_args(parser)
 
@@ -55,7 +55,7 @@ params = parse_args(parser)
 X_train, X_test, y_train, y_test = load_data(params)
 
 if params.gamma is None:
-    params.gamma = 'auto'
+    params.gamma = 1.0 / X_train.shape[1]
 
 cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
