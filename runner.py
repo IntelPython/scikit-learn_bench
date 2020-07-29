@@ -147,7 +147,7 @@ if 'Linux' in platform():
         if gpu_processes != '':
             print(f'There are running processes on GPU:\n{gpu_processes}',
                   file=sys.stderr)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         pass
 
 # get python packages info from conda
@@ -161,7 +161,7 @@ try:
             if col in pkg.keys():
                 pkg_info.update({col: pkg[col]})
         json_result['software'].update({pkg['name']: pkg_info})
-except FileNotFoundError:
+except (FileNotFoundError, json.JSONDecodeError):
     pass
 
 batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
