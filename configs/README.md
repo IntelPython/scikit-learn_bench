@@ -27,6 +27,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |data-order| array[string] | **REQUIRED**  input data order. Data order: *C* (row-major, default) or *F* (column-major) |
 |dtype| array[string] | **REQUIRED**  input data type. Data type: *float64* (default) or *float32* |
 |check-finitness| array[] | Check finiteness in sklearn input check(disabled by default) |
+|heterogeneous| array[bool] | *true* - input data is heterogeneous (*int32*, *float32*, *float64*), *false* - input data is homogeneous (default). Works only with *pandas* and *cudf* data format |
 
 ###  Case Object
 
