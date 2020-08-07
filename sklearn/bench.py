@@ -120,10 +120,8 @@ def parse_args(parser, size=None, loop_types=(),
                         choices=('C', 'F'),
                         help='Data order: C (row-major, default) or'
                              'F (column-major)')
-    parser.add_argument('--heterogeneous', type=bool, default=False,
-                        help='Is data heterogeneous or not')
-    parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
-                        choices=(np.float32, np.float64),
+    parser.add_argument('-d', '--dtype', type=str, default='float64',
+                        choices=('float32', 'float64', 'int32:float32:float64'),
                         help='Data type: float64 (default) or float32')
     parser.add_argument('--check-finiteness', default=False,
                         action='store_true',
@@ -169,6 +167,16 @@ def parse_args(parser, size=None, loop_types=(),
                             help='Problem size, delimited by "x" or ","')
 
     params = parser.parse_args()
+
+    if params.dtype == 'int32:float32:float64':
+        params.heterogeneous = True
+        params.dtype = np.float64
+
+        if params.data_format == 'numpy':
+            raise ValueError('There must be only one dtype for numpy array')
+    else:
+        params.heterogeneous = False
+        params.dtype = np.dtype(params.dtype)
 
     # disable finiteness check (default)
     if not params.check_finiteness:
@@ -532,7 +540,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             elif hasattr(full_data[element], 'dtypes'):
                 full_data[element].dtype = full_data[element].dtypes[0].type
 
-    params.dtype = get_dtype(full_data['X_train']) if not params.heterogeneous else 'heterogeneous'
+    params.dtype = get_dtype(full_data['X_train']) if not params.heterogeneous else 'int32:float32:float64'
     # add size to parameters which is need for some cases
     if not hasattr(params, 'size'):
         params.size = size_str(full_data['X_train'].shape)
