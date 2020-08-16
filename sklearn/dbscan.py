@@ -5,6 +5,7 @@
 import argparse
 from bench import measure_function_time, parse_args, load_data, print_output
 from sklearn.cluster import DBSCAN
+from sklearn.metrics.cluster import davies_bouldin_score
 
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
 parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
@@ -32,9 +33,14 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit
 time, _ = measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
+
+print(len(dbscan.core_sample_indices_))
+print(X.shape)
+
 params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+acc = davies_bouldin_score(X, labels)
 
 print_output(library='sklearn', algorithm='dbscan', stages=['training'],
              columns=columns, params=params, functions=['DBSCAN'],
-             times=[time], accuracies=[None], accuracy_type=None, data=[X],
+             times=[time], accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
              alg_instance=dbscan)

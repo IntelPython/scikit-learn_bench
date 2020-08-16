@@ -266,6 +266,7 @@ def time_box_filter(func, *args, n_meas, time_limit, **kwargs):
         t0 = timeit.default_timer()
         val = func(*args, **kwargs)
         t1 = timeit.default_timer()
+        print(t1-t0)
         times.append(t1-t0)
         if sum(times) > time_limit:
             break

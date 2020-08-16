@@ -210,12 +210,8 @@ def test_fit(X, y, params):
     fptype = getFPType(X)
     kf = daal_kernel(params.kernel, fptype, gamma=params.gamma)
 
-    if params.n_classes == 2:
-        y[y == 0] = -1
-    else:
-        y[y == -1] = 0
-
     svm_train = svm_training(
+            method='thuner',
             fptype=fptype,
             C=params.C,
             maxIterations=params.maxiter,
@@ -324,8 +320,6 @@ def main():
     params.n_classes = np.unique(y_train).size
 
     # This is necessary for daal
-    y_train[y_train == 0] = -1
-
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes',
                'accuracy', 'time')

@@ -61,6 +61,7 @@ cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = y_train[y_train.columns[0]].nunique()
+params.time_method = 'box'
 
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
@@ -74,16 +75,17 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit and predict
 fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 params.sv_len = clf.support_.shape[0]
-y_pred = clf.predict(X_train)
-train_acc = 100 * accuracy_score(y_pred, y_train)
 
 predict_time, y_pred = measure_function_time(
-    clf.predict, X_test, params=params)
+    clf.predict, X_train, params=params)
+train_acc = 100 * accuracy_score(y_pred, y_train)
+
+y_pred = clf.predict(X_test)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='cuml', algorithm='svc',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['SVM.fit', 'SVM.predict'],
              times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_test],
+             accuracies=[train_acc, test_acc], data=[X_train, X_train],
              alg_instance=clf)
