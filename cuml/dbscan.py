@@ -32,16 +32,7 @@ labels = dbscan.labels_
 X_host = convert_to_numpy(X)
 labels_host = convert_to_numpy(labels)
 
-
-print(len(dbscan.core_sample_indices_))
-print(X.shape)
-
-import numpy as np
-print(np.unique(labels))
-print(labels[:10])
-
 acc = davies_bouldin_score(X_host, labels_host)
-
 params.n_clusters = len(set(labels_host)) - (1 if -1 in labels_host else 0)
 
 print_output(library='cuml', algorithm='dbscan', stages=['training'],

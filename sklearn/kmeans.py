@@ -55,10 +55,6 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 fit_time, kmeans = measure_function_time(fit_kmeans, X_train, params=params)
 
 train_predict = kmeans.predict(X_train)
-
-print('n_iter_: ', kmeans.n_iter_)
-
-print('acc_train ', davies_bouldin_score(X_train, train_predict))
 acc_train = davies_bouldin_score(X_train, train_predict)
 
 # Time predict
@@ -66,7 +62,6 @@ predict_time, test_inertia = measure_function_time(
     kmeans.predict, X_test, params=params)
 
 acc_test = davies_bouldin_score(X_test, test_inertia)
-print('acc_test ', acc_test)
 
 print_output(library='sklearn', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,

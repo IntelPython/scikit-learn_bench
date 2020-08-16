@@ -26,8 +26,6 @@ params = parse_args(parser)
 # Load data
 X_train, X_test, y_train, y_test = load_data(params)
 
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-
 # Create our regression object
 regr = ElasticNet(fit_intercept=params.fit_intercept, l1_ratio=params.l1_ratio, alpha=params.alpha,
                         tol=params.tol, max_iter=params.maxiter, copy_X=False)
@@ -37,10 +35,6 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 
 # Time fit
 fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
-
-print('y_train.shape: ', y_train.shape)
-print('X_train.shape: ', X_train.shape)
-print('iter: ', regr.n_iter_)
 
 # Time predict
 predict_time, pred_train = measure_function_time(regr.predict, X_train, params=params)
@@ -53,5 +47,5 @@ print_output(library='sklearn', algorithm='elastic-net',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['ElasticNet.fit', 'ElasticNet.predict'],
              times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+             accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
              alg_instance=regr)

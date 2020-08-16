@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description='cuML logistic '
 parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                     action='store_false', default=True,
                     help="Don't fit intercept")
-parser.add_argument('--solver', default='qn', choices=('lbfgs', 'qn', 'owl'),
+parser.add_argument('--solver', default='qn', choices=('qn', 'owl'),
                     help='Solver to use.')
 parser.add_argument('--linesearch-max-iter', type=int, default=50,
                     help='Maximum iterations per solver outer iteration')
@@ -33,15 +33,12 @@ params.n_classes = y_train[y_train.columns[0]].nunique()
 # Create our classifier object
 clf = LogisticRegression(penalty='l2', C=params.C,
                          linesearch_max_iter=params.linesearch_max_iter,
-                         fit_intercept=params.fit_intercept, verbose=True,
+                         fit_intercept=params.fit_intercept, verbose=params.verbose,
                          tol=params.tol,
                          max_iter=params.maxiter, solver=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
-
-
-# print(clf.n_iter_)
 
 # Time fit and predict
 fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
@@ -66,4 +63,3 @@ if params.verbose:
     print(f'@ {clf.coef_.tolist()}')
     print('@ fit intercept:')
     print(f'@ {clf.intercept_.tolist()}')
-

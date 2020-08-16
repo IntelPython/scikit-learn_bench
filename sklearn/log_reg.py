@@ -56,9 +56,6 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit and predict
 fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 
-print(clf.n_iter_)
-print(y_train.shape)
-
 y_pred = clf.predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 

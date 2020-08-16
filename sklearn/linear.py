@@ -29,9 +29,6 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit
 fit_time, _ = measure_function_time(regr.fit, X_train, y_train, params=params)
 
-print('y_train.shape: ', y_train.shape)
-print('X_train.shape: ', X_train.shape)
-
 # Time predict
 predict_time, yp = measure_function_time(regr.predict, X_test, params=params)
 

@@ -34,9 +34,6 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 time, _ = measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
 
-print(len(dbscan.core_sample_indices_))
-print(X.shape)
-
 params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 acc = davies_bouldin_score(X, labels)
 

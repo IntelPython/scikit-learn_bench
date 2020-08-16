@@ -65,8 +65,7 @@ cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = len(np.unique(y_train))
-# params.box_filter_measurements = 1
-params.time_method = 'box'
+
 # Create our C-SVM classifier
 clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
           cache_size=params.cache_size_mb, tol=params.tol,

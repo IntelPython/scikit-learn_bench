@@ -64,19 +64,14 @@ train_predict = kmeans.predict(X_train)
 # Time predict
 predict_time, test_predict = measure_function_time(kmeans.predict, X_test, params=params)
 
-print('n_iter_: ', kmeans.n_iter_)
-
 X_train_host = convert_to_numpy(X_train)
 train_predict_host = convert_to_numpy(train_predict)
-print('acc_train ', davies_bouldin_score(X_train_host, train_predict_host))
 acc_train = davies_bouldin_score(X_train_host, train_predict_host)
 
 X_test_host = convert_to_numpy(X_test)
 test_predict_host = convert_to_numpy(test_predict)
 
 acc_test = davies_bouldin_score(X_test_host, test_predict_host)
-
-print('acc_test ', acc_test)
 
 print_output(library='cuml', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,
