@@ -211,7 +211,7 @@ def test_fit(X, y, params):
     kf = daal_kernel(params.kernel, fptype, gamma=params.gamma)
 
     svm_train = svm_training(
-            method='thuner',
+            method='thunder',
             fptype=fptype,
             C=params.C,
             maxIterations=params.maxiter,
@@ -265,7 +265,6 @@ def test_predict(X, training_result, params):
     else:
         prdct = multi_class_classifier_prediction(
                 nClasses=params.n_classes,
-                method='thunder',
                 fptype=fptype,
                 maxIterations=params.maxiter,
                 accuracyThreshold=params.tol,

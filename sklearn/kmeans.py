@@ -58,10 +58,10 @@ train_predict = kmeans.predict(X_train)
 acc_train = davies_bouldin_score(X_train, train_predict)
 
 # Time predict
-predict_time, test_inertia = measure_function_time(
+predict_time, test_predict = measure_function_time(
     kmeans.predict, X_test, params=params)
 
-acc_test = davies_bouldin_score(X_test, test_inertia)
+acc_test = davies_bouldin_score(X_test, test_predict)
 
 print_output(library='sklearn', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,
