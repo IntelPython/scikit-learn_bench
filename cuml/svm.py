@@ -74,16 +74,17 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit and predict
 fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
 params.sv_len = clf.support_.shape[0]
-y_pred = clf.predict(X_train)
-train_acc = 100 * accuracy_score(y_pred, y_train)
 
 predict_time, y_pred = measure_function_time(
-    clf.predict, X_test, params=params)
+    clf.predict, X_train, params=params)
+train_acc = 100 * accuracy_score(y_pred, y_train)
+
+y_pred = clf.predict(X_test)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 print_output(library='cuml', algorithm='svc',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['SVM.fit', 'SVM.predict'],
              times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_test],
+             accuracies=[train_acc, test_acc], data=[X_train, X_train],
              alg_instance=clf)
