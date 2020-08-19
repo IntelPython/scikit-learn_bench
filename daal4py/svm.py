@@ -140,11 +140,8 @@ def construct_dual_coefs(model, num_classes, X, y):
         del tmp
 
         support_ = two_class_sv_ind_[perm]
-        # support_vectors_ = X[support_]
-
         dual_coef_ = model.ClassificationCoefficients.T
         dual_coef_ = dual_coef_[:, perm]
-        # intercept_ = np.array([model.Bias])
 
     else:
         # multi-class
@@ -170,10 +167,6 @@ def construct_dual_coefs(model, num_classes, X, y):
                                  two_class_sv_ind_.ravel())
                 sv_ind_by_clf.append(sv_ind)
 
-                # svs_ = getArrayFromNumericTable(
-                #     svm_model.getSupportVectors())
-                # assert np.array_equal(svs_, X[sv_ind])
-
                 intercepts.append(-svm_model.Bias)
                 coefs.append(-svm_model.ClassificationCoefficients)
                 model_id += 1
@@ -190,8 +183,6 @@ def construct_dual_coefs(model, num_classes, X, y):
             sv_coef_by_clf,  # classification coeffs by two-class classifiers
             y.squeeze().astype(np.intp, copy=False)   # integer labels
         )
-        # support_vectors_ = X[support_]
-        # intercept_ = np.array(intercepts)
 
     return support_
 
@@ -318,7 +309,6 @@ def main():
     params.cache_size_bytes = cache_size_bytes
     params.n_classes = np.unique(y_train).size
 
-    # This is necessary for daal
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes',
                'accuracy', 'time')
