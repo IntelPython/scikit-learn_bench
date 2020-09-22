@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-
 import argparse
 import sys
 
@@ -14,7 +13,7 @@ from sklearn.utils import check_random_state
 def gen_blobs(args):
     X, y = make_blobs(n_samples=args.samples + args.test_samples,
                       n_features=args.features,
-                      centers=None,
+                      centers=args.clusters,
                       center_box=(-32, 32),
                       shuffle=True,
                       random_state=args.seed)
@@ -55,10 +54,8 @@ def gen_classification(args):
         np.save(args.fileytest, y[args.samples:])
     return 0
 
-
 def _ch_size(n):
     return n * (n + 1) // 2
-
 
 def _get_cluster_centers(clusters, features):
     import numpy.random_intel as nri
@@ -66,7 +63,6 @@ def _get_cluster_centers(clusters, features):
     cluster_centers = rs.randn(clusters, features)
     cluster_centers *= np.double(clusters)
     return cluster_centers
-
 
 def gen_kmeans(args):
     try:

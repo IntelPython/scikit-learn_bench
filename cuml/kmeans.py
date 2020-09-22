@@ -4,12 +4,12 @@
 
 import argparse
 from bench import (
-    parse_args, measure_function_time, load_data, print_output
+    parse_args, measure_function_time, load_data, print_output, convert_to_numpy
 )
 import numpy as np
 from cuml import KMeans
 import warnings
-
+from sklearn.metrics.cluster import davies_bouldin_score
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 parser = argparse.ArgumentParser(description='cuML K-means benchmark')
@@ -27,8 +27,10 @@ params = parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
 # Load and convert generated data
 X_train, X_test, _, _ = load_data(params)
 
+if params.filei == 'k-means++':
+    X_init = 'k-means++'
 # Load initial centroids from specified path
-if params.filei is not None:
+elif params.filei is not None:
     X_init = np.load(params.filei).astype(params.dtype)
     params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data
@@ -57,15 +59,24 @@ def kmeans_fit(X):
 
 # Time fit
 fit_time, kmeans = measure_function_time(kmeans_fit, X_train, params=params)
-train_inertia = float(kmeans.inertia_)
+train_predict = kmeans.predict(X_train)
 
 # Time predict
-predict_time, _ = measure_function_time(kmeans.predict, X_test, params=params)
-test_inertia = float(kmeans.inertia_)
+predict_time, test_predict = measure_function_time(kmeans.predict, X_test, params=params)
+
+X_train_host = convert_to_numpy(X_train)
+train_predict_host = convert_to_numpy(train_predict)
+acc_train = davies_bouldin_score(X_train_host, train_predict_host)
+
+X_test_host = convert_to_numpy(X_test)
+test_predict_host = convert_to_numpy(test_predict)
+
+acc_test = davies_bouldin_score(X_test_host, test_predict_host)
 
 print_output(library='cuml', algorithm='kmeans',
              stages=['training', 'prediction'], columns=columns,
              params=params, functions=['KMeans.fit', 'KMeans.predict'],
-             times=[fit_time, predict_time], accuracy_type='inertia',
-             accuracies=[train_inertia, test_inertia], data=[X_train, X_test],
+             times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
+             accuracies=[acc_train, acc_test], data=[X_train, X_test],
              alg_instance=kmeans)
+

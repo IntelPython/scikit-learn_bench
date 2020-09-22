@@ -9,7 +9,6 @@ from bench import (
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-
 parser = argparse.ArgumentParser(description='scikit-learn logistic '
                                              'regression benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept',
@@ -56,6 +55,7 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 
 # Time fit and predict
 fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
+
 y_pred = clf.predict(X_train)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 

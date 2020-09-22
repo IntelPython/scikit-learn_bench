@@ -33,8 +33,8 @@ params.n_classes = y_train[y_train.columns[0]].nunique()
 # Create our classifier object
 clf = LogisticRegression(penalty='l2', C=params.C,
                          linesearch_max_iter=params.linesearch_max_iter,
-                         fit_intercept=params.fit_intercept,
-                         verbose=params.verbose, tol=params.tol,
+                         fit_intercept=params.fit_intercept, verbose=params.verbose,
+                         tol=params.tol,
                          max_iter=params.maxiter, solver=params.solver)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',

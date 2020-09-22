@@ -21,7 +21,7 @@ X_train, X_test, y_train, y_test = load_data(
 
 # Create our regression object
 regr = LinearRegression(fit_intercept=params.fit_intercept,
-                        n_jobs=params.n_jobs)
+                        n_jobs=params.n_jobs, copy_X=False)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'time')

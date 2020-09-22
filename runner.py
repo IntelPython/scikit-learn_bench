@@ -147,7 +147,7 @@ if 'Linux' in platform():
         if gpu_processes != '':
             print(f'There are running processes on GPU:\n{gpu_processes}',
                   file=sys.stderr)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         pass
 
 # get python packages info from conda
@@ -161,7 +161,7 @@ try:
             if col in pkg.keys():
                 pkg_info.update({col: pkg[col]})
         json_result['software'].update({pkg['name']: pkg_info})
-except FileNotFoundError:
+except (FileNotFoundError, json.JSONDecodeError):
     pass
 
 batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -188,6 +188,7 @@ for params_set in config['cases']:
     generate_cases(params)
     verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                   f' {len(params_set["dataset"])} dataset(s)\n')
+
     for dataset in params_set['dataset']:
         if dataset['source'] in ['csv', 'npy']:
             paths = f'--file-X-train {dataset["training"]["x"]}'
@@ -212,6 +213,8 @@ for params_set in config['cases']:
             else:
                 gen_args.seed = 777
 
+            # default values
+            gen_args.clusters = 10
             gen_args.type = dataset['type']
             gen_args.samples = dataset['training']['n_samples']
             gen_args.features = dataset['n_features']
