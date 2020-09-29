@@ -17,6 +17,7 @@ parser.add_argument('--n-neighbors', default=5, type=int,
 parser.add_argument('--weights', type=str, default='uniform',
                     help='Weight function used in prediction')
 parser.add_argument('--method', type=str, default='brute',
+                    choices=('brute', 'kd_tree', 'ball_tree', 'auto'),
                     help='Algorithm used to compute the nearest neighbors')
 parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
@@ -32,16 +33,22 @@ knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
                                 algorithm=params.method,
                                 metric=params.metric)
 
-knn_clsf.fit(X_train, y_train)
-# Time predict
-time, yp = measure_function_time(knn_clsf.predict, X_test, params=params)
+# Measure time and accuracy on fitting
+train_time, _ = measure_function_time(knn_clsf.fit, X_train, y_train,
+    params=params)
+y_pred = knn_clsf.predict(X_train)
+train_acc = 100 * accuracy_score(y_pred, y_train)
 
-acc = 100 * accuracy_score(yp, y_test)
+# Measure time and accuracy on prediction
+predict_time, yp = measure_function_time(knn_clsf.predict, X_test, params=params)
+test_acc = 100 * accuracy_score(yp, y_test)
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_neighbors', 'n_classes', 'time')
 
 print_output(library='sklearn', algorithm='knn_classification',
-             stages=['prediction'], columns=columns, params=params,
-             functions=['knn_clsf.predict'], times=[time], accuracies=[acc],
-             accuracy_type='accuracy[%]', data=[X_test], alg_instance=knn_clsf)
+             stages=['training', 'prediction'], columns=columns, params=params,
+             functions=['knn_clsf.fit', 'knn_clsf.predict'],
+             times=[train_time, predict_time],
+             accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
+             data=[X_train, X_test], alg_instance=knn_clsf)
