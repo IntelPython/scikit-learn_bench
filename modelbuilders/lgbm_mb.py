@@ -17,8 +17,6 @@ parser = argparse.ArgumentParser(description='lightgbm gbt + model transform + d
 parser.add_argument('--colsample-bytree', type=float, default=1,
                     help='Subsample ratio of columns '
                          'when constructing each tree')
-parser.add_argument('--grow-policy', type=str, default='depthwise',
-                    help='Controls a way new nodes are added to the tree')
 parser.add_argument('--learning-rate', '--eta', type=float, default=0.3,
                     help='Step size shrinkage used in update '
                          'to prevents overfitting')
