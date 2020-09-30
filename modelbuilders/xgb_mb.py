@@ -6,6 +6,7 @@ import argparse
 import daal4py
 import numpy as np
 from os import environ
+from sys import stderr
 from timeit import default_timer as timer
 from typing import Tuple
 import xgboost as xgb

@@ -29,18 +29,17 @@ parser.add_argument('--max-delta-step', type=float, default=0,
                     help='Maximum delta step we allow each leaf output to be')
 parser.add_argument('--max-depth', type=int, default=6,
                     help='Maximum depth of a tree')
-parser.add_argument('--max-leaves', type=int, default=0,
+parser.add_argument('--max-leaves', type=int, default=31,
                     help='Maximum number of nodes to be added')
 parser.add_argument('--min-child-weight', type=float, default=1,
                     help='Minimum sum of instance weight needed in a child')
-parser.add_argument('--min-split-loss', '--gamma', type=float, default=0,
+parser.add_argument('--min-split-gain', '--gamma', type=float, default=0,
                     help='Minimum loss reduction required to make'
                          ' partition on a leaf node')
 parser.add_argument('--n-estimators', type=int, default=100,
                     help='Number of gradient boosted trees')
 parser.add_argument('--objective', type=str, required=True,
-                    choices=('reg:squarederror', 'binary:logistic',
-                             'multi:softmax', 'multi:softprob'),
+                    choices=('regression', 'binary', 'multiclass'),
                     help='Control a balance of positive and negative weights')
 parser.add_argument('--reg-alpha', type=float, default=0,
                     help='L1 regularization term on weights')
@@ -50,31 +49,24 @@ parser.add_argument('--scale-pos-weight', type=float, default=1,
                     help='Controls a balance of positive and negative weights')
 parser.add_argument('--subsample', type=float, default=1,
                     help='Subsample ratio of the training instances')
-parser.add_argument('--tree-method', type=str, required=True,
-                    help='The tree construction algorithm used in XGBoost')
 
 params = parse_args(parser)
 
 X_train, X_test, y_train, y_test = load_data(params)
 
 lgbm_params = {
-    'booster': 'gbtree',
-    'verbosity': 0,
+    'verbosity': -1,
     'learning_rate': params.learning_rate,
-    'min_split_loss': params.min_split_loss,
+    'min_split_gain': params.min_split_gain,
     'max_depth': params.max_depth,
     'min_child_weight': params.min_child_weight,
     'max_delta_step': params.max_delta_step,
     'subsample': params.subsample,
-    'sampling_method': 'uniform',
     'colsample_bytree': params.colsample_bytree,
-    'colsample_bylevel': 1,
     'colsample_bynode': 1,
     'reg_lambda': params.reg_lambda,
     'reg_alpha': params.reg_alpha,
-    'tree_method': params.tree_method,
     'scale_pos_weight': params.scale_pos_weight,
-    'grow_policy': params.grow_policy,
     'max_leaves': params.max_leaves,
     'max_bin': params.max_bin,
     'objective': params.objective,
@@ -113,10 +105,10 @@ t_creat_test, lgbm_test = measure_function_time(lgbm.Dataset, X_test, y_test, pa
 t_train, model_lgbm = measure_function_time(lgbm.train, lgbm_params,  lgbm_train, params=params,
                         num_boost_round=params.n_estimators, valid_sets=lgbm_train,
                         verbose_eval=False)
-y_train_pred = model_lgbm.predict(lgbm_train)
+y_train_pred = model_lgbm.predict(X_train)
 train_metric = metric_func(y_train, y_train_pred)
 
-t_lgbm_pred, y_test_pred = measure_function_time(model_lgbm.predict, lgbm_test, params=params)
+t_lgbm_pred, y_test_pred = measure_function_time(model_lgbm.predict, X_test, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
 
 t_trans, model_daal = measure_function_time(daal4py.get_gbt_model_from_lightgbm, model_lgbm, params=params)

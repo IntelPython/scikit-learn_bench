@@ -136,31 +136,13 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             if param_vars[file_arg].name.endswith('.npy'):
                 data = np.load(param_vars[file_arg].name)
             else:
-                data = read_csv(param_vars[file_arg].name, params)
+                data = read_csv(param_vars[file_arg].name)
             full_data[element] = convert_data(
                 data,
                 int_dtype if 'y' in element and int_label else params.dtype,
                 params.data_order, params.data_format
             )
-        # generate and convert data if it's marked and path isn't specified
-        if full_data[element] is None and element in generated_data:
-            full_data[element] = convert_data(
-                np.random.rand(*params.shape),
-                int_dtype if 'y' in element and int_label else params.dtype,
-                params.data_order, params.data_format)
-        # convert existing labels from 1- to 2-dimensional
-        # if it's forced and possible
-        if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
-            full_data[element] = full_data[element].reshape(
-                (full_data[element].shape[0], 1))
-        # add dtype property to data if it's needed and doesn't exist
-        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
-            if hasattr(full_data[element], 'values'):
-                full_data[element].dtype = full_data[element].values.dtype
-            elif hasattr(full_data[element], 'dtypes'):
-                full_data[element].dtype = full_data[element].dtypes[0].type
 
-    params.dtype = get_dtype(full_data['X_train'])
     # add size to parameters which is need for some cases
     if not hasattr(params, 'size'):
         params.size = size_str(full_data['X_train'].shape)
@@ -363,7 +345,7 @@ def print_output(library, algorithm, stages, columns, params, functions,
         print(json.dumps(output, indent=4))
 
 
-def read_csv(filename, params):
+def read_csv(filename):
     from string import ascii_lowercase, ascii_uppercase
 
     # find out header existance
@@ -377,9 +359,9 @@ def read_csv(filename, params):
     # try to read csv with pandas and fall back to numpy reader if failed
     try:
         import pandas as pd
-        data = pd.read_csv(filename, header=header, dtype=params.dtype).values
+        data = pd.read_csv(filename, header=header, dtype=np.float32).values
     except ImportError:
-        data = np.genfromtxt(filename, delimiter=',', dtype=params.dtype,
+        data = np.genfromtxt(filename, delimiter=',', dtype=np.float32,
                              skip_header=0 if header is None else 1)
 
     if data.ndim == 2:
