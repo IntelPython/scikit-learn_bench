@@ -53,7 +53,7 @@
             "subsample": [0.5],
             "eta": [0.1],
             "colsample-bytree": [0.05],
-            "single_precision_histogram": [""]
+            "single-precision-histogram": [""]
         },
         {
             "algorithm": "gbt",
@@ -131,7 +131,7 @@
             "n-estimators": [1000],
             "objective": ["binary:logistic"],
             "tree-method": ["hist"],
-            "enable_experimental_json_serialization": ["False"]
+            "enabl-experimental-json-serialization": ["False"]
         },
         {
             "algorithm": "gbt",
@@ -156,7 +156,7 @@
             "n-estimators": [200],
             "objective": ["multi:softprob"],
             "tree-method": ["hist"],
-            "single_precision_histogram": [""]
+            "single-precision-histogram": [""]
         }
     ]
 }
