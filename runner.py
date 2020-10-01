@@ -33,6 +33,24 @@ def filter_stderr(text):
     return text
 
 
+def filter_stdout(text):
+    verbosity_letters = 'EWIDT'
+    filtered, extra = '', ''
+    for line in text.split('\n'):
+        if line == '':
+            continue
+        to_remove = False
+        for letter in verbosity_letters:
+            if line.startswith(f'[{letter}]'):
+                to_remove = True
+                break
+        if to_remove:
+            extra += line + '\n'
+        else:
+            filtered += line + '\n'
+    return filtered, extra
+
+
 def generate_cases(params):
     '''
     Generate cases for benchmarking by iterating of
@@ -284,12 +302,17 @@ for params_set in config['cases']:
                 verbose_print(command)
                 if not args.dummy_run:
                     stdout, stderr = read_output_from_command(command)
+                    stdout, extra_stdout = filter_stdout(stdout)
                     stderr = filter_stderr(stderr)
+                    if extra_stdout != '':
+                        stderr += f'CASE {case} EXTRA OUTPUT:\n' \
+                                  + f'{extra_stdout}\n'
                     if args.output_format == 'json':
                         try:
                             json_result['results'].extend(json.loads(stdout))
                         except json.JSONDecodeError as decoding_exception:
-                            stderr += str(decoding_exception) + '\n'
+                            stderr += f'CASE {case} JSON DECODING ERROR:\n' \
+                                      + f'{decoding_exception}\n{stdout}\n'
                     elif args.output_format == 'csv':
                         csv_result += stdout + '\n'
                     if stderr != '':
