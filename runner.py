@@ -301,6 +301,7 @@ for params_set in config['cases']:
                     command = command.replace('  ', ' ')
                 verbose_print(command)
                 if not args.dummy_run:
+                    case = f'{lib},{algorithm} ' + case
                     stdout, stderr = read_output_from_command(command)
                     stdout, extra_stdout = filter_stdout(stdout)
                     stderr = filter_stderr(stderr)
