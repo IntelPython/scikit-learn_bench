@@ -288,8 +288,8 @@ for params_set in config['cases']:
                     if args.output_format == 'json':
                         try:
                             json_result['results'].extend(json.loads(stdout))
-                        except json.JSONDecodeError:
-                            pass
+                        except json.JSONDecodeError as decoding_exception:
+                            stderr += str(decoding_exception) + '\n'
                     elif args.output_format == 'csv':
                         csv_result += stdout + '\n'
                     if stderr != '':
