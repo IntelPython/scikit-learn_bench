@@ -289,7 +289,6 @@ for params_set in config['cases']:
                         try:
                             json_result['results'].extend(json.loads(stdout))
                         except json.JSONDecodeError:
-                            print("UNABLE TO PARSE, ", stdout)
                             pass
                     elif args.output_format == 'csv':
                         csv_result += stdout + '\n'
