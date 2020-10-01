@@ -6,8 +6,6 @@ import argparse
 import daal4py
 import numpy as np
 from os import environ
-from sys import stderr
-from timeit import default_timer as timer
 from typing import Tuple
 import xgboost as xgb
 from bench import get_accuracy, load_data, measure_function_time, parse_args, print_output, read_csv, rmse_score
@@ -20,6 +18,8 @@ parser.add_argument('--colsample-bytree', type=float, default=1,
                          'when constructing each tree')
 parser.add_argument('--count-dmatrix', default=False, action='store_true',
                     help='Count DMatrix creation in time measurements')
+parser.add_argument('--enable-experimental-json-serialization', default=True,
+                    choices=('True', 'False'), help='Use JSON to store memory snapshots')
 parser.add_argument('--grow-policy', type=str, default='depthwise',
                     help='Controls a way new nodes are added to the tree')
 parser.add_argument('--learning-rate', '--eta', type=float, default=0.3,
@@ -51,6 +51,8 @@ parser.add_argument('--reg-lambda', type=float, default=1,
                     help='L2 regularization term on weights')
 parser.add_argument('--scale-pos-weight', type=float, default=1,
                     help='Controls a balance of positive and negative weights')
+parser.add_argument('--single-precision-histogram', default=False, action='store_true',
+                    help='Build histograms instead of double precision')
 parser.add_argument('--subsample', type=float, default=1,
                     help='Subsample ratio of the training instances')
 parser.add_argument('--tree-method', type=str, required=True,
@@ -81,7 +83,9 @@ xgb_params = {
     'max_leaves': params.max_leaves,
     'max_bin': params.max_bin,
     'objective': params.objective,
-    'seed': params.seed
+    'seed': params.seed,
+    'single_precision_histogram': params.single_precision_histogram,
+    'enable_experimental_json_serialization': params.enable_experimental_json_serialization
 }
 
 if params.threads != -1:
@@ -112,22 +116,19 @@ t_creat_train, dtrain = measure_function_time(xgb.DMatrix, X_train, params=param
 t_creat_test, dtest = measure_function_time(xgb.DMatrix, X_test, params=params)
 
 def fit(dmatrix=None):
-    print("DTRAIN IS", dmatrix, file=stderr)
     if dmatrix is None:
         dmatrix = xgb.DMatrix(X_train, y_train)
     return xgb.train(xgb_params, dmatrix, params.n_estimators)
 
-def predict(dmatrix=None):
-    print("DTEST IS", dmatrix, file=stderr)
-    if dmatrix is None:
-        dmatrix = xgb.DMatrix(X_test, y_test)
+def predict():
+    dmatrix = xgb.DMatrix(X_test, y_test)
     return model_xgb.predict(dmatrix)
 
-t_train, model_xgb = measure_function_time(fit, dtrain if params.count_dmatrix else None, params=params)
-y_train_pred = 0  # model_xgb.predict(dtrain)
-train_metric = 0  # metric_func(y_train, y_train_pred)
+t_train, model_xgb = measure_function_time(fit, None if params.count_dmatrix else dtrain, params=params)
+y_train_pred = model_xgb.predict(dtrain)
+train_metric = metric_func(y_train, y_train_pred)
 
-t_xgb_pred, y_test_pred = measure_function_time(predict, dtest if params.count_dmatrix else None, params=params)
+t_xgb_pred, y_test_pred = measure_function_time(predict, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
 
 t_trans, model_daal = measure_function_time(daal4py.get_gbt_model_from_xgboost, model_xgb, params=params)

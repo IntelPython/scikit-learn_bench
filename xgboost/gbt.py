@@ -67,6 +67,10 @@ parser.add_argument('--objective', type=str, required=True,
                     help='Control a balance of positive and negative weights')
 parser.add_argument('--count-dmatrix', default=False, action='store_true',
                     help='Count DMatrix creation in time measurements')
+parser.add_argument('--single-precision-histogram', default=False, action='store_true',
+                    help='Build histograms instead of double precision')
+parser.add_argument('--enable-experimental-json-serialization', default=True,
+                    choices=('True', 'False'), help='Use JSON to store memory snapshots')
 
 params = parse_args(parser)
 
@@ -94,7 +98,9 @@ xgb_params = {
     'max_leaves': params.max_leaves,
     'max_bin': params.max_bin,
     'objective': params.objective,
-    'seed': params.seed
+    'seed': params.seed,
+    'single_precision_histogram': params.single_precision_histogram,
+    'enable_experimental_json_serialization': params.enable_experimental_json_serialization
 }
 
 if params.threads != -1:

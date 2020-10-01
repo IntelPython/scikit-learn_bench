@@ -6,7 +6,6 @@ import argparse
 import daal4py
 import numpy as np
 from os import environ
-from timeit import default_timer as timer
 from typing import Tuple
 import lightgbm as lgbm
 from bench import get_accuracy, load_data, measure_function_time, parse_args, print_output, read_csv, rmse_score
