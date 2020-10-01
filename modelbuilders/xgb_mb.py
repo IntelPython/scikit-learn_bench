@@ -111,15 +111,17 @@ t_creat_train, dtrain = measure_function_time(xgb.DMatrix, X_train, params=param
 
 t_creat_test, dtest = measure_function_time(xgb.DMatrix, X_test, params=params)
 
-def fit(dtrain=None):
-    if dtrain is None:
-        dtrain = xgb.DMatrix(X_train, y_train)
-    return xgb.train(xgb_params, dtrain, params.n_estimators)
+def fit(dmatrix=None):
+    print("DTRAIN IS", dmatrix, file=stderr)
+    if dmatrix is None:
+        dmatrix = xgb.DMatrix(X_train, y_train)
+    return xgb.train(xgb_params, dmatrix, params.n_estimators)
 
-def predict(dtest=None):
-    if dtest is None:
-        dtest = xgb.DMatrix(X_test, y_test)
-    return model_xgb.predict(dtest)
+def predict(dmatrix=None):
+    print("DTEST IS", dmatrix, file=stderr)
+    if dmatrix is None:
+        dmatrix = xgb.DMatrix(X_test, y_test)
+    return model_xgb.predict(dmatrix)
 
 t_train, model_xgb = measure_function_time(fit, dtrain if params.count_dmatrix else None, params=params)
 y_train_pred = 0  # model_xgb.predict(dtrain)
