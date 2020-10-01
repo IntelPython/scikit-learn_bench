@@ -122,8 +122,8 @@ def predict(dtest=None):
     return model_xgb.predict(dtest)
 
 t_train, model_xgb = measure_function_time(fit, dtrain if params.count_dmatrix else None, params=params)
-y_train_pred = model_xgb.predict(dtrain)
-train_metric = metric_func(y_train, y_train_pred)
+y_train_pred = 0  # model_xgb.predict(dtrain)
+train_metric = 0  # metric_func(y_train, y_train_pred)
 
 t_xgb_pred, y_test_pred = measure_function_time(predict, dtest if params.count_dmatrix else None, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)

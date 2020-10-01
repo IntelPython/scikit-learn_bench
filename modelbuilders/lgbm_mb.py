@@ -27,7 +27,7 @@ parser.add_argument('--max-delta-step', type=float, default=0,
                     help='Maximum delta step we allow each leaf output to be')
 parser.add_argument('--max-depth', type=int, default=6,
                     help='Maximum depth of a tree')
-parser.add_argument('--max-leaves', type=int, default=31,
+parser.add_argument('--max-leaves', type=int, default=0,
                     help='Maximum number of nodes to be added')
 parser.add_argument('--min-child-weight', type=float, default=1,
                     help='Minimum sum of instance weight needed in a child')
