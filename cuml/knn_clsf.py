@@ -37,12 +37,12 @@ knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
 
 # Measure time and accuracy on fitting
 train_time, _ = measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
-if args.task == 'classification':
+if params.task == 'classification':
     y_pred = knn_clsf.predict(X_train)
     train_acc = 100 * accuracy_score(y_pred, y_train)
 
 # Measure time and accuracy on prediction
-if args.task == 'classification':
+if params.task == 'classification':
     predict_time, yp = measure_function_time(knn_clsf.predict, X_test, params=params)
     test_acc = 100 * accuracy_score(yp, y_test)
 else:
@@ -51,7 +51,7 @@ else:
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_neighbors', 'n_classes', 'time')
 
-if args.task == 'classification':
+if params.task == 'classification':
     print_output(library='cuml', algorithm='knn_classification',
                  stages=['training', 'prediction'], columns=columns, params=params,
                  functions=['knn_clsf.fit', 'knn_clsf.predict'],
