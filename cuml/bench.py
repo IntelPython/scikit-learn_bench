@@ -8,6 +8,18 @@ import numpy as np
 import sklearn
 import timeit
 import json
+import os
+import sys
+
+
+if 'FORCE_DAAL4PY_SKLEARN' in os.environ.keys():
+    try:
+        from daal4py.sklearn import patch_sklearn
+        if os.environ['FORCE_DAAL4PY_SKLEARN'] == 'YES':
+            patch_sklearn()
+    except ImportError:
+        print('Failed to import daal4py.sklearn.patch_sklearn '
+              'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
 
 
 def get_dtype(data):
