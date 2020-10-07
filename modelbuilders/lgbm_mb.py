@@ -4,14 +4,18 @@
 
 import argparse
 import daal4py
+import lightgbm as lgbm
 import numpy as np
 from os import environ
 from typing import Tuple
-import lightgbm as lgbm
-from bench import get_accuracy, load_data, measure_function_time, parse_args, print_output, read_csv, rmse_score
 
 
-parser = argparse.ArgumentParser(description='lightgbm gbt + model transform + daal predict benchmark')
+from bench import load_data, measure_function_time, parse_args, print_output, rmse_score
+from utils import get_accuracy
+
+
+parser = argparse.ArgumentParser(
+    description='lightgbm gbt + model transform + daal predict benchmark')
 
 parser.add_argument('--colsample-bytree', type=float, default=1,
                     help='Subsample ratio of columns '
@@ -76,7 +80,8 @@ if params.threads != -1:
 if 'OMP_NUM_THREADS' in environ.keys():
     lgbm_params['nthread'] = int(environ['OMP_NUM_THREADS'])
 
-columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size', 'num_trees')
+columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function',
+                            'threads', 'dtype', 'size', 'num_trees')
 
 if params.objective.startswith('reg'):
     task = 'regression'
@@ -93,38 +98,44 @@ else:
     if params.n_classes > 2:
         lgbm_params['num_class'] = params.n_classes
 
-t_creat_train, lgbm_train = measure_function_time(lgbm.Dataset, X_train, y_train, params=params, 
-                                                    free_raw_data=False)
+t_creat_train, lgbm_train = measure_function_time(lgbm.Dataset, X_train, y_train, params=params,
+                                                  free_raw_data=False)
 
-t_creat_test, lgbm_test = measure_function_time(lgbm.Dataset, X_test, y_test, params=params, 
+t_creat_test, lgbm_test = measure_function_time(lgbm.Dataset, X_test, y_test, params=params,
                                                 reference=lgbm_train, free_raw_data=False)
 
-t_train, model_lgbm = measure_function_time(lgbm.train, lgbm_params,  lgbm_train, params=params,
-                        num_boost_round=params.n_estimators, valid_sets=lgbm_train,
-                        verbose_eval=False)
+t_train, model_lgbm = measure_function_time(
+    lgbm.train, lgbm_params, lgbm_train, params=params, num_boost_round=params.n_estimators,
+    valid_sets=lgbm_train, verbose_eval=False)
 y_train_pred = model_lgbm.predict(X_train)
 train_metric = metric_func(y_train, y_train_pred)
 
 t_lgbm_pred, y_test_pred = measure_function_time(model_lgbm.predict, X_test, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
 
-t_trans, model_daal = measure_function_time(daal4py.get_gbt_model_from_lightgbm, model_lgbm, params=params)
+t_trans, model_daal = measure_function_time(
+    daal4py.get_gbt_model_from_lightgbm, model_lgbm, params=params)
 
 if hasattr(params, 'n_classes'):
-    predict_algo = daal4py.gbt_classification_prediction(nClasses=params.n_classes, 
-        resultsToEvaluate='computeClassLabels', fptype='float')
-    t_daal_pred, daal_pred = measure_function_time(predict_algo.compute, X_test, model_daal, params=params)
+    predict_algo = daal4py.gbt_classification_prediction(
+        nClasses=params.n_classes, resultsToEvaluate='computeClassLabels', fptype='float')
+    t_daal_pred, daal_pred = measure_function_time(
+        predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 else:
     predict_algo = daal4py.gbt_regression_prediction()
-    t_daal_pred, daal_pred = measure_function_time(predict_algo.compute, X_test, model_daal, params=params)
+    t_daal_pred, daal_pred = measure_function_time(
+        predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 
-print_output(library='modelbuilders', algorithm=f'lightgbm_{task}_and_modelbuilder',
-             stages=['lgbm_train_matrix_create', 'lgbm_test_matrix_create', 'lgbm_training',
-                'lgbm_prediction', 'lgbm_to_daal_conv', 'daal_prediction'],
-             columns=columns, params=params, functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train',
-                'lgbm_predict', 'lgbm_to_daal', 'daal_compute'],
-             times=[t_creat_train, t_creat_test, t_train, t_lgbm_pred, t_trans, t_daal_pred],
-             accuracy_type=metric_name, accuracies=[0, 0, train_metric, test_metric_xgb, 0, test_metric_daal],
-             data=[X_train, X_test, X_train, X_test, X_train, X_test])
+print_output(
+    library='modelbuilders', algorithm=f'lightgbm_{task}_and_modelbuilder',
+    stages=['lgbm_train_matrix_create', 'lgbm_test_matrix_create', 'lgbm_training',
+            'lgbm_prediction', 'lgbm_to_daal_conv', 'daal_prediction'],
+    columns=columns, params=params,
+    functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train', 'lgbm_predict', 'lgbm_to_daal',
+               'daal_compute'],
+    times=[t_creat_train, t_creat_test, t_train, t_lgbm_pred, t_trans, t_daal_pred],
+    accuracy_type=metric_name, accuracies=[0, 0, train_metric, test_metric_xgb, 0,
+                                           test_metric_daal],
+    data=[X_train, X_test, X_train, X_test, X_train, X_test])

@@ -8,10 +8,14 @@ import numpy as np
 from os import environ
 from typing import Tuple
 import xgboost as xgb
-from bench import get_accuracy, load_data, measure_function_time, parse_args, print_output, read_csv, rmse_score
 
 
-parser = argparse.ArgumentParser(description='xgboost gbt + model transform + daal predict benchmark')
+from bench import load_data, measure_function_time, parse_args, print_output, rmse_score
+from utils import get_accuracy
+
+
+parser = argparse.ArgumentParser(
+    description='xgboost gbt + model transform + daal predict benchmark')
 
 parser.add_argument('--colsample-bytree', type=float, default=1,
                     help='Subsample ratio of columns '
@@ -94,7 +98,8 @@ if params.threads != -1:
 if 'OMP_NUM_THREADS' in environ.keys():
     xgb_params['nthread'] = int(environ['OMP_NUM_THREADS'])
 
-columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size', 'num_trees')
+columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function',
+                            'threads', 'dtype', 'size', 'num_trees')
 
 if params.objective.startswith('reg'):
     task = 'regression'
@@ -115,39 +120,49 @@ t_creat_train, dtrain = measure_function_time(xgb.DMatrix, X_train, params=param
 
 t_creat_test, dtest = measure_function_time(xgb.DMatrix, X_test, params=params)
 
+
 def fit(dmatrix=None):
     if dmatrix is None:
         dmatrix = xgb.DMatrix(X_train, y_train)
     return xgb.train(xgb_params, dmatrix, params.n_estimators)
 
+
 def predict():
     dmatrix = xgb.DMatrix(X_test, y_test)
     return model_xgb.predict(dmatrix)
 
-t_train, model_xgb = measure_function_time(fit, None if params.count_dmatrix else dtrain, params=params)
+
+t_train, model_xgb = measure_function_time(
+    fit, None if params.count_dmatrix else dtrain, params=params)
 y_train_pred = model_xgb.predict(dtrain)
 train_metric = metric_func(y_train, y_train_pred)
 
 t_xgb_pred, y_test_pred = measure_function_time(predict, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
 
-t_trans, model_daal = measure_function_time(daal4py.get_gbt_model_from_xgboost, model_xgb, params=params)
+t_trans, model_daal = measure_function_time(
+    daal4py.get_gbt_model_from_xgboost, model_xgb, params=params)
 
 if hasattr(params, 'n_classes'):
-    predict_algo = daal4py.gbt_classification_prediction(nClasses=params.n_classes, 
-        resultsToEvaluate='computeClassLabels', fptype='float')
-    t_daal_pred, daal_pred = measure_function_time(predict_algo.compute, X_test, model_daal, params=params)
+    predict_algo = daal4py.gbt_classification_prediction(
+        nClasses=params.n_classes, resultsToEvaluate='computeClassLabels', fptype='float')
+    t_daal_pred, daal_pred = measure_function_time(
+        predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 else:
     predict_algo = daal4py.gbt_regression_prediction()
-    t_daal_pred, daal_pred = measure_function_time(predict_algo.compute, X_test, model_daal, params=params)
+    t_daal_pred, daal_pred = measure_function_time(
+        predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 
-print_output(library='modelbuilders', algorithm=f'xgboost_{task}_and_modelbuilder',
-             stages=['xgb_train_dmatrix_create', 'xgb_test_dmatrix_create', 'xgb_training', 'xgb_prediction', 
-                'xgb_to_daal_conv', 'daal_prediction'],
-             columns=columns, params=params, functions=['xgb_dmatrix', 'xgb_dmatrix', 'xgb_train',
-                'xgb_predict', 'xgb_to_daal', 'daal_compute'],
-             times=[t_creat_train, t_creat_test, t_train, t_xgb_pred, t_trans, t_daal_pred],
-             accuracy_type=metric_name, accuracies=[0, 0, train_metric, test_metric_xgb, 0, test_metric_daal],
-             data=[X_train, X_test, X_train, X_test, X_train, X_test])
+print_output(
+    library='modelbuilders', algorithm=f'xgboost_{task}_and_modelbuilder',
+    stages=['xgb_train_dmatrix_create', 'xgb_test_dmatrix_create', 'xgb_training', 'xgb_prediction',
+            'xgb_to_daal_conv', 'daal_prediction'],
+    columns=columns, params=params,
+    functions=['xgb_dmatrix', 'xgb_dmatrix', 'xgb_train', 'xgb_predict', 'xgb_to_daal',
+               'daal_compute'],
+    times=[t_creat_train, t_creat_test, t_train, t_xgb_pred, t_trans, t_daal_pred],
+    accuracy_type=metric_name, accuracies=[0, 0, train_metric, test_metric_xgb, 0,
+                                           test_metric_daal],
+    data=[X_train, X_test, X_train, X_test, X_train, X_test])
