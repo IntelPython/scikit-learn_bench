@@ -33,10 +33,10 @@ Create a suitable conda environment for each framework to test. Each item in the
 
 ## Running Python benchmarks with runner script
 
-Run `python runner.py --config configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --configs configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
 
 runner options:
-* ``config`` : the path to configuration file
+* ``configs`` : configuration files paths
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running
 * ``verbose`` : print additional information during benchmarks running
 * ``output-format``: *json* or *csv*. Output type of benchmarks to use with their runner
