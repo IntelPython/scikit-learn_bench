@@ -340,6 +340,40 @@
             ]
         },
         {
+            "algorithm": "knn_clsf",
+            "dtype": ["float32"],
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 20000
+                    }
+                }
+            ],
+            "method": ["brute", "kd_tree"]
+        },
+        {
             "algorithm": "train_test_split",
             "dataset": [
                 {
