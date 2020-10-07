@@ -17,10 +17,10 @@ from make_datasets import (
 )
 
 
-def verbose_print(text):
+def verbose_print(text, **kwargs):
     global verbose_mode
     if verbose_mode:
-        print(text)
+        print(text, **kwargs)
 
 
 def filter_stderr(text):
@@ -97,9 +97,9 @@ def is_ht_enabled():
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', metavar='ConfigPath',
-                    type=argparse.FileType('r'), default='config_example.json',
-                    help='Path to configuration file')
+parser.add_argument('--configs', metavar='ConfigPath', type=str,
+                    default='configs/config_example.json',
+                    help='Path to configuration files')
 parser.add_argument('--dummy-run', default=False, action='store_true',
                     help='Run configuration parser and datasets generation'
                          'without benchmarks running')
@@ -111,12 +111,6 @@ parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
 args = parser.parse_args()
 env = os.environ.copy()
 verbose_mode = args.verbose
-
-with open(args.config.name, 'r') as config_file:
-    config = json.load(config_file)
-
-if 'omp_env' not in config.keys():
-    config['omp_env'] = []
 
 # make directory for data if it doesn't exist
 os.makedirs('data', exist_ok=True)
@@ -194,130 +188,137 @@ omp_env = {
     'OMP_NUM_THREADS': omp_num_threads
 }
 
-# get parameters that are common for all cases
-common_params = config['common']
-for params_set in config['cases']:
-    cases = ['']
-    params = common_params.copy()
-    params.update(params_set.copy())
-    algorithm = params['algorithm']
-    libs = params['lib']
-    del params['dataset'], params['algorithm'], params['lib']
-    generate_cases(params)
-    verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
-                  f' {len(params_set["dataset"])} dataset(s)\n')
+for config_name in args.configs.split(','):
+    verbose_print(f'Config: {config_name}')
+    with open(config_name, 'r') as config_file:
+        config = json.load(config_file)
 
-    for dataset in params_set['dataset']:
-        if dataset['source'] in ['csv', 'npy']:
-            paths = f'--file-X-train {dataset["training"]["x"]}'
-            if 'y' in dataset['training'].keys():
-                paths += f' --file-y-train {dataset["training"]["y"]}'
-            if 'testing' in dataset.keys():
-                paths += f' --file-X-test {dataset["testing"]["x"]}'
-                if 'y' in dataset['testing'].keys():
-                    paths += f' --file-y-test {dataset["testing"]["y"]}'
-            if 'name' in dataset.keys():
-                dataset_name = dataset['name']
-            else:
-                dataset_name = 'unknown'
-        elif dataset['source'] == 'synthetic':
-            class GenerationArgs:
-                pass
-            gen_args = GenerationArgs()
-            paths = ''
+    if 'omp_env' not in config.keys():
+        config['omp_env'] = []
+    # get parameters that are common for all cases
+    common_params = config['common']
+    for params_set in config['cases']:
+        cases = ['']
+        params = common_params.copy()
+        params.update(params_set.copy())
+        algorithm = params['algorithm']
+        libs = params['lib']
+        del params['dataset'], params['algorithm'], params['lib']
+        generate_cases(params)
+        verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
+                      f' {len(params_set["dataset"])} dataset(s)\n')
 
-            if 'seed' in params_set.keys():
-                gen_args.seed = params_set['seed']
-            else:
-                gen_args.seed = 777
+        for dataset in params_set['dataset']:
+            if dataset['source'] in ['csv', 'npy']:
+                paths = f'--file-X-train {dataset["training"]["x"]}'
+                if 'y' in dataset['training'].keys():
+                    paths += f' --file-y-train {dataset["training"]["y"]}'
+                if 'testing' in dataset.keys():
+                    paths += f' --file-X-test {dataset["testing"]["x"]}'
+                    if 'y' in dataset['testing'].keys():
+                        paths += f' --file-y-test {dataset["testing"]["y"]}'
+                if 'name' in dataset.keys():
+                    dataset_name = dataset['name']
+                else:
+                    dataset_name = 'unknown'
+            elif dataset['source'] == 'synthetic':
+                class GenerationArgs:
+                    pass
+                gen_args = GenerationArgs()
+                paths = ''
 
-            # default values
-            gen_args.clusters = 10
-            gen_args.type = dataset['type']
-            gen_args.samples = dataset['training']['n_samples']
-            gen_args.features = dataset['n_features']
-            if 'n_classes' in dataset.keys():
-                gen_args.classes = dataset['n_classes']
-                cls_num_for_file = f'-{dataset["n_classes"]}'
-            elif 'n_clusters' in dataset.keys():
-                gen_args.clusters = dataset['n_clusters']
-                cls_num_for_file = f'-{dataset["n_clusters"]}'
-            else:
-                cls_num_for_file = ''
+                if 'seed' in params_set.keys():
+                    gen_args.seed = params_set['seed']
+                else:
+                    gen_args.seed = 777
 
-            file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
-            file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
+                # default values
+                gen_args.clusters = 10
+                gen_args.type = dataset['type']
+                gen_args.samples = dataset['training']['n_samples']
+                gen_args.features = dataset['n_features']
+                if 'n_classes' in dataset.keys():
+                    gen_args.classes = dataset['n_classes']
+                    cls_num_for_file = f'-{dataset["n_classes"]}'
+                elif 'n_clusters' in dataset.keys():
+                    gen_args.clusters = dataset['n_clusters']
+                    cls_num_for_file = f'-{dataset["n_clusters"]}'
+                else:
+                    cls_num_for_file = ''
 
-            if gen_args.type == 'kmeans':
-                gen_args.node_id = 0
-                gen_args.filei = f'{file_prefix}init{file_postfix}'
-                paths += f'--filei {gen_args.filei}'
-                gen_args.filet = f'{file_prefix}threshold{file_postfix}'
+                file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
+                file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
-            gen_args.filex = f'{file_prefix}X-train{file_postfix}'
-            paths += f' --file-X-train {gen_args.filex}'
-            if gen_args.type not in ['kmeans', 'blobs']:
-                gen_args.filey = f'{file_prefix}y-train{file_postfix}'
-                paths += f' --file-y-train {gen_args.filey}'
+                if gen_args.type == 'kmeans':
+                    gen_args.node_id = 0
+                    gen_args.filei = f'{file_prefix}init{file_postfix}'
+                    paths += f'--filei {gen_args.filei}'
+                    gen_args.filet = f'{file_prefix}threshold{file_postfix}'
 
-            if 'testing' in dataset.keys():
-                gen_args.test_samples = dataset['testing']['n_samples']
-                gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
-                paths += f' --file-X-test {gen_args.filextest}'
+                gen_args.filex = f'{file_prefix}X-train{file_postfix}'
+                paths += f' --file-X-train {gen_args.filex}'
                 if gen_args.type not in ['kmeans', 'blobs']:
-                    gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
-                    paths += f' --file-y-test {gen_args.fileytest}'
-            else:
-                gen_args.test_samples = 0
-                gen_args.filextest = gen_args.filex
-                if gen_args.type not in ['kmeans', 'blobs']:
-                    gen_args.fileytest = gen_args.filey
+                    gen_args.filey = f'{file_prefix}y-train{file_postfix}'
+                    paths += f' --file-y-train {gen_args.filey}'
 
-            if not args.dummy_run and not os.path.isfile(gen_args.filex):
-                if gen_args.type == 'regression':
-                    gen_regression(gen_args)
-                elif gen_args.type == 'classification':
-                    gen_classification(gen_args)
-                elif gen_args.type == 'kmeans':
-                    gen_kmeans(gen_args)
-                elif gen_args.type == 'blobs':
-                    gen_blobs(gen_args)
-            dataset_name = f'synthetic_{gen_args.type}'
-        else:
-            raise ValueError(
-                'Unknown dataset source. Only synthetics datasets '
-                'and csv/npy files are supported now')
-        for lib in libs:
-            env = os.environ.copy()
-            if lib == 'xgboost':
-                for var in config['omp_env']:
-                    env[var] = omp_env[var]
-            for i, case in enumerate(cases):
-                command = f'python {lib}/{algorithm}.py --batch {batch} ' \
-                          + f'--arch {hostname} --header --output-format ' \
-                          + f'{args.output_format}{case} {paths} ' \
-                          + f'--dataset-name {dataset_name}'
-                while '  ' in command:
-                    command = command.replace('  ', ' ')
-                verbose_print(command)
-                if not args.dummy_run:
-                    case = f'{lib},{algorithm} ' + case
-                    stdout, stderr = read_output_from_command(command)
-                    stdout, extra_stdout = filter_stdout(stdout)
-                    stderr = filter_stderr(stderr)
-                    if extra_stdout != '':
-                        stderr += f'CASE {case} EXTRA OUTPUT:\n' \
-                                  + f'{extra_stdout}\n'
-                    if args.output_format == 'json':
-                        try:
-                            json_result['results'].extend(json.loads(stdout))
-                        except json.JSONDecodeError as decoding_exception:
-                            stderr += f'CASE {case} JSON DECODING ERROR:\n' \
-                                      + f'{decoding_exception}\n{stdout}\n'
-                    elif args.output_format == 'csv':
-                        csv_result += stdout + '\n'
-                    if stderr != '':
-                        print(stderr, file=sys.stderr)
+                if 'testing' in dataset.keys():
+                    gen_args.test_samples = dataset['testing']['n_samples']
+                    gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
+                    paths += f' --file-X-test {gen_args.filextest}'
+                    if gen_args.type not in ['kmeans', 'blobs']:
+                        gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
+                        paths += f' --file-y-test {gen_args.fileytest}'
+                else:
+                    gen_args.test_samples = 0
+                    gen_args.filextest = gen_args.filex
+                    if gen_args.type not in ['kmeans', 'blobs']:
+                        gen_args.fileytest = gen_args.filey
+
+                if not args.dummy_run and not os.path.isfile(gen_args.filex):
+                    if gen_args.type == 'regression':
+                        gen_regression(gen_args)
+                    elif gen_args.type == 'classification':
+                        gen_classification(gen_args)
+                    elif gen_args.type == 'kmeans':
+                        gen_kmeans(gen_args)
+                    elif gen_args.type == 'blobs':
+                        gen_blobs(gen_args)
+                dataset_name = f'synthetic_{gen_args.type}'
+            else:
+                raise ValueError(
+                    'Unknown dataset source. Only synthetics datasets '
+                    'and csv/npy files are supported now')
+            for lib in libs:
+                env = os.environ.copy()
+                if lib == 'xgboost':
+                    for var in config['omp_env']:
+                        env[var] = omp_env[var]
+                for i, case in enumerate(cases):
+                    command = f'python {lib}/{algorithm}.py --batch {batch} ' \
+                              + f'--arch {hostname} --header --output-format ' \
+                              + f'{args.output_format}{case} {paths} ' \
+                              + f'--dataset-name {dataset_name}'
+                    while '  ' in command:
+                        command = command.replace('  ', ' ')
+                    verbose_print(command)
+                    if not args.dummy_run:
+                        case = f'{lib},{algorithm} ' + case
+                        stdout, stderr = read_output_from_command(command)
+                        stdout, extra_stdout = filter_stdout(stdout)
+                        stderr = filter_stderr(stderr)
+                        if extra_stdout != '':
+                            stderr += f'CASE {case} EXTRA OUTPUT:\n' \
+                                      + f'{extra_stdout}\n'
+                        if args.output_format == 'json':
+                            try:
+                                json_result['results'].extend(json.loads(stdout))
+                            except json.JSONDecodeError as decoding_exception:
+                                stderr += f'CASE {case} JSON DECODING ERROR:\n' \
+                                          + f'{decoding_exception}\n{stdout}\n'
+                        elif args.output_format == 'csv':
+                            csv_result += stdout + '\n'
+                        if stderr != '':
+                            print(stderr, file=sys.stderr)
 
 if args.output_format == 'json':
     json_result = json.dumps(json_result, indent=4)
