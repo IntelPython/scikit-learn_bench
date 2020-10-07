@@ -52,14 +52,14 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'n_neighbors', 'n_classes', 'time')
 
 if params.task == 'classification':
-    print_output(library='cuml', algorithm='knn_classification',
+    print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_classification',
                  stages=['training', 'prediction'], columns=columns, params=params,
                  functions=['knn_clsf.fit', 'knn_clsf.predict'],
                  times=[train_time, predict_time],
                  accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
                  data=[X_train, X_test], alg_instance=knn_clsf)
 else:
-    print_output(library='cuml', algorithm='knn_search',
+    print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_search',
                  stages=['training', 'search'], columns=columns, params=params,
                  functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
                  times=[train_time, predict_time],

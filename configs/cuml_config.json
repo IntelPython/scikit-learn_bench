@@ -1,0 +1,290 @@
+{
+    "omp_env": ["OMP_NUM_THREADS"],
+    "common": {
+        "lib": ["cuml"],
+        "data-format": ["cudf"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 1000,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [1000],
+            "maxiter": [50],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 5,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [5],
+            "maxiter": [50],
+            "init": ["k-means++"],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 20,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 3000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [20],
+            "maxiter": [50],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "pca",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 1000000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 2000,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 1000,
+                    "training": {
+                        "n_samples": 30000
+                    }
+                }
+            ],
+            "svd-solver": ["full"],
+            "n-components": [10]
+        },
+        {
+            "algorithm": "ridge",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "alpha": [5]
+        },
+        {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "log_reg",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "maxiter": [100],
+            "tol": [0]
+        },
+        {
+            "algorithm": "dbscan",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 100,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "knn_clsf",
+            "dtype": ["float32"],
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 20000
+                    }
+                }
+            ],
+            "weights": ["uniform"],
+            "method": ["kd_tree", "brute"]
+        },
+        {
+            "algorithm": "train_test_split",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 5000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10000,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ],
+            "train-size": [0.75],
+            "test-size": [0.25]
+        }
+    ]
+}
