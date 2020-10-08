@@ -37,21 +37,25 @@ def print_output(library, algorithm, stages, columns, params, functions,
                 accuracy=accuracies[i])
     elif params.output_format == 'json':
         output = []
+        output.append({
+            'library': library,
+            'algorithm': algorithm,
+            'input_data': {
+                'data_format': params.data_format,
+                'data_order': params.data_order,
+                'data_type': str(params.dtype),
+                'dataset_name': params.dataset_name,
+                'rows': data[0].shape[0],
+                'columns': data[0].shape[1]
+            }
+        })
+        if hasattr(params, 'n_classes'):
+            output[-1]['input_data'].update({'classes': params.n_classes})
         for i in range(len(stages)):
             result = {
-                'library': library,
-                'algorithm': algorithm,
                 'stage': stages[i],
-                'input_data': {
-                    'data_format': params.data_format,
-                    'data_order': params.data_order,
-                    'data_type': str(params.dtype),
-                    'dataset_name': params.dataset_name,
-                    'rows': data[i].shape[0],
-                    'columns': data[i].shape[1]
-                }
             }
-            if stages[i] == 'daal4py_predict':
+            if 'daal' in stages[i]:
                 result.update({'conversion_to_daal4py': times[2 * i],
                                'prediction_time': times[2 * i + 1]})
             elif 'train' in stages[i]:
@@ -62,7 +66,5 @@ def print_output(library, algorithm, stages, columns, params, functions,
                                'prediction_time': times[2 * i + 1]})
             if accuracies[i] is not None:
                 result.update({f'{accuracy_type}': accuracies[i]})
-            if hasattr(params, 'n_classes'):
-                result['input_data'].update({'classes': params.n_classes})
             output.append(result)
         print(json.dumps(output, indent=4))

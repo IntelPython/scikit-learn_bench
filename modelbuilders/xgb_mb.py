@@ -135,7 +135,7 @@ def predict():
 t_train, model_xgb = measure_function_time(
     fit, None if params.count_dmatrix else dtrain, params=params)
 train_metric = None
-if X_train != X_test:
+if not X_train.equals(X_test):
     y_train_pred = model_xgb.predict(dtrain)
     train_metric = metric_func(y_train, y_train_pred)
 

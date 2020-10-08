@@ -108,7 +108,7 @@ t_train, model_lgbm = measure_function_time(
     lgbm.train, lgbm_params, lgbm_train, params=params, num_boost_round=params.n_estimators,
     valid_sets=lgbm_train, verbose_eval=False)
 train_metric = None
-if X_train != X_test:
+if not X_train.equals(X_test):
     y_train_pred = model_lgbm.predict(X_train)
     train_metric = metric_func(y_train, y_train_pred)
 
@@ -132,7 +132,7 @@ else:
 
 print_output(
     library='modelbuilders', algorithm=f'lightgbm_{task}_and_modelbuilder',
-    stages=['lgbm_train', 'lgbm_predict', 'daal_predict'],
+    stages=['lgbm_train', 'lgbm_predict', 'daal4py_predict'],
     columns=columns, params=params,
     functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train', 'lgbm_predict', 'lgbm_to_daal',
                'daal_compute'],
