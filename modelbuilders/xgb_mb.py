@@ -10,8 +10,8 @@ from typing import Tuple
 import xgboost as xgb
 
 
-from bench import load_data, measure_function_time, parse_args, print_output, rmse_score
-from utils import get_accuracy
+from bench import load_data, measure_function_time, parse_args, rmse_score
+from utils import get_accuracy, print_output
 
 
 parser = argparse.ArgumentParser(
@@ -98,17 +98,17 @@ if params.threads != -1:
 if 'OMP_NUM_THREADS' in environ.keys():
     xgb_params['nthread'] = int(environ['OMP_NUM_THREADS'])
 
-columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function',
-                            'threads', 'dtype', 'size', 'num_trees')
+columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function', 'prep_function',
+                            'threads', 'dtype', 'size', 'num_trees', 'time', 'prep_time')
 
 if params.objective.startswith('reg'):
     task = 'regression'
     metric_name, metric_func = 'rmse', rmse_score
-    columns += ('rmse', 'time')
+    columns += ('rmse',)
 else:
     task = 'classification'
     metric_name, metric_func = 'accuracy[%]', get_accuracy
-    columns += ('n_classes', 'accuracy', 'time')
+    columns += ('n_classes', 'accuracy')
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
@@ -134,8 +134,10 @@ def predict():
 
 t_train, model_xgb = measure_function_time(
     fit, None if params.count_dmatrix else dtrain, params=params)
-y_train_pred = model_xgb.predict(dtrain)
-train_metric = metric_func(y_train, y_train_pred)
+train_metric = None
+if X_train != X_test:
+    y_train_pred = model_xgb.predict(dtrain)
+    train_metric = metric_func(y_train, y_train_pred)
 
 t_xgb_pred, y_test_pred = measure_function_time(predict, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
@@ -157,12 +159,10 @@ else:
 
 print_output(
     library='modelbuilders', algorithm=f'xgboost_{task}_and_modelbuilder',
-    stages=['xgb_train_dmatrix_create', 'xgb_test_dmatrix_create', 'xgb_training', 'xgb_prediction',
-            'xgb_to_daal_conv', 'daal_prediction'],
+    stages=['xgboost_train', 'xgboost_predict', 'daal4py_predict'],
     columns=columns, params=params,
     functions=['xgb_dmatrix', 'xgb_dmatrix', 'xgb_train', 'xgb_predict', 'xgb_to_daal',
                'daal_compute'],
-    times=[t_creat_train, t_creat_test, t_train, t_xgb_pred, t_trans, t_daal_pred],
-    accuracy_type=metric_name, accuracies=[0, 0, train_metric, test_metric_xgb, 0,
-                                           test_metric_daal],
-    data=[X_train, X_test, X_train, X_test, X_train, X_test])
+    times=[t_creat_train, t_train, t_creat_test, t_xgb_pred, t_trans, t_daal_pred],
+    accuracy_type=metric_name, accuracies=[train_metric, test_metric_xgb, test_metric_daal],
+    data=[X_train, X_test, X_test])
