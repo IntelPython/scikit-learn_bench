@@ -350,6 +350,9 @@
                     "n_features": 3,
                     "training": {
                         "n_samples": 100000
+                    },
+                    "testing": {
+                        "n_samples": 100000
                     }
                 },
                 {
@@ -358,6 +361,9 @@
                     "n_classes": 2,
                     "n_features": 10,
                     "training": {
+                        "n_samples": 100000
+                    },
+                    "testing": {
                         "n_samples": 100000
                     }
                 },
@@ -368,10 +374,25 @@
                     "n_features": 50,
                     "training": {
                         "n_samples": 20000
+                    },
+                    "testing": {
+                        "n_samples": 20000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 10,
+                    "n_features": 16,
+                    "training": {
+                        "n_samples": 250000
+                    },
+                    "testing": {
+                        "n_samples": 250000
                     }
                 }
             ],
-            "method": ["brute", "kd_tree"]
+            "method": ["brute"]
         },
         {
             "algorithm": "train_test_split",
