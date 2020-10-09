@@ -12,11 +12,10 @@ import os
 import sys
 
 
-if 'FORCE_DAAL4PY_SKLEARN' in os.environ.keys():
+if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
     try:
         from daal4py.sklearn import patch_sklearn
-        if os.environ['FORCE_DAAL4PY_SKLEARN'] == 'YES':
-            patch_sklearn()
+        patch_sklearn()
     except ImportError:
         print('Failed to import daal4py.sklearn.patch_sklearn '
               'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
