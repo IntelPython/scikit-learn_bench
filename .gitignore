@@ -11,3 +11,4 @@ __work*
 # Datasets
 dataset
 *.csv
+*.npy
