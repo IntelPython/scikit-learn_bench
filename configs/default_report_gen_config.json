@@ -1,0 +1,18 @@
+{
+    "align": [
+        "algorithm",
+        "stage",
+        "input_data:data_order",
+        "input_data:data_type",
+        "input_data:dataset_name",
+        "input_data:rows",
+        "input_data:columns",
+        "input_data:classes",
+        "input_data:n_clusters"
+    ],
+    "diff": [
+        "software_hash",
+        "hardware_hash",
+        "measurement_time"
+    ]
+}
