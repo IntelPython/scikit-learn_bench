@@ -12,3 +12,6 @@ __work*
 dataset
 data
 *.csv
+
+# Benchmark reports
+reports
