@@ -1,7 +1,7 @@
 {
     "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
     "common": {
-        "lib": ["xgboost"],
+        "lib": ["modelbuilders"],
         "data-format": ["pandas"],
         "data-order": ["F"],
         "dtype": ["float32"],
@@ -9,54 +9,7 @@
     },
     "cases": [
         {
-            "algorithm": "gbt",
-            "dataset": [
-                {
-                    "source": "csv",
-                    "name": "plasticc",
-                    "training":
-                    {
-                        "x": "data/plasticc_x_train.csv",
-                        "y": "data/plasticc_y_train.csv"
-                    },
-                    "testing":
-                    {
-                        "x": "data/plasticc_x_test.csv",
-                        "y": "data/plasticc_y_test.csv"
-                    }
-                }
-            ],
-            "n-estimators": [60],
-            "objective": ["multi:softprob"],
-            "tree-method": ["hist"],
-            "max-depth": [7],
-            "subsample": [0.7],
-            "colsample-bytree": [0.7]
-        },
-        {
-            "algorithm": "gbt",
-            "dataset": [
-                {
-                    "source": "csv",
-                    "name": "santander",
-                    "training":
-                    {
-                        "x": "data/santander_x_train.csv",
-                        "y": "data/santander_y_train.csv"
-                    }
-                }
-            ],
-            "n-estimators": [10000],
-            "objective": ["binary:logistic"],
-            "tree-method": ["hist"],
-            "max-depth": [1],
-            "subsample": [0.5],
-            "eta": [0.1],
-            "colsample-bytree": [0.05],
-            "single-precision-histogram": [""]
-        },
-        {
-            "algorithm": "gbt",
+            "algorithm": "xgb_mb",
             "dataset": [
                 {
                     "source": "csv",
@@ -81,7 +34,7 @@
             "max-leaves": [256]
         },
         {
-            "algorithm": "gbt",
+            "algorithm": "xgb_mb",
             "dataset": [
                 {
                     "source": "csv",
@@ -107,7 +60,7 @@
             "tree-method": ["hist"]
         },
         {
-            "algorithm": "gbt",
+            "algorithm": "xgb_mb",
             "dataset": [
                 {
                     "source": "csv",
@@ -134,7 +87,7 @@
             "enable-experimental-json-serialization": ["False"]
         },
         {
-            "algorithm": "gbt",
+            "algorithm": "xgb_mb",
             "dataset": [
                 {
                     "source": "csv",
@@ -155,8 +108,7 @@
             "max-depth": [8],
             "n-estimators": [200],
             "objective": ["multi:softprob"],
-            "tree-method": ["hist"],
-            "single-precision-histogram": [""]
+            "tree-method": ["hist"]
         }
     ]
 }
