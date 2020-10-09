@@ -10,5 +10,6 @@ __work*
 
 # Datasets
 dataset
+data
 *.csv
 *.npy

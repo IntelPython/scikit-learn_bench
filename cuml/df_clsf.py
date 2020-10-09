@@ -7,6 +7,7 @@ from bench import (
     float_or_int, parse_args, measure_function_time, load_data, print_output,
     accuracy_score
 )
+import cuml
 from cuml.ensemble import RandomForestClassifier
 
 parser = argparse.ArgumentParser(description='cuml random forest '
@@ -67,7 +68,10 @@ def fit(X, y):
 
 
 def predict(X):
-    return clf.predict(X, predict_model='GPU', num_classes=params.n_classes)
+    prediction_args = {'predict_model': 'GPU'}
+    if int(cuml.__version__.split('.')[1]) <= 14:
+        prediction_args.update({'num_classes': params.n_classes})
+    return clf.predict(X, **prediction_args)
 
 
 columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',

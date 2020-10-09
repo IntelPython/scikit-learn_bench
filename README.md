@@ -10,6 +10,7 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 
 * [Prerequisites](#prerequisites)
 * [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
+* [How to enable daal4py patching for scikit-learn benchmarks](#how-to-enable-daal4py-patching-for-scikit-learn-benchmarks)
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Supported algorithms](#supported-algorithms)
 * [Algorithms parameters](#algorithms-parameters)
@@ -30,13 +31,15 @@ Create a suitable conda environment for each framework to test. Each item in the
 * [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
 * [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
 
+## How to enable daal4py patching for scikit-learn benchmarks
+Set specific environment variable `export FORCE_DAAL4PY_SKLEARN=YES`
 
 ## Running Python benchmarks with runner script
 
-Run `python runner.py --config configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --configs configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
 
 runner options:
-* ``config`` : the path to configuration file
+* ``configs`` : configuration files paths
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running
 * ``verbose`` : print additional information during benchmarks running
 * ``output-format``: *json* or *csv*. Output type of benchmarks to use with their runner

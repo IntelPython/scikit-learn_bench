@@ -1,0 +1,114 @@
+{
+    "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
+    "common": {
+        "lib": ["modelbuilders"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float32"],
+        "count-dmatrix": [""]
+    },
+    "cases": [
+        {
+            "algorithm": "xgb_mb",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "mortgage1Q",
+                    "training":
+                    {
+                        "x": "data/mortgage_x.csv",
+                        "y": "data/mortgage_y.csv"
+                    }
+                }
+            ],
+            "n-estimators": [100],
+            "objective": ["reg:squarederror"],
+            "tree-method": ["hist"],
+            "max-depth": [8],
+            "scale-pos-weight": [2],
+            "learning-rate": [0.1],
+            "subsample": [1],
+            "reg-alpha": [0.9],
+            "reg-lambda": [1],
+            "min-child-weight": [0],
+            "max-leaves": [256]
+        },
+        {
+            "algorithm": "xgb_mb",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "airline-ohe",
+                    "training":
+                    {
+                        "x": "data/airline-ohe_x_train.csv",
+                        "y": "data/airline-ohe_y_train.csv"
+                    }
+                }
+            ],
+            "reg-alpha": [0.9],
+            "max-bin": [256],
+            "scale-pos-weight": [2],
+            "learning-rate": [0.1],
+            "subsample": [1],
+            "reg-lambda":  [1],
+            "min-child-weight": [0],
+            "max-depth": [8],
+            "max-leaves": [256],
+            "n-estimators": [1000],
+            "objective": ["binary:logistic"],
+            "tree-method": ["hist"]
+        },
+        {
+            "algorithm": "xgb_mb",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "higgs1m",
+                    "training":
+                    {
+                        "x": "data/higgs1m_x_train.csv",
+                        "y": "data/higgs1m_y_train.csv"
+                    }
+                }
+            ],
+            "reg-alpha": [0.9],
+            "max-bin": [256],
+            "scale-pos-weight": [2],
+            "learning-rate": [0.1],
+            "subsample": [1],
+            "reg-lambda":  [1],
+            "min-child-weight": [0],
+            "max-depth": [8],
+            "max-leaves": [256],
+            "n-estimators": [1000],
+            "objective": ["binary:logistic"],
+            "tree-method": ["hist"],
+            "enable-experimental-json-serialization": ["False"]
+        },
+        {
+            "algorithm": "xgb_mb",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "msrank",
+                    "training":
+                    {
+                        "x": "data/mlsr_x_train.csv",
+                        "y": "data/mlsr_y_train.csv"
+                    }
+                }
+            ],
+            "max-bin": [256],
+            "learning-rate": [0.3],
+            "subsample": [1],
+            "reg-lambda":  [2],
+            "min-child-weight": [1],
+            "min-split-loss": [0.1],
+            "max-depth": [8],
+            "n-estimators": [200],
+            "objective": ["multi:softprob"],
+            "tree-method": ["hist"]
+        }
+    ]
+}
