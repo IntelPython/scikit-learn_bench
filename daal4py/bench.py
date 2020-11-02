@@ -249,7 +249,7 @@ def prepare_daal(num_threads=-1):
             set_daal_num_threads(num_threads)
         import daal4py
         num_threads = daal4py.num_threads()
-        daal_version = daal4py.__daal_run_version__
+        daal_version = daal4py._get__daal_run_version__()
     except ImportError:
         num_threads = 1
         daal_version = None
