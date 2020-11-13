@@ -68,7 +68,7 @@ parser.add_argument('--objective', type=str, required=True,
 parser.add_argument('--count-dmatrix', default=False, action='store_true',
                     help='Count DMatrix creation in time measurements')
 parser.add_argument('--inplace-predict', default=False, action='store_true',
-                    help='Count DMatrix creation in time measurements')
+                    help='Perform inplace_predict instead of default')
 parser.add_argument('--single-precision-histogram', default=False, action='store_true',
                     help='Build histograms instead of double precision')
 parser.add_argument('--enable-experimental-json-serialization', default=True,
