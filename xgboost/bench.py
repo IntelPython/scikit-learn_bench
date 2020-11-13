@@ -8,6 +8,17 @@ import numpy as np
 import sklearn
 import timeit
 import json
+import os
+import sys
+
+
+if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
+    try:
+        from daal4py.sklearn import patch_sklearn
+        patch_sklearn()
+    except ImportError:
+        print('Failed to import daal4py.sklearn.patch_sklearn '
+              'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
 
 
 def get_dtype(data):
@@ -238,7 +249,7 @@ def prepare_daal(num_threads=-1):
             set_daal_num_threads(num_threads)
         import daal4py
         num_threads = daal4py.num_threads()
-        daal_version = daal4py.__daal_run_version__
+        daal_version = daal4py._get__daal_run_version__()
     except ImportError:
         num_threads = 1
         daal_version = None

@@ -140,11 +140,8 @@ def construct_dual_coefs(model, num_classes, X, y):
         del tmp
 
         support_ = two_class_sv_ind_[perm]
-        # support_vectors_ = X[support_]
-
         dual_coef_ = model.ClassificationCoefficients.T
         dual_coef_ = dual_coef_[:, perm]
-        # intercept_ = np.array([model.Bias])
 
     else:
         # multi-class
@@ -170,10 +167,6 @@ def construct_dual_coefs(model, num_classes, X, y):
                                  two_class_sv_ind_.ravel())
                 sv_ind_by_clf.append(sv_ind)
 
-                # svs_ = getArrayFromNumericTable(
-                #     svm_model.getSupportVectors())
-                # assert np.array_equal(svs_, X[sv_ind])
-
                 intercepts.append(-svm_model.Bias)
                 coefs.append(-svm_model.ClassificationCoefficients)
                 model_id += 1
@@ -190,8 +183,6 @@ def construct_dual_coefs(model, num_classes, X, y):
             sv_coef_by_clf,  # classification coeffs by two-class classifiers
             y.squeeze().astype(np.intp, copy=False)   # integer labels
         )
-        # support_vectors_ = X[support_]
-        # intercept_ = np.array(intercepts)
 
     return support_
 
@@ -210,12 +201,8 @@ def test_fit(X, y, params):
     fptype = getFPType(X)
     kf = daal_kernel(params.kernel, fptype, gamma=params.gamma)
 
-    if params.n_classes == 2:
-        y[y == 0] = -1
-    else:
-        y[y == -1] = 0
-
     svm_train = svm_training(
+            method='thunder',
             fptype=fptype,
             C=params.C,
             maxIterations=params.maxiter,
@@ -290,20 +277,19 @@ def test_predict(X, training_result, params):
 def main():
     parser = argparse.ArgumentParser(description='daal4py SVC benchmark with '
                                                  'linear kernel')
-    parser.add_argument('-C', dest='C', type=float, default=0.01,
-                        help='SVM slack parameter')
+    parser.add_argument('-C', dest='C', type=float, default=1.0,
+                        help='SVM regularization parameter')
     parser.add_argument('--kernel', choices=('linear', 'rbf'),
                         default='linear', help='SVM kernel function')
     parser.add_argument('--gamma', type=float, default=None,
                         help='Parameter for kernel="rbf"')
-    parser.add_argument('--maxiter', type=int, default=2000,
-                        help='Maximum iterations for the iterative solver. '
-                             '-1 means no limit.')
-    parser.add_argument('--max-cache-size', type=int, default=64,
+    parser.add_argument('--maxiter', type=int, default=100000,
+                        help='Maximum iterations for the iterative solver. ')
+    parser.add_argument('--max-cache-size', type=int, default=8,
                         help='Maximum cache size, in gigabytes, for SVM.')
     parser.add_argument('--tau', type=float, default=1e-12,
                         help='Tau parameter for working set selection scheme')
-    parser.add_argument('--tol', type=float, default=1e-16,
+    parser.add_argument('--tol', type=float, default=1e-3,
                         help='Tolerance')
     parser.add_argument('--no-shrinking', action='store_false', default=True,
                         dest='shrinking',
@@ -322,9 +308,6 @@ def main():
     params.cache_size_mb = cache_size_bytes / 2**20
     params.cache_size_bytes = cache_size_bytes
     params.n_classes = np.unique(y_train).size
-
-    # This is necessary for daal
-    y_train[y_train == 0] = -1
 
     columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype',
                'size', 'kernel', 'cache_size_mb', 'C', 'sv_len', 'n_classes',

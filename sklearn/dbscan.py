@@ -5,10 +5,10 @@
 from bench import (measure_function_time, parse_args, load_data, print_output,
                   run_with_context, patch_sklearn)
 
-
 def main():
     import argparse
     from sklearn.cluster import DBSCAN
+    from sklearn.metrics.cluster import davies_bouldin_score
 
     parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
     parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
@@ -30,18 +30,20 @@ def main():
     # daal4py-patched scikit-learn, and probably 'kdtree' when running unpatched
     # scikit-learn.
 
-    columns = ('batch', 'arch', 'prefix', 'function', 'patch_sklearn', 'device', 'threads', 'dtype', 'size',
-               'n_clusters', 'time')
+    columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+            'n_clusters', 'time')
 
     # Time fit
     time, _ = measure_function_time(dbscan.fit, X, params=params)
     labels = dbscan.labels_
+
     params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    acc = davies_bouldin_score(X, labels)
 
     print_output(library='sklearn', algorithm='dbscan', stages=['training'],
-                 columns=columns, params=params, functions=['DBSCAN'],
-                 times=[time], accuracies=[None], accuracy_type=None, data=[X],
-                 alg_instance=dbscan)
+                columns=columns, params=params, functions=['DBSCAN'],
+                times=[time], accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
+                alg_instance=dbscan)
 
 
 if __name__ == "__main__":

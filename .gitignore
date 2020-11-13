@@ -1,0 +1,15 @@
+# Logs
+*.log
+
+# Release and work directories
+__pycache__*
+__work*
+
+# Visual Studio related files, e.g., ".vscode"
+.vs*
+
+# Datasets
+dataset
+data
+*.csv
+*.npy

@@ -8,17 +8,6 @@ import numpy as np
 import sklearn
 import timeit
 import json
-import os
-import sys
-
-
-if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
-    try:
-        from daal4py.sklearn import patch_sklearn
-        patch_sklearn()
-    except ImportError:
-        print('Failed to import daal4py.sklearn.patch_sklearn '
-              'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
 
 
 def get_dtype(data):
@@ -164,12 +153,6 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Seed to pass as random_state')
     parser.add_argument('--dataset-name', type=str, default=None,
                         help='Dataset name')
-    parser.add_argument('--device', type=str, default='None',
-                        choices=('None', 'host', 'cpu', 'gpu'),
-                        help='Execution context device, "None" to run without context.')
-    parser.add_argument('--patch_sklearn', type=str, default='None',
-                        choices=('None', 'True', 'False'),
-                        help='True for patch, False for unpatch, "None" to leave as is.')
 
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
@@ -525,11 +508,15 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                 params.data_order, params.data_format)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
-        if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
+        if full_data[element] is not None and 'y' in element and label_2d and hasattr(
+                full_data[element],
+                'reshape'):
             full_data[element] = full_data[element].reshape(
                 (full_data[element].shape[0], 1))
         # add dtype property to data if it's needed and doesn't exist
-        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
+        if full_data[element] is not None and add_dtype and not hasattr(
+                full_data[element],
+                'dtype'):
             if hasattr(full_data[element], 'values'):
                 full_data[element].dtype = full_data[element].values.dtype
             elif hasattr(full_data[element], 'dtypes'):
@@ -621,39 +608,6 @@ def print_output(library, algorithm, stages, columns, params, functions,
 def import_fptype_getter():
     try:
         from daal4py.sklearn._utils import getFPType
-    except:
+    except ImportError:
         from daal4py.sklearn.utils import getFPType
     return getFPType
-
-
-def patch_sklearn():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--patch_sklearn', type=str, default='None',
-                        choices=('None', 'True', 'False'),
-                        help='True for patch, False for unpatch, "None" to leave as is.')
-    args, _ = parser.parse_known_args()
-
-    if args.patch_sklearn is not None and args.patch_sklearn != 'None':
-        from daal4py.sklearn import patch_sklearn, unpatch_sklearn
-        if args.patch_sklearn == "True":
-            patch_sklearn()
-        elif args.patch_sklearn == "False":
-            unpatch_sklearn()
-        else:
-            raise ValueError('Parameter "patch_sklearn" must be '
-                             '"None", "True" or "False", got {}.'.format(args.patch_sklearn))
-
-
-def run_with_context(function):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--device', type=str, default='None',
-                        choices=('None', 'host', 'cpu', 'gpu'),
-                        help='Execution context device, "None" to run without context.')
-    args, _ = parser.parse_known_args()
-
-    if args.device is not None and args.device != 'None':
-        from daal4py.oneapi import sycl_context
-        with sycl_context(args.device):
-            function()
-    else:
-        function()

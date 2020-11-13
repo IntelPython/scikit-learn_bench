@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-#include <chrono>  
+#include <chrono>
 
 #define DAAL_DATA_TYPE double
 #include "common.hpp"
@@ -38,7 +38,7 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt,
 
     kmeans_result->get(da::kmeans::assignments);
     kmeans_result->get(da::kmeans::centroids  );
-    kmeans_result->get(da::kmeans::goalFunction);
+    kmeans_result->get(da::kmeans::objectiveFunction);
 
     dm::NumericTablePtr nIterationsNumericTable
         = algorithm.getResult()->get(da::kmeans::nIterations);
@@ -47,7 +47,7 @@ kmeans_fit_test(dm::NumericTablePtr X_nt, dm::NumericTablePtr X_init_nt,
     int *niPtr = blockNI.getBlockPtr();
     int actual_iters = niPtr[0];
     nIterationsNumericTable->releaseBlockOfRows(blockNI);
-    
+
     if(actual_iters != max_iters && verbose) {
     std::cout << std::endl << "@ WARNING: Number of actual iterations "
         << actual_iters << " is less than max_iters of "
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
     double* X_mult = (double*) daal::services::daal_malloc(
             X_nt->getNumberOfColumns() * X_nt->getNumberOfRows() *
             data_multiplier * sizeof(double));
-    
+
     for (int i = 0; i < data_multiplier; i++) {
         for (int j = 0;
              j < X_nt->getNumberOfColumns() * X_nt->getNumberOfRows(); j++) {

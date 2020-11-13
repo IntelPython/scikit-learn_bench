@@ -11,17 +11,16 @@ def main():
     import numpy as np
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import accuracy_score
-
     parser = argparse.ArgumentParser(description='scikit-learn logistic '
-                                                 'regression benchmark')
+                                                'regression benchmark')
     parser.add_argument('--no-fit-intercept', dest='fit_intercept',
                         action='store_false', default=True,
                         help="Don't fit intercept")
     parser.add_argument('--multiclass', default='auto',
                         choices=('auto', 'ovr', 'multinomial'),
                         help='How to treat multi class data. '
-                             '"auto" picks "ovr" for binary classification, and '
-                             '"multinomial" otherwise.')
+                            '"auto" picks "ovr" for binary classification, and '
+                            '"multinomial" otherwise.')
     parser.add_argument('--solver', default='lbfgs',
                         choices=('lbfgs', 'newton-cg', 'saga'),
                         help='Solver to use.')
@@ -31,8 +30,8 @@ def main():
                         help='Regularization parameter')
     parser.add_argument('--tol', type=float, default=None,
                         help='Tolerance for solver. If solver == "newton-cg", '
-                             'then the default is 1e-3. Otherwise, the default '
-                             'is 1e-10.')
+                            'then the default is 1e-3. Otherwise, the default '
+                            'is 1e-10.')
     params = parse_args(parser, loop_types=('fit', 'predict'))
 
     # Load generated data
@@ -48,16 +47,17 @@ def main():
 
     # Create our classifier object
     clf = LogisticRegression(penalty='l2', C=params.C, n_jobs=params.n_jobs,
-                             fit_intercept=params.fit_intercept,
-                             verbose=params.verbose,
-                             tol=params.tol, max_iter=params.maxiter,
-                             solver=params.solver, multi_class=params.multiclass)
+                            fit_intercept=params.fit_intercept,
+                            verbose=params.verbose,
+                            tol=params.tol, max_iter=params.maxiter,
+                            solver=params.solver, multi_class=params.multiclass)
 
-    columns = ('batch', 'arch', 'prefix', 'function', 'patch_sklearn', 'device', 'threads', 'dtype', 'size',
-               'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
+    columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
+            'solver', 'C', 'multiclass', 'n_classes', 'accuracy', 'time')
 
     # Time fit and predict
     fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
+
     y_pred = clf.predict(X_train)
     train_acc = 100 * accuracy_score(y_pred, y_train)
 
@@ -66,11 +66,11 @@ def main():
     test_acc = 100 * accuracy_score(y_pred, y_test)
 
     print_output(library='sklearn', algorithm='logistic_regression',
-                 stages=['training', 'prediction'], columns=columns,
-                 params=params, functions=['LogReg.fit', 'LogReg.predict'],
-                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                 accuracies=[train_acc, test_acc], data=[X_train, X_test],
-                 alg_instance=clf)
+                stages=['training', 'prediction'], columns=columns,
+                params=params, functions=['LogReg.fit', 'LogReg.predict'],
+                times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                alg_instance=clf)
     if params.verbose:
         print()
         print(f'@ Number of iterations: {clf.n_iter_}')

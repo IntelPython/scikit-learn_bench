@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
-from bench import parse_args, measure_function_time, load_data, print_output
+from bench import parse_args, measure_function_time, load_data, print_output, convert_to_numpy
 from cuml import DBSCAN
+from sklearn.metrics.cluster import davies_bouldin_score
 
 parser = argparse.ArgumentParser(description='cuML DBSCAN benchmark')
 parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
@@ -27,9 +28,14 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
 # Time fit
 time, _ = measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
-params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+
+X_host = convert_to_numpy(X)
+labels_host = convert_to_numpy(labels)
+
+acc = davies_bouldin_score(X_host, labels_host)
+params.n_clusters = len(set(labels_host)) - (1 if -1 in labels_host else 0)
 
 print_output(library='cuml', algorithm='dbscan', stages=['training'],
              columns=columns, params=params, functions=['DBSCAN'],
-             times=[time], accuracies=[None], accuracy_type=None, data=[X],
+             times=[time], accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
              alg_instance=dbscan)

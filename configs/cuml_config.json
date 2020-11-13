@@ -1,0 +1,486 @@
+{
+    "omp_env": ["OMP_NUM_THREADS"],
+    "common": {
+        "lib": ["cuml"],
+        "data-format": ["cudf"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 1000,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [1000],
+            "maxiter": [50],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 5,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [5],
+            "maxiter": [50],
+            "init": ["k-means++"],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 20,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 3000000
+                    }
+                }
+            ],
+            "time-method": ["box_filter"],
+            "n-clusters": [20],
+            "maxiter": [50],
+            "tol": [0.0]
+        },
+        {
+            "algorithm": "pca",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 1000000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 2000,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 1000,
+                    "training": {
+                        "n_samples": 30000
+                    }
+                }
+            ],
+            "svd-solver": ["full"],
+            "n-components": [10]
+        },
+        {
+            "algorithm": "df_clsf",
+            "dtype": ["float32"],
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "higgs1m",
+                    "training":
+                    {
+                        "x": "data/higgs1m_x_train.csv",
+                        "y": "data/higgs1m_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs1m_x_test.csv",
+                        "y": "data/higgs1m_y_test.csv"
+                    }
+                },
+                {
+                    "source": "csv",
+                    "name": "airline-ohe",
+                    "training":
+                    {
+                        "x": "data/airline-ohe_x_train.csv",
+                        "y": "data/airline-ohe_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/airline-ohe_x_test.csv",
+                        "y": "data/airline-ohe_y_test.csv"
+                    }
+                }
+            ],
+            "num-trees": [50],
+            "max-depth": [16],
+            "max-leaf-nodes": [131072],
+            "max-features": [0.2]
+        },
+        {
+            "algorithm": "ridge",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "alpha": [5]
+        },
+        {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "log_reg",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "maxiter": [100],
+            "tol": [0]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "ijcnn",
+                    "training":
+                    {
+                        "x": "data/ijcnn_x_train.csv",
+                        "y": "data/ijcnn_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/ijcnn_x_test.csv",
+                        "y": "data/ijcnn_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1000.0],
+            "kernel": ["linear"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "a9a",
+                    "training":
+                    {
+                        "x": "data/a9a_x_train.csv",
+                        "y": "data/a9a_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/a9a_x_test.csv",
+                        "y": "data/a9a_y_test.csv"
+                    }
+                }
+            ],
+            "C": [500.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "gisette",
+                    "training":
+                    {
+                        "x": "data/gisette_x_train.csv",
+                        "y": "data/gisette_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/gisette_x_test.csv",
+                        "y": "data/gisette_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.5e-3],
+            "kernel": ["linear"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "klaverjas",
+                    "training":
+                    {
+                        "x": "data/klaverjas_x_train.csv",
+                        "y": "data/klaverjas_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/klaverjas_x_test.csv",
+                        "y": "data/klaverjas_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "dbscan",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 100,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "knn_clsf",
+            "dtype": ["float32"],
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 100000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 20000
+                    },
+                    "testing": {
+                        "n_samples": 20000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 10,
+                    "n_features": 16,
+                    "training": {
+                        "n_samples": 250000
+                    },
+                    "testing": {
+                        "n_samples": 250000
+                    }
+                }
+            ],
+            "method": ["brute"]
+        },
+        {
+            "algorithm": "train_test_split",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 5000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10000,
+                    "training": {
+                        "n_samples": 10000
+                    }
+                }
+            ],
+            "train-size": [0.75],
+            "test-size": [0.25]
+        },
+        {
+            "algorithm": "train_test_split",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "census",
+                    "training":
+                    {
+                        "x": "data/census_x.csv",
+                        "y": "data/census_y.csv"
+                    }
+                }
+            ],
+            "train-size": [0.9],
+            "test-size": [0.1]
+        },
+        {
+            "algorithm": "lasso",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "mortgage",
+                    "training":
+                    {
+                        "x": "data/mortgage_x.csv",
+                        "y": "data/mortgage_y.csv"
+                    }
+                }
+            ],
+            "alpha": [1.0],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "elasticnet",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.csv",
+                        "y": "data/year_prediction_msd_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.csv",
+                        "y": "data/year_prediction_msd_y_test.csv"
+                    }
+                }
+            ],
+            "alpha": [2.0],
+            "l1_ratio": [0.5],
+            "tol": [1e-4]
+        }
+    ]
+}
