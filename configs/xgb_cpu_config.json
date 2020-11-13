@@ -131,7 +131,8 @@
             "n-estimators": [1000],
             "objective": ["binary:logistic"],
             "tree-method": ["hist"],
-            "enable-experimental-json-serialization": ["False"]
+            "enable-experimental-json-serialization": ["False"],
+            "inplace-predict": [""]
         },
         {
             "algorithm": "gbt",
