@@ -67,6 +67,8 @@ parser.add_argument('--objective', type=str, required=True,
                     help='Control a balance of positive and negative weights')
 parser.add_argument('--count-dmatrix', default=False, action='store_true',
                     help='Count DMatrix creation in time measurements')
+parser.add_argument('--inplace-predict', default=False, action='store_true',
+                    help='Perform inplace_predict instead of default')
 parser.add_argument('--single-precision-histogram', default=False, action='store_true',
                     help='Build histograms instead of double precision')
 parser.add_argument('--enable-experimental-json-serialization', default=True,
@@ -135,9 +137,13 @@ if params.count_dmatrix:
         dtrain = xgb.DMatrix(X_train, y_train)
         return xgb.train(xgb_params, dtrain, params.n_estimators)
 
-    def predict():
-        dtest = xgb.DMatrix(X_test, y_test)
-        return booster.predict(dtest)
+    if params.inplace_predict == False:
+        def predict():
+            dtest = xgb.DMatrix(X_test, y_test)
+            return booster.predict(dtest)
+    else:
+        def predict():
+            return booster.inplace_predict(np.ascontiguousarray(X_test.values, dtype=np.float32))
 else:
     def fit():
         return xgb.train(xgb_params, dtrain, params.n_estimators)
@@ -150,8 +156,7 @@ y_pred = convert_xgb_predictions(booster.predict(dtrain), params.objective)
 train_metric = metric_func(y_pred, y_train)
 
 predict_time, y_pred = measure_function_time(predict, params=params)
-test_metric = metric_func(
-    convert_xgb_predictions(y_pred, params.objective), y_test)
+test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
 
 print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
              stages=['training', 'prediction'], columns=columns,

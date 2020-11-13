@@ -129,7 +129,8 @@
             "max-leaves": [256],
             "n-estimators": [1000],
             "objective": ["binary:logistic"],
-            "tree-method": ["gpu_hist"]
+            "tree-method": ["gpu_hist"],
+            "inplace-predict": [""]
         },
         {
             "algorithm": "gbt",
