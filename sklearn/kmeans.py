@@ -1,3 +1,7 @@
+# Copyright (C) 2018-2020 Intel Corporation
+#
+# SPDX-License-Identifier: MIT
+
 from bench import (measure_function_time, parse_args, load_data, print_output,
                   run_with_context, patch_sklearn)
 
