@@ -13,6 +13,3 @@ dataset
 data
 *.csv
 *.npy
-
-# Benchmark reports
-reports
