@@ -1,5 +1,3 @@
-import os
-import sys
 import openpyxl
 import argparse
 import json
@@ -57,7 +55,7 @@ excel_header_columns = list(ascii_uppercase)
 for sym1 in ascii_uppercase:
     for sym2 in ascii_uppercase:
         excel_header_columns.append(sym1+sym2)
-xy_to_excel_cell = lambda x, y: "{}{}".format(excel_header_columns[x], y + 1)
+xy_to_excel_cell = lambda x, y: '{}{}'.format(excel_header_columns[x], y + 1)
 
 
 def write_cell(work_sheet, x, y, value):
@@ -76,11 +74,15 @@ def create_list(res_entry, props_list):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--result-files", type=str, required=True)
-parser.add_argument("--generation-config", type=str,
-                    default='configs/default_report_gen_config.json')
-parser.add_argument("--merging", type=str, default="none",
-                    choices=("full", "none", "sw_only", "hw_only"))
+parser.add_argument('--result-files', type=str, required=True,
+                    'Benchmark result file names '
+                    'separated by commas')
+parser.add_argument('--report-file', type=str,
+                    default=f'report_{str(datetime.date.today())}.xlsx')
+parser.add_argument('--generation-config', type=str,
+                    default='default_report_gen_config.json')
+parser.add_argument('--merging', type=str, default='none',
+                    choices=('full', 'none', 'sw_only', 'hw_only'))
 args = parser.parse_args()
 
 json_results = []
@@ -92,7 +94,6 @@ with open(args.generation_config, 'r') as file:
     gen_config = json.load(file)
 
 wb = openpyxl.Workbook()
-ws = wb.active
 
 # compute hash for software and hardware configurations
 HASH_LIMIT = 8
@@ -112,7 +113,7 @@ for i, json_res in enumerate(json_results):
         new_res_entry.update(extra_entry_info)
         all_res_entries.append(new_res_entry)
 
-if args.merging != "none":
+if args.merging != 'none':
     for i, resi_entry in enumerate(all_res_entries):
         already_exist = False
         for j, resj_entry in enumerate(all_res_entries):
@@ -197,17 +198,16 @@ for stage_key in stages_splitter.keys():
 
 # write configs
 for i, json_res in enumerate(json_results):
-    ws = wb.create_sheet(title=f'SW config n{i}_{json_res["software_hash"]}')
-    ws[xy_to_excel_cell(0, 0)] = f'Software configuration {i} (hash: {json_res["software_hash"]})'
+    ws = wb.create_sheet(title=f'SW config n{i}_{json_res['software_hash']}')
+    ws[xy_to_excel_cell(0, 0)] = f'Software configuration {i} (hash: {json_res['software_hash']})'
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
     for j in range(len(sw_conf)):
         ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
 
-    ws = wb.create_sheet(title=f'HW config n{i}_{json_res["hardware_hash"]}')
-    ws[xy_to_excel_cell(0, 0)] = f'Hardware configuration {i} (hash: {json_res["hardware_hash"]})'
+    ws = wb.create_sheet(title=f'HW config n{i}_{json_res['hardware_hash']}')
+    ws[xy_to_excel_cell(0, 0)] = f'Hardware configuration {i} (hash: {json_res['hardware_hash']})'
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
     for j in range(len(hw_conf)):
         ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]
 
-os.makedirs('reports', exist_ok=True)
-wb.save(f"reports/report_{str(datetime.date.today())}.xlsx")
+wb.save(args.report_file)
