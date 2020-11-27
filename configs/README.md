@@ -25,7 +25,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |lib| array[string] | **REQUIRED** list of test frameworks. It can be *sklearn*, *daal4py*, *cuml* or *xgboost* |
 |data-format| array[string] | **REQUIRED** input data format. Data formats: *numpy*, *pandas* or *cudf* |
 |data-order| array[string] | **REQUIRED**  input data order. Data order: *C* (row-major, default) or *F* (column-major) |
-|dtype| array[string] | **REQUIRED**  input data type. Data type: *float64* (default) or *float32* |
+|dtype| array[string] | **REQUIRED**  input data type. Data type: *float64* (default), *float32* or *int32:float32:float64* (heterogeneous data (1st column has *int32* dtype, 2nd - *float32*, 3rd - *float64*, etc), works only with *pandas* and *cudf*) |
 |check-finitness| array[] | Check finiteness in sklearn input check(disabled by default) |
 
 ###  Case Object

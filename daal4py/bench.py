@@ -131,8 +131,8 @@ def parse_args(parser, size=None, loop_types=(),
                         choices=('C', 'F'),
                         help='Data order: C (row-major, default) or'
                              'F (column-major)')
-    parser.add_argument('-d', '--dtype', type=np.dtype, default=np.float64,
-                        choices=(np.float32, np.float64),
+    parser.add_argument('-d', '--dtype', type=str, default='float64',
+                        choices=('float32', 'float64', 'int32:float32:float64'),
                         help='Data type: float64 (default) or float32')
     parser.add_argument('--check-finiteness', default=False,
                         action='store_true',
@@ -178,6 +178,16 @@ def parse_args(parser, size=None, loop_types=(),
                             help='Problem size, delimited by "x" or ","')
 
     params = parser.parse_args()
+
+    if params.dtype == 'int32:float32:float64':
+        params.heterogeneous = True
+        params.dtype = np.float64
+
+        if params.data_format == 'numpy':
+            raise ValueError('There must be only one dtype for numpy array')
+    else:
+        params.heterogeneous = False
+        params.dtype = np.dtype(params.dtype)
 
     # disable finiteness check (default)
     if not params.check_finiteness:
@@ -438,7 +448,7 @@ def rmse_score(y, yp):
         y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
 
 
-def convert_data(data, dtype, data_order, data_format):
+def convert_data(data, dtype, data_order, data_format, heterogeneous):
     '''
     Convert input data (numpy array) to needed format, type and order
     '''
@@ -447,6 +457,12 @@ def convert_data(data, dtype, data_order, data_format):
         data = np.asfortranarray(data, dtype)
     elif data_order == 'C':
         data = np.ascontiguousarray(data, dtype)
+
+    def convert_to_heterogen(df):
+        types = (np.int32, np.float32, np.float64)
+        n_types = len(types)
+        col_dtypes = {col: types[i%n_types] for i, col in enumerate(df.columns)}
+        return df.astype(col_dtypes)
 
     # Secondly, change format of data
     if data_format == 'numpy':
@@ -457,12 +473,18 @@ def convert_data(data, dtype, data_order, data_format):
         if data.ndim == 1:
             return pd.Series(data)
         else:
-            return pd.DataFrame(data)
+            if not heterogeneous:
+                return pd.DataFrame(data)
+            else:
+                return convert_to_heterogen(pd.DataFrame(data))
     elif data_format == 'cudf':
         import cudf
         import pandas as pd
 
-        return cudf.DataFrame.from_pandas(pd.DataFrame(data))
+        if not heterogeneous:
+            return cudf.DataFrame.from_pandas(pd.DataFrame(data))
+        else:
+            return cudf.DataFrame.from_pandas(convert_to_heterogen(pd.DataFrame(data)))
 
 
 def read_csv(filename, params):
@@ -509,14 +531,14 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             full_data[element] = convert_data(
                 data,
                 int_dtype if 'y' in element and int_label else params.dtype,
-                params.data_order, params.data_format
+                params.data_order, params.data_format, params.heterogeneous
             )
         # generate and convert data if it's marked and path isn't specified
         if full_data[element] is None and element in generated_data:
             full_data[element] = convert_data(
                 np.random.rand(*params.shape),
                 int_dtype if 'y' in element and int_label else params.dtype,
-                params.data_order, params.data_format)
+                params.data_order, params.data_format, params.heterogeneous)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
         if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
@@ -529,7 +551,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             elif hasattr(full_data[element], 'dtypes'):
                 full_data[element].dtype = full_data[element].dtypes[0].type
 
-    params.dtype = get_dtype(full_data['X_train'])
+    params.dtype = get_dtype(full_data['X_train']) if not params.heterogeneous else 'int32:float32:float64'
     # add size to parameters which is need for some cases
     if not hasattr(params, 'size'):
         params.size = size_str(full_data['X_train'].shape)

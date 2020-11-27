@@ -52,6 +52,7 @@
             "eps": [1]
         },
         {
+            "heterogeneous": [true],
             "algorithm": "linear",
             "dataset": [
                 {
