@@ -8,6 +8,17 @@ import numpy as np
 import sklearn
 import timeit
 import json
+import os
+import sys
+
+
+if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
+    try:
+        from daal4py.sklearn import patch_sklearn
+        patch_sklearn()
+    except ImportError:
+        print('Failed to import daal4py.sklearn.patch_sklearn '
+              'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
 
 
 def get_dtype(data):
@@ -173,19 +184,16 @@ def parse_args(parser, size=None, loop_types=(),
         sklearn_disable_finiteness_check()
 
     # Ask DAAL what it thinks about this number of threads
-    num_threads, daal_version = prepare_daal(num_threads=params.threads)
-    if params.verbose and daal_version:
-        print(f'@ Found DAAL version {daal_version}')
+    num_threads = prepare_daal_threads(num_threads=params.threads)
+    if params.verbose:
         print(f'@ DAAL gave us {num_threads} threads')
 
     n_jobs = None
-    if n_jobs_supported and not daal_version:
+    if n_jobs_supported:
         n_jobs = num_threads = params.threads
 
     # Set threading and DAAL related params here
     setattr(params, 'threads', num_threads)
-    setattr(params, 'daal_version', daal_version)
-    setattr(params, 'using_daal', daal_version is not None)
     setattr(params, 'n_jobs', n_jobs)
 
     # Set size string parameter for easy printing
@@ -232,18 +240,16 @@ def set_daal_num_threads(num_threads):
               'is being ignored')
 
 
-def prepare_daal(num_threads=-1):
+def prepare_daal_threads(num_threads=-1):
     try:
         if num_threads > 0:
             set_daal_num_threads(num_threads)
         import daal4py
         num_threads = daal4py.num_threads()
-        daal_version = daal4py._get__daal_run_version__()
     except ImportError:
         num_threads = 1
-        daal_version = None
 
-    return num_threads, daal_version
+    return num_threads
 
 
 def measure_function_time(func, *args, params, **kwargs):
@@ -508,15 +514,11 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                 params.data_order, params.data_format)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
-        if full_data[element] is not None and 'y' in element and label_2d and hasattr(
-                full_data[element],
-                'reshape'):
+        if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
             full_data[element] = full_data[element].reshape(
                 (full_data[element].shape[0], 1))
         # add dtype property to data if it's needed and doesn't exist
-        if full_data[element] is not None and add_dtype and not hasattr(
-                full_data[element],
-                'dtype'):
+        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
             if hasattr(full_data[element], 'values'):
                 full_data[element].dtype = full_data[element].values.dtype
             elif hasattr(full_data[element], 'dtypes'):
@@ -608,6 +610,6 @@ def print_output(library, algorithm, stages, columns, params, functions,
 def import_fptype_getter():
     try:
         from daal4py.sklearn._utils import getFPType
-    except ImportError:
+    except:
         from daal4py.sklearn.utils import getFPType
     return getFPType
