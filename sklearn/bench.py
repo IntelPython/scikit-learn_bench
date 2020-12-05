@@ -184,19 +184,16 @@ def parse_args(parser, size=None, loop_types=(),
         sklearn_disable_finiteness_check()
 
     # Ask DAAL what it thinks about this number of threads
-    num_threads, daal_version = prepare_daal(num_threads=params.threads)
-    if params.verbose and daal_version:
-        print(f'@ Found DAAL version {daal_version}')
+    num_threads = prepare_daal_threads(num_threads=params.threads)
+    if params.verbose:
         print(f'@ DAAL gave us {num_threads} threads')
 
     n_jobs = None
-    if n_jobs_supported and not daal_version:
+    if n_jobs_supported:
         n_jobs = num_threads = params.threads
 
     # Set threading and DAAL related params here
     setattr(params, 'threads', num_threads)
-    setattr(params, 'daal_version', daal_version)
-    setattr(params, 'using_daal', daal_version is not None)
     setattr(params, 'n_jobs', n_jobs)
 
     # Set size string parameter for easy printing
@@ -243,18 +240,16 @@ def set_daal_num_threads(num_threads):
               'is being ignored')
 
 
-def prepare_daal(num_threads=-1):
+def prepare_daal_threads(num_threads=-1):
     try:
         if num_threads > 0:
             set_daal_num_threads(num_threads)
         import daal4py
         num_threads = daal4py.num_threads()
-        daal_version = daal4py._get__daal_run_version__()
     except ImportError:
         num_threads = 1
-        daal_version = None
 
-    return num_threads, daal_version
+    return num_threads
 
 
 def measure_function_time(func, *args, params, **kwargs):
