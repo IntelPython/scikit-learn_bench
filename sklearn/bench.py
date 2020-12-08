@@ -164,6 +164,12 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Seed to pass as random_state')
     parser.add_argument('--dataset-name', type=str, default=None,
                         help='Dataset name')
+    parser.add_argument('--device', type=str, default='None',
+                        choices=('None', 'host', 'cpu', 'gpu'),
+                        help='Execution context device, "None" to run without context.')
+    parser.add_argument('--patch_sklearn', type=str, default='None',
+                        choices=('None', 'True', 'False'),
+                        help='True for patch, False for unpatch, "None" to leave as is.')
 
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
@@ -613,3 +619,36 @@ def import_fptype_getter():
     except:
         from daal4py.sklearn.utils import getFPType
     return getFPType
+
+
+def patch_sklearn():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--patch_sklearn', type=str, default='None',
+                        choices=('None', 'True', 'False'),
+                        help='True for patch, False for unpatch, "None" to leave as is.')
+    args, _ = parser.parse_known_args()
+
+    if args.patch_sklearn is not None and args.patch_sklearn != 'None':
+        from daal4py.sklearn import patch_sklearn, unpatch_sklearn
+        if args.patch_sklearn == "True":
+            patch_sklearn()
+        elif args.patch_sklearn == "False":
+            unpatch_sklearn()
+        else:
+            raise ValueError('Parameter "patch_sklearn" must be '
+                             '"None", "True" or "False", got {}.'.format(args.patch_sklearn))
+
+
+def run_with_context(function):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--device', type=str, default='None',
+                        choices=('None', 'host', 'cpu', 'gpu'),
+                        help='Execution context device, "None" to run without context.')
+    args, _ = parser.parse_known_args()
+
+    if args.device is not None and args.device != 'None':
+        from daal4py.oneapi import sycl_context
+        with sycl_context(args.device):
+            function()
+    else:
+        function()
