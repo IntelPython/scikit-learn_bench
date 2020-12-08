@@ -11,6 +11,8 @@ def main():
     from sklearn.cluster import KMeans
     from sklearn.metrics.cluster import davies_bouldin_score
 
+    global X_init, params
+
     parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
     parser.add_argument('-i', '--filei', '--fileI', '--init',
                         type=str, help='Initial clusters')
