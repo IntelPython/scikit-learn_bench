@@ -26,10 +26,10 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 
 Create a suitable conda environment for each framework to test. Each item in the list below links to instructions to create an appropriate conda environment for the framework.
 
-* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
 
 ## How to enable daal4py patching for scikit-learn benchmarks
 Set specific environment variable `export FORCE_DAAL4PY_SKLEARN=YES`
@@ -86,10 +86,10 @@ Run the following command:
 
 The list of supported parameters for each algorithm you can find here:
 
-* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#algorithms-parameters)
-* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
-* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
-* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)
+* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/blob/master/sklearn/README.md#algorithms-parameters)
+* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
+* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
+* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)
 
 ## Legacy automatic building and running
 - Run `make`. This will generate data, compile benchmarks, and run them.
