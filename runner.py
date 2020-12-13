@@ -108,6 +108,9 @@ parser.add_argument('--verbose', default=False, action='store_true',
                          'benchmarks running')
 parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
                     help='Output type of benchmarks to use with their runner')
+parser.add_argument('--output-file', default='results.json', type=argparse.FileType('w'),
+                    help='Output file of benchmarks to use with their runner')
+
 args = parser.parse_args()
 env = os.environ.copy()
 verbose_mode = args.verbose
@@ -117,64 +120,64 @@ os.makedirs('data', exist_ok=True)
 
 csv_result = ''
 json_result = {'hardware': {}, 'software': {}, 'results': []}
-if 'Linux' in platform():
-    # get CPU information
-    lscpu_info, _ = read_output_from_command('lscpu')
-    # remove excess spaces in CPU info output
-    while '  ' in lscpu_info:
-        lscpu_info = lscpu_info.replace('  ', ' ')
-    lscpu_info = lscpu_info.split('\n')
-    for i in range(len(lscpu_info)):
-        lscpu_info[i] = lscpu_info[i].split(': ')
-    json_result['hardware'].update(
-        {'CPU': {line[0]: line[1] for line in lscpu_info}})
-    if 'CPU MHz' in json_result['hardware']['CPU'].keys():
-        del json_result['hardware']['CPU']['CPU MHz']
-    # get RAM size
-    mem_info, _ = read_output_from_command('free -b')
-    mem_info = mem_info.split('\n')[1]
-    while '  ' in mem_info:
-        mem_info = mem_info.replace('  ', ' ')
-    mem_info = int(mem_info.split(' ')[1]) / 2 ** 30
-    json_result['hardware'].update({'RAM size[GB]': mem_info})
-    # get GPU information
-    try:
-        gpu_info, _ = read_output_from_command(
-            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
-            '--format=csv,noheader')
-        gpu_info = gpu_info.split(', ')
-        json_result['hardware'].update({
-            'GPU': {
-                'Name': gpu_info[0],
-                'Memory size': gpu_info[1],
-                'Performance mode': gpu_info[3]
-            }
-        })
-        json_result['software'].update(
-            {'GPU_driver': {'version': gpu_info[2]}})
-        # alert if GPU is already running any processes
-        gpu_processes, _ = read_output_from_command(
-            'nvidia-smi --query-compute-apps=name,pid,used_memory '
-            '--format=csv,noheader')
-        if gpu_processes != '':
-            print(f'There are running processes on GPU:\n{gpu_processes}',
-                  file=sys.stderr)
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
+# if 'Linux' in platform():
+#     # get CPU information
+#     lscpu_info, _ = read_output_from_command('lscpu')
+#     # remove excess spaces in CPU info output
+#     while '  ' in lscpu_info:
+#         lscpu_info = lscpu_info.replace('  ', ' ')
+#     lscpu_info = lscpu_info.split('\n')
+#     for i in range(len(lscpu_info)):
+#         lscpu_info[i] = lscpu_info[i].split(': ')
+#     json_result['hardware'].update(
+#         {'CPU': {line[0]: line[1] for line in lscpu_info}})
+#     if 'CPU MHz' in json_result['hardware']['CPU'].keys():
+#         del json_result['hardware']['CPU']['CPU MHz']
+#     # get RAM size
+#     mem_info, _ = read_output_from_command('free -b')
+#     mem_info = mem_info.split('\n')[1]
+#     while '  ' in mem_info:
+#         mem_info = mem_info.replace('  ', ' ')
+#     mem_info = int(mem_info.split(' ')[1]) / 2 ** 30
+#     json_result['hardware'].update({'RAM size[GB]': mem_info})
+#     # get GPU information
+#     try:
+#         gpu_info, _ = read_output_from_command(
+#             'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
+#             '--format=csv,noheader')
+#         gpu_info = gpu_info.split(', ')
+#         json_result['hardware'].update({
+#             'GPU': {
+#                 'Name': gpu_info[0],
+#                 'Memory size': gpu_info[1],
+#                 'Performance mode': gpu_info[3]
+#             }
+#         })
+#         json_result['software'].update(
+#             {'GPU_driver': {'version': gpu_info[2]}})
+#         # alert if GPU is already running any processes
+#         gpu_processes, _ = read_output_from_command(
+#             'nvidia-smi --query-compute-apps=name,pid,used_memory '
+#             '--format=csv,noheader')
+#         if gpu_processes != '':
+#             print(f'There are running processes on GPU:\n{gpu_processes}',
+#                   file=sys.stderr)
+#     except (FileNotFoundError, json.JSONDecodeError):
+#         pass
 
-# get python packages info from conda
-try:
-    conda_list, _ = read_output_from_command('conda list --json')
-    needed_columns = ['version', 'build_string', 'channel']
-    conda_list = json.loads(conda_list)
-    for pkg in conda_list:
-        pkg_info = {}
-        for col in needed_columns:
-            if col in pkg.keys():
-                pkg_info.update({col: pkg[col]})
-        json_result['software'].update({pkg['name']: pkg_info})
-except (FileNotFoundError, json.JSONDecodeError):
-    pass
+# # get python packages info from conda
+# try:
+#     conda_list, _ = read_output_from_command('conda list --json')
+#     needed_columns = ['version', 'build_string', 'channel']
+#     conda_list = json.loads(conda_list)
+#     for pkg in conda_list:
+#         pkg_info = {}
+#         for col in needed_columns:
+#             if col in pkg.keys():
+#                 pkg_info.update({col: pkg[col]})
+#         json_result['software'].update({pkg['name']: pkg_info})
+# except (FileNotFoundError, json.JSONDecodeError):
+#     pass
 
 batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
 json_result.update({'measurement_time': time.time()})
@@ -221,6 +224,9 @@ for config_name in args.configs.split(','):
                     dataset_name = dataset['name']
                 else:
                     dataset_name = 'unknown'
+
+                print("dataset: ", dataset)
+
             elif dataset['source'] == 'synthetic':
                 class GenerationArgs:
                     pass
@@ -294,8 +300,9 @@ for config_name in args.configs.split(','):
                     for var in config['omp_env']:
                         env[var] = omp_env[var]
                 for i, case in enumerate(cases):
-                    command = f'python {lib}/{algorithm}.py --batch {batch} ' \
-                              + f'--arch {hostname} --header --output-format ' \
+
+                    command = f'python {lib}_bench/{algorithm}.py --batch {batch} ' \
+                              + f'--arch {hostname} --output-format ' \
                               + f'{args.output_format}{case} {paths} ' \
                               + f'--dataset-name {dataset_name}'
                     while '  ' in command:
@@ -306,6 +313,9 @@ for config_name in args.configs.split(','):
                         stdout, stderr = read_output_from_command(command)
                         stdout, extra_stdout = filter_stdout(stdout)
                         stderr = filter_stderr(stderr)
+
+                        print(stdout, end='\n')
+
                         if extra_stdout != '':
                             stderr += f'CASE {case} EXTRA OUTPUT:\n' \
                                       + f'{extra_stdout}\n'
@@ -315,13 +325,8 @@ for config_name in args.configs.split(','):
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                           + f'{decoding_exception}\n{stdout}\n'
-                        elif args.output_format == 'csv':
-                            csv_result += stdout + '\n'
                         if stderr != '':
                             print(stderr, file=sys.stderr)
 
 if args.output_format == 'json':
-    json_result = json.dumps(json_result, indent=4)
-    print(json_result, end='\n')
-elif args.output_format == 'csv':
-    print(csv_result, end='')
+    json.dump(json_result, args.output_file, indent=4)

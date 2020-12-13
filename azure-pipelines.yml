@@ -1,0 +1,27 @@
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -q -y -n  -c conda-forge bench python=3.7 pandas daal4py scikit-learn xgboost
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/config_example.json
+    displayName: Run bench
+- job: Pep8
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.7'
+        addToPath: true
+  - script: |
+      python -m pip install --upgrade pip setuptools
+      pip install flake8
+      flake8 --count
+    displayName: 'PEP 8 check'
