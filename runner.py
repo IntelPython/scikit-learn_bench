@@ -228,5 +228,5 @@ if __name__ == '__main__':
     json.dump(json_result, args.output_file, indent=4)
 
     if not is_successful:
-        logging.warning(f'There were runtime errors')
+        logging.warning('benchmark running had runtime errors')
         sys.exit(1)

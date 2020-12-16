@@ -22,8 +22,8 @@ import bench
 from sklearn.decomposition import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
-parser.add_argument('--svd-solver', type=str, choices=['daal', 'full'],
-                    default='daal', help='SVD solver to use')
+parser.add_argument('--svd-solver', type=str, choices=['full'],
+                    default='full', help='SVD solver to use')
 parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
 parser.add_argument('--whiten', action='store_true', default=False,
