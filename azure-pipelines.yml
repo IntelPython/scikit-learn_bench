@@ -6,7 +6,7 @@ jobs:
   - script: |
       conda update -y -q conda
       export FORCE_DAAL4PY_SKLEARN=yes
-      conda create -q -y  -n bench -c conda-forge bench python=3.7 pandas daal4py scikit-learn
+      conda create -q -y -n bench -c conda-forge python=3.7 pandas daal4py scikit-learn
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
