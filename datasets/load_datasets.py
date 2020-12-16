@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import os
 import sys
@@ -23,7 +23,7 @@ from .loader import *
 
 dataset_loaders = {
     "a9a": a9a,
-    # "gisette": gisette,
+    "gisette": gisette,
     "ijcnn": ijcnn,
     "skin_segmentation": skin_segmentation,
     "klaverjas": klaverjas,
@@ -32,6 +32,7 @@ dataset_loaders = {
     "sensit": sensit,
     "covertype": covertype,
 }
+
 
 def try_load_dataset(dataset_name, output_directory):
     if dataset_name in dataset_loaders.keys():
@@ -45,9 +46,12 @@ def try_load_dataset(dataset_name, output_directory):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Use \'-d\' or \'--datasets\' option to enumerate dataset(s) which should be downloaded')
-    parser.add_argument('-l', '--list', action='store_const', const=True, help='list of available datasets')
-    parser.add_argument('-d', '--datasets', type=str, nargs='*', help='datasets which should be downloaded')
+    parser = argparse.ArgumentParser(
+        description='Use \'-d\' or \'--datasets\' option to enumerate dataset(s) which should be downloaded')
+    parser.add_argument('-l', '--list', action='store_const',
+                        const=True, help='list of available datasets')
+    parser.add_argument('-d', '--datasets', type=str, nargs='*',
+                        help='datasets which should be downloaded')
     args = parser.parse_args()
 
     if args.list:
@@ -61,8 +65,8 @@ if __name__ == '__main__':
         for val in dataset_loaders.values():
             val(root_dir)
     elif len(args.datasets) == 0:
-        print('Warning: Enumerate dataset(s) which should be downloaded')
+        logging.warning('Warning: Enumerate dataset(s) which should be downloaded')
     else:
-        for key,val in dataset_loaders.items():
+        for key, val in dataset_loaders.items():
             if key in args.datasets:
                 val(root_dir)

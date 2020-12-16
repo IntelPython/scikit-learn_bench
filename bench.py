@@ -11,7 +11,6 @@ import json
 import os
 import sys
 
-
 if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
     try:
         from daal4py.sklearn import patch_sklearn

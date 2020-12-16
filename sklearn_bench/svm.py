@@ -13,7 +13,7 @@ from bench import (
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
-
+import logging
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
