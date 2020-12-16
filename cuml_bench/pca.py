@@ -1,11 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 from cuml import PCA
 
 parser = argparse.ArgumentParser(description='cuML PCA benchmark')
@@ -16,10 +29,10 @@ parser.add_argument('--n-components', type=int, default=None,
                     help='Number of components to find')
 parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
-params = parse_args(parser, size=(10000, 1000))
+params = bench.parse_args(parser)
 
 # Load random data
-X_train, X_test, _, _ = load_data(params, generated_data=['X_train'])
+X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])
 
 if params.n_components is None:
     p, n = X_train.shape
@@ -33,14 +46,14 @@ columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
            'svd_solver', 'n_components', 'whiten', 'time')
 
 # Time fit
-fit_time, _ = measure_function_time(pca.fit, X_train, params=params)
+fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
 
 # Time transform
-transform_time, _ = measure_function_time(
+transform_time, _ = bench.measure_function_time(
     pca.transform, X_train, params=params)
 
-print_output(library='cuml', algorithm='pca',
-             stages=['training', 'transformation'], columns=columns,
+bench.print_output(library='cuml', algorithm='pca',
+             stages=['training', 'transformation'],
              params=params, functions=['PCA.fit', 'PCA.transform'],
              times=[fit_time, transform_time], accuracy_type=None,
              accuracies=[None, None], data=[X_train, X_test],

@@ -1,11 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output, convert_to_numpy
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 import numpy as np
 from cuml import KMeans
 import warnings
@@ -25,7 +38,7 @@ parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
 
 # Load and convert generated data
-X_train, X_test, _, _ = load_data(params)
+X_train, X_test, _, _ = bench.load_data(params)
 
 if params.filei == 'k-means++':
     X_init = 'k-means++'
@@ -43,10 +56,6 @@ else:
     else:
         X_init = X_train[centroids_idx]
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'n_clusters', 'time')
-
-
 # Workaround for cuML kmeans fail
 # when second call of 'fit' method causes AttributeError
 def kmeans_fit(X):
@@ -58,24 +67,24 @@ def kmeans_fit(X):
 
 
 # Time fit
-fit_time, kmeans = measure_function_time(kmeans_fit, X_train, params=params)
+fit_time, kmeans = bench.measure_function_time(kmeans_fit, X_train, params=params)
 train_predict = kmeans.predict(X_train)
 
 # Time predict
-predict_time, test_predict = measure_function_time(kmeans.predict, X_test, params=params)
+predict_time, test_predict = bench.measure_function_time(kmeans.predict, X_test, params=params)
 
-X_train_host = convert_to_numpy(X_train)
-train_predict_host = convert_to_numpy(train_predict)
+X_train_host = bench.convert_to_numpy(X_train)
+train_predict_host = bench.convert_to_numpy(train_predict)
 acc_train = davies_bouldin_score(X_train_host, train_predict_host)
 
-X_test_host = convert_to_numpy(X_test)
-test_predict_host = convert_to_numpy(test_predict)
+X_test_host = bench.convert_to_numpy(X_test)
+test_predict_host = bench.convert_to_numpy(test_predict)
 
 acc_test = davies_bouldin_score(X_test_host, test_predict_host)
 
-print_output(library='cuml', algorithm='kmeans',
-             stages=['training', 'prediction'], columns=columns,
-             params=params, functions=['KMeans.fit', 'KMeans.predict'],
+bench.print_output(library='cuml', algorithm='kmeans',
+             stages=['training', 'prediction'], params=params, 
+             functions=['KMeans.fit', 'KMeans.predict'],
              times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
              accuracies=[acc_train, acc_test], data=[X_train, X_test],
              alg_instance=kmeans)

@@ -1,11 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output, accuracy_score
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 import numpy as np
 from cuml.neighbors import KNeighborsClassifier
 
@@ -23,10 +36,10 @@ parser.add_argument('--method', type=str, default='brute',
                     help='Algorithm used to compute the nearest neighbors')
 parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load generated data
-X_train, X_test, y_train, y_test = load_data(params)
+X_train, X_test, y_train, y_test = bench.load_data(params)
 params.n_classes = y_train[y_train.columns[0]].nunique()
 
 # Create classification object
@@ -36,31 +49,28 @@ knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
                                 metric=params.metric)
 
 # Measure time and accuracy on fitting
-train_time, _ = measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
+train_time, _ = bench.measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
 if params.task == 'classification':
     y_pred = knn_clsf.predict(X_train)
-    train_acc = 100 * accuracy_score(y_pred, y_train)
+    train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 
 # Measure time and accuracy on prediction
 if params.task == 'classification':
-    predict_time, yp = measure_function_time(knn_clsf.predict, X_test, params=params)
-    test_acc = 100 * accuracy_score(yp, y_test)
+    predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test, params=params)
+    test_acc = 100 * bench.accuracy_score(yp, y_test)
 else:
-    predict_time, _ = measure_function_time(knn_clsf.kneighbors, X_test, params=params)
-
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'n_neighbors', 'n_classes', 'time')
+    predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test, params=params)
 
 if params.task == 'classification':
     print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_classification',
-                 stages=['training', 'prediction'], columns=columns, params=params,
+                 stages=['training', 'prediction'], params=params,
                  functions=['knn_clsf.fit', 'knn_clsf.predict'],
                  times=[train_time, predict_time],
                  accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
                  data=[X_train, X_test], alg_instance=knn_clsf)
 else:
     print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_search',
-                 stages=['training', 'search'], columns=columns, params=params,
+                 stages=['training', 'search'], params=params,
                  functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
                  times=[train_time, predict_time],
                  data=[X_train, X_test], alg_instance=knn_clsf)

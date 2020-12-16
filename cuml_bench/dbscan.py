@@ -1,9 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import parse_args, measure_function_time, load_data, print_output, convert_to_numpy
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 from cuml import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
 
@@ -13,29 +28,26 @@ parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
 parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load generated data
-X, _, _, _ = load_data(params)
+X, _, _, _ = bench.load_data(params)
 
 # Create our clustering object
 dbscan = DBSCAN(eps=params.eps,
                 min_samples=params.min_samples)
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'n_clusters', 'time')
-
 # Time fit
 time, _ = measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
 
-X_host = convert_to_numpy(X)
-labels_host = convert_to_numpy(labels)
+X_host = bench.convert_to_numpy(X)
+labels_host = bench.convert_to_numpy(labels)
 
 acc = davies_bouldin_score(X_host, labels_host)
 params.n_clusters = len(set(labels_host)) - (1 if -1 in labels_host else 0)
 
 print_output(library='cuml', algorithm='dbscan', stages=['training'],
-             columns=columns, params=params, functions=['DBSCAN'],
-             times=[time], accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
+             params=params, functions=['DBSCAN'], times=[time], 
+             accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
              alg_instance=dbscan)
