@@ -1,5 +1,5 @@
 jobs:
-- job: Linux Scikit-Learn
+- job: Linux_Sklearn
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -13,7 +13,7 @@ jobs:
       conda activate bench
       python runner.py --configs configs/testing/sklearn.json
     displayName: Run bench
-- job: Linux XGBoost
+- job: Linux_XGBoost
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -26,7 +26,7 @@ jobs:
       conda activate bench
       python runner.py --configs configs/testing/xgboost.json
     displayName: Run bench
-- job: Linux daal4py
+- job: Linux_daal4py
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
