@@ -10,12 +10,16 @@ import subprocess
 import multiprocessing
 import json
 import time
+import warnings
 import socket
+import logging
+
+from pathlib import Path
 from platform import platform
-from make_datasets import (
+from datasets.make_datasets import (
     gen_regression, gen_classification, gen_kmeans, gen_blobs
 )
-
+from datasets.load_datasets import try_load_dataset
 
 def verbose_print(text, **kwargs):
     global verbose_mode
@@ -67,7 +71,7 @@ def generate_cases(params):
     for i in range(n_param_values):
         for j in range(prev_length):
             cases[prev_length * i + j] += f' {dashes}{param_name} ' \
-                                          + f'{params[param_name][i]}'
+                + f'{params[param_name][i]}'
     del params[param_name]
     generate_cases(params)
 
@@ -103,17 +107,21 @@ parser.add_argument('--configs', metavar='ConfigPath', type=str,
 parser.add_argument('--dummy-run', default=False, action='store_true',
                     help='Run configuration parser and datasets generation'
                          'without benchmarks running')
-parser.add_argument('--verbose', default=False, action='store_true',
-                    help='Print additional information during'
-                         'benchmarks running')
 parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
                     help='Output type of benchmarks to use with their runner')
 parser.add_argument('--output-file', default='results.json', type=argparse.FileType('w'),
                     help='Output file of benchmarks to use with their runner')
+parser.add_argument('--verbose', default='INFO', type=str, 
+                    choices=("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"),
+                        help='Print additional information during benchmarks running')
 
 args = parser.parse_args()
 env = os.environ.copy()
 verbose_mode = args.verbose
+
+
+logging.basicConfig(stream=sys.stdout, format='%(levelname)s: %(message)s', level=verbose_mode)
+
 
 # make directory for data if it doesn't exist
 os.makedirs('data', exist_ok=True)
@@ -191,6 +199,14 @@ omp_env = {
     'OMP_NUM_THREADS': omp_num_threads
 }
 
+
+def is_exists_files(files):
+    for f in files:
+        if not os.path.isfile(f):
+            return False
+    return True
+
+
 for config_name in args.configs.split(','):
     verbose_print(f'Config: {config_name}')
     with open(config_name, 'r') as config_file:
@@ -213,19 +229,30 @@ for config_name in args.configs.split(','):
 
         for dataset in params_set['dataset']:
             if dataset['source'] in ['csv', 'npy']:
-                paths = f'--file-X-train {dataset["training"]["x"]}'
+                train_data = dataset["training"]
+                test_data = dataset["testing"]
+
+                file_train_data_x = train_data["x"]
+                file_train_data_y = train_data["y"]
+                file_test_data_x = test_data["x"]
+                file_test_data_y = test_data["y"]
+                paths = f'--file-X-train {file_train_data_x}'
                 if 'y' in dataset['training'].keys():
-                    paths += f' --file-y-train {dataset["training"]["y"]}'
+                    paths += f' --file-y-train {file_train_data_y}'
                 if 'testing' in dataset.keys():
-                    paths += f' --file-X-test {dataset["testing"]["x"]}'
+                    paths += f' --file-X-test {file_test_data_x}'
                     if 'y' in dataset['testing'].keys():
-                        paths += f' --file-y-test {dataset["testing"]["y"]}'
+                        paths += f' --file-y-test {file_test_data_y}'
                 if 'name' in dataset.keys():
                     dataset_name = dataset['name']
                 else:
                     dataset_name = 'unknown'
 
-                print("dataset: ", dataset)
+                if not is_exists_files([file_train_data_x, file_train_data_y]):
+                    directory_dataset = Path(file_train_data_x).parent
+                    if not try_load_dataset(dataset_name=dataset_name, output_directory=directory_dataset):
+                        logging.warning(f'Dataset {dataset_name} could not be loaded. \n'
+                                        'Check the correct name or expand the download in the folder dataset.')
 
             elif dataset['source'] == 'synthetic':
                 class GenerationArgs:
@@ -302,9 +329,9 @@ for config_name in args.configs.split(','):
                 for i, case in enumerate(cases):
 
                     command = f'python {lib}_bench/{algorithm}.py --batch {batch} ' \
-                              + f'--arch {hostname} --output-format ' \
-                              + f'{args.output_format}{case} {paths} ' \
-                              + f'--dataset-name {dataset_name}'
+                        + f'--arch {hostname} --output-format ' \
+                        + f'{args.output_format}{case} {paths} ' \
+                        + f'--dataset-name {dataset_name}'
                     while '  ' in command:
                         command = command.replace('  ', ' ')
                     verbose_print(command)
@@ -318,13 +345,14 @@ for config_name in args.configs.split(','):
 
                         if extra_stdout != '':
                             stderr += f'CASE {case} EXTRA OUTPUT:\n' \
-                                      + f'{extra_stdout}\n'
+                                + f'{extra_stdout}\n'
                         if args.output_format == 'json':
                             try:
-                                json_result['results'].extend(json.loads(stdout))
+                                json_result['results'].extend(
+                                    json.loads(stdout))
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
-                                          + f'{decoding_exception}\n{stdout}\n'
+                                    + f'{decoding_exception}\n{stdout}\n'
                         if stderr != '':
                             print(stderr, file=sys.stderr)
 

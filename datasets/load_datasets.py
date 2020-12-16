@@ -17,39 +17,32 @@
 import os
 import sys
 import argparse
+import logging
 
-
-sys.path.append("a9a")
-sys.path.append("gisette")
-sys.path.append("ijcnn")
-sys.path.append("skin_segmentation")
-sys.path.append("adult")
-sys.path.append("connect")
-sys.path.append("mnist")
-sys.path.append("sensit")
-sys.path.append("covertype")
-
-from a9a_loader import a9a
-from gisette_loader import gisette
-from ijcnn_loader import ijcnn
-from skin_segmentation_loader import skin_segmentation
-from adult_loader import adult
-from connect_loader import connect
-from mnist_loader import mnist
-from sensit_loader import sensit
-from covertype_loader import covertype
+from .loader import *
 
 dataset_loaders = {
     "a9a": a9a,
-    "gisette": gisette,
+    # "gisette": gisette,
     "ijcnn": ijcnn,
     "skin_segmentation": skin_segmentation,
-    "adult": adult,
+    "klaverjas": klaverjas,
     "connect": connect,
     "mnist": mnist,
     "sensit": sensit,
     "covertype": covertype,
 }
+
+def try_load_dataset(dataset_name, output_directory):
+    if dataset_name in dataset_loaders.keys():
+        try:
+            return dataset_loaders[dataset_name](output_directory)
+        except:
+            logging.warning("Internal error loading dataset")
+            return False
+    else:
+        return False
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Use \'-d\' or \'--datasets\' option to enumerate dataset(s) which should be downloaded')
