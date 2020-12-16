@@ -3,8 +3,9 @@
 
 **scikit-learn_bench** benchmarks various implementations of machine learning algorithms across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks and algorithms.  It currently support the [scikit-learn](https://scikit-learn.org/), [DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml), and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used [machine learning algorithms](#supported-algorithms).
 
-See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
+## Our articles
 
+https://medium.com/intel-analytics-software
 
 ## Table of content
 
@@ -14,7 +15,6 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Supported algorithms](#supported-algorithms)
 * [Algorithms parameters](#algorithms-parameters)
-* [Legacy automatic building and running](#legacy-automatic-building-and-running)
 
 ## Prerequisites
 - `python` and `scikit-learn` to run python versions
@@ -40,8 +40,8 @@ Run `python runner.py --configs configs/config_example.json [--output-format jso
 runner options:
 * ``configs`` : configuration files paths
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running
-* ``verbose`` : print additional information during benchmarks running
-* ``output-format``: *json* or *csv*. Output type of benchmarks to use with their runner
+* ``verbose`` : *WARNING*, *INFO*, *DEBUG*. Print additional information during benchmarks running. Default is *INFO*
+* ``output-file``: Output file name for result benchmarks
 
 Benchmarks currently support the following frameworks:
 * **scikit-learn**
