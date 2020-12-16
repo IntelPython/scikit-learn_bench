@@ -77,6 +77,7 @@ if __name__ == '__main__':
     os.makedirs('data', exist_ok=True)
 
     json_result = {'hardware': {}, 'software': {}, 'results': []}
+    is_successful = True
 
     for config_name in args.configs.split(','):
         logging.info(f'Config: {config_name}')
@@ -221,6 +222,11 @@ if __name__ == '__main__':
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'
                             if stderr != '':
+                                is_successful = False
                                 print(stderr, file=sys.stderr)
 
     json.dump(json_result, args.output_file, indent=4)
+
+    if not is_successful:
+        logging.warning(f'There were runtime errors')
+        sys.exit(1)
