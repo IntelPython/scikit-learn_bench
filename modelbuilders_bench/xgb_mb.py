@@ -1,6 +1,23 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
+
+import sys, os
+import argparse
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
 
 import argparse
 import daal4py
@@ -9,8 +26,6 @@ from os import environ
 from typing import Tuple
 import xgboost as xgb
 
-
-from bench import load_data, measure_function_time, parse_args, rmse_score
 from utils import get_accuracy, print_output
 
 
@@ -64,7 +79,7 @@ parser.add_argument('--tree-method', type=str, required=True,
 
 params = parse_args(parser)
 
-X_train, X_test, y_train, y_test = load_data(params)
+X_train, X_test, y_train, y_test = bench.load_data(params)
 
 xgb_params = {
     'booster': 'gbtree',
@@ -116,9 +131,9 @@ else:
     if params.n_classes > 2:
         xgb_params['num_class'] = params.n_classes
 
-t_creat_train, dtrain = measure_function_time(xgb.DMatrix, X_train, params=params, label=y_train)
+t_creat_train, dtrain = bench.measure_function_time(xgb.DMatrix, X_train, params=params, label=y_train)
 
-t_creat_test, dtest = measure_function_time(xgb.DMatrix, X_test, params=params)
+t_creat_test, dtest = bench.measure_function_time(xgb.DMatrix, X_test, params=params)
 
 
 def fit(dmatrix=None):
@@ -157,12 +172,11 @@ else:
         predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 
-print_output(
+bench.print_output(
     library='modelbuilders', algorithm=f'xgboost_{task}_and_modelbuilder',
     stages=['xgboost_train', 'xgboost_predict', 'daal4py_predict'],
-    columns=columns, params=params,
-    functions=['xgb_dmatrix', 'xgb_dmatrix', 'xgb_train', 'xgb_predict', 'xgb_to_daal',
-               'daal_compute'],
+    params=params, functions=['xgb_dmatrix', 'xgb_dmatrix', 
+        'xgb_train', 'xgb_predict', 'xgb_to_daal', 'daal_compute'],
     times=[t_creat_train, t_train, t_creat_test, t_xgb_pred, t_trans, t_daal_pred],
     accuracy_type=metric_name, accuracies=[train_metric, test_metric_xgb, test_metric_daal],
     data=[X_train, X_test, X_test])

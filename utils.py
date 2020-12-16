@@ -3,6 +3,31 @@ import sys
 import subprocess
 import multiprocessing
 
+def filter_stderr(text):
+    # delete 'Intel(R) DAAL usage in sklearn' messages
+    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers for sklearn enabled: ' + \
+                         'https://intelpython.github.io/daal4py/sklearn.html'
+    while fake_error_message in text:
+        text = text.replace(fake_error_message, '')
+    return text
+
+def filter_stdout(text):
+    verbosity_letters = 'EWIDT'
+    filtered, extra = '', ''
+    for line in text.split('\n'):
+        if line == '':
+            continue
+        to_remove = False
+        for letter in verbosity_letters:
+            if line.startswith(f'[{letter}]'):
+                to_remove = True
+                break
+        if to_remove:
+            extra += line + '\n'
+        else:
+            filtered += line + '\n'
+    return filtered, extra
+
 def is_exists_files(files):
     for f in files:
         if not os.path.isfile(f):

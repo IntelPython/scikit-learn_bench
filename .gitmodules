@@ -1,3 +1,0 @@
-[submodule "native/CLI11"]
-	path = native/CLI11
-	url = https://github.com/CLIUtils/CLI11.git

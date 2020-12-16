@@ -1,9 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
-from bench import measure_function_time, parse_args, load_data, print_output
+
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
 from sklearn.model_selection import train_test_split
 
 parser = argparse.ArgumentParser(
@@ -22,10 +37,10 @@ parser.add_argument('--rng', default=None,
                              'NONDETERM', None),
                     help='Random numbers generator for shuffling '
                          '(only for IDP scikit-learn)')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load generated data
-X, y, _, _ = load_data(params)
+X, y, _, _ = bench.load_data(params)
 
 if params.include_y:
     data_args = (X, y)
@@ -42,13 +57,10 @@ tts_params = {
 if params.rng is not None:
     tts_params['rng'] = params.rng
 
-time, _ = measure_function_time(train_test_split, *data_args, **tts_params,
+time, _ = bench.measure_function_time(train_test_split, *data_args, **tts_params,
                                 params=params)
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'time')
-
-print_output(library='sklearn', algorithm='train_test_split',
-             stages=['training'], columns=columns, params=params,
+bench.print_output(library='sklearn', algorithm='train_test_split',
+             stages=['training'], params=params,
              functions=['train_test_split'], times=[time], accuracies=[None],
              accuracy_type=None, data=[X], alg_params=tts_params)

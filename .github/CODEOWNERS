@@ -1,0 +1,7 @@
+#owners and reviewers
+/sklearn_bench/       @PetrovKP
+/daal4py_bench/       @PetrovKP
+/cuml_bench/          @PetrovKP
+/datasets/            @PetrovKP
+/modelbuilders_bench/ @ShvetsKS
+/xgboost_bench/       @ShvetsKS

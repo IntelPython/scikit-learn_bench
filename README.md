@@ -5,7 +5,7 @@
 
 ## Our articles
 
-https://medium.com/intel-analytics-software
+https://medium.com/intel-analytics-software/tagged/machine-learning
 
 ## Table of content
 

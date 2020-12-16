@@ -1,9 +1,24 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import measure_function_time, parse_args, load_data, print_output
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
 
@@ -13,10 +28,10 @@ parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
 parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
-params = parse_args(parser, n_jobs_supported=True)
+params = bench.parse_args(parser, n_jobs_supported=True)
 
 # Load generated data
-X, _, _, _ = load_data(params, add_dtype=True)
+X, _, _, _ = bench.load_data(params, add_dtype=True)
 
 # Create our clustering object
 dbscan = DBSCAN(eps=params.eps, n_jobs=params.n_jobs,
@@ -27,17 +42,14 @@ dbscan = DBSCAN(eps=params.eps, n_jobs=params.n_jobs,
 # daal4py-patched scikit-learn, and probably 'kdtree' when running unpatched
 # scikit-learn.
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'n_clusters', 'time')
-
 # Time fit
-time, _ = measure_function_time(dbscan.fit, X, params=params)
+time, _ = bench.measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
 
 params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 acc = davies_bouldin_score(X, labels)
 
-print_output(library='sklearn', algorithm='dbscan', stages=['training'],
-             columns=columns, params=params, functions=['DBSCAN'],
-             times=[time], accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
+bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
+             params=params, functions=['DBSCAN'], times=[time], accuracies=[acc], 
+             accuracy_type='davies_bouldin_score', data=[X],
              alg_instance=dbscan)

@@ -1,7 +1,18 @@
-# Copyright (C) 2017-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
 import numpy as np
@@ -67,6 +78,28 @@ def float_or_int(string):
     else:
         return int(string)
 
+def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
+    '''
+    Get an optimal cache size for sklearn.svm.SVC.
+
+    Parameters
+    ----------
+    n_rows : int
+        Number of rows in the dataset
+    dtype : dtype-like, optional (default np.double)
+        dtype to use for computing cache size
+    max_cache : int, optional (default 64)
+        Maximum cache size, in gigabytes
+    '''
+
+    byte_size = np.empty(0, dtype=dtype).itemsize
+    optimal_cache_size_bytes = byte_size * (n_rows ** 2)
+    one_gb = 2 ** 30
+    max_cache_bytes = max_cache * one_gb
+    if optimal_cache_size_bytes > max_cache_bytes:
+        return max_cache_bytes
+    else:
+        return optimal_cache_size_bytes
 
 def parse_args(parser, size=None, loop_types=(),
                n_jobs_supported=False, prefix='sklearn'):

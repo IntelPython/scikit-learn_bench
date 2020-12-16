@@ -9,7 +9,7 @@ __work*
 .vs*
 
 # Datasets
-dataset
 data
 *.csv
 *.npy
+results.json

@@ -1,15 +1,23 @@
-# Copyright (C) 2017-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
-
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from bench import (
-    parse_args, measure_function_time, load_data, print_output
-)
+import bench
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import davies_bouldin_score
@@ -22,10 +30,10 @@ parser.add_argument('-t', '--tol', type=float, default=0.,
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load and convert generated data
-X_train, X_test, _, _ = load_data(params)
+X_train, X_test, _, _ = bench.load_data(params)
 
 if params.filei == 'k-means++':
     X_init = 'k-means++'
@@ -52,18 +60,18 @@ def fit_kmeans(X):
     return alg
 
 # Time fit
-fit_time, kmeans = measure_function_time(fit_kmeans, X_train, params=params)
+fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train, params=params)
 
 train_predict = kmeans.predict(X_train)
 acc_train = davies_bouldin_score(X_train, train_predict)
 
 # Time predict
-predict_time, test_predict = measure_function_time(
+predict_time, test_predict = bench.measure_function_time(
     kmeans.predict, X_test, params=params)
 
 acc_test = davies_bouldin_score(X_test, test_predict)
 
-print_output(library='sklearn', algorithm='kmeans',
+bench.print_output(library='sklearn', algorithm='kmeans',
              stages=['training', 'prediction'],
              params=params, functions=['KMeans.fit', 'KMeans.predict'],
              times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',

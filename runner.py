@@ -1,51 +1,31 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
 import os
 import sys
 import json
-import time
-import warnings
 import socket
 import logging
+import pathlib
+
+import datasets.make_datasets as make_datasets
 import utils
 
-from pathlib import Path
-from datasets.make_datasets import (
-    gen_regression, gen_classification, gen_blobs
-)
 from datasets.load_datasets import try_load_dataset
-
-
-def filter_stderr(text):
-    # delete 'Intel(R) DAAL usage in sklearn' messages
-    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers for sklearn enabled: ' + \
-                         'https://intelpython.github.io/daal4py/sklearn.html'
-    while fake_error_message in text:
-        text = text.replace(fake_error_message, '')
-    return text
-
-
-def filter_stdout(text):
-    verbosity_letters = 'EWIDT'
-    filtered, extra = '', ''
-    for line in text.split('\n'):
-        if line == '':
-            continue
-        to_remove = False
-        for letter in verbosity_letters:
-            if line.startswith(f'[{letter}]'):
-                to_remove = True
-                break
-        if to_remove:
-            extra += line + '\n'
-        else:
-            filtered += line + '\n'
-    return filtered, extra
-
 
 def generate_cases(params):
     '''
@@ -67,9 +47,6 @@ def generate_cases(params):
     del params[param_name]
     generate_cases(params)
 
-
-hostname = socket.gethostname()
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -84,12 +61,14 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', default='INFO', type=str,
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
-
+    parser.add_argument('--report', default=False, action='store_true',
+                        help='Generator exel report by result of benchmarks')
     args = parser.parse_args()
     env = os.environ.copy()
 
     logging.basicConfig(
         stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
+    hostname = socket.gethostname()
 
     # make directory for data if it doesn't exist
     os.makedirs('data', exist_ok=True)
@@ -138,7 +117,7 @@ if __name__ == '__main__':
                         dataset_name = 'unknown'
 
                     if not utils.is_exists_files([file_train_data_x, file_train_data_y]):
-                        directory_dataset = Path(file_train_data_x).parent
+                        directory_dataset = pathlib.Path(file_train_data_x).parent
                         if not try_load_dataset(dataset_name=dataset_name, output_directory=directory_dataset):
                             logging.warning(f'Dataset {dataset_name} could not be loaded. \n'
                                             'Check the correct name or expand the download in the folder dataset.')
@@ -193,11 +172,11 @@ if __name__ == '__main__':
 
                     if not args.dummy_run and not os.path.isfile(gen_args.filex):
                         if gen_args.type == 'regression':
-                            gen_regression(gen_args)
+                            make_datasets.gen_regression(gen_args)
                         elif gen_args.type == 'classification':
-                            gen_classification(gen_args)
+                            make_datasets.gen_classification(gen_args)
                         elif gen_args.type == 'blobs':
-                            gen_blobs(gen_args)
+                            make_datasets.gen_blobs(gen_args)
                     dataset_name = f'synthetic_{gen_args.type}'
                 else:
                     logging.warning('Unknown dataset source. Only synthetics datasets '
@@ -221,8 +200,8 @@ if __name__ == '__main__':
                             case = f'{lib},{algorithm} ' + case
                             stdout, stderr = utils.read_output_from_command(
                                 command)
-                            stdout, extra_stdout = filter_stdout(stdout)
-                            stderr = filter_stderr(stderr)
+                            stdout, extra_stdout = utils.filter_stdout(stdout)
+                            stderr = utils.filter_stderr(stderr)
 
                             print(stdout, end='\n')
 

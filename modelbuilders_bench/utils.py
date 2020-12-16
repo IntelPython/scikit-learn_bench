@@ -1,12 +1,21 @@
-# Copyright (C) 2017-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
-
-from bench import print_header, print_row
 import json
 import numpy as np
-
 
 def get_accuracy(true_labels, prediction):
     errors = 0
@@ -25,17 +34,9 @@ def get_accuracy(true_labels, prediction):
     return 100 * (1 - errors/len(true_labels))
 
 
-def print_output(library, algorithm, stages, columns, params, functions,
+def print_output(library, algorithm, stages, params, functions,
                  times, accuracy_type, accuracies, data):
-    if params.output_format == 'csv':
-        print_header(columns, params)
-        for i in range(len(accuracies)):
-            print_row(
-                columns, params, prep_function=functions[2 * i],
-                function=functions[2 * i + 1],
-                time=times[2 * i], prep_time=times[2 * i + 1],
-                accuracy=accuracies[i])
-    elif params.output_format == 'json':
+    if params.output_format == 'json':
         output = []
         output.append({
             'library': library,

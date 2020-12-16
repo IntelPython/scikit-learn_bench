@@ -1,43 +1,27 @@
-# Copyright (C) 2018-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
 
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from bench import (
-    parse_args, measure_function_time, load_data, print_output
-)
+import bench
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
-import logging
-
-def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
-    '''
-    Get an optimal cache size for sklearn.svm.SVC.
-
-    Parameters
-    ----------
-    n_rows : int
-        Number of rows in the dataset
-    dtype : dtype-like, optional (default np.double)
-        dtype to use for computing cache size
-    max_cache : int, optional (default 64)
-        Maximum cache size, in gigabytes
-    '''
-
-    byte_size = np.empty(0, dtype=dtype).itemsize
-    optimal_cache_size_bytes = byte_size * (n_rows ** 2)
-    one_gb = 2 ** 30
-    max_cache_bytes = max_cache * one_gb
-    if optimal_cache_size_bytes > max_cache_bytes:
-        return max_cache_bytes
-    else:
-        return optimal_cache_size_bytes
-
 
 parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
 
@@ -56,15 +40,15 @@ parser.add_argument('--tol', type=float, default=1e-3,
                     help='Tolerance passed to sklearn.svm.SVC')
 parser.add_argument('--no-shrinking', action='store_false', default=True,
                     dest='shrinking', help="Don't use shrinking heuristic")
-params = parse_args(parser, loop_types=('fit', 'predict'))
+params = bench.parse_args(parser, loop_types=('fit', 'predict'))
 
 # Load data
-X_train, X_test, y_train, y_test = load_data(params)
+X_train, X_test, y_train, y_test = bench.load_data(params)
 
 if params.gamma is None:
     params.gamma = 1.0 / X_train.shape[1]
 
-cache_size_bytes = get_optimal_cache_size(X_train.shape[0],
+cache_size_bytes = bench.get_optimal_cache_size(X_train.shape[0],
                                           max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = len(np.unique(y_train))
@@ -75,17 +59,17 @@ clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
           shrinking=params.shrinking, gamma=params.gamma)
 
 # Time fit and predict
-fit_time, _ = measure_function_time(clf.fit, X_train, y_train, params=params)
+fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
 params.sv_len = clf.support_.shape[0]
 
-predict_time, y_pred = measure_function_time(
+predict_time, y_pred = bench.measure_function_time(
     clf.predict, X_train, params=params)
 train_acc = 100 * accuracy_score(y_pred, y_train)
 
 y_pred = clf.predict(X_test)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
-print_output(library='sklearn', algorithm='svc',
+bench.print_output(library='sklearn', algorithm='svc',
              stages=['training', 'prediction'],
              params=params, functions=['SVM.fit', 'SVM.predict'],
              times=[fit_time, predict_time], accuracy_type='accuracy[%]',
