@@ -43,10 +43,10 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.7'
-        addToPath: true
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
+      addToPath: true
   - script: |
       python -m pip install --upgrade pip setuptools
       pip install flake8
