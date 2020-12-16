@@ -1,14 +1,27 @@
-# Copyright (C) 2017-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output,
-    getFPType
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
 import numpy as np
 from daal4py import pca, pca_transform, normalization_zscore
+from daal4py.sklearn._utils import getFPType
+
 from sklearn.utils.extmath import svd_flip
 
 
@@ -22,10 +35,10 @@ parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 parser.add_argument('--write-results', action='store_true', default=False,
                     help='Write results to disk for verification')
-params = parse_args(parser, size=(10000, 1000))
+params = bench.parse_args(parser)
 
 # Load data
-X_train, X_test, _, _ = load_data(params, generated_data=['X_train'],
+X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'],
                                   add_dtype=True)
 
 if params.n_components is None:
@@ -120,29 +133,17 @@ def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
     return pca_transform_daal(pca_result, Xp, params.n_components,
                               X_train.shape[0], eigenvalues,
                               eigenvectors, whiten=params.whiten)
-
-
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'svd_solver', 'n_components', 'whiten', 'time')
-
 # Time fit
-fit_time, res = measure_function_time(test_fit, X_train, params=params)
+fit_time, res = bench.measure_function_time(test_fit, X_train, params=params)
 
 # Time transform
-transform_time, tr = measure_function_time(
+transform_time, tr = bench.measure_function_time(
     test_transform, X_test, *res[:3], params=params)
 
-print_output(library='daal4py', algorithm='pca',
-             stages=['training', 'transformation'], columns=columns,
+bench.print_output(library='daal4py', algorithm='pca',
+             stages=['training', 'transformation'],
              params=params, functions=['PCA.fit', 'PCA.transform'],
              times=[fit_time, transform_time], accuracy_type=None,
              accuracies=[None, None], data=[X_train, X_test],
              alg_params={'svd_solver': params.svd_solver,
                          'n_components': params.n_components})
-
-if params.write_results:
-    np.save('pca_daal4py_X_train.npy', X_train)
-    np.save('pca_daal4py_X_test.npy', X_test)
-    np.save('pca_daal4py_eigvals.npy', res[1])
-    np.save('pca_daal4py_eigvecs.npy', res[2])
-    np.save('pca_daal4py_tr.npy', tr)

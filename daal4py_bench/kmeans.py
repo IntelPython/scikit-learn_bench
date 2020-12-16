@@ -1,13 +1,27 @@
-# Copyright (C) 2017-2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys, os
 import argparse
-from bench import (
-    parse_args, measure_function_time, load_data, print_output, getFPType
-)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
+
 import numpy as np
 from daal4py import kmeans
+from daal4py.sklearn._utils import getFPType
 
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
@@ -19,10 +33,10 @@ parser.add_argument('-t', '--tol', default=0., type=float,
 parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser, prefix='daal4py')
+params = bench.parse_args(parser, prefix='daal4py')
 
 # Load generated data
-X_train, X_test, _, _ = load_data(params, add_dtype=True)
+X_train, X_test, _, _ = bench.load_data(params, add_dtype=True)
 
 # Load initial centroids from specified path
 if params.filei is not None:
@@ -61,21 +75,17 @@ def test_predict(X, X_init):
     )
     return algorithm.compute(X, X_init)
 
-
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'n_clusters', 'time')
-
 # Time fit
-fit_time, res = measure_function_time(test_fit, X_train, X_init, params=params)
+fit_time, res = bench.measure_function_time(test_fit, X_train, X_init, params=params)
 train_inertia = float(res.objectiveFunction[0, 0])
 
 # Time predict
-predict_time, res = measure_function_time(
+predict_time, res = bench.measure_function_time(
     test_predict, X_test, X_init, params=params)
 test_inertia = float(res.objectiveFunction[0, 0])
 
-print_output(library='daal4py', algorithm='kmeans',
-             stages=['training', 'prediction'], columns=columns,
+bench.print_output(library='daal4py', algorithm='kmeans',
+             stages=['training', 'prediction'],
              params=params, functions=['KMeans.fit', 'KMeans.predict'],
              times=[fit_time, predict_time], accuracy_type='inertia',
              accuracies=[train_inertia, test_inertia], data=[X_train, X_test])

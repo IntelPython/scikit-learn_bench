@@ -37,7 +37,7 @@ parser.add_argument('--method', type=str, default='brute',
                     help='Algorithm used to compute the nearest neighbors')
 parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)

@@ -1,7 +1,7 @@
 {
     "omp_env": ["OMP_NUM_THREADS"],
     "common": {
-        "lib": ["sklearn"],
+        "lib": ["daal4py"],
         "data-format": ["pandas"],
         "data-order": ["F"],
         "dtype": ["float64"]
@@ -20,7 +20,6 @@
                     }
                 }
             ],
-            "init": ["k-means++"],
             "n-clusters": [10]
         },
         {
@@ -93,43 +92,6 @@
             ]
         },
         {
-            "algorithm": "log_reg",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 1000
-                    },
-                    "testing": {
-                        "n_samples": 20
-                    }
-                }
-            ],
-            "tol": [0.01]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 100
-                    },
-                    "testing": {
-                        "n_samples": 20
-                    }
-                }
-            ],
-            "C": [10.0],
-            "kernel": ["linear"]
-        },
-        {
             "algorithm": "dbscan",
             "dataset": [
                 {
@@ -142,80 +104,6 @@
                     }
                 }
             ]
-        },
-        {
-            "algorithm": "knn_clsf",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 100
-                    },
-                    "testing": {
-                        "n_samples": 20
-                    }
-                }
-            ],
-            "method": ["brute", "kd_tree"]
-        },
-        {
-            "algorithm": "train_test_split",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 1000
-                    }                
-                }
-            ],
-            "include-y": [""],
-            "train-size": [0.75],
-            "test-size": [0.25]
-        },
-        {
-            "algorithm": "lasso",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 1000
-                    },
-                    "testing": {
-                        "n_samples": 20
-                    }
-                }
-            ],
-            "alpha": [1.0],
-            "tol": [1e-4]
-        },
-        {
-            "algorithm": "elasticnet",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
-                    "training": {
-                        "n_samples": 1000
-                    },
-                    "testing": {
-                        "n_samples": 20
-                    }
-                }
-            ],
-            "alpha": [2.0],
-            "l1_ratio": [0.5],
-            "tol": [1e-4]
         },
         {
             "algorithm": "pca",

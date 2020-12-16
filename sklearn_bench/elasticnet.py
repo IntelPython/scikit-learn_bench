@@ -48,9 +48,9 @@ fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=par
 # Time predict
 predict_time, pred_train = bench.measure_function_time(regr.predict, X_train, params=params)
 
-train_rmse = rmse_score(pred_train, y_train)
+train_rmse = bench.rmse_score(pred_train, y_train)
 pred_test = regr.predict(X_test)
-test_rmse = rmse_score(pred_test, y_test)
+test_rmse = bench.rmse_score(pred_test, y_test)
 
 bench.print_output(library='sklearn', algorithm='elastic-net',
              stages=['training', 'prediction'], params=params, 
