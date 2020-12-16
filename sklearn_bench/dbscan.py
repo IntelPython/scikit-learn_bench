@@ -14,8 +14,10 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 
@@ -50,6 +52,6 @@ params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 acc = davies_bouldin_score(X, labels)
 
 bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
-             params=params, functions=['DBSCAN'], times=[time], accuracies=[acc], 
-             accuracy_type='davies_bouldin_score', data=[X],
-             alg_instance=dbscan)
+                   params=params, functions=['DBSCAN'], times=[time], accuracies=[acc],
+                   accuracy_type='davies_bouldin_score', data=[X],
+                   alg_instance=dbscan)

@@ -14,11 +14,11 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-
 from cuml import LogisticRegression
 
 parser = argparse.ArgumentParser(description='cuML logistic '
@@ -55,13 +55,13 @@ fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=para
 y_pred = clf.predict(X_train)
 train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = measure_function_time(
+predict_time, y_pred = bench.measure_function_time(
     clf.predict, X_test, params=params)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
 bench.print_output(library='cuml', algorithm='logistic_regression',
-             stages=['training', 'prediction'], columns=columns,
-             params=params, functions=['LogReg.fit', 'LogReg.predict'],
-             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_test],
-             alg_instance=clf)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['LogReg.fit', 'LogReg.predict'],
+                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                   accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                   alg_instance=clf)

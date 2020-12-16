@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -35,7 +36,7 @@ parser.add_argument('--maxiter', type=int, default=100,
 parser.add_argument('--samples-per-batch', type=int, default=32768,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-params = parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
+params = bench.parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
 
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)
@@ -56,6 +57,7 @@ else:
     else:
         X_init = X_train[centroids_idx]
 
+
 # Workaround for cuML kmeans fail
 # when second call of 'fit' method causes AttributeError
 def kmeans_fit(X):
@@ -71,7 +73,8 @@ fit_time, kmeans = bench.measure_function_time(kmeans_fit, X_train, params=param
 train_predict = kmeans.predict(X_train)
 
 # Time predict
-predict_time, test_predict = bench.measure_function_time(kmeans.predict, X_test, params=params)
+predict_time, test_predict = bench.measure_function_time(kmeans.predict, X_test,
+                                                         params=params)
 
 X_train_host = bench.convert_to_numpy(X_train)
 train_predict_host = bench.convert_to_numpy(train_predict)
@@ -83,9 +86,8 @@ test_predict_host = bench.convert_to_numpy(test_predict)
 acc_test = davies_bouldin_score(X_test_host, test_predict_host)
 
 bench.print_output(library='cuml', algorithm='kmeans',
-             stages=['training', 'prediction'], params=params, 
-             functions=['KMeans.fit', 'KMeans.predict'],
-             times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
-             accuracies=[acc_train, acc_test], data=[X_train, X_test],
-             alg_instance=kmeans)
-
+                   stages=['training', 'prediction'], params=params,
+                   functions=['KMeans.fit', 'KMeans.predict'],
+                   times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
+                   accuracies=[acc_train, acc_test], data=[X_train, X_test],
+                   alg_instance=kmeans)

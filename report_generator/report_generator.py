@@ -14,11 +14,13 @@ def get_property(entry, prop):
     return value
 
 
-def result_entries_have_same_values(first_entry, second_entry, props, error_on_missing=True):
+def result_entries_have_same_values(first_entry, second_entry, props,
+                                    error_on_missing=True):
     res = True
     for prop in props:
         try:
-            res = res and (get_property(first_entry, prop) == get_property(second_entry, prop))
+            res = res and \
+                (get_property(first_entry, prop) == get_property(second_entry, prop))
         except KeyError:
             if error_on_missing:
                 raise KeyError()
@@ -54,8 +56,11 @@ def results_are_mergeable(first_res, second_res, merging):
 excel_header_columns = list(ascii_uppercase)
 for sym1 in ascii_uppercase:
     for sym2 in ascii_uppercase:
-        excel_header_columns.append(sym1+sym2)
-xy_to_excel_cell = lambda x, y: '{}{}'.format(excel_header_columns[x], y + 1)
+        excel_header_columns.append(sym1 + sym2)
+
+
+def xy_to_excel_cell(x, y):
+    return '{}{}'.format(excel_header_columns[x], y + 1)
 
 
 def write_cell(work_sheet, x, y, value):
@@ -75,8 +80,7 @@ def create_list(res_entry, props_list):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--result-files', type=str, required=True,
-                    'Benchmark result file names '
-                    'separated by commas')
+                    help='Benchmark result file names separated by commas')
 parser.add_argument('--report-file', type=str,
                     default=f'report_{str(datetime.date.today())}.xlsx')
 parser.add_argument('--generation-config', type=str,
@@ -198,14 +202,16 @@ for stage_key in stages_splitter.keys():
 
 # write configs
 for i, json_res in enumerate(json_results):
-    ws = wb.create_sheet(title=f'SW config n{i}_{json_res['software_hash']}')
-    ws[xy_to_excel_cell(0, 0)] = f'Software configuration {i} (hash: {json_res['software_hash']})'
+    ws = wb.create_sheet(title=f"SW config n{i}_{json_res['software_hash']}")
+    ws[xy_to_excel_cell(0, 0)] = \
+        f"Software configuration {i} (hash: {json_res['software_hash']})"
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
     for j in range(len(sw_conf)):
         ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
 
-    ws = wb.create_sheet(title=f'HW config n{i}_{json_res['hardware_hash']}')
-    ws[xy_to_excel_cell(0, 0)] = f'Hardware configuration {i} (hash: {json_res['hardware_hash']})'
+    ws = wb.create_sheet(title=f"HW config n{i}_{json_res['hardware_hash']}")
+    ws[xy_to_excel_cell(0, 0)] = \
+        f"Hardware configuration {i} (hash: {json_res['hardware_hash']})"
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
     for j in range(len(hw_conf)):
         ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]

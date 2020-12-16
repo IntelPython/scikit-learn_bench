@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -42,9 +43,6 @@ if params.n_components is None:
 pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
           n_components=params.n_components)
 
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'svd_solver', 'n_components', 'whiten', 'time')
-
 # Time fit
 fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
 
@@ -53,8 +51,8 @@ transform_time, _ = bench.measure_function_time(
     pca.transform, X_train, params=params)
 
 bench.print_output(library='cuml', algorithm='pca',
-             stages=['training', 'transformation'],
-             params=params, functions=['PCA.fit', 'PCA.transform'],
-             times=[fit_time, transform_time], accuracy_type=None,
-             accuracies=[None, None], data=[X_train, X_test],
-             alg_instance=pca)
+                   stages=['training', 'transformation'],
+                   params=params, functions=['PCA.fit', 'PCA.transform'],
+                   times=[fit_time, transform_time], accuracy_type=None,
+                   accuracies=[None, None], data=[X_train, X_test],
+                   alg_instance=pca)

@@ -16,7 +16,8 @@
 
 import argparse
 
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 from sklearn.linear_model import LinearRegression
@@ -47,8 +48,8 @@ yp = regr.predict(X_train)
 train_rmse = bench.rmse_score(yp, y_train)
 
 bench.print_output(library='sklearn', algorithm='linear_regression',
-             stages=['training', 'prediction'],
-             params=params, functions=['Linear.fit', 'Linear.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-             alg_instance=regr)
+                   stages=['training', 'prediction'],
+                   params=params, functions=['Linear.fit', 'Linear.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                   alg_instance=regr)

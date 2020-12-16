@@ -14,20 +14,16 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-
-import argparse
 import daal4py
 import numpy as np
 from os import environ
-from typing import Tuple
 import xgboost as xgb
-
-from utils import get_accuracy, print_output
-
+import utils
 
 parser = argparse.ArgumentParser(
     description='xgboost gbt + model transform + daal predict benchmark')
@@ -77,7 +73,7 @@ parser.add_argument('--subsample', type=float, default=1,
 parser.add_argument('--tree-method', type=str, required=True,
                     help='The tree construction algorithm used in XGBoost')
 
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
@@ -104,7 +100,8 @@ xgb_params = {
     'objective': params.objective,
     'seed': params.seed,
     'single_precision_histogram': params.single_precision_histogram,
-    'enable_experimental_json_serialization': params.enable_experimental_json_serialization
+    'enable_experimental_json_serialization':
+        params.enable_experimental_json_serialization
 }
 
 if params.threads != -1:
@@ -113,17 +110,12 @@ if params.threads != -1:
 if 'OMP_NUM_THREADS' in environ.keys():
     xgb_params['nthread'] = int(environ['OMP_NUM_THREADS'])
 
-columns: Tuple[str, ...] = ('batch', 'arch', 'prefix', 'function', 'prep_function',
-                            'threads', 'dtype', 'size', 'num_trees', 'time', 'prep_time')
-
 if params.objective.startswith('reg'):
     task = 'regression'
-    metric_name, metric_func = 'rmse', rmse_score
-    columns += ('rmse',)
+    metric_name, metric_func = 'rmse', bench.rmse_score
 else:
     task = 'classification'
-    metric_name, metric_func = 'accuracy[%]', get_accuracy
-    columns += ('n_classes', 'accuracy')
+    metric_name, metric_func = 'accuracy[%]', utils.get_accuracy
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
@@ -131,8 +123,8 @@ else:
     if params.n_classes > 2:
         xgb_params['num_class'] = params.n_classes
 
-t_creat_train, dtrain = bench.measure_function_time(xgb.DMatrix, X_train, params=params, label=y_train)
-
+t_creat_train, dtrain = bench.measure_function_time(xgb.DMatrix, X_train,
+                                                    params=params, label=y_train)
 t_creat_test, dtest = bench.measure_function_time(xgb.DMatrix, X_test, params=params)
 
 
@@ -147,36 +139,39 @@ def predict():
     return model_xgb.predict(dmatrix)
 
 
-t_train, model_xgb = measure_function_time(
+t_train, model_xgb = bench.measure_function_time(
     fit, None if params.count_dmatrix else dtrain, params=params)
 train_metric = None
 if not X_train.equals(X_test):
     y_train_pred = model_xgb.predict(dtrain)
     train_metric = metric_func(y_train, y_train_pred)
 
-t_xgb_pred, y_test_pred = measure_function_time(predict, params=params)
+t_xgb_pred, y_test_pred = bench.measure_function_time(predict, params=params)
 test_metric_xgb = metric_func(y_test, y_test_pred)
 
-t_trans, model_daal = measure_function_time(
+t_trans, model_daal = bench.measure_function_time(
     daal4py.get_gbt_model_from_xgboost, model_xgb, params=params)
 
 if hasattr(params, 'n_classes'):
     predict_algo = daal4py.gbt_classification_prediction(
         nClasses=params.n_classes, resultsToEvaluate='computeClassLabels', fptype='float')
-    t_daal_pred, daal_pred = measure_function_time(
+    t_daal_pred, daal_pred = bench.measure_function_time(
         predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 else:
     predict_algo = daal4py.gbt_regression_prediction()
-    t_daal_pred, daal_pred = measure_function_time(
+    t_daal_pred, daal_pred = bench.measure_function_time(
         predict_algo.compute, X_test, model_daal, params=params)
     test_metric_daal = metric_func(y_test, daal_pred.prediction)
 
-bench.print_output(
-    library='modelbuilders', algorithm=f'xgboost_{task}_and_modelbuilder',
-    stages=['xgboost_train', 'xgboost_predict', 'daal4py_predict'],
-    params=params, functions=['xgb_dmatrix', 'xgb_dmatrix', 
-        'xgb_train', 'xgb_predict', 'xgb_to_daal', 'daal_compute'],
-    times=[t_creat_train, t_train, t_creat_test, t_xgb_pred, t_trans, t_daal_pred],
-    accuracy_type=metric_name, accuracies=[train_metric, test_metric_xgb, test_metric_daal],
-    data=[X_train, X_test, X_test])
+utils.print_output(library='modelbuilders',
+                   algorithm=f'xgboost_{task}_and_modelbuilder',
+                   stages=['xgboost_train', 'xgboost_predict', 'daal4py_predict'],
+                   params=params, functions=['xgb_dmatrix', 'xgb_dmatrix',
+                                             'xgb_train', 'xgb_predict',
+                                             'xgb_to_daal', 'daal_compute'],
+                   times=[t_creat_train, t_train, t_creat_test, t_xgb_pred,
+                          t_trans, t_daal_pred],
+                   accuracy_type=metric_name,
+                   accuracies=[train_metric, test_metric_xgb, test_metric_daal],
+                   data=[X_train, X_test, X_test])

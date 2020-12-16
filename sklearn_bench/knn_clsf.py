@@ -15,7 +15,8 @@
 #===============================================================================
 
 import argparse
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
@@ -57,21 +58,25 @@ if params.task == 'classification':
 
 # Measure time and accuracy on prediction
 if params.task == 'classification':
-    predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test, params=params)
+    predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test,
+                                                   params=params)
     test_acc = 100 * accuracy_score(yp, y_test)
 else:
-    predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test, params=params)
+    predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test,
+                                                  params=params)
 
 if params.task == 'classification':
-    bench.print_output(library='sklearn', algorithm=knn_clsf._fit_method + '_knn_classification',
-                 stages=['training', 'prediction'], params=params,
-                 functions=['knn_clsf.fit', 'knn_clsf.predict'],
-                 times=[train_time, predict_time],
-                 accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
-                 data=[X_train, X_test], alg_instance=knn_clsf)
+    bench.print_output(library='sklearn',
+                       algorithm=knn_clsf._fit_method + '_knn_classification',
+                       stages=['training', 'prediction'], params=params,
+                       functions=['knn_clsf.fit', 'knn_clsf.predict'],
+                       times=[train_time, predict_time],
+                       accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
+                       data=[X_train, X_test], alg_instance=knn_clsf)
 else:
-    bench.print_output(library='sklearn', algorithm=knn_clsf._fit_method + '_knn_search',
-                 stages=['training', 'search'], params=params,
-                 functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
-                 times=[train_time, predict_time],
-                 data=[X_train, X_test], alg_instance=knn_clsf)
+    bench.print_output(library='sklearn',
+                       algorithm=knn_clsf._fit_method + '_knn_search',
+                       stages=['training', 'search'], params=params,
+                       functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
+                       times=[train_time, predict_time],
+                       data=[X_train, X_test], alg_instance=knn_clsf)

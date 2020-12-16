@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -22,7 +23,6 @@ import bench
 import numpy as np
 from daal4py import kmeans
 from daal4py.sklearn._utils import getFPType
-
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
@@ -75,6 +75,7 @@ def test_predict(X, X_init):
     )
     return algorithm.compute(X, X_init)
 
+
 # Time fit
 fit_time, res = bench.measure_function_time(test_fit, X_train, X_init, params=params)
 train_inertia = float(res.objectiveFunction[0, 0])
@@ -85,7 +86,7 @@ predict_time, res = bench.measure_function_time(
 test_inertia = float(res.objectiveFunction[0, 0])
 
 bench.print_output(library='daal4py', algorithm='kmeans',
-             stages=['training', 'prediction'],
-             params=params, functions=['KMeans.fit', 'KMeans.predict'],
-             times=[fit_time, predict_time], accuracy_type='inertia',
-             accuracies=[train_inertia, test_inertia], data=[X_train, X_test])
+                   stages=['training', 'prediction'],
+                   params=params, functions=['KMeans.fit', 'KMeans.predict'],
+                   times=[fit_time, predict_time], accuracy_type='inertia',
+                   accuracies=[train_inertia, test_inertia], data=[X_train, X_test])

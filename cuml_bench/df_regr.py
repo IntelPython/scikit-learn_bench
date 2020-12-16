@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -61,6 +62,7 @@ if params.split_algorithm == 'hist':
 else:
     params.split_algorithm = 1
 
+
 # Create our random forest regressor
 def fit(X, y):
     global regr
@@ -79,6 +81,7 @@ def fit(X, y):
 def predict(X):
     return regr.predict(X, predict_model='GPU')
 
+
 fit_time, _ = bench.measure_function_time(fit, X_train, y_train, params=params)
 
 y_pred = predict(X_train)
@@ -88,8 +91,8 @@ predict_time, y_pred = bench.measure_function_time(predict, X_test, params=param
 test_rmse = bench.rmse_score(y_pred, y_test)
 
 bench.print_output(library='cuml', algorithm='decision_forest_regression',
-             stages=['training', 'prediction'], params=params, 
-             functions=['df_regr.fit', 'df_regr.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-             alg_instance=regr)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['df_regr.fit', 'df_regr.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                   alg_instance=regr)

@@ -19,7 +19,8 @@ import sys
 import argparse
 import logging
 
-from .loader import *
+from .loader import (a9a, gisette, ijcnn, skin_segmentation,
+                     klaverjas, connect, mnist, sensit, covertype)
 
 dataset_loaders = {
     "a9a": a9a,
@@ -47,7 +48,8 @@ def try_load_dataset(dataset_name, output_directory):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Use \'-d\' or \'--datasets\' option to enumerate dataset(s) which should be downloaded')
+        description='Use \'-d\' or \'--datasets\' option to enumerate '
+                    'dataset(s) which should be downloaded')
     parser.add_argument('-l', '--list', action='store_const',
                         const=True, help='list of available datasets')
     parser.add_argument('-d', '--datasets', type=str, nargs='*',
@@ -61,11 +63,12 @@ if __name__ == '__main__':
 
     root_dir = os.environ['DATASETSROOT']
 
-    if args.datasets == None:
+    if args.datasets is not None:
         for val in dataset_loaders.values():
             val(root_dir)
     elif len(args.datasets) == 0:
-        logging.warning('Warning: Enumerate dataset(s) which should be downloaded')
+        logging.warning(
+            'Warning: Enumerate dataset(s) which should be downloaded')
     else:
         for key, val in dataset_loaders.items():
             if key in args.datasets:

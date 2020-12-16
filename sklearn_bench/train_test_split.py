@@ -16,7 +16,8 @@
 
 import argparse
 
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 from sklearn.model_selection import train_test_split
@@ -58,9 +59,9 @@ if params.rng is not None:
     tts_params['rng'] = params.rng
 
 time, _ = bench.measure_function_time(train_test_split, *data_args, **tts_params,
-                                params=params)
+                                      params=params)
 
 bench.print_output(library='sklearn', algorithm='train_test_split',
-             stages=['training'], params=params,
-             functions=['train_test_split'], times=[time], accuracies=[None],
-             accuracy_type=None, data=[X], alg_params=tts_params)
+                   stages=['training'], params=params,
+                   functions=['train_test_split'], times=[time], accuracies=[None],
+                   accuracy_type=None, data=[X], alg_params=tts_params)

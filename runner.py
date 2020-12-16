@@ -27,6 +27,7 @@ import utils
 
 from datasets.load_datasets import try_load_dataset
 
+
 def generate_cases(params):
     '''
     Generate cases for benchmarking by iterating of
@@ -47,6 +48,7 @@ def generate_cases(params):
     del params[param_name]
     generate_cases(params)
 
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -56,7 +58,8 @@ if __name__ == '__main__':
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation'
                              'without benchmarks running')
-    parser.add_argument('--output-file', default='results.json', type=argparse.FileType('w'),
+    parser.add_argument('--output-file', default='results.json',
+                        type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
     parser.add_argument('--verbose', default='INFO', type=str,
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
@@ -93,7 +96,7 @@ if __name__ == '__main__':
             del params['dataset'], params['algorithm'], params['lib']
             generate_cases(params)
             logging.info(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
-                          f' {len(params_set["dataset"])} dataset(s)\n')
+                         f' {len(params_set["dataset"])} dataset(s)\n')
 
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
@@ -118,9 +121,12 @@ if __name__ == '__main__':
 
                     if not utils.is_exists_files([file_train_data_x, file_train_data_y]):
                         directory_dataset = pathlib.Path(file_train_data_x).parent
-                        if not try_load_dataset(dataset_name=dataset_name, output_directory=directory_dataset):
-                            logging.warning(f'Dataset {dataset_name} could not be loaded. \n'
-                                            'Check the correct name or expand the download in the folder dataset.')
+                        if not try_load_dataset(dataset_name=dataset_name,
+                                                output_directory=directory_dataset):
+                            logging.warning(f'Dataset {dataset_name} '
+                                            'could not be loaded. \n'
+                                            'Check the correct name or expand '
+                                            'the download in the folder dataset.')
                             continue
 
                 elif dataset['source'] == 'synthetic':
@@ -180,7 +186,7 @@ if __name__ == '__main__':
                     dataset_name = f'synthetic_{gen_args.type}'
                 else:
                     logging.warning('Unknown dataset source. Only synthetics datasets '
-                        'and csv/npy files are supported now')
+                                    'and csv/npy files are supported now')
 
                 omp_env = utils.get_omp_env()
                 for lib in libs:

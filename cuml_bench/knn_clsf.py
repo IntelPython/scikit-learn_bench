@@ -14,12 +14,11 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-
-import numpy as np
 from cuml.neighbors import KNeighborsClassifier
 
 parser = argparse.ArgumentParser(
@@ -49,28 +48,33 @@ knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
                                 metric=params.metric)
 
 # Measure time and accuracy on fitting
-train_time, _ = bench.measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
+train_time, _ = bench.measure_function_time(knn_clsf.fit, X_train, y_train,
+                                            params=params)
 if params.task == 'classification':
     y_pred = knn_clsf.predict(X_train)
     train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 
 # Measure time and accuracy on prediction
 if params.task == 'classification':
-    predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test, params=params)
+    predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test,
+                                                   params=params)
     test_acc = 100 * bench.accuracy_score(yp, y_test)
 else:
-    predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test, params=params)
+    predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test,
+                                                  params=params)
 
 if params.task == 'classification':
-    print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_classification',
-                 stages=['training', 'prediction'], params=params,
-                 functions=['knn_clsf.fit', 'knn_clsf.predict'],
-                 times=[train_time, predict_time],
-                 accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
-                 data=[X_train, X_test], alg_instance=knn_clsf)
+    bench.print_output(library='cuml',
+                       algorithm=knn_clsf.algorithm + '_knn_classification',
+                       stages=['training', 'prediction'], params=params,
+                       functions=['knn_clsf.fit', 'knn_clsf.predict'],
+                       times=[train_time, predict_time],
+                       accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
+                       data=[X_train, X_test], alg_instance=knn_clsf)
 else:
-    print_output(library='cuml', algorithm=knn_clsf.algorithm + '_knn_search',
-                 stages=['training', 'search'], params=params,
-                 functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
-                 times=[train_time, predict_time],
-                 data=[X_train, X_test], alg_instance=knn_clsf)
+    bench.print_output(library='cuml',
+                       algorithm=knn_clsf.algorithm + '_knn_search',
+                       stages=['training', 'search'], params=params,
+                       functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
+                       times=[train_time, predict_time],
+                       data=[X_train, X_test], alg_instance=knn_clsf)

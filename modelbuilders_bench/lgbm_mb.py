@@ -14,16 +14,17 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
+import utils
 
 import daal4py
 import lightgbm as lgbm
 import numpy as np
 from os import environ
-from typing import Tuple
 
 parser = argparse.ArgumentParser(
     description='lightgbm gbt + model transform + daal predict benchmark')
@@ -62,7 +63,7 @@ parser.add_argument('--scale-pos-weight', type=float, default=1,
 parser.add_argument('--subsample', type=float, default=1,
                     help='Subsample ratio of the training instances')
 
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
@@ -93,7 +94,7 @@ if 'OMP_NUM_THREADS' in environ.keys():
 
 if params.objective.startswith('reg'):
     task = 'regression'
-    metric_name, metric_func = 'rmse', rmse_score
+    metric_name, metric_func = 'rmse', bench.rmse_score
 else:
     task = 'classification'
     metric_name, metric_func = 'accuracy[%]', utils.get_accuracy
@@ -104,21 +105,26 @@ else:
     if params.n_classes > 2:
         lgbm_params['num_class'] = params.n_classes
 
-t_creat_train, lgbm_train = bench.measure_function_time(lgbm.Dataset, X_train, y_train, params=params,
-                                                  free_raw_data=False)
+t_creat_train, lgbm_train = bench.measure_function_time(lgbm.Dataset, X_train,
+                                                        y_train, params=params,
+                                                        free_raw_data=False)
 
-t_creat_test, lgbm_test =bench.measure_function_time(lgbm.Dataset, X_test, y_test, params=params,
-                                                reference=lgbm_train, free_raw_data=False)
+t_creat_test, lgbm_test = bench.measure_function_time(lgbm.Dataset, X_test, y_test,
+                                                      params=params, reference=lgbm_train,
+                                                      free_raw_data=False)
 
-t_train, model_lgbm = bench.measure_function_time(
-    lgbm.train, lgbm_params, lgbm_train, params=params, num_boost_round=params.n_estimators,
-    valid_sets=lgbm_train, verbose_eval=False)
+t_train, model_lgbm = bench.measure_function_time(lgbm.train, lgbm_params, lgbm_train,
+                                                  params=params,
+                                                  num_boost_round=params.n_estimators,
+                                                  valid_sets=lgbm_train,
+                                                  verbose_eval=False)
 train_metric = None
 if not X_train.equals(X_test):
     y_train_pred = model_lgbm.predict(X_train)
     train_metric = metric_func(y_train, y_train_pred)
 
-t_lgbm_pred, y_test_pred = bench.measure_function_time(model_lgbm.predict, X_test, params=params)
+t_lgbm_pred, y_test_pred = bench.measure_function_time(model_lgbm.predict, X_test,
+                                                       params=params)
 test_metric_lgbm = metric_func(y_test, y_test_pred)
 
 t_trans, model_daal = bench.measure_function_time(
@@ -139,8 +145,9 @@ else:
 utils.print_output(
     library='modelbuilders', algorithm=f'lightgbm_{task}_and_modelbuilder',
     stages=['lgbm_train', 'lgbm_predict', 'daal4py_predict'],
-    params=params, functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train', 
-        'lgbm_predict', 'lgbm_to_daal', 'daal_compute'],
+    params=params, functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train',
+                              'lgbm_predict', 'lgbm_to_daal', 'daal_compute'],
     times=[t_creat_train, t_train, t_creat_test, t_lgbm_pred, t_trans, t_daal_pred],
-    accuracy_type=metric_name, accuracies=[train_metric, test_metric_lgbm, test_metric_daal],
+    accuracy_type=metric_name, accuracies=[train_metric, test_metric_lgbm,
+                                           test_metric_daal],
     data=[X_train, X_test, X_test])

@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -26,6 +27,7 @@ from daal4py import (
     decision_forest_classification_prediction, engines_mt2203
 )
 from daal4py.sklearn._utils import getFPType
+
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,
                 n_features_per_node=0, max_depth=0, min_impurity=0,
@@ -40,20 +42,20 @@ def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,
     engine = engines_mt2203(seed=seed, fptype=fptype)
 
     algorithm = decision_forest_classification_training(
-            nClasses=n_classes,
-            fptype=fptype,
-            method='defaultDense',
-            nTrees=n_trees,
-            observationsPerTreeFraction=1.,
-            featuresPerNode=features_per_node,
-            maxTreeDepth=max_depth,
-            minObservationsInLeafNode=1,
-            engine=engine,
-            impurityThreshold=min_impurity,
-            varImportance='MDI',
-            resultsToCompute='',
-            memorySavingMode=False,
-            bootstrap=bootstrap
+        nClasses=n_classes,
+        fptype=fptype,
+        method='defaultDense',
+        nTrees=n_trees,
+        observationsPerTreeFraction=1.,
+        featuresPerNode=features_per_node,
+        maxTreeDepth=max_depth,
+        minObservationsInLeafNode=1,
+        engine=engine,
+        impurityThreshold=min_impurity,
+        varImportance='MDI',
+        resultsToCompute='',
+        memorySavingMode=False,
+        bootstrap=bootstrap
     )
 
     df_clsf_result = algorithm.compute(X, y)
@@ -64,8 +66,8 @@ def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,
 def df_clsf_predict(X, training_result, n_classes, verbose=False):
 
     algorithm = decision_forest_classification_prediction(
-            nClasses=n_classes,
-            fptype='float',  # we give float here specifically to match sklearn
+        nClasses=n_classes,
+        fptype='float',  # we give float here specifically to match sklearn
     )
 
     result = algorithm.compute(X, training_result.model)
@@ -127,7 +129,7 @@ if __name__ == '__main__':
     test_acc = 100 * accuracy_score(yp, y_test)
 
     bench.print_output(library='daal4py', algorithm='decision_forest_classification',
-                 stages=['training', 'prediction'], params=params, 
-                 functions=['df_clsf.fit', 'df_clsf.predict'],
-                 times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                 accuracies=[train_acc, test_acc], data=[X_train, X_test])
+                       stages=['training', 'prediction'], params=params,
+                       functions=['df_clsf.fit', 'df_clsf.predict'],
+                       times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                       accuracies=[train_acc, test_acc], data=[X_train, X_test])

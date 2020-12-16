@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -50,6 +51,7 @@ def test_predict(Xp, model):
     regr_predict = ridge_regression_prediction(fptype=getFPType(Xp))
     return regr_predict.compute(Xp, model)
 
+
 # Time fit
 fit_time, res = bench.measure_function_time(
     test_fit, X_train, y_train, params=params)
@@ -63,7 +65,7 @@ pres = test_predict(X_train, res.model)
 train_rmse = bench.rmse_score(pres.prediction, y_train)
 
 bench.print_output(library='daal4py', algorithm='ridge_regression',
-             stages=['training', 'prediction'], params=params, 
-             functions=['Ridge.fit', 'Ridge.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
+                   stages=['training', 'prediction'], params=params,
+                   functions=['Ridge.fit', 'Ridge.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test])

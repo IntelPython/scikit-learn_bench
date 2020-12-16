@@ -14,11 +14,11 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-
 import cuml
 from cuml.ensemble import RandomForestClassifier
 
@@ -85,6 +85,7 @@ def predict(X):
         prediction_args.update({'num_classes': params.n_classes})
     return clf.predict(X, **prediction_args)
 
+
 fit_time, _ = bench.measure_function_time(fit, X_train, y_train, params=params)
 y_pred = predict(X_train)
 train_acc = 100 * bench.accuracy_score(y_pred, y_train)
@@ -92,9 +93,9 @@ train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 predict_time, y_pred = bench.measure_function_time(predict, X_test, params=params)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
-print_output(library='cuml', algorithm='decision_forest_classification',
-             stages=['training', 'prediction'],
-             params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
-             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_test],
-             alg_instance=clf)
+bench.print_output(library='cuml', algorithm='decision_forest_classification',
+                   stages=['training', 'prediction'],
+                   params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
+                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                   accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                   alg_instance=clf)

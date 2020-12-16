@@ -16,7 +16,8 @@
 
 import argparse
 
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
@@ -49,7 +50,7 @@ if params.gamma is None:
     params.gamma = 1.0 / X_train.shape[1]
 
 cache_size_bytes = bench.get_optimal_cache_size(X_train.shape[0],
-                                          max_cache=params.max_cache_size)
+                                                max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = len(np.unique(y_train))
 
@@ -70,8 +71,8 @@ y_pred = clf.predict(X_test)
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 bench.print_output(library='sklearn', algorithm='svc',
-             stages=['training', 'prediction'],
-             params=params, functions=['SVM.fit', 'SVM.predict'],
-             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_train],
-             alg_instance=clf)
+                   stages=['training', 'prediction'],
+                   params=params, functions=['SVM.fit', 'SVM.predict'],
+                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                   accuracies=[train_acc, test_acc], data=[X_train, X_train],
+                   alg_instance=clf)

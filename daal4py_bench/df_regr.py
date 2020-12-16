@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -39,19 +40,19 @@ def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,
     engine = engines_mt2203(seed=seed, fptype=fptype)
 
     algorithm = decision_forest_regression_training(
-            fptype=fptype,
-            method='defaultDense',
-            nTrees=n_trees,
-            observationsPerTreeFraction=1.,
-            featuresPerNode=features_per_node,
-            maxTreeDepth=max_depth,
-            minObservationsInLeafNode=1,
-            engine=engine,
-            impurityThreshold=min_impurity,
-            varImportance='MDI',
-            resultsToCompute='',
-            memorySavingMode=False,
-            bootstrap=bootstrap
+        fptype=fptype,
+        method='defaultDense',
+        nTrees=n_trees,
+        observationsPerTreeFraction=1.,
+        featuresPerNode=features_per_node,
+        maxTreeDepth=max_depth,
+        minObservationsInLeafNode=1,
+        engine=engine,
+        impurityThreshold=min_impurity,
+        varImportance='MDI',
+        resultsToCompute='',
+        memorySavingMode=False,
+        bootstrap=bootstrap
     )
 
     df_regr_result = algorithm.compute(X, y)
@@ -62,7 +63,7 @@ def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,
 def df_regr_predict(X, training_result):
 
     algorithm = decision_forest_regression_prediction(
-            fptype='float'
+        fptype='float'
     )
 
     result = algorithm.compute(X, training_result.model)
@@ -126,7 +127,7 @@ if __name__ == '__main__':
     test_rmse = bench.rmse_score(yp, y_test)
 
     bench.print_output(library='daal4py', algorithm='decision_forest_regression',
-                 stages=['training', 'prediction'], params=params, 
-                 functions=['df_regr.fit', 'df_regr.predict'],
-                 times=[fit_time, predict_time], accuracy_type='rmse',
-                 accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
+                       stages=['training', 'prediction'], params=params,
+                       functions=['df_regr.fit', 'df_regr.predict'],
+                       times=[fit_time, predict_time], accuracy_type='rmse',
+                       accuracies=[train_rmse, test_rmse], data=[X_train, X_test])

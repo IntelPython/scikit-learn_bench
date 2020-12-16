@@ -15,7 +15,8 @@
 #===============================================================================
 
 import argparse
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
@@ -54,10 +55,11 @@ else:
 
 def fit_kmeans(X):
     global X_init, params
-    alg = KMeans(n_clusters=params.n_clusters, tol=params.tol, 
+    alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
                  max_iter=params.maxiter, init=X_init, n_init=1)
     alg.fit(X)
     return alg
+
 
 # Time fit
 fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train, params=params)
@@ -72,8 +74,8 @@ predict_time, test_predict = bench.measure_function_time(
 acc_test = davies_bouldin_score(X_test, test_predict)
 
 bench.print_output(library='sklearn', algorithm='kmeans',
-             stages=['training', 'prediction'],
-             params=params, functions=['KMeans.fit', 'KMeans.predict'],
-             times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
-             accuracies=[acc_train, acc_test], data=[X_train, X_test],
-             alg_instance=kmeans)
+                   stages=['training', 'prediction'],
+                   params=params, functions=['KMeans.fit', 'KMeans.predict'],
+                   times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
+                   accuracies=[acc_train, acc_test], data=[X_train, X_test],
+                   alg_instance=kmeans)

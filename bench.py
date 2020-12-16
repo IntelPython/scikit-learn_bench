@@ -78,6 +78,7 @@ def float_or_int(string):
     else:
         return int(string)
 
+
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
     Get an optimal cache size for sklearn.svm.SVC.
@@ -100,6 +101,7 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
         return max_cache_bytes
     else:
         return optimal_cache_size_bytes
+
 
 def parse_args(parser, size=None, loop_types=(),
                n_jobs_supported=False, prefix='sklearn'):
@@ -273,13 +275,14 @@ def measure_function_time(func, *args, params, **kwargs):
                            n_meas=params.box_filter_measurements,
                            time_limit=params.time_limit, **kwargs)
 
+
 def time_box_filter(func, *args, n_meas, time_limit, **kwargs):
     times = []
     while len(times) < n_meas:
         t0 = timeit.default_timer()
         val = func(*args, **kwargs)
         t1 = timeit.default_timer()
-        times.append(t1-t0)
+        times.append(t1 - t0)
         if sum(times) > time_limit:
             break
 
@@ -428,11 +431,13 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                 params.data_order, params.data_format)
         # convert existing labels from 1- to 2-dimensional
         # if it's forced and possible
-        if full_data[element] is not None and 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
+        if full_data[element] is not None and 'y' in element \
+                and label_2d and hasattr(full_data[element], 'reshape'):
             full_data[element] = full_data[element].reshape(
                 (full_data[element].shape[0], 1))
         # add dtype property to data if it's needed and doesn't exist
-        if full_data[element] is not None and add_dtype and not hasattr(full_data[element], 'dtype'):
+        if full_data[element] is not None and add_dtype and \
+                not hasattr(full_data[element], 'dtype'):
             if hasattr(full_data[element], 'values'):
                 full_data[element].dtype = full_data[element].values.dtype
             elif hasattr(full_data[element], 'dtypes'):
@@ -448,6 +453,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
         if full_data[f'{data}_train'] is not None and full_data[f'{data}_test'] is None:
             full_data[f'{data}_test'] = full_data[f'{data}_train']
     return tuple(full_data.values())
+
 
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
                    alg_params=None):

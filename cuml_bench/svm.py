@@ -14,11 +14,11 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-import numpy as np
 from cuml.svm import SVC
 
 parser = argparse.ArgumentParser(description='cuML SVM benchmark')
@@ -36,7 +36,7 @@ parser.add_argument('--max-cache-size', type=int, default=8,
                     help='Maximum cache size, in gigabytes, for SVM.')
 parser.add_argument('--tol', type=float, default=1e-3,
                     help='Tolerance passed to sklearn.svm.SVC')
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params)
@@ -45,7 +45,7 @@ if params.gamma is None:
     params.gamma = 1.0 / X_train.shape[1]
 
 cache_size_bytes = bench.get_optimal_cache_size(X_train.shape[0],
-                                          max_cache=params.max_cache_size)
+                                                max_cache=params.max_cache_size)
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = y_train[y_train.columns[0]].nunique()
 
@@ -66,8 +66,8 @@ y_pred = clf.predict(X_test)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
 bench.print_output(library='cuml', algorithm='svc',
-             stages=['training', 'prediction'], params=params, 
-             functions=['SVM.fit', 'SVM.predict'],
-             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_train],
-             alg_instance=clf)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['SVM.fit', 'SVM.predict'],
+                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                   accuracies=[train_acc, test_acc], data=[X_train, X_train],
+                   alg_instance=clf)

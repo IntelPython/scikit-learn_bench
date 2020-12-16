@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -71,8 +72,8 @@ predict_time, y_pred = bench.measure_function_time(
 test_acc = 100 * accuracy_score(y_pred, y_test)
 
 bench.print_output(library='sklearn', algorithm='decision_forest_classification',
-             stages=['training', 'prediction'], params=params, 
-             functions=['df_clsf.fit', 'df_clsf.predict'],
-             times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-             accuracies=[train_acc, test_acc], data=[X_train, X_test],
-             alg_instance=clf)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['df_clsf.fit', 'df_clsf.predict'],
+                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                   accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                   alg_instance=clf)

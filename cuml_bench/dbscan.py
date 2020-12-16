@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -38,7 +39,7 @@ dbscan = DBSCAN(eps=params.eps,
                 min_samples=params.min_samples)
 
 # Time fit
-time, _ = measure_function_time(dbscan.fit, X, params=params)
+time, _ = bench.measure_function_time(dbscan.fit, X, params=params)
 labels = dbscan.labels_
 
 X_host = bench.convert_to_numpy(X)
@@ -47,7 +48,7 @@ labels_host = bench.convert_to_numpy(labels)
 acc = davies_bouldin_score(X_host, labels_host)
 params.n_clusters = len(set(labels_host)) - (1 if -1 in labels_host else 0)
 
-print_output(library='cuml', algorithm='dbscan', stages=['training'],
-             params=params, functions=['DBSCAN'], times=[time], 
-             accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
-             alg_instance=dbscan)
+bench.print_output(library='cuml', algorithm='dbscan', stages=['training'],
+                   params=params, functions=['DBSCAN'], times=[time],
+                   accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
+                   alg_instance=dbscan)

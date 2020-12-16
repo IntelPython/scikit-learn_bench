@@ -1,15 +1,37 @@
+#===============================================================================
+# Copyright 2020 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
+
 import os
 import sys
 import subprocess
 import multiprocessing
+import logging
+import json
+import platform
+
 
 def filter_stderr(text):
     # delete 'Intel(R) DAAL usage in sklearn' messages
-    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers for sklearn enabled: ' + \
+    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers ' + \
+                         'for sklearn enabled: ' + \
                          'https://intelpython.github.io/daal4py/sklearn.html'
     while fake_error_message in text:
         text = text.replace(fake_error_message, '')
     return text
+
 
 def filter_stdout(text):
     verbosity_letters = 'EWIDT'
@@ -28,16 +50,19 @@ def filter_stdout(text):
             filtered += line + '\n'
     return filtered, extra
 
+
 def is_exists_files(files):
     for f in files:
         if not os.path.isfile(f):
             return False
     return True
 
+
 def read_output_from_command(command):
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, encoding='utf-8', env=os.environ.copy())
     return res.stdout[:-1], res.stderr[:-1]
+
 
 def _is_ht_enabled():
     try:
@@ -55,6 +80,7 @@ def _is_ht_enabled():
         logging.info('Impossible to check hyperthreading via lscpu')
         return False
 
+
 def get_omp_env():
     cpu_count = multiprocessing.cpu_count()
     omp_num_threads = str(cpu_count // 2) if _is_ht_enabled() else str(cpu_count)
@@ -65,10 +91,11 @@ def get_omp_env():
     }
     return omp_env
 
+
 def get_hw_parameters():
     hw_params = {}
 
-    if 'Linux' in platform():
+    if 'Linux' in platform.platform():
         # get CPU information
         lscpu_info, _ = read_output_from_command('lscpu')
         # remove excess spaces in CPU info output
@@ -110,6 +137,11 @@ def get_hw_parameters():
 def get_sw_parameters():
     sw_params = {}
     try:
+        gpu_info, _ = read_output_from_command(
+            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
+            '--format=csv,noheader')
+        gpu_info = gpu_info.split(', ')
+
         sw_params.update(
             {'GPU_driver': {'version': gpu_info[2]}})
         # alert if GPU is already running any processes

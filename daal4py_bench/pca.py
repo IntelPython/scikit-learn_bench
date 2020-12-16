@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -39,7 +40,7 @@ params = bench.parse_args(parser)
 
 # Load data
 X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'],
-                                  add_dtype=True)
+                                        add_dtype=True)
 
 if params.n_components is None:
     p, n = X_train.shape
@@ -106,8 +107,7 @@ def pca_transform_daal(pca_result, X, n_components, fit_n_samples,
 
 def pca_fit_full_daal(X, n_components):
 
-    fit_result, eigenvalues, eigenvectors, S = pca_fit_daal(
-      X, min(X.shape), 'svdDense')
+    fit_result, eigenvalues, eigenvectors, S = pca_fit_daal(X, min(X.shape), 'svdDense')
     U = pca_transform_daal(fit_result, X, min(X.shape), X.shape[0],
                            eigenvalues, eigenvectors,
                            whiten=True, scale_eigenvalues=True)
@@ -133,6 +133,8 @@ def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
     return pca_transform_daal(pca_result, Xp, params.n_components,
                               X_train.shape[0], eigenvalues,
                               eigenvectors, whiten=params.whiten)
+
+
 # Time fit
 fit_time, res = bench.measure_function_time(test_fit, X_train, params=params)
 
@@ -141,9 +143,9 @@ transform_time, tr = bench.measure_function_time(
     test_transform, X_test, *res[:3], params=params)
 
 bench.print_output(library='daal4py', algorithm='pca',
-             stages=['training', 'transformation'],
-             params=params, functions=['PCA.fit', 'PCA.transform'],
-             times=[fit_time, transform_time], accuracy_type=None,
-             accuracies=[None, None], data=[X_train, X_test],
-             alg_params={'svd_solver': params.svd_solver,
-                         'n_components': params.n_components})
+                   stages=['training', 'transformation'],
+                   params=params, functions=['PCA.fit', 'PCA.transform'],
+                   times=[fit_time, transform_time], accuracy_type=None,
+                   accuracies=[None, None], data=[X_train, X_test],
+                   alg_params={'svd_solver': params.svd_solver,
+                               'n_components': params.n_components})

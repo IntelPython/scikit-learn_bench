@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -43,6 +44,6 @@ tts_params = {
 time, _ = bench.measure_function_time(train_test_split, X=X, y=y, params=params)
 
 bench.print_output(library='cuml', algorithm='train_test_split',
-             stages=['training'], params=params,
-             functions=['train_test_split'], times=[time], accuracies=[None],
-             accuracy_type=None, data=[X], alg_params=tts_params)
+                   stages=['training'], params=params,
+                   functions=['train_test_split'], times=[time], accuracies=[None],
+                   accuracy_type=None, data=[X], alg_params=tts_params)

@@ -14,12 +14,12 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 
-import argparse
 from daal4py import dbscan
 from daal4py.sklearn._utils import getFPType
 
@@ -46,10 +46,11 @@ def test_dbscan(X):
     )
     return algorithm.compute(X)
 
+
 # Time clustering
 time, result = bench.measure_function_time(test_dbscan, X, params=params)
 params.n_clusters = int(result.nClusters[0, 0])
 
 bench.print_output(library='daal4py', algorithm='dbscan', stages=['training'],
-             params=params, functions=['DBSCAN'], times=[time], 
-             accuracies=[None], accuracy_type=None, data=[X])
+                   params=params, functions=['DBSCAN'], times=[time],
+                   accuracies=[None], accuracy_type=None, data=[X])

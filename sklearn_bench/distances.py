@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -31,9 +32,9 @@ params = bench.parse_args(parser)
 X, _, _, _ = bench.load_data(params, generated_data=['X_train'], add_dtype=True)
 
 time, _ = bench.measure_function_time(pairwise_distances, X, metric=params.metric,
-                                n_jobs=params.n_jobs, params=params)
+                                      n_jobs=params.n_jobs, params=params)
 
 bench.print_output(library='sklearn', algorithm='distances', stages=['computation'],
-             params=params, functions=[params.metric.capitalize()], times=[time],
-             accuracy_type=None, accuracies=[None], data=[X],
-             alg_params={'metric': params.metric})
+                   params=params, functions=[params.metric.capitalize()], times=[time],
+                   accuracy_type=None, accuracies=[None], data=[X],
+                   alg_params={'metric': params.metric})

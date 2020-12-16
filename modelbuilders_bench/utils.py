@@ -17,6 +17,7 @@
 import json
 import numpy as np
 
+
 def get_accuracy(true_labels, prediction):
     errors = 0
     for i in range(len(true_labels)):
@@ -31,7 +32,7 @@ def get_accuracy(true_labels, prediction):
             pred_label = np.argmax(prediction[i])
         if true_labels[i] != pred_label:
             errors += 1
-    return 100 * (1 - errors/len(true_labels))
+    return 100 * (1 - errors / len(true_labels))
 
 
 def print_output(library, algorithm, stages, params, functions,

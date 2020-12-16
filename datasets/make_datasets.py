@@ -66,10 +66,10 @@ def gen_classification(args):
         np.save(args.fileytest, y[args.samples:])
     return 0
 
-def main():
 
+def main():
     parser = argparse.ArgumentParser(
-            description='Dataset generator using scikit-learn')
+        description='Dataset generator using scikit-learn')
     parser.add_argument('-f', '--features', type=int, default=1000,
                         help='Number of features in dataset')
     parser.add_argument('-s', '--samples', type=int, default=10000,

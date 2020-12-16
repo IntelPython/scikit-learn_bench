@@ -15,7 +15,8 @@
 #===============================================================================
 
 import argparse
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 from sklearn.linear_model import Ridge
@@ -32,15 +33,12 @@ parser.add_argument('--alpha', type=float, default=1.0,
 params = bench.parse_args(parser)
 
 # Load data
-X_train, X_test, y_train, y_test = bench.load_data(
-    params, generated_data=['X_train', 'y_train'])
+X_train, X_test, y_train, y_test = bench.load_data(params,
+                                                   generated_data=['X_train', 'y_train'])
 
 # Create our regression object
 regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,
              solver=params.solver)
-
-columns = ('batch', 'arch', 'prefix', 'function', 'threads', 'dtype', 'size',
-           'time')
 
 # Time fit
 fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
@@ -53,8 +51,8 @@ yp = regr.predict(X_train)
 train_rmse = bench.rmse_score(yp, y_train)
 
 bench.print_output(library='sklearn', algorithm='ridge_regression',
-             stages=['training', 'prediction'], params=params, 
-             functions=['Ridge.fit', 'Ridge.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-             alg_instance=regr)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['Ridge.fit', 'Ridge.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                   alg_instance=regr)

@@ -1,16 +1,25 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
+import sys
+import os
 import argparse
-
-import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import bench
 
-from bench import (
-    parse_args, measure_function_time, load_data, print_output,
-    accuracy_score, rmse_score
-)
 import numpy as np
 import xgboost as xgb
 import os
@@ -78,10 +87,10 @@ parser.add_argument('--single-precision-histogram', default=False, action='store
 parser.add_argument('--enable-experimental-json-serialization', default=True,
                     choices=('True', 'False'), help='Use JSON to store memory snapshots')
 
-params = parse_args(parser)
+params = bench.parse_args(parser)
 
 # Load and convert data
-X_train, X_test, y_train, y_test = load_data(params)
+X_train, X_test, y_train, y_test = bench.load_data(params)
 
 xgb_params = {
     'booster': 'gbtree',
@@ -106,7 +115,8 @@ xgb_params = {
     'objective': params.objective,
     'seed': params.seed,
     'single_precision_histogram': params.single_precision_histogram,
-    'enable_experimental_json_serialization': params.enable_experimental_json_serialization
+    'enable_experimental_json_serialization':
+        params.enable_experimental_json_serialization
 }
 
 if params.threads != -1:
@@ -117,11 +127,11 @@ if 'OMP_NUM_THREADS' in os.environ.keys():
 
 if params.objective.startswith('reg'):
     task = 'regression'
-    metric_name, metric_func = 'rmse', rmse_score
+    metric_name, metric_func = 'rmse', bench.rmse_score
 else:
     task = 'classification'
-    metric_name = 'accuracy[%]'
-    metric_func = lambda y1, y2: 100 * accuracy_score(y1, y2)
+    metric_name = 'accuracy'
+    metric_func = bench.accuracy_score
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
@@ -136,13 +146,14 @@ if params.count_dmatrix:
         dtrain = xgb.DMatrix(X_train, y_train)
         return xgb.train(xgb_params, dtrain, params.n_estimators)
 
-    if params.inplace_predict == False:
+    if not params.inplace_predict:
         def predict():
             dtest = xgb.DMatrix(X_test, y_test)
             return booster.predict(dtest)
     else:
         def predict():
-            return booster.inplace_predict(np.ascontiguousarray(X_test.values, dtype=np.float32))
+            return booster.inplace_predict(np.ascontiguousarray(X_test.values,
+                                                                dtype=np.float32))
 else:
     def fit():
         return xgb.train(xgb_params, dtrain, params.n_estimators)
@@ -150,16 +161,16 @@ else:
     def predict():
         return booster.predict(dtest)
 
-fit_time, booster = measure_function_time(fit, params=params)
+fit_time, booster = bench.measure_function_time(fit, params=params)
 y_pred = convert_xgb_predictions(booster.predict(dtrain), params.objective)
 train_metric = metric_func(y_pred, y_train)
 
-predict_time, y_pred = measure_function_time(predict, params=params)
+predict_time, y_pred = bench.measure_function_time(predict, params=params)
 test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
 
-print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
-             stages=['training', 'prediction'],
-             params=params, functions=['gbt.fit', 'gbt.predict'],
-             times=[fit_time, predict_time], accuracy_type=metric_name,
-             accuracies=[train_metric, test_metric], data=[X_train, X_test],
-             alg_instance=booster)
+bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
+                   stages=['training', 'prediction'],
+                   params=params, functions=['gbt.fit', 'gbt.predict'],
+                   times=[fit_time, predict_time], accuracy_type=metric_name,
+                   accuracies=[train_metric, test_metric], data=[X_train, X_test],
+                   alg_instance=booster)

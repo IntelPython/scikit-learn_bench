@@ -14,7 +14,8 @@
 # limitations under the License.
 #===============================================================================
 
-import sys, os
+import sys
+import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
@@ -40,22 +41,23 @@ params = bench.parse_args(parser)
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
 # Create our regression object
-regr = ElasticNet(fit_intercept=params.fit_intercept, l1_ratio=params.l1_ratio, alpha=params.alpha,
-                        tol=params.tol, max_iter=params.maxiter)
+regr = ElasticNet(fit_intercept=params.fit_intercept, l1_ratio=params.l1_ratio,
+                  alpha=params.alpha, tol=params.tol, max_iter=params.maxiter)
 
 # Time fit
 fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
 # Time predict
-predict_time, pred_train = bench.measure_function_time(regr.predict, X_train, params=params)
+predict_time, pred_train = bench.measure_function_time(regr.predict, X_train,
+                                                       params=params)
 
 train_rmse = bench.rmse_score(pred_train, y_train)
 pred_test = regr.predict(X_test)
 test_rmse = bench.rmse_score(pred_test, y_test)
 
 bench.print_output(library='cuml', algorithm='elastic-net',
-             stages=['training', 'prediction'], params=params, 
-             functions=['ElasticNet.fit', 'ElasticNet.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
-             alg_instance=regr)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['ElasticNet.fit', 'ElasticNet.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
+                   alg_instance=regr)

@@ -15,7 +15,8 @@
 #===============================================================================
 
 import argparse
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 from sklearn.linear_model import Lasso
@@ -52,8 +53,8 @@ pred_test = regr.predict(X_test)
 test_rmse = bench.rmse_score(pred_test, y_test)
 
 bench.print_output(library='sklearn', algorithm='lasso',
-             stages=['training', 'prediction'], params=params, 
-             functions=['Lasso.fit', 'Lasso.predict'],
-             times=[fit_time, predict_time], accuracy_type='rmse',
-             accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-             alg_instance=regr)
+                   stages=['training', 'prediction'], params=params,
+                   functions=['Lasso.fit', 'Lasso.predict'],
+                   times=[fit_time, predict_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                   alg_instance=regr)

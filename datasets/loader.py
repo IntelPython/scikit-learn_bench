@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import os
-import sys
 import logging
 
 import pandas as pd
@@ -141,10 +140,10 @@ def skin_segmentation(dataset_dir=None):
 def klaverjas(dataset_dir=None):
     """
     Abstract:
-    Klaverjas is an example of the Jack-Nine card games, 
-    which are characterized as trick-taking games where the the Jack 
-    and nine of the trump suit are the highest-ranking trumps, and 
-    the tens and aces of other suits are the most valuable cards 
+    Klaverjas is an example of the Jack-Nine card games,
+    which are characterized as trick-taking games where the the Jack
+    and nine of the trump suit are the highest-ranking trumps, and
+    the tens and aces of other suits are the most valuable cards
     of these suits. It is played by four players in two teams.
 
     Task Information:
@@ -213,8 +212,8 @@ def connect(dataset_dir=None):
 def mnist(dataset_dir=None):
     """
     Abstract:
-    The MNIST database of handwritten digits with 784 features. 
-    It can be split in a training set of the first 60,000 examples, 
+    The MNIST database of handwritten digits with 784 features.
+    It can be split in a training set of the first 60,000 examples,
     and a test set of 10,000 examples
     Source:
     Yann LeCun, Corinna Cortes, Christopher J.C. Burges
@@ -303,7 +302,7 @@ def covertype(dataset_dir=None):
     logging.info(f'{dataset_name} dataset is downloaded')
     logging.info('reading CSV file...')
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
@@ -332,22 +331,24 @@ def gisette(dataset_dir=None):
     cache_dir = os.path.join(dataset_dir, '_gisette')
     os.makedirs(cache_dir, exist_ok=True)
 
-    gisette_train_data_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'
+    domen_hhtp = 'http://archive.ics.uci.edu/ml/machine-learning-databases/'
+
+    gisette_train_data_url = domen_hhtp + '/gisette/GISETTE/gisette_train.data'
     filename_train_data = os.path.join(cache_dir, 'gisette_train.data')
     if not os.path.exists(filename_train_data):
         urlretrieve(gisette_train_data_url, filename_train_data)
 
-    gisette_train_labels_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels'
+    gisette_train_labels_url = domen_hhtp + '/gisette/GISETTE/gisette_train.labels'
     filename_train_labels = os.path.join(cache_dir, 'gisette_train.labels')
     if not os.path.exists(filename_train_labels):
         urlretrieve(gisette_train_labels_url, filename_train_labels)
 
-    gisette_test_data_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_valid.data'
+    gisette_test_data_url = domen_hhtp + '/gisette/GISETTE/gisette_valid.data'
     filename_test_data = os.path.join(cache_dir, 'gisette_valid.data')
     if not os.path.exists(filename_test_data):
         urlretrieve(gisette_test_data_url, filename_test_data)
 
-    gisette_test_labels_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/gisette/gisette_valid.labels'
+    gisette_test_labels_url = domen_hhtp + '/gisette/gisette_valid.labels'
     filename_test_labels = os.path.join(cache_dir, 'gisette_valid.labels')
     if not os.path.exists(filename_test_labels):
         urlretrieve(gisette_test_labels_url, filename_test_labels)
@@ -375,7 +376,8 @@ def gisette(dataset_dir=None):
     y_test = df_labels.iloc[:num_train].values
     y_test = pd.DataFrame((y_test > 0).astype(int))
 
-    for data, name in zip((x_train, x_test, y_train, y_test), ('x_train', 'x_test', 'y_train', 'y_test')):
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.csv'
         data.to_csv(os.path.join(dataset_dir, filename),
                     header=False, index=False)

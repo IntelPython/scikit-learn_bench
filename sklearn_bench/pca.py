@@ -15,7 +15,8 @@
 #===============================================================================
 
 import argparse
-import sys, os
+import sys
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 from sklearn.decomposition import PCA
@@ -48,8 +49,8 @@ transform_time, _ = bench.measure_function_time(
     pca.transform, X_train, params=params)
 
 bench.print_output(library='sklearn', algorithm='pca',
-             stages=['training', 'transformation'],
-             params=params, functions=['PCA.fit', 'PCA.transform'],
-             times=[fit_time, transform_time], accuracy_type=None,
-             accuracies=[None, None], data=[X_train, X_test],
-             alg_instance=pca)
+                   stages=['training', 'transformation'],
+                   params=params, functions=['PCA.fit', 'PCA.transform'],
+                   times=[fit_time, transform_time], accuracy_type=None,
+                   accuracies=[None, None], data=[X_train, X_test],
+                   alg_instance=pca)
