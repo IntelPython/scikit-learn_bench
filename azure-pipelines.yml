@@ -6,7 +6,7 @@ jobs:
   - script: |
       conda update -y -q conda
       export FORCE_DAAL4PY_SKLEARN=yes
-      conda create -q -y -n bench -c conda-forge bench python=3.7 pandas daal4py scikit-learn
+      conda create -n bench -q -y -c conda-forge bench python=3.7 pandas daal4py scikit-learn
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -19,7 +19,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -q -y -n bench -c conda-forge bench python=3.7 pandas xgboost
+      conda create -n bench -q -y -c conda-forge bench python=3.7 pandas xgboost
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -32,7 +32,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -q -y -n bench -c conda-forge bench python=3.7 pandas daal4py
+      conda create -n bench -q -y -c conda-forge bench python=3.7 pandas daal4py
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
