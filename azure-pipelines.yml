@@ -13,32 +13,32 @@ jobs:
       conda activate bench
       python runner.py --configs configs/testing/sklearn.json
     displayName: Run bench
-# - job: Linux_XGBoost
-#   pool:
-#     vmImage: 'ubuntu-20.04'
-#   steps:
-#   - script: |
-#       conda update -y -q conda
-#       conda create -n bench -q -y -c conda-forge bench python=3.7 pandas xgboost
-#     displayName: Create Anaconda environment
-#   - script: |
-#       . /usr/share/miniconda/etc/profile.d/conda.sh
-#       conda activate bench
-#       python runner.py --configs configs/testing/xgboost.json
-#     displayName: Run bench
-# - job: Linux_daal4py
-#   pool:
-#     vmImage: 'ubuntu-20.04'
-#   steps:
-#   - script: |
-#       conda update -y -q conda
-#       conda create -n bench -q -y -c conda-forge bench python=3.7 pandas daal4py
-#     displayName: Create Anaconda environment
-#   - script: |
-#       . /usr/share/miniconda/etc/profile.d/conda.sh
-#       conda activate bench
-#       python runner.py --configs configs/testing/daal4py.json
-#     displayName: Run bench
+- job: Linux_XGBoost
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/xgboost.json
+    displayName: Run bench
+- job: Linux_daal4py
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas daal4py
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/daal4py.json
+    displayName: Run bench
 - job: Pep8
   pool:
     vmImage: 'ubuntu-20.04'
