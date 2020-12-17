@@ -35,13 +35,14 @@ Set specific environment variable `export FORCE_DAAL4PY_SKLEARN=YES`
 
 ## Running Python benchmarks with runner script
 
-Run `python runner.py --configs configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --configs configs/config_example.json [--output-file result.json --verbose INFO --report]` to launch benchmarks.
 
 runner options:
 * ``configs`` : configuration files paths
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running
 * ``verbose`` : *WARNING*, *INFO*, *DEBUG*. Print additional information during benchmarks running. Default is *INFO*
 * ``output-file``: Output file name for result benchmarks
+* ``report``: Create an Excel report based on benchmarks results. Need library `openpyxl`.
 
 Benchmarks currently support the following frameworks:
 * **scikit-learn**

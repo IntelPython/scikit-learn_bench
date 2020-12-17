@@ -16,14 +16,14 @@
                     "n_classes": 5,
                     "n_features": 10,
                     "training": {
-                        "n_samples": 1000
+                        "n_samples": 100
                     },
                     "testing": {
                         "n_samples": 20
                     }
                 }
             ],
-            "n-estimators": [100],
+            "n-estimators": [10],
             "tree-method": ["hist"],
             "objective": ["multi:softprob"],
             "max-depth": [8]

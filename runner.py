@@ -65,7 +65,8 @@ if __name__ == '__main__':
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
     parser.add_argument('--report', default=False, action='store_true',
-                        help='Generator exel report by result of benchmarks')
+                        help='Create an Excel report based on benchmarks results. '
+                             'Need "openpyxl" library')
     args = parser.parse_args()
     env = os.environ.copy()
 
@@ -223,9 +224,22 @@ if __name__ == '__main__':
                                     + f'{decoding_exception}\n{stdout}\n'
                             if stderr != '':
                                 is_successful = False
-                                print(stderr, file=sys.stderr)
+                                logging.warning('Error in benchmark: \n' + stderr)
 
     json.dump(json_result, args.output_file, indent=4)
+    name_result_file = args.output_file.name
+    args.output_file.close()
+    
+    if args.report:
+        command = f'python report_generator/report_generator.py ' \
+                + f'--result-files {name_result_file} '           \
+                + f'--report-file {name_result_file}.xlsx '       \
+                + '--generation-config report_generator/default_report_gen_config.json'
+        logging.info(command)
+        stdout, stderr = utils.read_output_from_command(command)
+        if stderr != '':
+            logging.warning('Error in report generator: \n' + stderr)
+            is_successful = False
 
     if not is_successful:
         logging.warning('benchmark running had runtime errors')

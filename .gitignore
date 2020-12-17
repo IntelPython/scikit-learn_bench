@@ -12,4 +12,7 @@ __work*
 data
 *.csv
 *.npy
+
+# Results
 results.json
+*.xlsx
