@@ -1,6 +1,8 @@
 
 # Machine Learning Benchmarks
 
+[![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
+
 **Machine Learning Benchmarks** benchmarks various implementations of machine learning algorithms across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks and algorithms.  It currently support the [scikit-learn](https://scikit-learn.org/), [DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml), and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used [machine learning algorithms](#supported-algorithms).
 
 ## Our articles
