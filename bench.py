@@ -190,14 +190,13 @@ def parse_args(parser, size=None, loop_types=(),
 
     params = parser.parse_args()
 
-    if not params.no_intel_optimized:
+    if not params.no_intel_optimized and :
         try:
             from daal4py.sklearn import patch_sklearn
             patch_sklearn()
         except ImportError:
             print('Failed to import daal4py.sklearn.patch_sklearn.'
-                  'Use stock version scikit-learn',
-                  file=sys.stderr)
+                  'Use stock version scikit-learn')
 
     # disable finiteness check (default)
     if not params.check_finiteness:
@@ -229,25 +228,6 @@ def parse_args(parser, size=None, loop_types=(),
 
 def size_str(shape):
     return 'x'.join(str(d) for d in shape)
-
-
-def print_header(columns, params):
-    if params.header:
-        print(','.join(columns))
-
-
-def print_row(columns, params, **kwargs):
-    values = []
-
-    for col in columns:
-        if col in kwargs:
-            values.append(str(kwargs[col]))
-        elif hasattr(params, col):
-            values.append(str(getattr(params, col)))
-        else:
-            values.append('')
-
-    print(','.join(values))
 
 
 def set_daal_num_threads(num_threads):
