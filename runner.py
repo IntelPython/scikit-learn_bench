@@ -58,6 +58,9 @@ if __name__ == '__main__':
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation'
                              'without benchmarks running')
+    parser.add_argument('--no-intel-optimized', default=False, action='store_true',
+                        help='Use no intel optimized version. '
+                             'Now avalible for scikit-learn benchmarks'),
     parser.add_argument('--output-file', default='results.json',
                         type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
@@ -191,14 +194,15 @@ if __name__ == '__main__':
                                     'and csv/npy files are supported now')
 
                 omp_env = utils.get_omp_env()
+                no_intel_optimize = f'--no-intel-optimized ' if args.no_intel_optimized else ''
                 for lib in libs:
                     env = os.environ.copy()
                     if lib == 'xgboost':
                         for var in config['omp_env']:
                             env[var] = omp_env[var]
                     for i, case in enumerate(cases):
-
                         command = f'python {lib}_bench/{algorithm}.py ' \
+                            + no_intel_optimize \
                             + f'--arch {hostname} {case} {paths} ' \
                             + f'--dataset-name {dataset_name}'
                         while '  ' in command:

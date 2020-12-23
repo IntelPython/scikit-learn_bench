@@ -43,6 +43,8 @@ def try_load_dataset(dataset_name, output_directory):
             logging.warning("Internal error loading dataset")
             return False
     else:
+        logging.warning(f"There is no script to download the dataset: {dataset_name}. "
+                        "You need to add a dataset or script to load it.")
         return False
 
 

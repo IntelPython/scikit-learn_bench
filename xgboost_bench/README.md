@@ -1,6 +1,6 @@
 ## How to create conda environment for benchmarking
 
-    conda create -n skl_bench -c conda-forge python=3.7 xgboost pandas
+    conda create -n bench -c conda-forge python=3.7 xgboost pandas
 
 ##  Algorithms parameters
 

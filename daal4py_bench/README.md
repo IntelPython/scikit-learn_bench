@@ -1,7 +1,7 @@
 
 ## How to create conda environment for benchmarking
 
-`conda create -n skl_bench -c intel python=3.7 daal4py pandas`
+`conda create -n bench -c intel python=3.7 daal4py pandas scikit-learn`
 
 ##  Algorithms parameters
 

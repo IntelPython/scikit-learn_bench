@@ -14,13 +14,11 @@
 # limitations under the License.
 #===============================================================================
 
+import argparse
 import sys
 import os
-import argparse
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-
 from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
 

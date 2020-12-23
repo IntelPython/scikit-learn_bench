@@ -19,16 +19,7 @@ import numpy as np
 import sklearn
 import timeit
 import json
-import os
 import sys
-
-if os.environ.get('FORCE_DAAL4PY_SKLEARN', False) in ['y', 'yes', 'Y', 'YES', 'Yes']:
-    try:
-        from daal4py.sklearn import patch_sklearn
-        patch_sklearn()
-    except ImportError:
-        print('Failed to import daal4py.sklearn.patch_sklearn '
-              'while FORCE_DAAL4PY_SKLEARN is set', file=sys.stderr)
 
 
 def get_dtype(data):
@@ -182,7 +173,9 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Seed to pass as random_state')
     parser.add_argument('--dataset-name', type=str, default=None,
                         help='Dataset name')
-
+    parser.add_argument('--no-intel-optimized', default=False, action='store_true',
+                        help='Use no intel optimized version. '
+                             'Now avalible for scikit-learn benchmarks'),
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
             parser.add_argument(f'--file-{data}-{stage}',
@@ -196,6 +189,15 @@ def parse_args(parser, size=None, loop_types=(),
                             help='Problem size, delimited by "x" or ","')
 
     params = parser.parse_args()
+
+    if not params.no_intel_optimized:
+        try:
+            from daal4py.sklearn import patch_sklearn
+            patch_sklearn()
+        except ImportError:
+            print('Failed to import daal4py.sklearn.patch_sklearn.'
+                  'Use stock version scikit-learn',
+                  file=sys.stderr)
 
     # disable finiteness check (default)
     if not params.check_finiteness:

@@ -1,5 +1,4 @@
 {
-    "omp_env": ["OMP_NUM_THREADS"],
     "common": {
         "lib": ["daal4py"],
         "data-format": ["pandas"],
