@@ -195,7 +195,7 @@ def parse_args(parser, size=None, loop_types=(),
             patch_sklearn()
         except ImportError:
             print('Failed to import daal4py.sklearn.patch_sklearn.'
-                  'Use stock version scikit-learn')
+                  'Use stock version scikit-learn', file=sys.stderr)
 
     # disable finiteness check (default)
     if not params.check_finiteness:
