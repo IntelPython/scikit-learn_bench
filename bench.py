@@ -190,7 +190,7 @@ def parse_args(parser, size=None, loop_types=(),
 
     params = parser.parse_args()
 
-    if not params.no_intel_optimized and :
+    if not params.no_intel_optimized:
         try:
             from daal4py.sklearn import patch_sklearn
             patch_sklearn()
