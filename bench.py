@@ -19,7 +19,6 @@ import numpy as np
 import sklearn
 import timeit
 import json
-import sys
 
 
 def get_dtype(data):
