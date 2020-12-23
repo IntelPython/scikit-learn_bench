@@ -194,7 +194,8 @@ if __name__ == '__main__':
                                     'and csv/npy files are supported now')
 
                 omp_env = utils.get_omp_env()
-                no_intel_optimize = f'--no-intel-optimized ' if args.no_intel_optimized else ''
+                no_intel_optimize = \
+                    '--no-intel-optimized ' if args.no_intel_optimized else ''
                 for lib in libs:
                     env = os.environ.copy()
                     if lib == 'xgboost':
@@ -233,12 +234,12 @@ if __name__ == '__main__':
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name
     args.output_file.close()
-    
+
     if args.report:
-        command = f'python report_generator/report_generator.py ' \
-                + f'--result-files {name_result_file} '           \
-                + f'--report-file {name_result_file}.xlsx '       \
-                + '--generation-config report_generator/default_report_gen_config.json'
+        command = 'python report_generator/report_generator.py ' \
+            + f'--result-files {name_result_file} '              \
+            + f'--report-file {name_result_file}.xlsx '          \
+            + '--generation-config report_generator/default_report_gen_config.json'
         logging.info(command)
         stdout, stderr = utils.read_output_from_command(command)
         if stderr != '':
