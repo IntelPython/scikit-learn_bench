@@ -1,0 +1,58 @@
+{
+    "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
+    "common": {
+        "lib": ["xgboost"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+
+        {
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ],
+            "n-estimators": [50],
+            "objective": ["multi:softprob"],
+            "tree-method": ["hist"],
+            "max-depth": [7],
+            "subsample": [0.7],
+            "colsample-bytree": [0.7]
+        },
+        {
+            "algorithm": "gbt",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ],
+            "n-estimators": [50],
+            "objective": ["reg:squarederror"],
+            "tree-method": ["hist"],
+            "max-depth": [8],
+            "learning-rate": [0.1],
+            "reg-alpha": [0.9]
+        }
+    ]
+}

@@ -1,19 +1,67 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
-- main
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+jobs:
+- job: Linux_Sklearn
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      export FORCE_DAAL4PY_SKLEARN=yes
+      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn daal4py
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/sklearn.json
+    displayName: Run bench
+- job: Linux_XGBoost
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
+    displayName: Run bench
+- job: Linux_daal4py
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas scikit-learn daal4py
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/daal4py.json
+    displayName: Run bench
+- job: Linux_XGBoost_and_daal4py
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: |
+      conda update -y -q conda
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py
+    displayName: Create Anaconda environment
+  - script: |
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench
+      python runner.py --configs configs/testing/daal4py_xgboost.json
+    displayName: Run bench
+- job: Pep8
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
+      addToPath: true
+  - script: |
+      python -m pip install --upgrade pip setuptools
+      pip install flake8
+      flake8 --ignore=E265,E722,E402 --max-line-length=90 --count
+    displayName: 'PEP 8 check'

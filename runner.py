@@ -1,54 +1,31 @@
-# Copyright (C) 2020 Intel Corporation
+#===============================================================================
+# Copyright 2020 Intel Corporation
 #
-# SPDX-License-Identifier: MIT
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 import argparse
 import os
 import sys
-import subprocess
-import multiprocessing
 import json
-import time
 import socket
-from platform import platform
-from make_datasets import (
-    gen_regression, gen_classification, gen_kmeans, gen_blobs
-)
+import logging
+import pathlib
 
+import datasets.make_datasets as make_datasets
+import utils
 
-def verbose_print(text, **kwargs):
-    global verbose_mode
-    if verbose_mode:
-        print(text, **kwargs)
-
-
-def filter_stderr(text):
-    # delete 'Intel(R) DAAL usage in sklearn' messages
-    fake_error_message = 'Intel(R) Data Analytics Acceleration Library ' \
-                         + '(Intel(R) DAAL) solvers for sklearn enabled: ' \
-                         + 'https://intelpython.github.io/daal4py/sklearn.html'
-    while fake_error_message in text:
-        text = text.replace(fake_error_message, '')
-    return text
-
-
-def filter_stdout(text):
-    verbosity_letters = 'EWIDT'
-    filtered, extra = '', ''
-    for line in text.split('\n'):
-        if line == '':
-            continue
-        to_remove = False
-        for letter in verbosity_letters:
-            if line.startswith(f'[{letter}]'):
-                to_remove = True
-                break
-        if to_remove:
-            extra += line + '\n'
-        else:
-            filtered += line + '\n'
-    return filtered, extra
+from datasets.load_datasets import try_load_dataset
 
 
 def generate_cases(params):
@@ -67,261 +44,208 @@ def generate_cases(params):
     for i in range(n_param_values):
         for j in range(prev_length):
             cases[prev_length * i + j] += f' {dashes}{param_name} ' \
-                                          + f'{params[param_name][i]}'
+                + f'{params[param_name][i]}'
     del params[param_name]
     generate_cases(params)
 
 
-def read_output_from_command(command):
-    global env
-    res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, encoding='utf-8', env=env)
-    return res.stdout[:-1], res.stderr[:-1]
+if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--configs', metavar='ConfigPath', type=str,
+                        default='configs/config_example.json',
+                        help='Path to configuration files')
+    parser.add_argument('--dummy-run', default=False, action='store_true',
+                        help='Run configuration parser and datasets generation'
+                             'without benchmarks running')
+    parser.add_argument('--no-intel-optimized', default=False, action='store_true',
+                        help='Use no intel optimized version. '
+                             'Now avalible for scikit-learn benchmarks'),
+    parser.add_argument('--output-file', default='results.json',
+                        type=argparse.FileType('w'),
+                        help='Output file of benchmarks to use with their runner')
+    parser.add_argument('--verbose', default='INFO', type=str,
+                        choices=("ERROR", "WARNING", "INFO", "DEBUG"),
+                        help='Print additional information during benchmarks running')
+    parser.add_argument('--report', default=False, action='store_true',
+                        help='Create an Excel report based on benchmarks results. '
+                             'Need "openpyxl" library')
+    args = parser.parse_args()
+    env = os.environ.copy()
 
-def is_ht_enabled():
-    try:
-        cpu_info, _ = read_output_from_command('lscpu')
-        cpu_info = cpu_info.split('\n')
-        for el in cpu_info:
-            if 'Thread(s) per core' in el:
-                threads_per_core = int(el[-1])
-                if threads_per_core > 1:
-                    return True
+    logging.basicConfig(
+        stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
+    hostname = socket.gethostname()
+
+    # make directory for data if it doesn't exist
+    os.makedirs('data', exist_ok=True)
+
+    json_result = {'hardware': {}, 'software': {}, 'results': []}
+    is_successful = True
+
+    for config_name in args.configs.split(','):
+        logging.info(f'Config: {config_name}')
+        with open(config_name, 'r') as config_file:
+            config = json.load(config_file)
+
+        if 'omp_env' not in config.keys():
+            config['omp_env'] = []
+        # get parameters that are common for all cases
+        common_params = config['common']
+        for params_set in config['cases']:
+            cases = ['']
+            params = common_params.copy()
+            params.update(params_set.copy())
+            algorithm = params['algorithm']
+            libs = params['lib']
+            del params['dataset'], params['algorithm'], params['lib']
+            generate_cases(params)
+            logging.info(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
+                         f' {len(params_set["dataset"])} dataset(s)\n')
+
+            for dataset in params_set['dataset']:
+                if dataset['source'] in ['csv', 'npy']:
+                    train_data = dataset["training"]
+                    test_data = dataset["testing"]
+
+                    file_train_data_x = train_data["x"]
+                    file_train_data_y = train_data["y"]
+                    file_test_data_x = test_data["x"]
+                    file_test_data_y = test_data["y"]
+                    paths = f'--file-X-train {file_train_data_x}'
+                    if 'y' in dataset['training'].keys():
+                        paths += f' --file-y-train {file_train_data_y}'
+                    if 'testing' in dataset.keys():
+                        paths += f' --file-X-test {file_test_data_x}'
+                        if 'y' in dataset['testing'].keys():
+                            paths += f' --file-y-test {file_test_data_y}'
+                    if 'name' in dataset.keys():
+                        dataset_name = dataset['name']
+                    else:
+                        dataset_name = 'unknown'
+
+                    if not utils.is_exists_files([file_train_data_x, file_train_data_y]):
+                        directory_dataset = pathlib.Path(file_train_data_x).parent
+                        if not try_load_dataset(dataset_name=dataset_name,
+                                                output_directory=directory_dataset):
+                            logging.warning(f'Dataset {dataset_name} '
+                                            'could not be loaded. \n'
+                                            'Check the correct name or expand '
+                                            'the download in the folder dataset.')
+                            continue
+
+                elif dataset['source'] == 'synthetic':
+                    class GenerationArgs:
+                        pass
+                    gen_args = GenerationArgs()
+                    paths = ''
+
+                    if 'seed' in params_set.keys():
+                        gen_args.seed = params_set['seed']
+                    else:
+                        gen_args.seed = 777
+
+                    # default values
+                    gen_args.clusters = 10
+                    gen_args.type = dataset['type']
+                    gen_args.samples = dataset['training']['n_samples']
+                    gen_args.features = dataset['n_features']
+                    if 'n_classes' in dataset.keys():
+                        gen_args.classes = dataset['n_classes']
+                        cls_num_for_file = f'-{dataset["n_classes"]}'
+                    elif 'n_clusters' in dataset.keys():
+                        gen_args.clusters = dataset['n_clusters']
+                        cls_num_for_file = f'-{dataset["n_clusters"]}'
+                    else:
+                        cls_num_for_file = ''
+
+                    file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
+                    file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
+
+                    gen_args.filex = f'{file_prefix}X-train{file_postfix}'
+                    paths += f' --file-X-train {gen_args.filex}'
+                    if gen_args.type not in ['blobs']:
+                        gen_args.filey = f'{file_prefix}y-train{file_postfix}'
+                        paths += f' --file-y-train {gen_args.filey}'
+
+                    if 'testing' in dataset.keys():
+                        gen_args.test_samples = dataset['testing']['n_samples']
+                        gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
+                        paths += f' --file-X-test {gen_args.filextest}'
+                        if gen_args.type not in ['blobs']:
+                            gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
+                            paths += f' --file-y-test {gen_args.fileytest}'
+                    else:
+                        gen_args.test_samples = 0
+                        gen_args.filextest = gen_args.filex
+                        if gen_args.type not in ['blobs']:
+                            gen_args.fileytest = gen_args.filey
+
+                    if not args.dummy_run and not os.path.isfile(gen_args.filex):
+                        if gen_args.type == 'regression':
+                            make_datasets.gen_regression(gen_args)
+                        elif gen_args.type == 'classification':
+                            make_datasets.gen_classification(gen_args)
+                        elif gen_args.type == 'blobs':
+                            make_datasets.gen_blobs(gen_args)
+                    dataset_name = f'synthetic_{gen_args.type}'
                 else:
-                    return False
-        return False
-    except FileNotFoundError:
-        verbose_print('Impossible to check hyperthreading via lscpu')
-        return False
+                    logging.warning('Unknown dataset source. Only synthetics datasets '
+                                    'and csv/npy files are supported now')
 
+                omp_env = utils.get_omp_env()
+                no_intel_optimize = \
+                    '--no-intel-optimized ' if args.no_intel_optimized else ''
+                for lib in libs:
+                    env = os.environ.copy()
+                    if lib == 'xgboost':
+                        for var in config['omp_env']:
+                            env[var] = omp_env[var]
+                    for i, case in enumerate(cases):
+                        command = f'python {lib}_bench/{algorithm}.py ' \
+                            + no_intel_optimize \
+                            + f'--arch {hostname} {case} {paths} ' \
+                            + f'--dataset-name {dataset_name}'
+                        while '  ' in command:
+                            command = command.replace('  ', ' ')
+                        logging.info(command)
+                        if not args.dummy_run:
+                            case = f'{lib},{algorithm} ' + case
+                            stdout, stderr = utils.read_output_from_command(
+                                command)
+                            stdout, extra_stdout = utils.filter_stdout(stdout)
+                            stderr = utils.filter_stderr(stderr)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--configs', metavar='ConfigPath', type=str,
-                    default='configs/config_example.json',
-                    help='Path to configuration files')
-parser.add_argument('--dummy-run', default=False, action='store_true',
-                    help='Run configuration parser and datasets generation'
-                         'without benchmarks running')
-parser.add_argument('--verbose', default=False, action='store_true',
-                    help='Print additional information during'
-                         'benchmarks running')
-parser.add_argument('--output-format', default='json', choices=('json', 'csv'),
-                    help='Output type of benchmarks to use with their runner')
-args = parser.parse_args()
-env = os.environ.copy()
-verbose_mode = args.verbose
+                            print(stdout, end='\n')
 
-# make directory for data if it doesn't exist
-os.makedirs('data', exist_ok=True)
-
-csv_result = ''
-json_result = {'hardware': {}, 'software': {}, 'results': []}
-if 'Linux' in platform():
-    # get CPU information
-    lscpu_info, _ = read_output_from_command('lscpu')
-    # remove excess spaces in CPU info output
-    while '  ' in lscpu_info:
-        lscpu_info = lscpu_info.replace('  ', ' ')
-    lscpu_info = lscpu_info.split('\n')
-    for i in range(len(lscpu_info)):
-        lscpu_info[i] = lscpu_info[i].split(': ')
-    json_result['hardware'].update(
-        {'CPU': {line[0]: line[1] for line in lscpu_info}})
-    if 'CPU MHz' in json_result['hardware']['CPU'].keys():
-        del json_result['hardware']['CPU']['CPU MHz']
-    # get RAM size
-    mem_info, _ = read_output_from_command('free -b')
-    mem_info = mem_info.split('\n')[1]
-    while '  ' in mem_info:
-        mem_info = mem_info.replace('  ', ' ')
-    mem_info = int(mem_info.split(' ')[1]) / 2 ** 30
-    json_result['hardware'].update({'RAM size[GB]': mem_info})
-    # get GPU information
-    try:
-        gpu_info, _ = read_output_from_command(
-            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
-            '--format=csv,noheader')
-        gpu_info = gpu_info.split(', ')
-        json_result['hardware'].update({
-            'GPU': {
-                'Name': gpu_info[0],
-                'Memory size': gpu_info[1],
-                'Performance mode': gpu_info[3]
-            }
-        })
-        json_result['software'].update(
-            {'GPU_driver': {'version': gpu_info[2]}})
-        # alert if GPU is already running any processes
-        gpu_processes, _ = read_output_from_command(
-            'nvidia-smi --query-compute-apps=name,pid,used_memory '
-            '--format=csv,noheader')
-        if gpu_processes != '':
-            print(f'There are running processes on GPU:\n{gpu_processes}',
-                  file=sys.stderr)
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
-
-# get python packages info from conda
-try:
-    conda_list, _ = read_output_from_command('conda list --json')
-    needed_columns = ['version', 'build_string', 'channel']
-    conda_list = json.loads(conda_list)
-    for pkg in conda_list:
-        pkg_info = {}
-        for col in needed_columns:
-            if col in pkg.keys():
-                pkg_info.update({col: pkg[col]})
-        json_result['software'].update({pkg['name']: pkg_info})
-except (FileNotFoundError, json.JSONDecodeError):
-    pass
-
-batch = time.strftime('%Y-%m-%dT%H:%M:%S%z')
-json_result.update({'measurement_time': time.time()})
-hostname = socket.gethostname()
-
-cpu_count = multiprocessing.cpu_count()
-omp_num_threads = str(cpu_count // 2) if is_ht_enabled() else str(cpu_count)
-
-omp_env = {
-    'OMP_PLACES': f'{{0}}:{cpu_count}:1',
-    'OMP_NUM_THREADS': omp_num_threads
-}
-
-for config_name in args.configs.split(','):
-    verbose_print(f'Config: {config_name}')
-    with open(config_name, 'r') as config_file:
-        config = json.load(config_file)
-
-    if 'omp_env' not in config.keys():
-        config['omp_env'] = []
-    # get parameters that are common for all cases
-    common_params = config['common']
-    for params_set in config['cases']:
-        cases = ['']
-        params = common_params.copy()
-        params.update(params_set.copy())
-        algorithm = params['algorithm']
-        libs = params['lib']
-        del params['dataset'], params['algorithm'], params['lib']
-        generate_cases(params)
-        verbose_print(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
-                      f' {len(params_set["dataset"])} dataset(s)\n')
-
-        for dataset in params_set['dataset']:
-            if dataset['source'] in ['csv', 'npy']:
-                paths = f'--file-X-train {dataset["training"]["x"]}'
-                if 'y' in dataset['training'].keys():
-                    paths += f' --file-y-train {dataset["training"]["y"]}'
-                if 'testing' in dataset.keys():
-                    paths += f' --file-X-test {dataset["testing"]["x"]}'
-                    if 'y' in dataset['testing'].keys():
-                        paths += f' --file-y-test {dataset["testing"]["y"]}'
-                if 'name' in dataset.keys():
-                    dataset_name = dataset['name']
-                else:
-                    dataset_name = 'unknown'
-            elif dataset['source'] == 'synthetic':
-                class GenerationArgs:
-                    pass
-                gen_args = GenerationArgs()
-                paths = ''
-
-                if 'seed' in params_set.keys():
-                    gen_args.seed = params_set['seed']
-                else:
-                    gen_args.seed = 777
-
-                # default values
-                gen_args.clusters = 10
-                gen_args.type = dataset['type']
-                gen_args.samples = dataset['training']['n_samples']
-                gen_args.features = dataset['n_features']
-                if 'n_classes' in dataset.keys():
-                    gen_args.classes = dataset['n_classes']
-                    cls_num_for_file = f'-{dataset["n_classes"]}'
-                elif 'n_clusters' in dataset.keys():
-                    gen_args.clusters = dataset['n_clusters']
-                    cls_num_for_file = f'-{dataset["n_clusters"]}'
-                else:
-                    cls_num_for_file = ''
-
-                file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
-                file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
-
-                if gen_args.type == 'kmeans':
-                    gen_args.node_id = 0
-                    gen_args.filei = f'{file_prefix}init{file_postfix}'
-                    paths += f'--filei {gen_args.filei}'
-                    gen_args.filet = f'{file_prefix}threshold{file_postfix}'
-
-                gen_args.filex = f'{file_prefix}X-train{file_postfix}'
-                paths += f' --file-X-train {gen_args.filex}'
-                if gen_args.type not in ['kmeans', 'blobs']:
-                    gen_args.filey = f'{file_prefix}y-train{file_postfix}'
-                    paths += f' --file-y-train {gen_args.filey}'
-
-                if 'testing' in dataset.keys():
-                    gen_args.test_samples = dataset['testing']['n_samples']
-                    gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
-                    paths += f' --file-X-test {gen_args.filextest}'
-                    if gen_args.type not in ['kmeans', 'blobs']:
-                        gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
-                        paths += f' --file-y-test {gen_args.fileytest}'
-                else:
-                    gen_args.test_samples = 0
-                    gen_args.filextest = gen_args.filex
-                    if gen_args.type not in ['kmeans', 'blobs']:
-                        gen_args.fileytest = gen_args.filey
-
-                if not args.dummy_run and not os.path.isfile(gen_args.filex):
-                    if gen_args.type == 'regression':
-                        gen_regression(gen_args)
-                    elif gen_args.type == 'classification':
-                        gen_classification(gen_args)
-                    elif gen_args.type == 'kmeans':
-                        gen_kmeans(gen_args)
-                    elif gen_args.type == 'blobs':
-                        gen_blobs(gen_args)
-                dataset_name = f'synthetic_{gen_args.type}'
-            else:
-                raise ValueError(
-                    'Unknown dataset source. Only synthetics datasets '
-                    'and csv/npy files are supported now')
-            for lib in libs:
-                env = os.environ.copy()
-                if lib == 'xgboost':
-                    for var in config['omp_env']:
-                        env[var] = omp_env[var]
-                for i, case in enumerate(cases):
-                    command = f'python {lib}/{algorithm}.py --batch {batch} ' \
-                              + f'--arch {hostname} --header --output-format ' \
-                              + f'{args.output_format}{case} {paths} ' \
-                              + f'--dataset-name {dataset_name}'
-                    while '  ' in command:
-                        command = command.replace('  ', ' ')
-                    verbose_print(command)
-                    if not args.dummy_run:
-                        case = f'{lib},{algorithm} ' + case
-                        stdout, stderr = read_output_from_command(command)
-                        stdout, extra_stdout = filter_stdout(stdout)
-                        stderr = filter_stderr(stderr)
-                        if extra_stdout != '':
-                            stderr += f'CASE {case} EXTRA OUTPUT:\n' \
-                                      + f'{extra_stdout}\n'
-                        if args.output_format == 'json':
+                            if extra_stdout != '':
+                                stderr += f'CASE {case} EXTRA OUTPUT:\n' \
+                                    + f'{extra_stdout}\n'
                             try:
-                                json_result['results'].extend(json.loads(stdout))
+                                json_result['results'].extend(
+                                    json.loads(stdout))
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
-                                          + f'{decoding_exception}\n{stdout}\n'
-                        elif args.output_format == 'csv':
-                            csv_result += stdout + '\n'
-                        if stderr != '':
-                            print(stderr, file=sys.stderr)
+                                    + f'{decoding_exception}\n{stdout}\n'
+                            if stderr != '':
+                                is_successful = False
+                                logging.warning('Error in benchmark: \n' + stderr)
 
-if args.output_format == 'json':
-    json_result = json.dumps(json_result, indent=4)
-    print(json_result, end='\n')
-elif args.output_format == 'csv':
-    print(csv_result, end='')
+    json.dump(json_result, args.output_file, indent=4)
+    name_result_file = args.output_file.name
+    args.output_file.close()
+
+    if args.report:
+        command = 'python report_generator/report_generator.py ' \
+            + f'--result-files {name_result_file} '              \
+            + f'--report-file {name_result_file}.xlsx '          \
+            + '--generation-config report_generator/default_report_gen_config.json'
+        logging.info(command)
+        stdout, stderr = utils.read_output_from_command(command)
+        if stderr != '':
+            logging.warning('Error in report generator: \n' + stderr)
+            is_successful = False
+
+    if not is_successful:
+        logging.warning('benchmark running had runtime errors')
+        sys.exit(1)

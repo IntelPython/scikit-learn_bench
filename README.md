@@ -1,10 +1,24 @@
 
-# scikit-learn_bench
+# Machine Learning Benchmarks
 
-**scikit-learn_bench** benchmarks various implementations of machine learning algorithms across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks and algorithms.  It currently support the [scikit-learn](https://scikit-learn.org/), [DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml), and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used [machine learning algorithms](#supported-algorithms).
+[![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
 
-See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
+**Machine Learning Benchmarks** benchmarks contains implementations of machine learning algorithms
+across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks
+and algorithms. It currently support the [scikit-learn](https://scikit-learn.org/),
+[DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml),
+and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used
+[machine learning algorithms](#supported-algorithms).
 
+## Follow us on Medium
+
+We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-software/tagged/machine-learning) to learn tips and tricks for more efficient data analysis. Here are our latest blogs:
+
+- [Improve the Performance of XGBoost and LightGBM Inference](https://medium.com/intel-analytics-software/improving-the-performance-of-xgboost-and-lightgbm-inference-3b542c03447e)
+- [Accelerate Kaggle Challenges Using Intel AI Analytics Toolkit](https://medium.com/intel-analytics-software/accelerate-kaggle-challenges-using-intel-ai-analytics-toolkit-beb148f66d5a)
+- [Accelerate Your scikit-learn Applications](https://medium.com/intel-analytics-software/improving-the-performance-of-xgboost-and-lightgbm-inference-3b542c03447e)
+- [Accelerate Linear Models for Machine Learning](https://medium.com/intel-analytics-software/accelerating-linear-models-for-machine-learning-5a75ff50a0fe)
+- [Accelerate K-Means Clustering](https://medium.com/intel-analytics-software/accelerate-k-means-clustering-6385088788a1)
 
 ## Table of content
 
@@ -14,35 +28,52 @@ See benchmark results [here](https://intelpython.github.io/scikit-learn_bench).
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Supported algorithms](#supported-algorithms)
 * [Algorithms parameters](#algorithms-parameters)
-* [Legacy automatic building and running](#legacy-automatic-building-and-running)
-
-## Prerequisites
-- `python` and `scikit-learn` to run python versions
-- pandas when using its DataFrame as input data format
-- `icc`, `ifort`, `mkl`, `daal` to compile and run native benchmarks
-- machine learning frameworks, that you want to test. Check [this item](#how-to-create-conda-environment-for-benchmarking) to get additional information how to set environment.
 
 ## How to create conda environment for benchmarking
 
 Create a suitable conda environment for each framework to test. Each item in the list below links to instructions to create an appropriate conda environment for the framework.
 
-* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
-* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
+* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/blob/master/sklearn/README.md#how-to-create-conda-environment-for-benchmarking)
 
-## How to enable daal4py patching for scikit-learn benchmarks
-Set specific environment variable `export FORCE_DAAL4PY_SKLEARN=YES`
+```bash
+conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
+```
+
+* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/blob/master/daal4py/README.md#how-to-create-conda-environment-for-benchmarking)
+
+```bash
+conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
+```
+
+* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/blob/master/cuml/README.md#how-to-create-conda-environment-for-benchmarking)
+
+```bash
+conda create -n bench -c rapidsai -c conda-forge python=3.7 cuml pandas cudf
+```
+
+* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost/README.md#how-to-create-conda-environment-for-benchmarking)
+
+```bash
+conda create -n bench -c conda-forge python=3.7 xgboost pandas
+```
 
 ## Running Python benchmarks with runner script
 
-Run `python runner.py --configs configs/config_example.json [--output-format json --verbose]` to launch benchmarks.
+Run `python runner.py --configs configs/config_example.json [--output-file result.json --verbose INFO --report]` to launch benchmarks.
 
 runner options:
 * ``configs`` : configuration files paths
-* ``dummy-run`` : run configuration parser and datasets generation without benchmarks running
-* ``verbose`` : print additional information during benchmarks running
-* ``output-format``: *json* or *csv*. Output type of benchmarks to use with their runner
+* ``no-intel-optimized`` : use no intel optimized version. Now avalible for scikit-learn benchmarks. Default is intel-optimized version.
+* ``output-file``: output file name for result benchmarks. Default is `result.json`
+* ``report``: create an Excel report based on benchmarks results. Need library `openpyxl`.
+* ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.
+* ``verbose`` : *WARNING*, *INFO*, *DEBUG*. print additional information during benchmarks running. Default is *INFO*
+
+|   Level  |  Description  |
+|----------|---------------|
+| *DEBUG*   | etailed information, typically of interest only when diagnosing problems. Usually at this level the logging output is so low level that it’s not useful to users who are not familiar with the software’s internals. |
+| *INFO*    | Confirmation that things are working as expected. |
+| *WARNING* | An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected. |
 
 Benchmarks currently support the following frameworks:
 * **scikit-learn**
@@ -52,7 +83,7 @@ Benchmarks currently support the following frameworks:
 
 The configuration of benchmarks allows you to select the frameworks to run, select datasets for measurements and configure the parameters of the algorithms.
 
- You can configure benchmarks by editing a config file. Check  [config.json schema](https://github.com/PivovarA/scikit-learn_bench/blob/master/configs/README.md) for more details.
+ You can configure benchmarks by editing a config file. Check  [config.json schema](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/README.md) for more details.
 
 ## Benchmark supported algorithms
 
@@ -86,17 +117,7 @@ Run the following command:
 
 The list of supported parameters for each algorithm you can find here:
 
-* [**scikit-learn**](https://github.com/PivovarA/scikit-learn_bench/blob/master/sklearn/README.md#algorithms-parameters)
-* [**daal4py**](https://github.com/PivovarA/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
-* [**cuml**](https://github.com/PivovarA/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
-* [**xgboost**](https://github.com/PivovarA/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)
-
-## Legacy automatic building and running
-- Run `make`. This will generate data, compile benchmarks, and run them.
-  - To run only scikit-learn benchmarks, use `make sklearn`.
-  - To run only native benchmarks, use `make native`.
-  - To run only daal4py benchmarks, use `make daal4py`.
-  - To run a specific implementation of a specific benchmark,
-    directly request the corresponding file: `make output/<impl>/<bench>.out`.
-  - If you have activated a conda environment, the build will use daal from
-    the conda environment, if available.
+* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/blob/master/sklearn/README.md#algorithms-parameters)
+* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/blob/master/daal4py/README.md#algorithms-parameters)
+* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/blob/master/cuml/README.md#algorithms-parameters)
+* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost/README.md#algorithms-parameters)

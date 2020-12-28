@@ -1,0 +1,142 @@
+{
+    "common": {
+        "lib": ["daal4py"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "kmeans",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 10,
+                    "n_features": 2,
+                    "training": {
+                        "n_samples": 100
+                    }
+                }
+            ],
+            "n-clusters": [10]
+        },
+        {
+            "algorithm": "df_clsf",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ],
+            "num-trees": [10]
+        },
+        {
+            "algorithm": "df_regr",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ],
+            "num-trees": [10]
+        },
+        {
+            "algorithm": "ridge",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 200
+                    }
+                }
+            ],
+            "alpha": [5]
+        },
+        {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 200
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "dbscan",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 10,
+                    "n_features": 2,
+                    "training": {
+                        "n_samples": 100
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "pca",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "distances",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ]
+        }
+    ]
+}
