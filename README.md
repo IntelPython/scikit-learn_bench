@@ -3,7 +3,7 @@
 
 [![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
 
-**Machine Learning Benchmarks** benchmarks contains implementations of machine learning algorithms
+**Machine Learning Benchmarks** contains implementations of machine learning algorithms
 across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks
 and algorithms. It currently support the [scikit-learn](https://scikit-learn.org/),
 [DAAL4PY](https://intelpython.github.io/daal4py/), [cuML](https://github.com/rapidsai/cuml),
@@ -14,6 +14,7 @@ and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used
 
 We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-software/tagged/machine-learning) to learn tips and tricks for more efficient data analysis. Here are our latest blogs:
 
+- [From Hours to Minutes: 600x Faster SVM](https://medium.com/intel-analytics-software/from-hours-to-minutes-600x-faster-svm-647f904c31ae)
 - [Improve the Performance of XGBoost and LightGBM Inference](https://medium.com/intel-analytics-software/improving-the-performance-of-xgboost-and-lightgbm-inference-3b542c03447e)
 - [Accelerate Kaggle Challenges Using Intel AI Analytics Toolkit](https://medium.com/intel-analytics-software/accelerate-kaggle-challenges-using-intel-ai-analytics-toolkit-beb148f66d5a)
 - [Accelerate Your scikit-learn Applications](https://medium.com/intel-analytics-software/improving-the-performance-of-xgboost-and-lightgbm-inference-3b542c03447e)
@@ -69,8 +70,8 @@ runner options:
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.
 * ``verbose`` : *WARNING*, *INFO*, *DEBUG*. print additional information during benchmarks running. Default is *INFO*
 
-|   Level  |  Description  |
-|----------|---------------|
+|   Level   |  Description  |
+|-----------|---------------|
 | *DEBUG*   | etailed information, typically of interest only when diagnosing problems. Usually at this level the logging output is so low level that it’s not useful to users who are not familiar with the software’s internals. |
 | *INFO*    | Confirmation that things are working as expected. |
 | *WARNING* | An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected. |
