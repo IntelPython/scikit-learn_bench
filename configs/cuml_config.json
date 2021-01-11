@@ -308,6 +308,27 @@
             "kernel": ["rbf"]
         },
         {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "skin_segmentation",
+                    "training":
+                    {
+                        "x": "data/skin_segmentation_x_train.csv",
+                        "y": "data/skin_segmentation_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/skin_segmentation_x_test.csv",
+                        "y": "data/skin_segmentation_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.0],
+            "kernel": ["rbf"]
+        },
+        {
             "algorithm": "dbscan",
             "dataset": [
                 {

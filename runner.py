@@ -80,7 +80,11 @@ if __name__ == '__main__':
     # make directory for data if it doesn't exist
     os.makedirs('data', exist_ok=True)
 
-    json_result = {'hardware': {}, 'software': {}, 'results': []}
+    json_result = {
+        'hardware': utils.get_hw_parameters(),
+        'software': utils.get_sw_parameters(),
+        'results': []
+    }
     is_successful = True
 
     for config_name in args.configs.split(','):
@@ -106,18 +110,17 @@ if __name__ == '__main__':
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
                     train_data = dataset["training"]
-                    test_data = dataset["testing"]
-
                     file_train_data_x = train_data["x"]
-                    file_train_data_y = train_data["y"]
-                    file_test_data_x = test_data["x"]
-                    file_test_data_y = test_data["y"]
                     paths = f'--file-X-train {file_train_data_x}'
                     if 'y' in dataset['training'].keys():
+                        file_train_data_y = train_data["y"]
                         paths += f' --file-y-train {file_train_data_y}'
                     if 'testing' in dataset.keys():
+                        test_data = dataset["testing"]
+                        file_test_data_x = test_data["x"]
                         paths += f' --file-X-test {file_test_data_x}'
                         if 'y' in dataset['testing'].keys():
+                            file_test_data_y = test_data["y"]
                             paths += f' --file-y-test {file_test_data_y}'
                     if 'name' in dataset.keys():
                         dataset_name = dataset['name']
