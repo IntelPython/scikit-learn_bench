@@ -313,6 +313,31 @@ def covertype(dataset_dir=None):
     return True
 
 
+def codrnanorm(dataset_dir=None):
+    """
+    """
+    dataset_name = 'codrnanorm'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    X, y = fetch_openml(name='codrnaNorm', return_X_y=True,
+                        as_frame=False, data_home=dataset_dir)
+    X = pd.DataFrame(X.todense())
+    y = pd.DataFrame(y)
+
+    logging.info(f'{dataset_name} dataset is downloaded')
+    logging.info('reading CSV file...')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42)
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.csv'
+        data.to_csv(os.path.join(dataset_dir, filename),
+                    header=False, index=False)
+    logging.info(f'dataset {dataset_name} ready.')
+    return True
+
+
 def gisette(dataset_dir=None):
     """
     GISETTE is a handwritten digit recognition problem.
