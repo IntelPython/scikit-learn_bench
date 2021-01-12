@@ -37,7 +37,7 @@ def a9a(dataset_dir=None):
     a9a X train dataset (39073, 123)
     a9a y train dataset (39073, 1)
     a9a X test dataset  (9769,  123)
-    a9a y train dataset (9769,  1)
+    a9a y test dataset  (9769,  1)
     """
     dataset_name = 'a9a'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -75,7 +75,7 @@ def ijcnn(dataset_dir=None):
     ijcnn X train dataset (153344, 22)
     ijcnn y train dataset (153344, 1)
     ijcnn X test dataset  (38337,  22)
-    ijcnn y train dataset (38337,  1)
+    ijcnn y test dataset  (38337,  1)
     """
     dataset_name = 'ijcnn'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -113,7 +113,7 @@ def skin_segmentation(dataset_dir=None):
     skin_segmentation X train dataset (196045, 3)
     skin_segmentation y train dataset (196045, 1)
     skin_segmentation X test dataset  (49012,  3)
-    skin_segmentation y train dataset (49012,  1)
+    skin_segmentation y test dataset  (49012,  1)
     """
     dataset_name = 'skin_segmentation'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -151,7 +151,7 @@ def klaverjas(dataset_dir=None):
     klaverjas X train dataset (196045, 3)
     klaverjas y train dataset (196045, 1)
     klaverjas X test dataset  (49012,  3)
-    klaverjas y train dataset (49012,  1)
+    klaverjas y test dataset  (49012,  1)
     """
     dataset_name = 'klaverjas'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -184,7 +184,7 @@ def connect(dataset_dir=None):
     connect X train dataset (196045, 127)
     connect y train dataset (196045, 1)
     connect X test dataset  (49012,  127)
-    connect y train dataset (49012,  1)
+    connect y test dataset  (49012,  1)
     """
     dataset_name = 'connect'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -223,7 +223,7 @@ def mnist(dataset_dir=None):
     mnist X train dataset (60000, 784)
     mnist y train dataset (60000, 1)
     mnist X test dataset  (10000,  784)
-    mnist y train dataset (10000,  1)
+    mnist y test dataset  (10000,  1)
     """
     dataset_name = 'mnist'
 
@@ -258,7 +258,7 @@ def sensit(dataset_dir=None):
     sensit X train dataset (196045, 3)
     sensit y train dataset (196045, 1)
     sensit X test dataset  (49012,  3)
-    sensit y train dataset (49012,  1)
+    sensit y test dataset  (49012,  1)
     """
     dataset_name = 'sensit'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -285,12 +285,16 @@ def sensit(dataset_dir=None):
 
 def covertype(dataset_dir=None):
     """
+    Abstract: This is the original version of the famous
+    covertype dataset in ARFF format.
+    Author: Jock A. Blackard, Dr. Denis J. Dean, Dr. Charles W. Anderson
+    Source: [original](https://archive.ics.uci.edu/ml/datasets/covertype)
 
-    covertype X train dataset (196045, 3)
-    covertype y train dataset (196045, 1)
-    covertype X test dataset  (49012,  3)
-    covertype y train dataset (49012,  1)
-
+    Classification task. n_classes = 7.
+    covertype X train dataset (390852, 54)
+    covertype y train dataset (390852, 1)
+    covertype X test dataset  (97713,  54)
+    covertype y test dataset  (97713,  1)
     """
     dataset_name = 'covertype'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -298,6 +302,41 @@ def covertype(dataset_dir=None):
     X, y = fetch_openml(name='covertype', version=3, return_X_y=True,
                         as_frame=True, data_home=dataset_dir)
     y = y.astype(int)
+
+    logging.info(f'{dataset_name} dataset is downloaded')
+    logging.info('reading CSV file...')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42)
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.csv'
+        data.to_csv(os.path.join(dataset_dir, filename),
+                    header=False, index=False)
+    logging.info(f'dataset {dataset_name} ready.')
+    return True
+
+
+def codrnanorm(dataset_dir=None):
+    """
+    Abstract: Detection of non-coding RNAs on the basis of predicted secondary
+    structure formation free energy change.
+    Author: Andrew V Uzilov,Joshua M Keegan,David H Mathews.
+    Source: [original](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets)
+
+    Classification task. n_classes = 2.
+    codrnanorm X train dataset (390852, 8)
+    codrnanorm y train dataset (390852, 1)
+    codrnanorm X test dataset  (97713,  8)
+    codrnanorm y test dataset  (97713,  1)
+    """
+    dataset_name = 'codrnanorm'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    X, y = fetch_openml(name='codrnaNorm', return_X_y=True,
+                        as_frame=False, data_home=dataset_dir)
+    X = pd.DataFrame(X.todense())
+    y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} dataset is downloaded')
     logging.info('reading CSV file...')
@@ -323,7 +362,7 @@ def gisette(dataset_dir=None):
     gisette X train dataset (6000, 5000)
     gisette y train dataset (6000, 1)
     gisette X test dataset  (1000, 5000)
-    gisette y train dataset (1000, 1)
+    gisette y test dataset  (1000, 1)
     """
     dataset_name = 'gisette'
     os.makedirs(dataset_dir, exist_ok=True)

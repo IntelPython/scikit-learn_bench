@@ -20,7 +20,8 @@ import argparse
 import logging
 
 from .loader import (a9a, gisette, ijcnn, skin_segmentation,
-                     klaverjas, connect, mnist, sensit, covertype)
+                     klaverjas, connect, mnist, sensit,
+                     covertype, codrnanorm)
 
 dataset_loaders = {
     "a9a": a9a,
@@ -32,6 +33,7 @@ dataset_loaders = {
     "mnist": mnist,
     "sensit": sensit,
     "covertype": covertype,
+    "codrnanorm": codrnanorm,
 }
 
 
