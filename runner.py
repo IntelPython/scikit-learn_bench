@@ -127,7 +127,7 @@ if __name__ == '__main__':
                     else:
                         dataset_name = 'unknown'
 
-                    if not utils.is_exists_files([file_train_data_x, file_train_data_y]):
+                    if not utils.is_exists_files([file_train_data_x]):
                         directory_dataset = pathlib.Path(file_train_data_x).parent
                         if not try_load_dataset(dataset_name=dataset_name,
                                                 output_directory=directory_dataset):
