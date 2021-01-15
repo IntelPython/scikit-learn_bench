@@ -19,7 +19,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.linear_model import Lasso
 
 parser = argparse.ArgumentParser(description='scikit-learn lasso regression '
                                              'benchmark')
@@ -33,6 +32,8 @@ parser.add_argument('--maxiter', type=int, default=1000,
 parser.add_argument('--tol', type=float, default=0.0,
                     help='Tolerance for solver.')
 params = bench.parse_args(parser)
+
+from sklearn.linear_model import Lasso
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params)

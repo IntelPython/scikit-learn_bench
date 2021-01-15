@@ -19,7 +19,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.decomposition import PCA
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
 parser.add_argument('--svd-solver', type=str, choices=['full'],
@@ -29,6 +28,8 @@ parser.add_argument('--n-components', type=int, default=None,
 parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 params = bench.parse_args(parser)
+
+from sklearn.decomposition import PCA
 
 # Load random data
 X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])

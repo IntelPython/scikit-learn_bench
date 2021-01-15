@@ -21,7 +21,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
-from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
@@ -42,6 +41,8 @@ parser.add_argument('--tol', type=float, default=1e-3,
 parser.add_argument('--no-shrinking', action='store_false', default=True,
                     dest='shrinking', help="Don't use shrinking heuristic")
 params = bench.parse_args(parser, loop_types=('fit', 'predict'))
+
+from sklearn.svm import SVC
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params)

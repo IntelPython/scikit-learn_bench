@@ -20,7 +20,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
-from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import davies_bouldin_score
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
@@ -32,6 +31,8 @@ parser.add_argument('--maxiter', type=int, default=100,
                     help='Maximum number of iterations')
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = bench.parse_args(parser)
+
+from sklearn.cluster import KMeans
 
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)

@@ -65,7 +65,6 @@
             "tol": [0.0]
         },
         {
-            "lib": ["daal4py"],
             "algorithm": "pca",
             "dataset": [
                 {
@@ -97,9 +96,18 @@
                     "training": {
                         "n_samples": 30000
                     }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 4000,
+                    "training": {
+                        "n_samples": 6000
+                    }
                 }
             ],
-            "svd-solver": ["correlation"],
+            "svd-solver": ["full"],
             "n-components": [10]
         },
         {

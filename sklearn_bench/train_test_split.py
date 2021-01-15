@@ -20,7 +20,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.model_selection import train_test_split
 
 parser = argparse.ArgumentParser(
     description='scikit-learn train_test_split benchmark')
@@ -39,6 +38,8 @@ parser.add_argument('--rng', default=None,
                     help='Random numbers generator for shuffling '
                          '(only for IDP scikit-learn)')
 params = bench.parse_args(parser)
+
+from sklearn.model_selection import train_test_split
 
 # Load generated data
 X, y, _, _ = bench.load_data(params)
