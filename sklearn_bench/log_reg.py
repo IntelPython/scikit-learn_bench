@@ -20,8 +20,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+
 parser = argparse.ArgumentParser(description='scikit-learn logistic '
                                              'regression benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept',
@@ -44,6 +44,8 @@ parser.add_argument('--tol', type=float, default=None,
                          'then the default is 1e-3. Otherwise, the default '
                          'is 1e-10.')
 params = bench.parse_args(parser, loop_types=('fit', 'predict'))
+
+from sklearn.linear_model import LogisticRegression
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)

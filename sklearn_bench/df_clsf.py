@@ -21,7 +21,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
@@ -46,6 +45,8 @@ parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
                     action='store_false', help="Don't control bootstraping")
 
 params = bench.parse_args(parser)
+
+from sklearn.ensemble import RandomForestClassifier
 
 # Load and convert data
 X_train, X_test, y_train, y_test = bench.load_data(params)

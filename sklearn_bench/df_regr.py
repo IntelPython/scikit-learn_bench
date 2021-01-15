@@ -19,7 +19,6 @@ import os
 import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.ensemble import RandomForestRegressor
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
                                              'regression benchmark')
@@ -44,6 +43,8 @@ parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
                     action='store_false', help="Don't control bootstraping")
 
 params = bench.parse_args(parser)
+
+from sklearn.ensemble import RandomForestRegressor
 
 # Load and convert data
 X_train, X_test, y_train, y_test = bench.load_data(params)

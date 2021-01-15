@@ -20,8 +20,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 
-from sklearn.linear_model import ElasticNet
-
 parser = argparse.ArgumentParser(description='scikit-learn elastic-net regression '
                                              'benchmark')
 parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=False,
@@ -36,6 +34,8 @@ parser.add_argument('--l1_ratio', dest='l1_ratio', type=float, default=0.5,
 parser.add_argument('--tol', type=float, default=0.0,
                     help='Tolerance for solver.')
 params = bench.parse_args(parser)
+
+from sklearn.linear_model import ElasticNet
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params)

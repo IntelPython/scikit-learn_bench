@@ -19,7 +19,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
 
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
@@ -29,6 +28,8 @@ parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
 params = bench.parse_args(parser, n_jobs_supported=True)
+
+from sklearn.cluster import DBSCAN
 
 # Load generated data
 X, _, _, _ = bench.load_data(params, add_dtype=True)

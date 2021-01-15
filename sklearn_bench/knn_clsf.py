@@ -20,7 +20,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser(
@@ -39,6 +38,8 @@ parser.add_argument('--method', type=str, default='brute',
 parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
 params = bench.parse_args(parser)
+
+from sklearn.neighbors import KNeighborsClassifier
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)

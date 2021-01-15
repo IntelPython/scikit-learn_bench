@@ -20,7 +20,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.linear_model import LinearRegression
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '
                                              'benchmark')
@@ -28,6 +27,8 @@ parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                     action='store_false',
                     help="Don't fit intercept (assume data already centered)")
 params = bench.parse_args(parser)
+
+from sklearn.linear_model import LinearRegression
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(

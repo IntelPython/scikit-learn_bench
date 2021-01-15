@@ -19,7 +19,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
-from sklearn.linear_model import Ridge
 
 parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
                                              'benchmark')
@@ -31,6 +30,8 @@ parser.add_argument('--solver', default='auto',
 parser.add_argument('--alpha', type=float, default=1.0,
                     help='Regularization strength')
 params = bench.parse_args(parser)
+
+from sklearn.linear_model import Ridge
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params,
