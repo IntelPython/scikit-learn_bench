@@ -58,7 +58,8 @@ regr = RandomForestRegressor(criterion=params.criterion,
                              max_leaf_nodes=params.max_leaf_nodes,
                              min_impurity_decrease=params.min_impurity_decrease,
                              bootstrap=params.bootstrap,
-                             random_state=params.seed)
+                             random_state=params.seed,
+                             n_jobs=params.n_jobs)
 
 fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 

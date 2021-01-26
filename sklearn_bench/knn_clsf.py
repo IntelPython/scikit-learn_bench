@@ -49,7 +49,8 @@ params.n_classes = len(np.unique(y_train))
 knn_clsf = KNeighborsClassifier(n_neighbors=params.n_neighbors,
                                 weights=params.weights,
                                 algorithm=params.method,
-                                metric=params.metric)
+                                metric=params.metric,
+                                n_jobs=params.n_jobs)
 
 # Measure time and accuracy on fitting
 train_time, _ = bench.measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
