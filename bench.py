@@ -95,7 +95,7 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
 
 
 def parse_args(parser, size=None, loop_types=(),
-               n_jobs_supported=False, prefix='sklearn'):
+               n_jobs_supported=True, prefix='sklearn'):
     '''
     Add common arguments useful for most benchmarks and parse.
 

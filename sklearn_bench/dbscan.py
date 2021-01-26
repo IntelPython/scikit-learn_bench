@@ -27,7 +27,7 @@ parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
 parser.add_argument('-m', '--min-samples', default=5, type=int,
                     help='The minimum number of samples required in a '
                     'neighborhood to consider a point a core point')
-params = bench.parse_args(parser, n_jobs_supported=True)
+params = bench.parse_args(parser)
 
 from sklearn.cluster import DBSCAN
 

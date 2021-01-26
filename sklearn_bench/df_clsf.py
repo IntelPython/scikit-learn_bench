@@ -60,7 +60,8 @@ clf = RandomForestClassifier(criterion=params.criterion,
                              max_leaf_nodes=params.max_leaf_nodes,
                              min_impurity_decrease=params.min_impurity_decrease,
                              bootstrap=params.bootstrap,
-                             random_state=params.seed)
+                             random_state=params.seed,
+                             n_jobs=params.n_jobs)
 
 params.n_classes = len(np.unique(y_train))
 
