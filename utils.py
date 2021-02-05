@@ -58,9 +58,9 @@ def is_exists_files(files):
     return True
 
 
-def read_output_from_command(command):
+def read_output_from_command(command, env=os.environ.copy()):
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, encoding='utf-8', env=os.environ.copy())
+                         stderr=subprocess.PIPE, encoding='utf-8', env=env)
     return res.stdout[:-1], res.stderr[:-1]
 
 

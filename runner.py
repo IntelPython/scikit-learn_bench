@@ -215,7 +215,7 @@ if __name__ == '__main__':
                         if not args.dummy_run:
                             case = f'{lib},{algorithm} ' + case
                             stdout, stderr = utils.read_output_from_command(
-                                command)
+                                command, env=env)
                             stdout, extra_stdout = utils.filter_stdout(stdout)
                             stderr = utils.filter_stderr(stderr)
 
