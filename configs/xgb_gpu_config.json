@@ -1,5 +1,5 @@
 {
-    "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
+    "omp_env": ["OMP_NUM_THREADS"],
     "common": {
         "lib": ["xgboost"],
         "data-format": ["cudf"],

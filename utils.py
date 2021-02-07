@@ -86,7 +86,6 @@ def get_omp_env():
     omp_num_threads = str(cpu_count // 2) if _is_ht_enabled() else str(cpu_count)
 
     omp_env = {
-        'OMP_PLACES': f'{{0}}:{cpu_count}:1',
         'OMP_NUM_THREADS': omp_num_threads
     }
     return omp_env
