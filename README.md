@@ -36,25 +36,25 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 
 Create a suitable conda environment for each framework to test. Each item in the list below links to instructions to create an appropriate conda environment for the framework.
 
-* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench#how-to-create-conda-environment-for-benchmarking)
+* [**scikit-learn**](sklearn_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
 ```
 
-* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/tree/master/daal4py_bench#how-to-create-conda-environment-for-benchmarking)
+* [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
 ```
 
-* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/tree/master/cuml_bench#how-to-create-conda-environment-for-benchmarking)
+* [**cuml**](cuml_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 conda create -n bench -c rapidsai -c conda-forge python=3.7 cuml pandas cudf
 ```
 
-* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost_bench#how-to-create-conda-environment-for-benchmarking)
+* [**xgboost**](xgboost_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 conda create -n bench -c conda-forge python=3.7 xgboost pandas
@@ -120,7 +120,7 @@ Run the following command:
 
 The list of supported parameters for each algorithm you can find here:
 
-* [**scikit-learn**](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench#algorithms-parameters)
-* [**daal4py**](https://github.com/IntelPython/scikit-learn_bench/tree/master/daal4py_bench#algorithms-parameters)
-* [**cuml**](https://github.com/IntelPython/scikit-learn_bench/tree/master/cuml_bench#algorithms-parameters)
-* [**xgboost**](https://github.com/IntelPython/scikit-learn_bench/tree/master/xgboost_bench#algorithms-parameters)
+* [**scikit-learn**](sklearn_bench#algorithms-parameters)
+* [**daal4py**](daal4py_bench#algorithms-parameters)
+* [**cuml**](cuml_bench#algorithms-parameters)
+* [**xgboost**](xgboost_bench#algorithms-parameters)
