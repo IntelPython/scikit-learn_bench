@@ -83,6 +83,7 @@ if __name__ == "__main__":
     parser.add_argument('--maxiter', type=int, default=100,
                         help='Maximum number of iterations')
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
+    global X_init, params
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
     
