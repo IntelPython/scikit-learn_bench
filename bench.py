@@ -175,7 +175,11 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Dataset name')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use no intel optimized version. '
-                             'Now avalible for scikit-learn benchmarks'),
+                             'Now avalible for scikit-learn benchmarks')
+    parser.add_argument('--device', default=None, type=str,
+                        choices=("host", "cpu", "gpu"),
+                        help='Execution context device')
+    
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
             parser.add_argument(f'--file-{data}-{stage}',
@@ -197,6 +201,8 @@ def parse_args(parser, size=None, loop_types=(),
         except ImportError:
             print('Failed to import daal4py.sklearn.patch_sklearn.'
                   'Use stock version scikit-learn', file=sys.stderr)
+    else:
+        params.device = None
 
     # disable finiteness check (default)
     if not params.check_finiteness:
@@ -492,3 +498,11 @@ def print_output(library, algorithm, stages, params, functions,
                     del result['algorithm_parameters']['handle']
             output.append(result)
         print(json.dumps(output, indent=4))
+
+def run_with_context(params, function):
+    if params.device is not None:
+        from daal4py.oneapi import sycl_context
+        with sycl_context(params.device):
+            function()
+    else:
+        function()

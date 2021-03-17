@@ -70,6 +70,9 @@ if __name__ == '__main__':
     parser.add_argument('--report', default=False, action='store_true',
                         help='Create an Excel report based on benchmarks results. '
                              'Need "openpyxl" library')
+    parser.add_argument('--device', default=None, type=str,
+                        choices=("host", "cpu", "gpu"),
+                        help='Execution context device')
     args = parser.parse_args()
     env = os.environ.copy()
 
