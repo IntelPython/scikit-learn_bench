@@ -25,8 +25,6 @@ def main():
     from sklearn.cluster import KMeans
     from sklearn.metrics.cluster import davies_bouldin_score
 
-    global X_init, params
-
     # Load and convert generated data
     X_train, X_test, _, _ = bench.load_data(params)
 
@@ -47,16 +45,14 @@ def main():
             X_init = X_train[centroids_idx]
 
 
-    def fit_kmeans(X):
-        global X_init, params
+    def fit_kmeans(X, X_init):
         alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
                     max_iter=params.maxiter, init=X_init, n_init=1)
         alg.fit(X)
         return alg
 
-
     # Time fit
-    fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train, params=params)
+    fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train, X_init, params=params)
 
     train_predict = kmeans.predict(X_train)
     acc_train = davies_bouldin_score(X_train, train_predict)
@@ -83,7 +79,6 @@ if __name__ == "__main__":
     parser.add_argument('--maxiter', type=int, default=100,
                         help='Maximum number of iterations')
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
-    global X_init, params
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
     
