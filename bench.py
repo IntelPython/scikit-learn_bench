@@ -176,10 +176,10 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use no intel optimized version. '
                              'Now avalible for scikit-learn benchmarks')
-    parser.add_argument('--device', default=None, type=str,
-                        choices=("host", "cpu", "gpu"),
+    parser.add_argument('--device', default='host', type=str,
+                        choices=('host', 'cpu', 'gpu'),
                         help='Execution context device')
-    
+
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
             parser.add_argument(f'--file-{data}-{stage}',
@@ -201,8 +201,12 @@ def parse_args(parser, size=None, loop_types=(),
         except ImportError:
             print('Failed to import daal4py.sklearn.patch_sklearn.'
                   'Use stock version scikit-learn', file=sys.stderr)
+            params.device = 'host'
     else:
-        params.device = None
+        if params.device != 'host':
+            print('Device context not supported without intel optimized version',
+                  file=sys.stderr)
+            params.device = 'host'
 
     # disable finiteness check (default)
     if not params.check_finiteness:
@@ -499,8 +503,9 @@ def print_output(library, algorithm, stages, params, functions,
             output.append(result)
         print(json.dumps(output, indent=4))
 
+
 def run_with_context(params, function):
-    if params.device is not None:
+    if params.device != 'host':
         from daal4py.oneapi import sycl_context
         with sycl_context(params.device):
             function()

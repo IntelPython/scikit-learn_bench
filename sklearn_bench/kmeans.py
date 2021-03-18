@@ -21,6 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 import numpy as np
 
+
 def main():
     from sklearn.cluster import KMeans
     from sklearn.metrics.cluster import davies_bouldin_score
@@ -38,21 +39,21 @@ def main():
     else:
         np.random.seed(params.seed)
         centroids_idx = np.random.randint(0, X_train.shape[0],
-                                        size=params.n_clusters)
+                                          size=params.n_clusters)
         if hasattr(X_train, "iloc"):
             X_init = X_train.iloc[centroids_idx].values
         else:
             X_init = X_train[centroids_idx]
 
-
     def fit_kmeans(X, X_init):
         alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
-                    max_iter=params.maxiter, init=X_init, n_init=1)
+                     max_iter=params.maxiter, init=X_init, n_init=1)
         alg.fit(X)
         return alg
 
     # Time fit
-    fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train, X_init, params=params)
+    fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train,
+                                                   X_init, params=params)
 
     train_predict = kmeans.predict(X_train)
     acc_train = davies_bouldin_score(X_train, train_predict)
@@ -64,11 +65,13 @@ def main():
     acc_test = davies_bouldin_score(X_test, test_predict)
 
     bench.print_output(library='sklearn', algorithm='kmeans',
-                    stages=['training', 'prediction'],
-                    params=params, functions=['KMeans.fit', 'KMeans.predict'],
-                    times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
-                    accuracies=[acc_train, acc_test], data=[X_train, X_test],
-                    alg_instance=kmeans)
+                       stages=['training', 'prediction'],
+                       params=params, functions=['KMeans.fit', 'KMeans.predict'],
+                       times=[fit_time, predict_time],
+                       accuracy_type='davies_bouldin_score',
+                       accuracies=[acc_train, acc_test], data=[X_train, X_test],
+                       alg_instance=kmeans)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
@@ -81,4 +84,3 @@ if __name__ == "__main__":
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
-    

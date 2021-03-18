@@ -20,6 +20,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bench
 
+
 def main():
     from sklearn.cluster import DBSCAN
     from sklearn.metrics.cluster import davies_bouldin_score
@@ -32,9 +33,9 @@ def main():
                     min_samples=params.min_samples, metric='euclidean',
                     algorithm='auto')
 
-    # N.B. algorithm='auto' will select DAAL's brute force method when running
-    # daal4py-patched scikit-learn, and probably 'kdtree' when running unpatched
-    # scikit-learn.
+    # N.B. algorithm='auto' will select oneAPI Data Analytics Library (oneDAL)
+    # brute force method when running daal4py-patched scikit-learn, and probably
+    #  'kdtree' when running unpatched scikit-learn.
 
     # Time fit
     time, _ = bench.measure_function_time(dbscan.fit, X, params=params)
@@ -44,9 +45,10 @@ def main():
     acc = davies_bouldin_score(X, labels)
 
     bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
-                    params=params, functions=['DBSCAN'], times=[time], accuracies=[acc],
-                    accuracy_type='davies_bouldin_score', data=[X],
-                    alg_instance=dbscan)
+                       params=params, functions=['DBSCAN'], times=[time],
+                       accuracies=[acc], accuracy_type='davies_bouldin_score',
+                       data=[X], alg_instance=dbscan)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
