@@ -4,7 +4,7 @@
         "data-format": ["pandas"],
         "data-order": ["F"],
         "dtype": ["float64"],
-        "device": ["host", "cpu", "gpu"]
+        "device": ["host", "cpu", "gpu", "None"]
     },
     "cases": [
         {
