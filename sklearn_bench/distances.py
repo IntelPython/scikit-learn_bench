@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import os
+from sklearn.metrics.pairwise import pairwise_distances
+import sys
+
 import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
                                              'benchmark')
@@ -27,7 +29,6 @@ parser.add_argument('--metric', default='cosine',
                     help='Metric to test for pairwise distances')
 params = bench.parse_args(parser)
 
-from sklearn.metrics.pairwise import pairwise_distances
 
 # Load data
 X, _, _, _ = bench.load_data(params, generated_data=['X_train'], add_dtype=True)

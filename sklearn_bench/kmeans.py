@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
 import numpy as np
+import os
+from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import davies_bouldin_score
+import sys
+
+import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
 parser.add_argument('-i', '--filei', '--fileI', '--init',
@@ -32,7 +34,6 @@ parser.add_argument('--maxiter', type=int, default=100,
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = bench.parse_args(parser)
 
-from sklearn.cluster import KMeans
 
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)
@@ -42,7 +43,8 @@ if params.filei == 'k-means++':
 # Load initial centroids from specified path
 elif params.filei is not None:
     X_init = np.load(params.filei).astype(params.dtype)
-    params.n_clusters = X_init.shape[0]
+    if isinstance(X_init, np.ndarray):
+        params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data
 else:
     np.random.seed(params.seed)

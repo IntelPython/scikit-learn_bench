@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import os
-import sys
-import subprocess
-import multiprocessing
-import logging
 import json
+import logging
+import multiprocessing
+import os
 import platform
+import subprocess
+import sys
 
 
 def filter_stderr(text):

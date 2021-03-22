@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import os
-import sys
 import argparse
 import logging
+import os
+import sys
 
 from .loader import (a9a, gisette, ijcnn, skin_segmentation,
                      klaverjas, connect, mnist, sensit,
@@ -41,7 +41,7 @@ def try_load_dataset(dataset_name, output_directory):
     if dataset_name in dataset_loaders.keys():
         try:
             return dataset_loaders[dataset_name](output_directory)
-        except:
+        except BaseException:
             logging.warning("Internal error loading dataset")
             return False
     else:
@@ -70,10 +70,6 @@ if __name__ == '__main__':
     if args.datasets is not None:
         for val in dataset_loaders.values():
             val(root_dir)
-    elif len(args.datasets) == 0:
+    else:
         logging.warning(
             'Warning: Enumerate dataset(s) which should be downloaded')
-    else:
-        for key, val in dataset_loaders.items():
-            if key in args.datasets:
-                val(root_dir)

@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
 import numpy as np
+import os
 from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+import sys
+
+import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
     description='scikit-learn kNN classifier benchmark')
@@ -39,7 +41,6 @@ parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
 params = bench.parse_args(parser)
 
-from sklearn.neighbors import KNeighborsClassifier
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)
@@ -81,4 +82,5 @@ else:
                        stages=['training', 'search'], params=params,
                        functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
                        times=[train_time, predict_time],
+                       accuracies=[], accuracy_type=None,
                        data=[X_train, X_test], alg_instance=knn_clsf)

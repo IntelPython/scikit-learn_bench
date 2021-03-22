@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from sklearn.decomposition import PCA
+import sys
+
 import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
 parser.add_argument('--svd-solver', type=str, choices=['full'],
@@ -29,7 +31,6 @@ parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 params = bench.parse_args(parser)
 
-from sklearn.decomposition import PCA
 
 # Load random data
 X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])

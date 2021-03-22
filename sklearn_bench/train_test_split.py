@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from sklearn.model_selection import train_test_split
+import sys
+from typing import Iterable
+
 import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
     description='scikit-learn train_test_split benchmark')
@@ -39,11 +41,11 @@ parser.add_argument('--rng', default=None,
                          '(only for IDP scikit-learn)')
 params = bench.parse_args(parser)
 
-from sklearn.model_selection import train_test_split
 
 # Load generated data
 X, y, _, _ = bench.load_data(params)
 
+data_args: Iterable
 if params.include_y:
     data_args = (X, y)
 else:
@@ -59,8 +61,7 @@ tts_params = {
 if params.rng is not None:
     tts_params['rng'] = params.rng
 
-time, _ = bench.measure_function_time(train_test_split, *data_args, **tts_params,
-                                      params=params)
+time, _ = bench.measure_function_time(train_test_split, *data_args, params=params, **tts_params)
 
 bench.print_output(library='sklearn', algorithm='train_test_split',
                    stages=['training'], params=params,

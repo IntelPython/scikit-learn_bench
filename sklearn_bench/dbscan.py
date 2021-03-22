@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
+from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
+import sys
+
+import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
 parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
@@ -29,7 +31,6 @@ parser.add_argument('-m', '--min-samples', default=5, type=int,
                     'neighborhood to consider a point a core point')
 params = bench.parse_args(parser)
 
-from sklearn.cluster import DBSCAN
 
 # Load generated data
 X, _, _, _ = bench.load_data(params, add_dtype=True)

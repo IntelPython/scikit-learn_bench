@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
-
-import numpy as np
-from sklearn.metrics import accuracy_score
 from daal4py import (
     decision_forest_classification_training,
     decision_forest_classification_prediction, engines_mt2203
 )
 from daal4py.sklearn._utils import getFPType
+import numpy as np
+import os
+from sklearn.metrics import accuracy_score
+import sys
+
+import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,

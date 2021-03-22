@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
-
 import numpy as np
+import os
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import sys
+
+import bench
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '
                                              'classification benchmark')
@@ -46,7 +48,6 @@ parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
 
 params = bench.parse_args(parser)
 
-from sklearn.ensemble import RandomForestClassifier
 
 # Load and convert data
 X_train, X_test, y_train, y_test = bench.load_data(params)
