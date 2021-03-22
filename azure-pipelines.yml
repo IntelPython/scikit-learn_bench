@@ -75,6 +75,6 @@ jobs:
       addToPath: true
   - script: |
       python -m pip install --upgrade pip setuptools
-      pip install mypy sklearn-stub data-science-types
+      pip install mypy data-science-types
       mypy . --ignore-missing-imports
     displayName: 'mypy check'

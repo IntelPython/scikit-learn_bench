@@ -15,12 +15,12 @@
 # ===============================================================================
 
 import argparse
+from typing import Any
 
 import bench
 import numpy as np
 from daal4py import kmeans
 from daal4py.sklearn._utils import getFPType
-
 
 parser = argparse.ArgumentParser(description='daal4py K-Means clustering '
                                              'benchmark')
@@ -36,9 +36,10 @@ params = bench.parse_args(parser, prefix='daal4py')
 # Load generated data
 X_train, X_test, _, _ = bench.load_data(params, add_dtype=True)
 
+X_init: Any
 # Load initial centroids from specified path
 if params.filei is not None:
-    X_init = np.load(params.filei).astype(params.dtype)
+    X_init = {k: v.astype(params.dtype) for k, v in np.load(params.filei).items()}
     params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data
 else:

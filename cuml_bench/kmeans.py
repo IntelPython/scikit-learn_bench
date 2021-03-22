@@ -16,12 +16,12 @@
 
 import argparse
 import warnings
+from typing import Any
 
 import bench
 import numpy as np
 from cuml import KMeans
 from sklearn.metrics.cluster import davies_bouldin_score
-
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 parser = argparse.ArgumentParser(description='cuML K-means benchmark')
@@ -39,11 +39,12 @@ params = bench.parse_args(parser, prefix='cuml', loop_types=('fit', 'predict'))
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)
 
+X_init: Any
 if params.filei == 'k-means++':
     X_init = 'k-means++'
 # Load initial centroids from specified path
 elif params.filei is not None:
-    X_init = np.load(params.filei).astype(params.dtype)
+    X_init = {k: v.astype(params.dtype) for k, v in np.load(params.filei).items()}
     if isinstance(X_init, np.ndarray):
         params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data

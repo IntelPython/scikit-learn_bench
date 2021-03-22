@@ -15,6 +15,7 @@
 # ===============================================================================
 
 import argparse
+from typing import Any
 
 import bench
 import numpy as np
@@ -36,11 +37,12 @@ if not params.no_intel_optimized:
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)
 
+X_init: Any
 if params.filei == 'k-means++':
     X_init = 'k-means++'
 # Load initial centroids from specified path
 elif params.filei is not None:
-    X_init = np.load(params.filei).astype(params.dtype)
+    X_init = {k: v.astype(params.dtype) for k, v in np.load(params.filei).items()}
     if isinstance(X_init, np.ndarray):
         params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data
