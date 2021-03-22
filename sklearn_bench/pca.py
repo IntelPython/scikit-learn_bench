@@ -15,13 +15,10 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from sklearn.decomposition import PCA
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
 parser.add_argument('--svd-solver', type=str, choices=['full'],

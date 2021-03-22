@@ -15,16 +15,12 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 import numpy as np
 from daal4py import normalization_zscore, pca, pca_transform
 from daal4py.sklearn._utils import getFPType
 from sklearn.utils.extmath import svd_flip
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 parser = argparse.ArgumentParser(description='daal4py PCA benchmark')

@@ -15,14 +15,11 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 from typing import Iterable
 
 import bench
 from sklearn.model_selection import train_test_split
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
     description='scikit-learn train_test_split benchmark')

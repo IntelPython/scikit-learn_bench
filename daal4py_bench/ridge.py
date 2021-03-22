@@ -15,16 +15,11 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 import numpy as np
 from daal4py import ridge_regression_prediction, ridge_regression_training
 from daal4py.sklearn._utils import getFPType
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 parser = argparse.ArgumentParser(description='daal4py ridge regression '
                                              'benchmark')

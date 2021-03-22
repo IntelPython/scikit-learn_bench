@@ -15,8 +15,6 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 import numpy as np
@@ -24,8 +22,6 @@ from daal4py import (decision_forest_classification_prediction,
                      decision_forest_classification_training, engines_mt2203)
 from daal4py.sklearn._utils import getFPType
 from sklearn.metrics import accuracy_score
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def df_clsf_fit(X, y, n_classes, n_trees=100, seed=12345,

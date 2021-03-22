@@ -15,13 +15,9 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from cuml import PCA
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 parser = argparse.ArgumentParser(description='cuML PCA benchmark')

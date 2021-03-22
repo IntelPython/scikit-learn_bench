@@ -15,14 +15,10 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from daal4py import linear_regression_prediction, linear_regression_training
 from daal4py.sklearn._utils import getFPType
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 parser = argparse.ArgumentParser(description='daal4py linear regression '

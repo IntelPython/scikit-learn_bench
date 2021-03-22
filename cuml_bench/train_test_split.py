@@ -15,13 +15,10 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from cuml import train_test_split
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
     description='cuml train_test_split benchmark')

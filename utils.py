@@ -59,6 +59,10 @@ def is_exists_files(files):
 
 
 def read_output_from_command(command, env=os.environ.copy()):
+    if "PYTHONPATH" in env:
+        env["PYTHONPATH"] += ":" + os.path.dirname(os.path.abspath(__file__))
+    else:
+        env["PYTHONPATH"] = os.path.dirname(os.path.abspath(__file__))
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, encoding='utf-8', env=env)
     return res.stdout[:-1], res.stderr[:-1]

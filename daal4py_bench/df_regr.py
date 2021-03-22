@@ -15,15 +15,11 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from daal4py import (decision_forest_regression_prediction,
                      decision_forest_regression_training, engines_mt2203)
 from daal4py.sklearn._utils import getFPType
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def df_regr_fit(X, y, n_trees=100, seed=12345, n_features_per_node=0,

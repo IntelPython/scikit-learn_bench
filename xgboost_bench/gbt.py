@@ -16,13 +16,10 @@
 
 import argparse
 import os
-import sys
 
 import bench
 import numpy as np
 import xgboost as xgb
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def convert_probs_to_classes(y_prob):

@@ -16,7 +16,6 @@
 
 import argparse
 import os
-import sys
 
 import bench
 import daal4py
@@ -25,7 +24,6 @@ import xgboost as xgb
 
 import utils
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
     description='xgboost gbt + model transform + daal predict benchmark')

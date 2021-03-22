@@ -15,13 +15,9 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from cuml.linear_model import ElasticNet
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 parser = argparse.ArgumentParser(description='scikit-learn elastic-net regression '

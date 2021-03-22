@@ -15,14 +15,10 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 from cuml import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 parser = argparse.ArgumentParser(description='cuML DBSCAN benchmark')

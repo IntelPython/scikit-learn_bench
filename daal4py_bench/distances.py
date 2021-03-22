@@ -15,14 +15,10 @@
 # ===============================================================================
 
 import argparse
-import os
-import sys
 
 import bench
 import daal4py
 from daal4py.sklearn._utils import getFPType
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def compute_distances(pairwise_distances, X):
