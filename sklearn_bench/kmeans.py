@@ -18,9 +18,7 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import davies_bouldin_score
-
 
 parser = argparse.ArgumentParser(description='scikit-learn K-means benchmark')
 parser.add_argument('-i', '--filei', '--fileI', '--init',
@@ -32,6 +30,8 @@ parser.add_argument('--maxiter', type=int, default=100,
 parser.add_argument('--n-clusters', type=int, help='Number of clusters')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.cluster import KMeans
 
 # Load and convert generated data
 X_train, X_test, _, _ = bench.load_data(params)
@@ -46,7 +46,7 @@ elif params.filei is not None:
 # or choose random centroids from training data
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0],
+    centroids_idx = np.random.randint(low=0, high=X_train.shape[0],
                                       size=params.n_clusters)
     if hasattr(X_train, "iloc"):
         X_init = X_train.iloc[centroids_idx].values

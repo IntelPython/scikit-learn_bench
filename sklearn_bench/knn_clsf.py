@@ -19,8 +19,6 @@ import argparse
 import bench
 import numpy as np
 from sklearn.metrics import accuracy_score
-from sklearn.neighbors import KNeighborsClassifier
-
 
 parser = argparse.ArgumentParser(
     description='scikit-learn kNN classifier benchmark')
@@ -39,6 +37,8 @@ parser.add_argument('--metric', type=str, default='euclidean',
                     help='Distance metric to use')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.neighbors import KNeighborsClassifier
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)

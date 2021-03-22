@@ -18,9 +18,7 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-
 
 parser = argparse.ArgumentParser(description='scikit-learn logistic '
                                              'regression benchmark')
@@ -45,6 +43,8 @@ parser.add_argument('--tol', type=float, default=None,
                          'is 1e-10.')
 params = bench.parse_args(parser, loop_types=('fit', 'predict'))
 
+if not params.no_intel_optimized:
+    from sklearn.linear_model import LogisticRegression
 
 # Load generated data
 X_train, X_test, y_train, y_test = bench.load_data(params)

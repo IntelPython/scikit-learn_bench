@@ -43,7 +43,7 @@ if params.filei is not None:
 # or choose random centroids from training data
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0],
+    centroids_idx = np.random.randint(low=0, high=X_train.shape[0],
                                       size=params.n_clusters)
     if hasattr(X_train, "iloc"):
         X_init = X_train.iloc[centroids_idx].values

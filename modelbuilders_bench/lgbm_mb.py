@@ -22,8 +22,7 @@ import daal4py
 import lightgbm as lgbm
 import numpy as np
 
-import utils
-
+import modelbuilders_bench.mb_utils as utils
 
 parser = argparse.ArgumentParser(
     description='lightgbm gbt + model transform + daal predict benchmark')

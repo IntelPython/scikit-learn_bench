@@ -17,8 +17,6 @@
 import argparse
 
 import bench
-from sklearn.decomposition import PCA
-
 
 parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
 parser.add_argument('--svd-solver', type=str, choices=['full'],
@@ -29,6 +27,8 @@ parser.add_argument('--whiten', action='store_true', default=False,
                     help='Perform whitening')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.decomposition import PCA
 
 # Load random data
 X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])

@@ -17,8 +17,6 @@
 import argparse
 
 import bench
-from sklearn.metrics.pairwise import pairwise_distances
-
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '
                                              'benchmark')
@@ -27,6 +25,8 @@ parser.add_argument('--metric', default='cosine',
                     help='Metric to test for pairwise distances')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.metrics.pairwise import pairwise_distances
 
 # Load data
 X, _, _, _ = bench.load_data(params, generated_data=['X_train'], add_dtype=True)

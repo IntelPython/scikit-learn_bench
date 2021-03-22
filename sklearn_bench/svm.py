@@ -19,7 +19,6 @@ import argparse
 import bench
 import numpy as np
 from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC
 
 parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
 
@@ -40,6 +39,8 @@ parser.add_argument('--no-shrinking', action='store_false', default=True,
                     dest='shrinking', help="Don't use shrinking heuristic")
 params = bench.parse_args(parser, loop_types=('fit', 'predict'))
 
+if not params.no_intel_optimized:
+    from sklearn.svm import SVC
 
 # Load data
 X_train, X_test, y_train, y_test = bench.load_data(params)

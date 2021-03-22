@@ -17,9 +17,7 @@
 import argparse
 
 import bench
-from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import davies_bouldin_score
-
 
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
 parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
@@ -29,6 +27,8 @@ parser.add_argument('-m', '--min-samples', default=5, type=int,
                     'neighborhood to consider a point a core point')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.cluster import DBSCAN
 
 # Load generated data
 X, _, _, _ = bench.load_data(params, add_dtype=True)

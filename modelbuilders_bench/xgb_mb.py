@@ -22,8 +22,7 @@ import daal4py
 import numpy as np
 import xgboost as xgb
 
-import utils
-
+import modelbuilders_bench.mb_utils as utils
 
 parser = argparse.ArgumentParser(
     description='xgboost gbt + model transform + daal predict benchmark')

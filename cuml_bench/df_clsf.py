@@ -15,11 +15,11 @@
 # ===============================================================================
 
 import argparse
+from typing import Any
 
 import bench
 import cuml
 from cuml.ensemble import RandomForestClassifier
-
 
 parser = argparse.ArgumentParser(description='cuml random forest '
                                              'classification benchmark')
@@ -62,6 +62,7 @@ else:
     params.split_algorithm = 1
 
 params.n_classes = y_train[y_train.columns[0]].nunique()
+clf: Any
 
 
 def fit(X, y):
@@ -79,6 +80,7 @@ def fit(X, y):
 
 
 def predict(X):
+    global clf
     prediction_args = {'predict_model': 'GPU'}
     if int(cuml.__version__.split('.')[1]) <= 14:
         prediction_args.update({'num_classes': params.n_classes})

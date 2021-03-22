@@ -18,8 +18,6 @@ import argparse
 from typing import Iterable
 
 import bench
-from sklearn.model_selection import train_test_split
-
 
 parser = argparse.ArgumentParser(
     description='scikit-learn train_test_split benchmark')
@@ -39,6 +37,8 @@ parser.add_argument('--rng', default=None,
                          '(only for IDP scikit-learn)')
 params = bench.parse_args(parser)
 
+if not params.no_intel_optimized:
+    from sklearn.model_selection import train_test_split
 
 # Load generated data
 X, y, _, _ = bench.load_data(params)
