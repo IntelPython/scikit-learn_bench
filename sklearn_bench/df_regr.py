@@ -16,10 +16,11 @@
 
 import argparse
 import os
-from sklearn.ensemble import RandomForestRegressor
 import sys
 
 import bench
+from sklearn.ensemble import RandomForestRegressor
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn random forest '

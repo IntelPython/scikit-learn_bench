@@ -15,14 +15,16 @@
 # ===============================================================================
 
 import argparse
-import daal4py
-import numpy as np
 import os
-import xgboost as xgb
 import sys
 
 import bench
+import daal4py
+import numpy as np
+import xgboost as xgb
+
 import utils
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(

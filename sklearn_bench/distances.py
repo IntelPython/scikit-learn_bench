@@ -16,10 +16,11 @@
 
 import argparse
 import os
-from sklearn.metrics.pairwise import pairwise_distances
 import sys
 
 import bench
+from sklearn.metrics.pairwise import pairwise_distances
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn pairwise distances '

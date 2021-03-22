@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml.neighbors import KNeighborsClassifier
 import os
 import sys
 
 import bench
+from cuml.neighbors import KNeighborsClassifier
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(

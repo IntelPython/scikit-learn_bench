@@ -16,10 +16,11 @@
 
 import argparse
 import os
-from sklearn.linear_model import LinearRegression
 import sys
 
 import bench
+from sklearn.linear_model import LinearRegression
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn linear regression '

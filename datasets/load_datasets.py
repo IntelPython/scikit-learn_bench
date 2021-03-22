@@ -19,9 +19,8 @@ import logging
 import os
 import sys
 
-from .loader import (a9a, gisette, ijcnn, skin_segmentation,
-                     klaverjas, connect, mnist, sensit,
-                     covertype, codrnanorm)
+from .loader import (a9a, codrnanorm, connect, covertype, gisette, ijcnn,
+                     klaverjas, mnist, sensit, skin_segmentation)
 
 dataset_loaders = {
     "a9a": a9a,

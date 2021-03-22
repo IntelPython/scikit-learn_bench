@@ -15,12 +15,13 @@
 # ===============================================================================
 
 import argparse
-from cuml import DBSCAN
 import os
-from sklearn.metrics.cluster import davies_bouldin_score
 import sys
 
 import bench
+from cuml import DBSCAN
+from sklearn.metrics.cluster import davies_bouldin_score
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

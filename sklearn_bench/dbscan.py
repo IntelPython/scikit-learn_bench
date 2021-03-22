@@ -16,11 +16,12 @@
 
 import argparse
 import os
-from sklearn.cluster import DBSCAN
-from sklearn.metrics.cluster import davies_bouldin_score
 import sys
 
 import bench
+from sklearn.cluster import DBSCAN
+from sklearn.metrics.cluster import davies_bouldin_score
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')

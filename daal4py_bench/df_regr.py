@@ -15,16 +15,14 @@
 # ===============================================================================
 
 import argparse
-from daal4py import (
-    decision_forest_regression_training,
-    decision_forest_regression_prediction,
-    engines_mt2203
-)
-from daal4py.sklearn._utils import getFPType
 import os
 import sys
 
 import bench
+from daal4py import (decision_forest_regression_prediction,
+                     decision_forest_regression_training, engines_mt2203)
+from daal4py.sklearn._utils import getFPType
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

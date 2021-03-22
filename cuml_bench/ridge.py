@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml import Ridge
 import os
 import sys
 
 import bench
+from cuml import Ridge
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='cuML ridge regression '

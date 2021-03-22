@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml.linear_model import Lasso
 import os
 import sys
 
 import bench
+from cuml.linear_model import Lasso
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

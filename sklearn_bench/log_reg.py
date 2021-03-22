@@ -15,13 +15,14 @@
 # ===============================================================================
 
 import argparse
-import numpy as np
 import os
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
 import sys
 
 import bench
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn logistic '

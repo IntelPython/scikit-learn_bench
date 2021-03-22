@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml.ensemble import RandomForestRegressor
 import os
 import sys
 
 import bench
+from cuml.ensemble import RandomForestRegressor
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

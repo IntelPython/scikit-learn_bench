@@ -15,13 +15,14 @@
 # ===============================================================================
 
 import argparse
-import numpy as np
 import os
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 import sys
 
 import bench
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

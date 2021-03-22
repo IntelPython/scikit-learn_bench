@@ -23,8 +23,8 @@ import socket
 import sys
 
 import datasets.make_datasets as make_datasets
-from datasets.load_datasets import try_load_dataset
 import utils
+from datasets.load_datasets import try_load_dataset
 
 
 def generate_cases(params):

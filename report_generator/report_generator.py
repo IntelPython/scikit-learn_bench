@@ -18,9 +18,10 @@ import argparse
 import datetime
 import hashlib
 import json
-import openpyxl
 from string import ascii_uppercase
-from typing import List, Any
+from typing import Any, List
+
+import openpyxl
 
 
 def get_property(entry, prop):

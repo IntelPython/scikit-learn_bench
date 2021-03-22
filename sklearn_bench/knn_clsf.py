@@ -15,13 +15,14 @@
 # ===============================================================================
 
 import argparse
-import numpy as np
 import os
-from sklearn.metrics import accuracy_score
-from sklearn.neighbors import KNeighborsClassifier
 import sys
 
 import bench
+import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(

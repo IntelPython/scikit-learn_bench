@@ -15,14 +15,16 @@
 # ===============================================================================
 
 import argparse
-import daal4py
-import lightgbm as lgbm
-import numpy as np
 import os
 import sys
 
 import bench
+import daal4py
+import lightgbm as lgbm
+import numpy as np
+
 import utils
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

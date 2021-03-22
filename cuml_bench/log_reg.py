@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml import LogisticRegression
 import os
 import sys
 
 import bench
+from cuml import LogisticRegression
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='cuML logistic '

@@ -15,12 +15,13 @@
 # ===============================================================================
 
 import argparse
-import numpy as np
 import os
 import sys
-import xgboost as xgb
 
 import bench
+import numpy as np
+import xgboost as xgb
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

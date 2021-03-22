@@ -15,14 +15,15 @@
 # ===============================================================================
 
 import argparse
-from cuml import KMeans
-import numpy as np
 import os
-from sklearn.metrics.cluster import davies_bouldin_score
 import sys
 import warnings
 
 import bench
+import numpy as np
+from cuml import KMeans
+from sklearn.metrics.cluster import davies_bouldin_score
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

@@ -16,11 +16,12 @@
 
 import argparse
 import os
-from sklearn.model_selection import train_test_split
 import sys
 from typing import Iterable
 
 import bench
+from sklearn.model_selection import train_test_split
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(
@@ -61,7 +62,8 @@ tts_params = {
 if params.rng is not None:
     tts_params['rng'] = params.rng
 
-time, _ = bench.measure_function_time(train_test_split, *data_args, params=params, **tts_params)
+time, _ = bench.measure_function_time(
+    train_test_split, *data_args, params=params, **tts_params)
 
 bench.print_output(library='sklearn', algorithm='train_test_split',
                    stages=['training'], params=params,

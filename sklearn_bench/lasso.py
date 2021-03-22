@@ -16,10 +16,11 @@
 
 import argparse
 import os
-from sklearn.linear_model import Lasso
 import sys
 
 import bench
+from sklearn.linear_model import Lasso
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='scikit-learn lasso regression '

@@ -15,14 +15,15 @@
 # ===============================================================================
 
 import argparse
-from daal4py import pca, pca_transform, normalization_zscore
-from daal4py.sklearn._utils import getFPType
-import numpy as np
 import os
-from sklearn.utils.extmath import svd_flip
 import sys
 
 import bench
+import numpy as np
+from daal4py import normalization_zscore, pca, pca_transform
+from daal4py.sklearn._utils import getFPType
+from sklearn.utils.extmath import svd_flip
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

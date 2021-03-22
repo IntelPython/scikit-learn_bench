@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml import train_test_split
 import os
 import sys
 
 import bench
+from cuml import train_test_split
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(

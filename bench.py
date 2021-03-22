@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-import numpy as np
-import sklearn
-import timeit
 import json
 import sys
+import timeit
+
+import numpy as np
+import sklearn
 
 
 def get_dtype(data):

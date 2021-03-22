@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml import PCA
 import os
 import sys
 
 import bench
+from cuml import PCA
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

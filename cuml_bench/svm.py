@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml.svm import SVC
 import os
 import sys
 
 import bench
+from cuml.svm import SVC
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='cuML SVM benchmark')

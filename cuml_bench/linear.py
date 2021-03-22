@@ -15,11 +15,12 @@
 # ===============================================================================
 
 import argparse
-from cuml import LinearRegression
 import os
 import sys
 
 import bench
+from cuml import LinearRegression
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 parser = argparse.ArgumentParser(description='cuML linear regression '
