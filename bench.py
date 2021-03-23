@@ -204,9 +204,9 @@ def parse_args(parser, size=None, loop_types=(),
             params.device = 'None'
     else:
         if params.device != 'None':
-            print(f'Device context is not supported for stock scikit-learn.'
+            print('Device context is not supported for stock scikit-learn.'
                   'Please use --no-intel-optimized=False with'
-                  '--device={params.device} parameter. Fallback to --device=None.',
+                  f'--device={params.device} parameter. Fallback to --device=None.',
                   file=sys.stderr)
             params.device = 'None'
 
