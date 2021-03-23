@@ -18,9 +18,12 @@ import json
 import logging
 import multiprocessing
 import os
+import pathlib
 import platform
 import subprocess
 import sys
+
+from datasets.load_datasets import try_load_dataset
 
 
 def filter_stderr(text):
@@ -28,9 +31,7 @@ def filter_stderr(text):
     fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers ' + \
                          'for sklearn enabled: ' + \
                          'https://intelpython.github.io/daal4py/sklearn.html'
-    while fake_error_message in text:
-        text = text.replace(fake_error_message, '')
-    return text
+    return ''.join(text.split(fake_error_message))
 
 
 def filter_stdout(text):
@@ -51,9 +52,10 @@ def filter_stdout(text):
     return filtered, extra
 
 
-def is_exists_files(files):
-    for f in files:
-        if not os.path.isfile(f):
+def find_the_dataset(name: str, fullpath: str) -> bool:
+    if not os.path.isfile(fullpath):
+        if not try_load_dataset(dataset_name=name,
+                                output_directory=pathlib.Path(fullpath).parent):
             return False
     return True
 
@@ -89,11 +91,10 @@ def get_omp_env():
     cpu_count = multiprocessing.cpu_count()
     omp_num_threads = str(cpu_count // 2) if _is_ht_enabled() else str(cpu_count)
 
-    omp_env = {
+    return {
         'OMP_PLACES': f'{{0}}:{cpu_count}:1',
         'OMP_NUM_THREADS': omp_num_threads
     }
-    return omp_env
 
 
 def get_hw_parameters():

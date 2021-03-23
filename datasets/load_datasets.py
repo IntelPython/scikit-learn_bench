@@ -37,7 +37,7 @@ dataset_loaders = {
 
 
 def try_load_dataset(dataset_name, output_directory):
-    if dataset_name in dataset_loaders.keys():
+    if dataset_name in dataset_loaders:
         try:
             return dataset_loaders[dataset_name](output_directory)
         except BaseException:
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.list:
-        for key in dataset_loaders.keys():
+        for key in dataset_loaders:
             print(key)
         sys.exit(0)
 

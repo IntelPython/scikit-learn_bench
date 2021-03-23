@@ -34,8 +34,7 @@ def convert_xgb_predictions(y_pred, objective):
     return y_pred
 
 
-parser = argparse.ArgumentParser(description='xgboost gradient boosted trees '
-                                             'benchmark')
+parser = argparse.ArgumentParser(description='xgboost gradient boosted trees benchmark')
 
 parser.add_argument('--n-estimators', type=int, default=100,
                     help='Number of gradient boosted trees')

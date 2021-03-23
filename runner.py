@@ -18,13 +18,11 @@ import argparse
 import json
 import logging
 import os
-import pathlib
 import socket
 import sys
 
 import datasets.make_datasets as make_datasets
 import utils
-from datasets.load_datasets import try_load_dataset
 
 
 def generate_cases(params):
@@ -54,7 +52,7 @@ if __name__ == '__main__':
                         default='configs/config_example.json',
                         help='Path to configuration files')
     parser.add_argument('--dummy-run', default=False, action='store_true',
-                        help='Run configuration parser and datasets generation'
+                        help='Run configuration parser and datasets generation '
                              'without benchmarks running')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use no intel optimized version. '
@@ -69,7 +67,6 @@ if __name__ == '__main__':
                         help='Create an Excel report based on benchmarks results. '
                              'Need "openpyxl" library')
     args = parser.parse_args()
-    env = os.environ.copy()
 
     logging.basicConfig(
         stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
@@ -90,8 +87,6 @@ if __name__ == '__main__':
         with open(config_name, 'r') as config_file:
             config = json.load(config_file)
 
-        if 'omp_env' not in config.keys():
-            config['omp_env'] = []
         # get parameters that are common for all cases
         common_params = config['common']
         for params_set in config['cases']:
@@ -107,34 +102,21 @@ if __name__ == '__main__':
 
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
-                    train_data = dataset["training"]
-                    file_train_data_x = train_data["x"]
-                    paths = f'--file-X-train {file_train_data_x}'
-                    if 'y' in dataset['training'].keys():
-                        file_train_data_y = train_data["y"]
-                        paths += f' --file-y-train {file_train_data_y}'
-                    if 'testing' in dataset.keys():
-                        test_data = dataset["testing"]
-                        file_test_data_x = test_data["x"]
-                        paths += f' --file-X-test {file_test_data_x}'
-                        if 'y' in dataset['testing'].keys():
-                            file_test_data_y = test_data["y"]
-                            paths += f' --file-y-test {file_test_data_y}'
-                    if 'name' in dataset.keys():
-                        dataset_name = dataset['name']
-                    else:
-                        dataset_name = 'unknown'
-
-                    if not utils.is_exists_files([file_train_data_x]):
-                        directory_dataset = pathlib.Path(file_train_data_x).parent
-                        if not try_load_dataset(dataset_name=dataset_name,
-                                                output_directory=directory_dataset):
-                            logging.warning(f'Dataset {dataset_name} '
-                                            'could not be loaded. \n'
-                                            'Check the correct name or expand '
-                                            'the download in the folder dataset.')
-                            continue
-
+                    dataset_name = dataset['name'] if 'name' in dataset else 'unknown'
+                    if 'training' not in dataset or not utils.find_the_dataset(
+                            dataset_name, dataset['training']["x"]):
+                        logging.warning(
+                            f'Dataset {dataset_name} could not be loaded. \n'
+                            'Check the correct name or expand the download in '
+                            'the folder dataset.')
+                        continue
+                    paths = '--file-X-train ' + dataset['training']["x"]
+                    if 'y' in dataset['training']:
+                        paths += ' --file-y-train ' + dataset['training']["y"]
+                    if 'testing' in dataset:
+                        paths += ' --file-X-test ' + dataset["testing"]["x"]
+                        if 'y' in dataset['testing']:
+                            paths += ' --file-y-test ' + dataset["testing"]["y"]
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
                         classes: int
@@ -151,7 +133,7 @@ if __name__ == '__main__':
                     gen_args = GenerationArgs()
                     paths = ''
 
-                    if 'seed' in params_set.keys():
+                    if 'seed' in params_set:
                         gen_args.seed = params_set['seed']
                     else:
                         gen_args.seed = 777
@@ -161,10 +143,10 @@ if __name__ == '__main__':
                     gen_args.type = dataset['type']
                     gen_args.samples = dataset['training']['n_samples']
                     gen_args.features = dataset['n_features']
-                    if 'n_classes' in dataset.keys():
+                    if 'n_classes' in dataset:
                         gen_args.classes = dataset['n_classes']
                         cls_num_for_file = f'-{dataset["n_classes"]}'
-                    elif 'n_clusters' in dataset.keys():
+                    elif 'n_clusters' in dataset:
                         gen_args.clusters = dataset['n_clusters']
                         cls_num_for_file = f'-{dataset["n_clusters"]}'
                     else:
@@ -179,7 +161,7 @@ if __name__ == '__main__':
                         gen_args.filey = f'{file_prefix}y-train{file_postfix}'
                         paths += f' --file-y-train {gen_args.filey}'
 
-                    if 'testing' in dataset.keys():
+                    if 'testing' in dataset:
                         gen_args.test_samples = dataset['testing']['n_samples']
                         gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
                         paths += f' --file-X-test {gen_args.filextest}'
@@ -204,21 +186,21 @@ if __name__ == '__main__':
                     logging.warning('Unknown dataset source. Only synthetics datasets '
                                     'and csv/npy files are supported now')
 
-                omp_env = utils.get_omp_env()
                 no_intel_optimize = \
                     '--no-intel-optimized ' if args.no_intel_optimized else ''
                 for lib in libs:
                     env = os.environ.copy()
-                    if lib == 'xgboost':
+                    if lib == 'xgboost' and 'omp_env' in config:
+                        omp_env = utils.get_omp_env()
                         for var in config['omp_env']:
-                            env[var] = omp_env[var]
+                            if var in omp_env:
+                                env[var] = omp_env[var]
                     for i, case in enumerate(cases):
                         command = f'python {lib}_bench/{algorithm}.py ' \
                             + no_intel_optimize \
                             + f'--arch {hostname} {case} {paths} ' \
                             + f'--dataset-name {dataset_name}'
-                        while '  ' in command:
-                            command = command.replace('  ', ' ')
+                        command = ' '.join(command.split())
                         logging.info(command)
                         if not args.dummy_run:
                             case = f'{lib},{algorithm} ' + case
