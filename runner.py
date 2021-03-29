@@ -25,27 +25,6 @@ import datasets.make_datasets as make_datasets
 import utils
 
 
-def generate_cases(params):
-    '''
-    Generate cases for benchmarking by iterating of
-    parameters values
-    '''
-    global cases
-    if len(params) == 0:
-        return cases
-    prev_length = len(cases)
-    param_name = list(params.keys())[0]
-    n_param_values = len(params[param_name])
-    cases = cases * n_param_values
-    dashes = '-' if len(param_name) == 1 else '--'
-    for i in range(n_param_values):
-        for j in range(prev_length):
-            cases[prev_length * i + j] += f' {dashes}{param_name} ' \
-                + f'{params[param_name][i]}'
-    del params[param_name]
-    generate_cases(params)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
@@ -90,21 +69,22 @@ if __name__ == '__main__':
         # get parameters that are common for all cases
         common_params = config['common']
         for params_set in config['cases']:
-            cases = ['']
             params = common_params.copy()
             params.update(params_set.copy())
             algorithm = params['algorithm']
             libs = params['lib']
             del params['dataset'], params['algorithm'], params['lib']
-            generate_cases(params)
+            cases = utils.generate_cases(params)
             logging.info(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                          f' {len(params_set["dataset"])} dataset(s)\n')
 
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
                     dataset_name = dataset['name'] if 'name' in dataset else 'unknown'
-                    if 'training' not in dataset or not utils.find_the_dataset(
-                            dataset_name, dataset['training']["x"]):
+                    if 'training' not in dataset or \
+                        'x' not in dataset['training'] or \
+                        not utils.find_the_dataset(dataset_name,
+                                                   dataset['training']['x']):
                         logging.warning(
                             f'Dataset {dataset_name} could not be loaded. \n'
                             'Check the correct name or expand the download in '
@@ -189,12 +169,6 @@ if __name__ == '__main__':
                 no_intel_optimize = \
                     '--no-intel-optimized ' if args.no_intel_optimized else ''
                 for lib in libs:
-                    env = os.environ.copy()
-                    if lib == 'xgboost' and 'omp_env' in config:
-                        omp_env = utils.get_omp_env()
-                        for var in config['omp_env']:
-                            if var in omp_env:
-                                env[var] = omp_env[var]
                     for i, case in enumerate(cases):
                         command = f'python {lib}_bench/{algorithm}.py ' \
                             + no_intel_optimize \
@@ -205,7 +179,7 @@ if __name__ == '__main__':
                         if not args.dummy_run:
                             case = f'{lib},{algorithm} ' + case
                             stdout, stderr = utils.read_output_from_command(
-                                command, env=env)
+                                command, env=os.environ.copy())
                             stdout, extra_stdout = utils.filter_stdout(stdout)
                             stderr = utils.filter_stderr(stderr)
 
@@ -215,8 +189,7 @@ if __name__ == '__main__':
                                 stderr += f'CASE {case} EXTRA OUTPUT:\n' \
                                     + f'{extra_stdout}\n'
                             try:
-                                json_result['results'].extend(
-                                    json.loads(stdout))
+                                json_result['results'] = json.loads(stdout)
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'

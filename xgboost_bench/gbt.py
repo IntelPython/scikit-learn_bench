@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-import os
 
 import bench
 import numpy as np
@@ -117,9 +116,6 @@ xgb_params = {
 
 if params.threads != -1:
     xgb_params.update({'nthread': params.threads})
-
-if 'OMP_NUM_THREADS' in os.environ.keys():
-    xgb_params['nthread'] = int(os.environ['OMP_NUM_THREADS'])
 
 if params.objective.startswith('reg'):
     task = 'regression'

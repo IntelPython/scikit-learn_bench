@@ -1,5 +1,4 @@
 {
-    "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
     "common": {
         "lib": ["modelbuilders"],
         "data-format": ["pandas"],
