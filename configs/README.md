@@ -27,6 +27,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |data-order| array[string] | **REQUIRED**  input data order. Data order: *C* (row-major, default) or *F* (column-major) |
 |dtype| array[string] | **REQUIRED**  input data type. Data type: *float64* (default) or *float32* |
 |check-finitness| array[] | Check finiteness in sklearn input check(disabled by default) |
+|device| array[string] | For scikit-learn only. List of devices to run with sycl context. It can be *None* (without context, default), *cpu*, *gpu* or *host*|
 
 ###  Case Object
 
