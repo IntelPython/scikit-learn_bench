@@ -16,6 +16,8 @@
 
 import logging
 import os
+import re
+import tarfile
 from pathlib import Path
 from typing import Any
 from urllib.request import urlretrieve
@@ -44,6 +46,42 @@ def _show_progress(block_num: int, block_size: int, total_size: int) -> None:
 
 def _retrieve(url: str, filename: str) -> None:
     urlretrieve(url, filename, reporthook=_show_progress)
+
+
+def _read_libsvm_msrank(file_obj, n_samples, n_features, dtype):
+    X = np.zeros((n_samples, n_features))
+    y = np.zeros((n_samples,))
+
+    counter = 0
+
+    regexp = re.compile(r'[A-Za-z0-9]+:(-?\d*\.?\d+)')
+
+    for line in file_obj:
+        line = str(line).replace("\\n'", "")
+        line = regexp.sub('\g<1>', line)
+        line = line.rstrip(" \n\r").split(' ')
+
+        y[counter] = int(line[0])
+        X[counter] = [float(i) for i in line[1:]]
+
+        counter += 1
+        if counter == n_samples:
+            break
+
+    return np.array(X, dtype=dtype), np.array(y, dtype=dtype)
+
+
+def _make_gen(reader):
+    b = reader(1024 * 1024)
+    while b:
+        yield b
+        b = reader(1024 * 1024)
+
+
+def _count_lines(filename):
+    with open(filename, 'rb') as f:
+        f_gen = _make_gen(f.read)
+        return sum(buf.count(b'\n') for buf in f_gen)
 
 
 def a_nine_a(dataset_dir: Path) -> bool:
@@ -136,7 +174,56 @@ def airline(dataset_dir: Path) -> bool:
 
 
 def airline_ohe(dataset_dir: Path) -> bool:
-    return False
+    """
+    Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
+    TaskType:binclass
+    NumberOfFeatures:700
+    NumberOfInstances:10100000
+    """
+    dataset_name = 'airline-ohe'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_train = 'https://s3.amazonaws.com/benchm-ml--main/train-10m.csv'
+    url_test = 'https://s3.amazonaws.com/benchm-ml--main/test.csv'
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}')
+        _retrieve(url_train, local_url_train)
+    if not os.path.isfile(local_url_test):
+        logging.info(f'Started loading {dataset_name}')
+        _retrieve(url_test, local_url_test)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    sets = []
+    labels = []
+
+    categorical_names = ["Month", "DayofMonth",
+                         "DayOfWeek", "UniqueCarrier", "Origin", "Dest"]
+
+    for local_url in [local_url_train, local_url_train]:
+        df = pd.read_csv(local_url, nrows=1000000
+                         if local_url.endswith('train-10m.csv') else None)
+        X = df.drop('dep_delayed_15min', 1)
+        y = df["dep_delayed_15min"]
+
+        y_num = np.where(y == "Y", 1, 0)
+
+        sets.append(X)
+        labels.append(y_num)
+
+    n_samples_train = sets[0].shape[0]
+
+    X_final: Any = pd.concat(sets)
+    X_final = pd.get_dummies(X_final, columns=categorical_names)
+    sets = [X_final[:n_samples_train], X_final[n_samples_train:]]
+
+    for data, name in zip((sets[0], sets[1], labels[0], labels[1]),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
 
 
 def bosch(dataset_dir: Path) -> bool:
@@ -454,7 +541,43 @@ def higgs(dataset_dir: Path) -> bool:
 
 
 def higgs_one_m(dataset_dir: Path) -> bool:
-    return False
+    """
+    Higgs dataset from UCI machine learning repository (
+    https://archive.ics.uci.edu/ml/datasets/HIGGS).
+    TaskType:binclass
+    NumberOfFeatures:28
+    NumberOfInstances:11M
+    """
+    dataset_name = 'higgs1m'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz'
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        _retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    nrows_train, nrows_test, dtype = 1000000, 500000, np.float32
+    data: Any = pd.read_csv(local_url, delimiter=",", header=None,
+                            compression="gzip", dtype=dtype, nrows=nrows_train+nrows_test)
+
+    data = data[list(data.columns[1:])+list(data.columns[0:1])]
+    n_features = data.shape[1]-1
+    train_data = np.ascontiguousarray(data.values[:nrows_train, :n_features], dtype=dtype)
+    train_label = np.ascontiguousarray(data.values[:nrows_train, n_features], dtype=dtype)
+    test_data = np.ascontiguousarray(
+        data.values[nrows_train: nrows_train + nrows_test, : n_features],
+        dtype=dtype)
+    test_label = np.ascontiguousarray(
+        data.values[nrows_train: nrows_train + nrows_test, n_features],
+        dtype=dtype)
+    for data, name in zip((train_data, test_data, train_label, test_label),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
 
 
 def ijcnn(dataset_dir: Path) -> bool:
@@ -576,7 +699,51 @@ def mortgage_first_q(dataset_dir: Path) -> bool:
 
 
 def msrank(dataset_dir: Path) -> bool:
-    return False
+    """
+    Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
+    TaskType:binclass
+    NumberOfFeatures:700
+    NumberOfInstances:10100000
+    """
+    dataset_name = 'msrank'
+    os.makedirs(dataset_dir, exist_ok=True)
+    url = "https://storage.mds.yandex.net/get-devtools-opensource/471749/msrank.tar.gz"
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        _retrieve(url, local_url)
+        logging.info(f'{dataset_name} is loaded, unzipping...')
+        tar = tarfile.open(local_url, "r:gz")
+        tar.extractall(dataset_dir)
+        tar.close()
+        logging.info(f'{dataset_name} is unzipped, started parsing...')
+
+    sets = []
+    labels = []
+    n_features = 137
+
+    for set_name in ['train.txt', 'vali.txt', 'test.txt']:
+        file_name = str(dataset_dir) + os.path.join('MSRank', set_name)
+
+        n_samples = _count_lines(file_name)
+        with open(file_name, 'r') as file_obj:
+            X, y = _read_libsvm_msrank(file_obj, n_samples, n_features, np.float32)
+
+        sets.append(X)
+        labels.append(y)
+
+    sets[0] = np.vstack((sets[0], sets[1]))
+    labels[0] = np.hstack((labels[0], labels[1]))
+
+    sets = [np.ascontiguousarray(sets[i]) for i in [0, 2]]
+    labels = [np.ascontiguousarray(labels[i]) for i in [0, 2]]
+
+    for data, name in zip((sets[0], sets[1], labels[0], labels[1]),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
 
 
 def plasticc(dataset_dir: Path) -> bool:

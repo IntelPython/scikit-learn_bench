@@ -79,12 +79,17 @@
         {
             "dataset": [
                 {
-                    "source":   "csv",
+                    "source":   "npy",
                     "name":     "airline-ohe",
                     "training":
                     {
-                        "x":    "data/airline-ohe_x_train.csv",
-                        "y":    "data/airline-ohe_y_train.csv"
+                        "x":    "data/airline-ohe_x_train.npy",
+                        "y":    "data/airline-ohe_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/airline-ohe_x_test.npy",
+                        "y":    "data/airline-ohe_y_test.npy"
                     }
                 }
             ],
@@ -103,12 +108,17 @@
         {
             "dataset": [
                 {
-                    "source":   "csv",
+                    "source":   "npy",
                     "name":     "higgs1m",
                     "training":
                     {
-                        "x":    "data/higgs1m_x_train.csv",
-                        "y":    "data/higgs1m_y_train.csv"
+                        "x":    "data/higgs1m_x_train.npy",
+                        "y":    "data/higgs1m_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/higgs1m_x_test.npy",
+                        "y":    "data/higgs1m_y_test.npy"
                     }
                 }
             ],
@@ -129,12 +139,17 @@
         {
             "dataset": [
                 {
-                    "source":   "csv",
+                    "source":   "npy",
                     "name":     "msrank",
                     "training":
                     {
-                        "x":    "data/mlsr_x_train.csv",
-                        "y":    "data/mlsr_y_train.csv"
+                        "x":    "data/msrank_x_train.npy",
+                        "y":    "data/msrank_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/msrank_x_test.npy",
+                        "y":    "data/msrank_y_test.npy"
                     }
                 }
             ],
