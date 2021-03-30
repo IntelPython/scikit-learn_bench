@@ -58,7 +58,7 @@ def _read_libsvm_msrank(file_obj, n_samples, n_features, dtype):
 
     for line in file_obj:
         line = str(line).replace("\\n'", "")
-        line = regexp.sub('\g<1>', line)
+        line = regexp.sub(r'\g<1>', line)
         line = line.rstrip(" \n\r").split(' ')
 
         y[counter] = int(line[0])

@@ -6,7 +6,7 @@ jobs:
   - script: |
       conda update -y -q conda
       export FORCE_DAAL4PY_SKLEARN=yes
-      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn daal4py
+      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn daal4py tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -19,7 +19,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -32,7 +32,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas scikit-learn daal4py
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas scikit-learn daal4py tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -45,7 +45,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py
+      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -63,7 +63,7 @@ jobs:
   - script: |
       python -m pip install --upgrade pip setuptools
       pip install flake8
-      flake8 --max-line-length=90 --count
+      flake8 --max-line-length=100 --count
     displayName: 'PEP 8 check'
 - job: Mypy
   pool:
