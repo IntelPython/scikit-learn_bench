@@ -15,7 +15,7 @@
     "cases": [
         {
             "objective":        "binary:logistic",
-            "scale-pos-weight": 1,
+            "scale-pos-weight": 2.1067817411664587,
             "dataset": [
                 {
                     "source":   "npy",
@@ -35,7 +35,7 @@
         },
         {
             "objective":        "binary:logistic",
-            "scale-pos-weight": 1,
+            "scale-pos-weight": 173.63348001466812,
             "dataset": [
                 {
                     "source":   "npy",
@@ -74,7 +74,7 @@
         },
         {
             "objective":        "binary:logistic",
-            "scale-pos-weight": 1,
+            "scale-pos-weight": 2.0017715678375363,
             "dataset": [
                 {
                     "source":   "npy",
@@ -94,7 +94,7 @@
         },
         {
             "objective":        "binary:logistic",
-            "scale-pos-weight": 1,
+            "scale-pos-weight": 578.2868020304569,
             "dataset": [
                 {
                     "source":   "npy",
@@ -114,7 +114,7 @@
         },
         {
             "objective":        "binary:logistic",
-            "scale-pos-weight": 1,
+            "scale-pos-weight": 1.8872389605086624,
             "dataset": [
                 {
                     "source":   "npy",

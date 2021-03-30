@@ -24,7 +24,6 @@ import sys
 import datasets.make_datasets as make_datasets
 import utils
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
