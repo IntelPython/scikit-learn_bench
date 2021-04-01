@@ -18,39 +18,43 @@ import argparse
 
 import bench
 
-parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
-parser.add_argument('--svd-solver', type=str, choices=['full'],
-                    default='full', help='SVD solver to use')
-parser.add_argument('--n-components', type=int, default=None,
-                    help='Number of components to find')
-parser.add_argument('--whiten', action='store_true', default=False,
-                    help='Perform whitening')
-params = bench.parse_args(parser)
 
-if not params.no_intel_optimized:
+def main():
     from sklearn.decomposition import PCA
 
-# Load random data
-X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])
+    # Load random data
+    X_train, X_test, _, _ = bench.load_data(params, generated_data=['X_train'])
 
-if params.n_components is None:
-    p, n = X_train.shape
-    params.n_components = min((n, (2 + min((n, p))) // 3))
+    if params.n_components is None:
+        p, n = X_train.shape
+        params.n_components = min((n, (2 + min((n, p))) // 3))
 
-# Create our PCA object
-pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
-          n_components=params.n_components)
+    # Create our PCA object
+    pca = PCA(svd_solver=params.svd_solver, whiten=params.whiten,
+              n_components=params.n_components)
 
-# Time fit
-fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
+    # Time fit
+    fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
 
-# Time transform
-transform_time, _ = bench.measure_function_time(
-    pca.transform, X_train, params=params)
+    # Time transform
+    transform_time, _ = bench.measure_function_time(
+        pca.transform, X_train, params=params)
 
-bench.print_output(library='sklearn', algorithm='pca',
-                   stages=['training', 'transformation'],
-                   params=params, functions=['PCA.fit', 'PCA.transform'],
-                   times=[fit_time, transform_time], accuracy_type=None,
-                   accuracies=[None, None], data=[X_train, X_test],
-                   alg_instance=pca)
+    bench.print_output(library='sklearn', algorithm='pca',
+                       stages=['training', 'transformation'],
+                       params=params, functions=['PCA.fit', 'PCA.transform'],
+                       times=[fit_time, transform_time], accuracy_type=None,
+                       accuracies=[None, None], data=[X_train, X_test],
+                       alg_instance=pca)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
+    parser.add_argument('--svd-solver', type=str, choices=['full'],
+                        default='full', help='SVD solver to use')
+    parser.add_argument('--n-components', type=int, default=None,
+                        help='Number of components to find')
+    parser.add_argument('--whiten', action='store_true', default=False,
+                        help='Perform whitening')
+    params = bench.parse_args(parser)
+    bench.run_with_context(params, main)

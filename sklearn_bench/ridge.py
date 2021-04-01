@@ -18,41 +18,45 @@ import argparse
 
 import bench
 
-parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
-                                             'benchmark')
-parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
-                    action='store_false',
-                    help="Don't fit intercept (assume data already centered)")
-parser.add_argument('--solver', default='auto',
-                    help='Solver used for training')
-parser.add_argument('--alpha', type=float, default=1.0,
-                    help='Regularization strength')
-params = bench.parse_args(parser)
 
-if not params.no_intel_optimized:
+def main():
     from sklearn.linear_model import Ridge
 
-# Load data
-X_train, X_test, y_train, y_test = bench.load_data(params,
-                                                   generated_data=['X_train', 'y_train'])
+    # Load data
+    X_train, X_test, y_train, y_test = bench.load_data(params,
+                                                       generated_data=['X_train', 'y_train'])
 
-# Create our regression object
-regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,
-             solver=params.solver)
+    # Create our regression object
+    regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,
+                 solver=params.solver)
 
-# Time fit
-fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
+    # Time fit
+    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
-# Time predict
-predict_time, yp = bench.measure_function_time(regr.predict, X_test, params=params)
+    # Time predict
+    predict_time, yp = bench.measure_function_time(regr.predict, X_test, params=params)
 
-test_rmse = bench.rmse_score(yp, y_test)
-yp = regr.predict(X_train)
-train_rmse = bench.rmse_score(yp, y_train)
+    test_rmse = bench.rmse_score(yp, y_test)
+    yp = regr.predict(X_train)
+    train_rmse = bench.rmse_score(yp, y_train)
 
-bench.print_output(library='sklearn', algorithm='ridge_regression',
-                   stages=['training', 'prediction'], params=params,
-                   functions=['Ridge.fit', 'Ridge.predict'],
-                   times=[fit_time, predict_time], accuracy_type='rmse',
-                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-                   alg_instance=regr)
+    bench.print_output(library='sklearn', algorithm='ridge_regression',
+                       stages=['training', 'prediction'], params=params,
+                       functions=['Ridge.fit', 'Ridge.predict'],
+                       times=[fit_time, predict_time], accuracy_type='rmse',
+                       accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
+                       alg_instance=regr)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='scikit-learn ridge regression '
+                                     'benchmark')
+    parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
+                        action='store_false',
+                        help="Don't fit intercept (assume data already centered)")
+    parser.add_argument('--solver', default='auto',
+                        help='Solver used for training')
+    parser.add_argument('--alpha', type=float, default=1.0,
+                        help='Regularization strength')
+    params = bench.parse_args(parser)
+    bench.run_with_context(params, main)

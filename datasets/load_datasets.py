@@ -59,8 +59,8 @@ def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
     if dataset_name in dataset_loaders:
         try:
             return dataset_loaders[dataset_name](output_directory)
-        except BaseException:
-            logging.warning("Internal error loading dataset")
+        except BaseException as ex:
+            logging.warning(f"Internal error loading dataset:\n{ex}")
             return False
     else:
         logging.warning(f"There is no script to download the dataset: {dataset_name}. "
