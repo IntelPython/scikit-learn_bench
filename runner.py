@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import os
-import sys
 import json
-import socket
 import logging
+import os
 import pathlib
+import socket
+import sys
 
 import datasets.make_datasets as make_datasets
 import utils
-
 from datasets.load_datasets import try_load_dataset
 
 
@@ -50,7 +49,6 @@ def generate_cases(params):
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
                         default='configs/config_example.json',
@@ -139,7 +137,17 @@ if __name__ == '__main__':
 
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
-                        pass
+                        classes: int
+                        clusters: int
+                        features: int
+                        filex: str
+                        filextest: str
+                        filey: str
+                        fileytest: str
+                        samples: int
+                        seed: int
+                        test_samples: int
+                        type: str
                     gen_args = GenerationArgs()
                     paths = ''
 

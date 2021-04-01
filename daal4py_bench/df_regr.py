@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
 
-from daal4py import (
-    decision_forest_regression_training,
-    decision_forest_regression_prediction,
-    engines_mt2203
-)
+import bench
+from daal4py import (decision_forest_regression_prediction,
+                     decision_forest_regression_training, engines_mt2203)
 from daal4py.sklearn._utils import getFPType
 
 

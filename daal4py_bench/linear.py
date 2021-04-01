@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
 
-from daal4py import linear_regression_training, linear_regression_prediction
+import bench
+from daal4py import linear_regression_prediction, linear_regression_training
 from daal4py.sklearn._utils import getFPType
+
 
 parser = argparse.ArgumentParser(description='daal4py linear regression '
                                              'benchmark')
