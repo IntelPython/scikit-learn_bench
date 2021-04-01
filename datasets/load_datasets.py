@@ -21,11 +21,12 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict
 
-from .loader import (a_nine_a, airline, airline_ohe, bosch, codrnanorm,
-                     connect, covertype, covtype, epsilon, fraud, gisette,
-                     higgs, higgs_one_m, ijcnn, klaverjas, mnist,
-                     mortgage_first_q, msrank, plasticc, santander, sensit,
-                     skin_segmentation, year)
+
+from .loader_clf import (
+    a_nine_a, airline, airline_ohe, bosch, codrnanorm, epsilon, fraud, gisette, higgs, higgs_one_m,
+    ijcnn, klaverjas, santander, skin_segmentation)
+from .loader_reg import (mortgage_first_q, year_prediction_msd)
+from .loader_mul import (connect, covertype, covtype, mnist, msrank, plasticc, sensit)
 
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
@@ -51,7 +52,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "santander": santander,
     "sensit": sensit,
     "skin_segmentation": skin_segmentation,
-    "year": year,
+    "year_prediction_msd": year_prediction_msd,
 }
 
 
