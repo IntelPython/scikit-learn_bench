@@ -63,7 +63,7 @@ jobs:
   - script: |
       python -m pip install --upgrade pip setuptools
       pip install flake8
-      flake8 --max-line-length=90 --count
+      flake8 --max-line-length=100 --count
     displayName: 'PEP 8 check'
 - job: Mypy
   pool:
