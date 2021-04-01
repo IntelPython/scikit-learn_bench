@@ -21,13 +21,12 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict
 
-
-from .loader_clf import (
-    a_nine_a, airline, airline_ohe, bosch, codrnanorm, epsilon, fraud, gisette, higgs, higgs_one_m,
-    ijcnn, klaverjas, santander, skin_segmentation)
-from .loader_reg import (mortgage_first_q, year_prediction_msd)
-from .loader_mul import (connect, covertype, covtype, mnist, msrank, plasticc, sensit)
-
+from .loader_clf import (a_nine_a, airline, airline_ohe, bosch, codrnanorm,
+                         epsilon, fraud, gisette, higgs, higgs_one_m, ijcnn,
+                         klaverjas, santander, skin_segmentation)
+from .loader_mul import (connect, covertype, covtype, mnist, msrank, plasticc,
+                         sensit)
+from .loader_reg import mortgage_first_q, year_prediction_msd
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
