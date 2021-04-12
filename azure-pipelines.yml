@@ -37,7 +37,7 @@ jobs:
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench
-      python runner.py --configs configs/testing/daal4py.json
+      python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
     displayName: Run bench
 - job: Linux_XGBoost_and_daal4py
   pool:
@@ -50,7 +50,7 @@ jobs:
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench
-      python runner.py --configs configs/testing/daal4py_xgboost.json
+      python runner.py --configs configs/testing/daal4py_xgboost.json --no-intel-optimized
     displayName: Run bench
 - job: Pep8
   pool:
