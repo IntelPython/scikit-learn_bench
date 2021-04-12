@@ -197,10 +197,10 @@ def parse_args(parser, size=None, loop_types=(),
 
     if not params.no_intel_optimized:
         try:
-            from daal4py.sklearn import patch_sklearn
+            from sklearnex import patch_sklearn
             patch_sklearn()
         except ImportError:
-            print('Failed to import daal4py.sklearn.patch_sklearn.'
+            print('Failed to import sklearnex.patch_sklearn.'
                   'Use stock version scikit-learn', file=sys.stderr)
             params.device = 'None'
     else:
