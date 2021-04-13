@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
 import argparse
-import numpy as np
-import sklearn
-import timeit
 import json
 import sys
+import timeit
+
+import numpy as np
+import sklearn
 
 
 def get_dtype(data):
@@ -196,10 +197,10 @@ def parse_args(parser, size=None, loop_types=(),
 
     if not params.no_intel_optimized:
         try:
-            from daal4py.sklearn import patch_sklearn
+            from sklearnex import patch_sklearn
             patch_sklearn()
         except ImportError:
-            print('Failed to import daal4py.sklearn.patch_sklearn.'
+            print('Failed to import sklearnex.patch_sklearn.'
                   'Use stock version scikit-learn', file=sys.stderr)
             params.device = 'None'
     else:

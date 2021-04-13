@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import os
-import sys
-import subprocess
-import multiprocessing
-import logging
 import json
+import logging
+import multiprocessing
+import os
 import platform
+import subprocess
+import sys
 
 
 def filter_stderr(text):
@@ -59,6 +59,10 @@ def is_exists_files(files):
 
 
 def read_output_from_command(command, env=os.environ.copy()):
+    if "PYTHONPATH" in env:
+        env["PYTHONPATH"] += ":" + os.path.dirname(os.path.abspath(__file__))
+    else:
+        env["PYTHONPATH"] = os.path.dirname(os.path.abspath(__file__))
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, encoding='utf-8', env=env)
     return res.stdout[:-1], res.stderr[:-1]

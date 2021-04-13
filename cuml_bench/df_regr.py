@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
+from typing import Any
 
+import bench
 from cuml.ensemble import RandomForestRegressor
 
 parser = argparse.ArgumentParser(description='cuml random forest '
@@ -61,6 +59,7 @@ if params.split_algorithm == 'hist':
     params.split_algorithm = 0
 else:
     params.split_algorithm = 1
+regr: Any
 
 
 # Create our random forest regressor
@@ -79,6 +78,7 @@ def fit(X, y):
 
 
 def predict(X):
+    global regr
     return regr.predict(X, predict_model='GPU')
 
 

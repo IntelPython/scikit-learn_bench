@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
+from typing import Any
 
+import bench
 import numpy as np
 from daal4py import kmeans
 from daal4py.sklearn._utils import getFPType
@@ -38,14 +36,15 @@ params = bench.parse_args(parser, prefix='daal4py')
 # Load generated data
 X_train, X_test, _, _ = bench.load_data(params, add_dtype=True)
 
+X_init: Any
 # Load initial centroids from specified path
 if params.filei is not None:
-    X_init = np.load(params.filei).astype(params.dtype)
+    X_init = {k: v.astype(params.dtype) for k, v in np.load(params.filei).items()}
     params.n_clusters = X_init.shape[0]
 # or choose random centroids from training data
 else:
     np.random.seed(params.seed)
-    centroids_idx = np.random.randint(0, X_train.shape[0],
+    centroids_idx = np.random.randint(low=0, high=X_train.shape[0],
                                       size=params.n_clusters)
     if hasattr(X_train, "iloc"):
         X_init = X_train.iloc[centroids_idx].values

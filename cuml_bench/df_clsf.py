@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from typing import Any
+
 import bench
 import cuml
 from cuml.ensemble import RandomForestClassifier
@@ -63,6 +62,7 @@ else:
     params.split_algorithm = 1
 
 params.n_classes = y_train[y_train.columns[0]].nunique()
+clf: Any
 
 
 def fit(X, y):
@@ -80,6 +80,7 @@ def fit(X, y):
 
 
 def predict(X):
+    global clf
     prediction_args = {'predict_model': 'GPU'}
     if int(cuml.__version__.split('.')[1]) <= 14:
         prediction_args.update({'num_classes': params.n_classes})

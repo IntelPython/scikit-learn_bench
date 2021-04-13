@@ -38,7 +38,7 @@ Create a suitable conda environment for each framework to test. Each item in the
 * [**scikit-learn**](sklearn_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
+conda create -n bench -c intel python=3.7 scikit-learn scikit-learn-intelex pandas
 ```
 
 * [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
@@ -65,7 +65,7 @@ Run `python runner.py --configs configs/config_example.json [--output-file resul
 
 runner options:
 * ``configs`` : configuration files paths
-* ``no-intel-optimized`` : use no intel optimized version. Now avalible for scikit-learn benchmarks. Default is intel-optimized version.
+* ``no-intel-optimized`` : using Scikit-learn without Intel(R) Extension for Scikit-learn*. Now avalible for scikit-learn benchmarks. Default starts with using Intel(R) Extension for Scikit-learn*.
 * ``output-file``: output file name for result benchmarks. Default is `result.json`
 * ``report``: create an Excel report based on benchmarks results. Need library `openpyxl`.
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.

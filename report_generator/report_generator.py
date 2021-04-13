@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
+
+import argparse
+import datetime
+import hashlib
+import json
+from string import ascii_uppercase
+from typing import Any, List
 
 import openpyxl
-import argparse
-import json
-import hashlib
-from string import ascii_uppercase
-import datetime
 
 
 def get_property(entry, prop):
@@ -88,7 +90,7 @@ def create_list(res_entry, props_list):
     for prop in props_list:
         try:
             val = get_property(res_entry, prop)
-        except:
+        except BaseException:
             val = ''
         line.append(val)
     return line
@@ -147,7 +149,7 @@ if args.merging != 'none':
 while {} in all_res_entries:
     all_res_entries.remove({})
 
-diff_combinations = []
+diff_combinations: List[Any] = []
 for i, res_entry in enumerate(all_res_entries):
     already_exist = False
     for diff_comb in diff_combinations:
@@ -158,7 +160,7 @@ for i, res_entry in enumerate(all_res_entries):
         diff_comb = res_entry.copy()
         diff_combinations.append(diff_comb)
 
-align_combinations = []
+align_combinations: List[Any] = []
 for i, res_entry in enumerate(all_res_entries):
     already_exist = False
     for align_comb in align_combinations:
@@ -205,7 +207,8 @@ for stage_key in stages_splitter.keys():
     for i, res_entry in enumerate(all_res_entries):
         if res_entry['stage'] not in stages_splitter[stage_key]:
             continue
-        x, y = None, None
+        x: int
+        y: int
         for j, align_comb in enumerate(stage_align_combinations):
             if result_entries_are_comparable(res_entry, align_comb, gen_config):
                 y = j

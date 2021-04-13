@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import bench
 from cuml.neighbors import KNeighborsClassifier
+
 
 parser = argparse.ArgumentParser(
     description='cuML kNN classifier benchmark')
@@ -77,4 +76,5 @@ else:
                        stages=['training', 'search'], params=params,
                        functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
                        times=[train_time, predict_time],
+                       accuracies=[], accuracy_type=None,
                        data=[X_train, X_test], alg_instance=knn_clsf)

@@ -1,4 +1,4 @@
-#===============================================================================
+# ===============================================================================
 # Copyright 2020-2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#===============================================================================
+# ===============================================================================
 
-import sys
-import os
 import argparse
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bench
-import utils
+import os
 
+import bench
 import daal4py
 import lightgbm as lgbm
 import numpy as np
-from os import environ
+
+import modelbuilders_bench.mb_utils as utils
 
 parser = argparse.ArgumentParser(
     description='lightgbm gbt + model transform + daal predict benchmark')
@@ -89,8 +87,8 @@ lgbm_params = {
 if params.threads != -1:
     lgbm_params.update({'nthread': params.threads})
 
-if 'OMP_NUM_THREADS' in environ.keys():
-    lgbm_params['nthread'] = int(environ['OMP_NUM_THREADS'])
+if 'OMP_NUM_THREADS' in os.environ.keys():
+    lgbm_params['nthread'] = int(os.environ['OMP_NUM_THREADS'])
 
 if params.objective.startswith('reg'):
     task = 'regression'
