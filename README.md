@@ -29,7 +29,7 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 * [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Benchmark supported algorithms](#benchmark-supported-algorithms)
-* [Intel(R) Extension for Scikit-learn* support](#Intel(R)-Extension-for-Scikit-learn*-support)
+* [Intel(R) Extension for Scikit-learn* support](#intel(r)-extension-for-scikit-learn*-support)
 * [Algorithms parameters](#algorithms-parameters)
 
 ## How to create conda environment for benchmarking
@@ -66,7 +66,7 @@ Run `python runner.py --configs configs/config_example.json [--output-file resul
 
 runner options:
 * ``configs`` : configuration files paths
-* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](#Intel(R)-Extension-for-Scikit-learn*-support). Now avalible for scikit-learn benchmarks. Default starts with using Intel(R) Extension for Scikit-learn*.
+* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intel(r)-extension-for-scikit-learn*-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench). Default running with using Intel(R) Extension for Scikit-learn*.
 * ``output-file``: output file name for result benchmarks. Default is `result.json`
 * ``report``: create an Excel report based on benchmarks results. Need library `openpyxl`.
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.
@@ -108,7 +108,9 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:white_check_mark:|
 
 ## Intel(R) Extension for Scikit-learn* support
-[Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) provides the ability to run scikit-learn on CPU and GPU with kernels optimized by [oneDAL](https://github.com/oneapi-src/oneDAL). The extension support GPU patching for algorihms: **DBSCAN**, **KMeans**, **LinearRegression**, **LogisticRegression**. You can launch benchmarks with GPU support using [skl_xpu_config.json](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_with_context_config.json) configuration file.
+[Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) providing drop-in patching speeds up scikit-learn on CPU and GPU. 
+
+Scikit-learn benchmarks on GPU with Intel(R) Extension for Scikit-learn support algorithms: **DBSCAN**, **KMeans**, **LinearRegression**, **LogisticRegression**. Example config with GPU support [here](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json).
 
 ##  Algorithms parameters
 
