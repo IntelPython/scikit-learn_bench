@@ -29,7 +29,7 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 * [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
 * [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 * [Benchmark supported algorithms](#benchmark-supported-algorithms)
-* [Intel(R) Extension for Scikit-learn* support](#intel(r)-extension-for-scikit-learn*-support)
+* [Intel(R) Extension for Scikit-learn* support](#intelr-extension-for-scikit-learn-support)
 * [Algorithms parameters](#algorithms-parameters)
 
 ## How to create conda environment for benchmarking
