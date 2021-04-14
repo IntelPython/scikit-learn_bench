@@ -66,7 +66,7 @@ Run `python runner.py --configs configs/config_example.json [--output-file resul
 
 runner options:
 * ``configs`` : configuration files paths
-* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](##intel(r)-extension-for-scikit-learn*-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench). Default running with using Intel(R) Extension for Scikit-learn*.
+* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench). Default running with using Intel(R) Extension for Scikit-learn*.
 * ``output-file``: output file name for result benchmarks. Default is `result.json`
 * ``report``: create an Excel report based on benchmarks results. Need library `openpyxl`.
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.
