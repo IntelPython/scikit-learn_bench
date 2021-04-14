@@ -66,7 +66,7 @@ Run `python runner.py --configs configs/config_example.json [--output-file resul
 
 runner options:
 * ``configs`` : configuration files paths
-* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intel(r)-extension-for-scikit-learn*-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench). Default running with using Intel(R) Extension for Scikit-learn*.
+* ``no-intel-optimized`` : using Scikit-learn without [Intel(R) Extension for Scikit-learn*](##intel(r)-extension-for-scikit-learn*-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench). Default running with using Intel(R) Extension for Scikit-learn*.
 * ``output-file``: output file name for result benchmarks. Default is `result.json`
 * ``report``: create an Excel report based on benchmarks results. Need library `openpyxl`.
 * ``dummy-run`` : run configuration parser and datasets generation without benchmarks running.
@@ -108,9 +108,17 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:white_check_mark:|
 
 ## Intel(R) Extension for Scikit-learn* support
-[Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) providing drop-in patching speeds up scikit-learn on CPU and GPU. 
 
-Scikit-learn benchmarks on GPU with Intel(R) Extension for Scikit-learn support algorithms: **DBSCAN**, **KMeans**, **LinearRegression**, **LogisticRegression**. Example config with GPU support [here](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json).
+Every scikit-learn benchmark launched with default parameter values uses [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) on the CPU. Some benchmarks have a GPU support:
+ 
+* **dbscan**
+* **kmeans** 
+* **linear** 
+* **log_reg**
+
+A configuration file that contains all these benchmarks can be found [here](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json). You can use the following command to run these benchmarks on both CPU and GPU.
+
+    python runner.py --configs configs/skl_xpu_config.json
 
 ##  Algorithms parameters
 
