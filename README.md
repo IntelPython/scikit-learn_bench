@@ -109,7 +109,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
 ## Intel(R) Extension for Scikit-learn support
 
-By default scikit-learn benchmark launches using [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) on the CPU (use ``no-intel-optimized`` option to run without extention). Some benchmarks have a GPU support:
+The runs of Scikit-learn benchmark use [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) on the CPU by default (use ``no-intel-optimized`` option to run without extention). Some benchmarks have a GPU support:
 
 * dbscan
 * kmeans
