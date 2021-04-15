@@ -6,7 +6,7 @@ jobs:
   - script: |
       conda update -y -q conda
       export FORCE_DAAL4PY_SKLEARN=yes
-      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn daal4py tqdm
+      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn scikit-learn-intelex tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -37,7 +37,7 @@ jobs:
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench
-      python runner.py --configs configs/testing/daal4py.json
+      python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
     displayName: Run bench
 - job: Linux_XGBoost_and_daal4py
   pool:
@@ -50,7 +50,7 @@ jobs:
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench
-      python runner.py --configs configs/testing/daal4py_xgboost.json
+      python runner.py --configs configs/testing/daal4py_xgboost.json --no-intel-optimized
     displayName: Run bench
 - job: Pep8
   pool:
