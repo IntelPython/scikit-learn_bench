@@ -158,7 +158,7 @@ def airline_ohe(dataset_dir: Path) -> bool:
         X = df.drop('dep_delayed_15min', 1)
         y = df["dep_delayed_15min"]
 
-        y_num = np.where(y == "Y", 1, 0)
+        y_num = np.where((y == "Y").tolist(), 1, 0)
 
         sets.append(X)
         labels.append(y_num)
@@ -382,7 +382,7 @@ def gisette(dataset_dir: Path) -> bool:
     num_train = 6000
     x_train_arr = df_train.iloc[:num_train].values
     x_train = pd.DataFrame(np.array([np.fromstring(
-        elem[0], dtype=int, count=num_cols, sep=' ') for elem in x_train_arr]))
+        elem[0], dtype=int, count=num_cols, sep=' ').tolist() for elem in x_train_arr]))
     y_train_arr = df_labels.iloc[:num_train].values
     y_train = pd.DataFrame((y_train_arr > 0).astype(int))
 
@@ -393,7 +393,7 @@ def gisette(dataset_dir: Path) -> bool:
     x_test = pd.DataFrame(np.array(
         [np.fromstring(
             elem[0],
-            dtype=int, count=num_cols, sep=' ')
+            dtype=int, count=num_cols, sep=' ').tolist()
          for elem in x_test_arr]))
     y_test_arr = df_labels.iloc[:num_train].values
     y_test = pd.DataFrame((y_test_arr > 0).astype(int))
