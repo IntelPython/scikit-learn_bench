@@ -156,9 +156,9 @@ def airline_ohe(dataset_dir: Path) -> bool:
         df = pd.read_csv(local_url, nrows=1000000
                          if local_url.endswith('train-10m.csv') else None)
         X = df.drop('dep_delayed_15min', 1)
-        y = df["dep_delayed_15min"]
+        y: Any = df["dep_delayed_15min"]
 
-        y_num = np.where((y == "Y").tolist(), 1, 0)
+        y_num = np.where(y == "Y", 1, 0)
 
         sets.append(X)
         labels.append(y_num)
@@ -380,7 +380,7 @@ def gisette(dataset_dir: Path) -> bool:
     df_train = pd.read_csv(filename_train_data, header=None)
     df_labels = pd.read_csv(filename_train_labels, header=None)
     num_train = 6000
-    x_train_arr = df_train.iloc[:num_train].values
+    x_train_arr: Any = df_train.iloc[:num_train].values
     x_train = pd.DataFrame(np.array([np.fromstring(
         elem[0], dtype=int, count=num_cols, sep=' ').tolist() for elem in x_train_arr]))
     y_train_arr = df_labels.iloc[:num_train].values
@@ -389,7 +389,7 @@ def gisette(dataset_dir: Path) -> bool:
     num_train = 1000
     df_test = pd.read_csv(filename_test_data, header=None)
     df_labels = pd.read_csv(filename_test_labels, header=None)
-    x_test_arr = df_test.iloc[:num_train].values
+    x_test_arr: Any = df_test.iloc[:num_train].values
     x_test = pd.DataFrame(np.array(
         [np.fromstring(
             elem[0],
