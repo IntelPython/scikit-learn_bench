@@ -8,7 +8,7 @@ pip install -r sklearn_bench/requirements.txt
 ```
 or
 ```bash
-conda create -n bench -c conda-forge scikit-learn scikit-learn-intelex pandas
+conda install -c conda-forge scikit-learn scikit-learn-intelex pandas
 ```
 
 ##  Algorithms parameters

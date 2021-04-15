@@ -1,6 +1,13 @@
 ## How to create conda environment for benchmarking
 
-    conda create -n bench -c conda-forge python=3.7 xgboost pandas
+```bash
+pip install -r xgboost_bench/requirements.txt
+```
+or
+
+```bash
+conda install -c conda-forge xgboost pandas
+```
 
 ##  Algorithms parameters
 

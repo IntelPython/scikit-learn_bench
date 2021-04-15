@@ -1,0 +1,230 @@
+{
+    "common": {
+        "lib": ["cuml"],
+        "data-format": ["cudf"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "ijcnn",
+                    "training":
+                    {
+                        "x": "data/ijcnn_x_train.csv",
+                        "y": "data/ijcnn_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/ijcnn_x_test.csv",
+                        "y": "data/ijcnn_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1000.0],
+            "kernel": ["linear"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "a9a",
+                    "training":
+                    {
+                        "x": "data/a9a_x_train.csv",
+                        "y": "data/a9a_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/a9a_x_test.csv",
+                        "y": "data/a9a_y_test.csv"
+                    }
+                }
+            ],
+            "C": [500.0],
+            "kernel": ["rbf"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "gisette",
+                    "training":
+                    {
+                        "x": "data/gisette_x_train.csv",
+                        "y": "data/gisette_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/gisette_x_test.csv",
+                        "y": "data/gisette_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.5e-3],
+            "kernel": ["linear"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "klaverjas",
+                    "training":
+                    {
+                        "x": "data/klaverjas_x_train.csv",
+                        "y": "data/klaverjas_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/klaverjas_x_test.csv",
+                        "y": "data/klaverjas_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.0],
+            "kernel": ["rbf"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "connect4",
+                    "training":
+                    {
+                        "x": "data/connect_x_train.csv",
+                        "y": "data/connect_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/connect_x_test.csv",
+                        "y": "data/connect_y_test.csv"
+                    }
+                }
+            ],
+            "C": [100.0],
+            "kernel": ["linear"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.csv",
+                        "y": "data/mnist_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.csv",
+                        "y": "data/mnist_y_test.csv"
+                    }
+                }
+            ],
+            "C": [50.0],
+            "kernel": ["rbf"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "sensit",
+                    "training":
+                    {
+                        "x": "data/sensit_x_train.csv",
+                        "y": "data/sensit_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/sensit_x_test.csv",
+                        "y": "data/sensit_y_test.csv"
+                    }
+                }
+            ],
+            "C": [500.0],
+            "kernel": ["linear"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "skin_segmentation",
+                    "training":
+                    {
+                        "x": "data/skin_segmentation_x_train.csv",
+                        "y": "data/skin_segmentation_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/skin_segmentation_x_test.csv",
+                        "y": "data/skin_segmentation_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1.0],
+            "kernel": ["rbf"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "covertype",
+                    "training":
+                    {
+                        "x": "data/covertype_x_train.csv",
+                        "y": "data/covertype_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/covertype_x_test.csv",
+                        "y": "data/covertype_y_test.csv"
+                    }
+                }
+            ],
+            "C": [100.0],
+            "kernel": ["rbf"],
+            "probability": [""]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "csv",
+                    "name": "codrnanorm",
+                    "training":
+                    {
+                        "x": "data/codrnanorm_x_train.csv",
+                        "y": "data/codrnanorm_y_train.csv"
+                    },
+                    "testing":
+                    {
+                        "x": "data/codrnanorm_x_test.csv",
+                        "y": "data/codrnanorm_y_test.csv"
+                    }
+                }
+            ],
+            "C": [1000.0],
+            "kernel": ["linear"],
+            "probability": [""]
+        }
+    ]
+}

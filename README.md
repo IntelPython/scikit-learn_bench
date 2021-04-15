@@ -43,25 +43,29 @@ pip install -r sklearn_bench/requirements.txt
 ```
 or
 ```bash
-conda create -n bench -c conda-forge scikit-learn scikit-learn-intelex pandas
+conda install -c conda-forge scikit-learn scikit-learn-intelex pandas
 ```
 
 * [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda create -n bench -c intel python=3.7 scikit-learn daal4py pandas
+conda install -c intel python=3.7 scikit-learn daal4py pandas
 ```
 
 * [**cuml**](cuml_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda create -n bench -c rapidsai -c conda-forge python=3.7 cuml pandas cudf
+conda install -c rapidsai -c conda-forge python=3.7 cuml pandas cudf
 ```
 
 * [**xgboost**](xgboost_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda create -n bench -c conda-forge python=3.7 xgboost pandas
+pip install -r xgboost_bench/requirements.txt
+```
+or
+```bash
+conda install -c conda-forge xgboost pandas
 ```
 
 ## Running Python benchmarks with runner script

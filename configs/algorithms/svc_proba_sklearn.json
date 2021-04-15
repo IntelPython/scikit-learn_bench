@@ -99,7 +99,7 @@
             "dataset": [
                 {
                     "source": "csv",
-                    "name": "connect4",
+                    "name": "connect",
                     "training":
                     {
                         "x": "data/connect_x_train.csv",
