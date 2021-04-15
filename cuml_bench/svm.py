@@ -57,12 +57,14 @@ params.sv_len = clf.support_.shape[0]
 if params.probability:
     state_predict = 'predict_proba'
     accuracy_type = 'log_loss'
-    def metric_call(x, y): return bench.log_loss(x, y)
+    def metric_call(x, y):
+      return bench.log_loss(x, y)
     clf_predict = clf.predict_proba
 else:
     state_predict = 'prediction'
     accuracy_type = 'accuracy[%]'
-    def metric_call(x, y): return 100 * bench.accuracy_score(x, y)
+    def metric_call(x, y):
+      return 100 * bench.accuracy_score(x, y)
     clf_predict = clf.predict
 
 

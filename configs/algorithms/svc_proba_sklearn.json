@@ -92,6 +92,7 @@
             ],
             "C": [1.0],
             "kernel": ["rbf"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -114,6 +115,7 @@
             ],
             "C": [100.0],
             "kernel": ["linear"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -136,6 +138,7 @@
             ],
             "C": [50.0],
             "kernel": ["rbf"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -158,6 +161,7 @@
             ],
             "C": [500.0],
             "kernel": ["linear"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -180,6 +184,7 @@
             ],
             "C": [1.0],
             "kernel": ["rbf"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -202,6 +207,7 @@
             ],
             "C": [100.0],
             "kernel": ["rbf"],
+            "max-cache-size": [2],
             "probability": [""]
         },
         {
@@ -224,6 +230,7 @@
             ],
             "C": [1000.0],
             "kernel": ["linear"],
+            "max-cache-size": [2],
             "probability": [""]
         }
     ]
