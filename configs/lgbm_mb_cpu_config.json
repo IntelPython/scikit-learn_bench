@@ -1,108 +1,120 @@
 {
     "common": {
-        "lib": ["modelbuilders"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float32"]
+        "lib":          "modelbuilders",
+        "data-format":  "pandas",
+        "data-order":   "F",
+        "dtype":        "float32",
+        "algorithm":    "lgbm_mb"
     },
     "cases": [
         {
-            "algorithm": "lgbm_mb",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "mortgage1Q",
+                    "source":   "npy",
+                    "name":     "airline-ohe",
                     "training":
                     {
-                        "x": "data/mortgage_x.csv",
-                        "y": "data/mortgage_y.csv"
+                        "x":    "data/airline-ohe_x_train.npy",
+                        "y":    "data/airline-ohe_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/airline-ohe_x_test.npy",
+                        "y":    "data/airline-ohe_y_test.npy"
                     }
                 }
             ],
-            "n-estimators": [100],
-            "objective": ["regression"],
-            "max-depth": [8],
-            "scale-pos-weight": [2],
-            "learning-rate": [0.1],
-            "subsample": [1],
-            "reg-alpha": [0.9],
-            "reg-lambda": [1],
-            "min-child-weight": [0],
-            "max-leaves": [256]
+            "reg-alpha":        0.9,
+            "max-bin":          256,
+            "scale-pos-weight": 2,
+            "learning-rate":    0.1,
+            "subsample":        1,
+            "reg-lambda":       1,
+            "min-child-weight": 0,
+            "max-depth":        8,
+            "max-leaves":       256,
+            "n-estimators":     1000,
+            "objective":        "binary"
         },
         {
-            "algorithm": "lgbm_mb",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "airline-ohe",
+                    "source":   "npy",
+                    "name":     "higgs1m",
                     "training":
                     {
-                        "x": "data/airline-ohe_x_train.csv",
-                        "y": "data/airline-ohe_y_train.csv"
+                        "x":    "data/higgs1m_x_train.npy",
+                        "y":    "data/higgs1m_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/higgs1m_x_test.npy",
+                        "y":    "data/higgs1m_y_test.npy"
                     }
                 }
             ],
-            "reg-alpha": [0.9],
-            "max-bin": [256],
-            "scale-pos-weight": [2],
-            "learning-rate": [0.1],
-            "subsample": [1],
-            "reg-lambda":  [1],
-            "min-child-weight": [0],
-            "max-depth": [8],
-            "max-leaves": [256],
-            "n-estimators": [1000],
-            "objective": ["binary"]
+            "reg-alpha":        0.9,
+            "max-bin":          256,
+            "scale-pos-weight": 2,
+            "learning-rate":    0.1,
+            "subsample":        1,
+            "reg-lambda":       1,
+            "min-child-weight": 0,
+            "max-depth":        8,
+            "max-leaves":       256,
+            "n-estimators":     1000,
+            "objective":        "binary"
         },
         {
-            "algorithm": "lgbm_mb",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "higgs1m",
+                    "source":   "csv",
+                    "name":     "mortgage1Q",
                     "training":
                     {
-                        "x": "data/higgs1m_x_train.csv",
-                        "y": "data/higgs1m_y_train.csv"
+                        "x":    "data/mortgage_x.csv",
+                        "y":    "data/mortgage_y.csv"
                     }
                 }
             ],
-            "reg-alpha": [0.9],
-            "max-bin": [256],
-            "scale-pos-weight": [2],
-            "learning-rate": [0.1],
-            "subsample": [1],
-            "reg-lambda":  [1],
-            "min-child-weight": [0],
-            "max-depth": [8],
-            "max-leaves": [256],
-            "n-estimators": [1000],
-            "objective": ["binary"]
+            "n-estimators":     100,
+            "objective":        "regression",
+            "max-depth":        8,
+            "scale-pos-weight": 2,
+            "learning-rate":    0.1,
+            "subsample":        1,
+            "reg-alpha":        0.9,
+            "reg-lambda":       1,
+            "min-child-weight": 0,
+            "max-leaves":       256
         },
         {
-            "algorithm": "lgbm_mb",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "msrank",
+                    "source":   "npy",
+                    "name":     "msrank",
                     "training":
                     {
-                        "x": "data/mlsr_x_train.csv",
-                        "y": "data/mlsr_y_train.csv"
+                        "x":    "data/msrank_x_train.npy",
+                        "y":    "data/msrank_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x":    "data/msrank_x_test.npy",
+                        "y":    "data/msrank_y_test.npy"
                     }
                 }
             ],
-            "max-bin": [256],
-            "learning-rate": [0.3],
-            "subsample": [1],
-            "reg-lambda":  [2],
-            "min-child-weight": [1],
-            "min-split-gain": [0.1],
-            "max-depth": [8],
-            "max-leaves": [256],
-            "n-estimators": [200],
-            "objective": ["multiclass"]
+            "max-bin":          256,
+            "learning-rate":    0.3,
+            "subsample":        1,
+            "reg-lambda":       2,
+            "min-child-weight": 1,
+            "min-split-loss":   0.1,
+            "max-depth":        8,
+            "max-leaves":       256,
+            "n-estimators":     200,
+            "objective":        "multiclass"
         }
     ]
 }

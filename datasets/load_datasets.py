@@ -24,12 +24,13 @@ from typing import Callable, Dict
 from .loader_clf import (a_nine_a, airline, airline_ohe, bosch, codrnanorm,
                          epsilon, fraud, gisette, higgs, higgs_one_m, ijcnn,
                          klaverjas, santander, skin_segmentation)
-from .loader_mul import (connect, covertype, covtype, mnist, msrank, plasticc,
-                         sensit)
-from .loader_reg import mortgage_first_q, year_prediction_msd
+from .loader_mul import (connect, covertype, covtype, letters, mnist, msrank,
+                         plasticc, sensit)
+from .loader_reg import abalone, mortgage_first_q, year_prediction_msd
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
+    "abalone": abalone,
     "airline": airline,
     "airline-ohe": airline_ohe,
     "bosch": bosch,
@@ -44,6 +45,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "higgs1m": higgs_one_m,
     "ijcnn": ijcnn,
     "klaverjas": klaverjas,
+    "letters": letters,
     "mnist": mnist,
     "mortgage1Q": mortgage_first_q,
     "msrank": msrank,

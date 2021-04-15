@@ -72,6 +72,8 @@ if __name__ == '__main__':
             params.update(params_set.copy())
             algorithm = params['algorithm']
             libs = params['lib']
+            if not isinstance(libs, list):
+                libs = [libs]
             del params['dataset'], params['algorithm'], params['lib']
             cases = utils.generate_cases(params)
             logging.info(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'

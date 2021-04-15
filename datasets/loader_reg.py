@@ -17,12 +17,46 @@
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from .loader_utils import retrieve
+
+
+def abalone(dataset_dir: Path) -> bool:
+    """
+    https://archive.ics.uci.edu/ml/machine-learning-databases/abalone
+
+    TaskType:regression
+    NumberOfFeatures:8
+    NumberOfInstances:4177
+    """
+    dataset_name = 'abalone'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data'
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    abalone: Any = pd.read_csv(local_url, header=None)
+    abalone[0] = abalone[0].astype('category').cat.codes
+    X = abalone.iloc[:, :-1].values
+    y = abalone.iloc[:, -1].values
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+    for data, name in zip((X_train, X_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
 
 
 def mortgage_first_q(dataset_dir: Path) -> bool:

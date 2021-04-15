@@ -18,6 +18,7 @@ import logging
 import os
 import tarfile
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -107,6 +108,40 @@ def covtype(dataset_dir: Path) -> bool:
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=77,
                                                         test_size=0.2,
                                                         )
+    for data, name in zip((X_train, X_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def letters(dataset_dir: Path) -> bool:
+    """
+    http://archive.ics.uci.edu/ml/datasets/Letter+Recognition
+
+    TaskType:multiclass
+    NumberOfFeatures:16
+    NumberOfInstances:20.000
+    """
+    dataset_name = 'letters'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = ('http://archive.ics.uci.edu/ml/machine-learning-databases/' +
+           'letter-recognition/letter-recognition.data')
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    letters = pd.read_csv(local_url, header=None)
+    X = letters.iloc[:, 1:].values
+    y: Any = letters.iloc[:, 0]
+    y = y.astype('category').cat.codes.values
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
     for data, name in zip((X_train, X_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
