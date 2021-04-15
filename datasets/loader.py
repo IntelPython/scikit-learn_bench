@@ -187,7 +187,7 @@ def connect(dataset_dir=None):
     dataset_name = 'connect'
     os.makedirs(dataset_dir, exist_ok=True)
 
-    X, y = fetch_openml(name='connect-4', return_X_y=True,
+    X, y = fetch_openml(name='connect-4', version=1, return_X_y=True,
                         as_frame=False, data_home=dataset_dir)
     X = pd.DataFrame(X.todense())
     y = pd.DataFrame(y)

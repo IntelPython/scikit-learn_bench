@@ -1,9 +1,11 @@
 {
     "common": {
-        "lib": ["cuml"],
-        "data-format": ["cudf"],
+        "lib": ["sklearn"],
+        "data-format": ["pandas"],
         "data-order": ["F"],
-        "dtype": ["float64"]
+        "dtype": ["float64"],
+        "max-cache-size": [2],
+        "probability": [""]
     },
     "cases": [
         {
@@ -25,9 +27,7 @@
                 }
             ],
             "C": [1000.0],
-            "kernel": ["linear"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -48,9 +48,7 @@
                 }
             ],
             "C": [500.0],
-            "kernel": ["rbf"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["rbf"]
         },
         {
             "algorithm": "svm",
@@ -71,9 +69,7 @@
                 }
             ],
             "C": [1.5e-3],
-            "kernel": ["linear"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -94,16 +90,14 @@
                 }
             ],
             "C": [1.0],
-            "kernel": ["rbf"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["rbf"]
         },
         {
             "algorithm": "svm",
             "dataset": [
                 {
                     "source": "csv",
-                    "name": "connect4",
+                    "name": "connect",
                     "training":
                     {
                         "x": "data/connect_x_train.csv",
@@ -117,9 +111,7 @@
                 }
             ],
             "C": [100.0],
-            "kernel": ["linear"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -140,9 +132,7 @@
                 }
             ],
             "C": [50.0],
-            "kernel": ["rbf"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["rbf"]
         },
         {
             "algorithm": "svm",
@@ -163,9 +153,7 @@
                 }
             ],
             "C": [500.0],
-            "kernel": ["linear"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -186,9 +174,7 @@
                 }
             ],
             "C": [1.0],
-            "kernel": ["rbf"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["rbf"]
         },
         {
             "algorithm": "svm",
@@ -209,9 +195,7 @@
                 }
             ],
             "C": [100.0],
-            "kernel": ["rbf"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["rbf"]
         },
         {
             "algorithm": "svm",
@@ -232,9 +216,7 @@
                 }
             ],
             "C": [1000.0],
-            "kernel": ["linear"],
-            "max-cache-size": [2],
-            "probability": [""]
+            "kernel": ["linear"]
         }
     ]
 }
