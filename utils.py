@@ -27,10 +27,15 @@ from datasets.load_datasets import try_load_dataset
 
 def filter_stderr(text: str) -> str:
     # delete 'Intel(R) DAAL usage in sklearn' messages
-    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers ' + \
-                         'for sklearn enabled: ' + \
-                         'https://intelpython.github.io/daal4py/sklearn.html'
-    return ''.join(text.split(fake_error_message))
+    daal_fake_error_message = ('Intel(R) oneAPI Data Analytics Library solvers ' +
+                               'for sklearn enabled: ' +
+                               'https://intelpython.github.io/daal4py/sklearn.html')
+    skex_fake_error_message = ('Intel(R) Extension for Scikit-learn* enabled ' +
+                               '(https://github.com/intel/scikit-learn-intelex)')
+
+    text = ''.join(text.split(daal_fake_error_message))
+    text = ''.join(text.split(skex_fake_error_message))
+    return text
 
 
 def filter_stdout(text: str) -> Tuple[str, str]:
