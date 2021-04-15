@@ -179,9 +179,9 @@ def connect(dataset_dir=None):
     http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass.htm
 
     Classification task. n_classes = 3.
-    connect X train dataset (196045, 127)
-    connect y train dataset (196045, 1)
-    connect X test dataset  (49012,  127)
+    connect X train dataset (60801, 126)
+    connect y train dataset (60801, 1)
+    connect X test dataset  (49012,  126)
     connect y test dataset  (49012,  1)
     """
     dataset_name = 'connect'

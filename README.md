@@ -39,7 +39,11 @@ Create a suitable conda environment for each framework to test. Each item in the
 * [**scikit-learn**](sklearn_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda create -n bench -c intel python=3.7 scikit-learn scikit-learn-intelex pandas
+pip install -r sklearn_bench/requirements.txt
+```
+or
+```bash
+conda create -n bench -c conda-forge scikit-learn scikit-learn-intelex pandas
 ```
 
 * [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
@@ -109,7 +113,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
 ## Intel(R) Extension for Scikit-learn support
 
-When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension. 
+When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
 The following benchmarks have a GPU support:
 * dbscan
