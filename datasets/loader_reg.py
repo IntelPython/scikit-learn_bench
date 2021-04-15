@@ -60,10 +60,21 @@ def abalone(dataset_dir: Path) -> bool:
 
 
 def mortgage_first_q(dataset_dir: Path) -> bool:
+    """
+    Still doesn't have an loading instruction
+    """
     return False
 
 
 def year_prediction_msd(dataset_dir: Path) -> bool:
+    """
+    YearPredictionMSD dataset from UCI repository
+    https://archive.ics.uci.edu/ml/datasets/yearpredictionmsd
+
+    TaskType:regression
+    NumberOfFeatures:90
+    NumberOfInstances:515345
+    """
     dataset_name = 'year_prediction_msd'
     os.makedirs(dataset_dir, exist_ok=True)
 

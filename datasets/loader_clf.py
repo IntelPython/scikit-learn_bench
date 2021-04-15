@@ -32,7 +32,7 @@ def a_nine_a(dataset_dir: Path) -> bool:
     Author: Ronny Kohavi","Barry Becker
     libSVM","AAD group
     Source: original - Date unknown
-    Cite: http://archive.ics.uci.edu/ml/datasets/Adult
+    Site: http://archive.ics.uci.edu/ml/datasets/Adult
 
     Classification task. n_classes = 2.
     a9a X train dataset (39073, 123)
@@ -65,6 +65,14 @@ def a_nine_a(dataset_dir: Path) -> bool:
 
 
 def airline(dataset_dir: Path) -> bool:
+    """
+    Airline dataset
+    http://kt.ijs.si/elena_ikonomovska/data.html
+
+    TaskType:binclass
+    NumberOfFeatures:13
+    NumberOfInstances:115M
+    """
     dataset_name = 'airline'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -131,10 +139,10 @@ def airline_ohe(dataset_dir: Path) -> bool:
     local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
     local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
     if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}')
+        logging.info(f'Started loading {dataset_name} train')
         retrieve(url_train, local_url_train)
     if not os.path.isfile(local_url_test):
-        logging.info(f'Started loading {dataset_name}')
+        logging.info(f'Started loading {dataset_name} test')
         retrieve(url_test, local_url_test)
     logging.info(f'{dataset_name} is loaded, started parsing...')
 
@@ -170,6 +178,17 @@ def airline_ohe(dataset_dir: Path) -> bool:
 
 
 def bosch(dataset_dir: Path) -> bool:
+    """
+    Bosch Production Line Performance data set
+    https://www.kaggle.com/c/bosch-production-line-performance
+
+    Requires Kaggle API and API token (https://github.com/Kaggle/kaggle-api)
+    Contains missing values as NaN.
+
+    TaskType:binclass
+    NumberOfFeatures:968
+    NumberOfInstances:1.184M
+    """
     dataset_name = 'bosch'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -233,6 +252,14 @@ def codrnanorm(dataset_dir: Path) -> bool:
 
 
 def epsilon(dataset_dir: Path) -> bool:
+    """
+    Epsilon dataset
+    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
+    TaskType:binclass
+    NumberOfFeatures:2000
+    NumberOfInstances:500K
+    """
     dataset_name = 'epsilon'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -268,6 +295,17 @@ def epsilon(dataset_dir: Path) -> bool:
 
 
 def fraud(dataset_dir: Path) -> bool:
+    """
+    Credit Card Fraud Detection contest
+    https://www.kaggle.com/mlg-ulb/creditcardfraud
+
+    Requires Kaggle API and API token (https://github.com/Kaggle/kaggle-api)
+    Contains missing values as NaN.
+
+    TaskType:binclass
+    NumberOfFeatures:30
+    NumberOfInstances:285K
+    """
     dataset_name = 'fraud'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -371,6 +409,14 @@ def gisette(dataset_dir: Path) -> bool:
 
 
 def higgs(dataset_dir: Path) -> bool:
+    """
+    Higgs dataset from UCI machine learning repository
+    https://archive.ics.uci.edu/ml/datasets/HIGGS
+
+    TaskType:binclass
+    NumberOfFeatures:28
+    NumberOfInstances:11M
+    """
     dataset_name = 'higgs'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -397,11 +443,14 @@ def higgs(dataset_dir: Path) -> bool:
 
 def higgs_one_m(dataset_dir: Path) -> bool:
     """
-    Higgs dataset from UCI machine learning repository (
-    https://archive.ics.uci.edu/ml/datasets/HIGGS).
+    Higgs dataset from UCI machine learning repository
+    https://archive.ics.uci.edu/ml/datasets/HIGGS
+
+    Only first 1.5M samples is taken
+
     TaskType:binclass
     NumberOfFeatures:28
-    NumberOfInstances:11M
+    NumberOfInstances:1.5M
     """
     dataset_name = 'higgs1m'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -511,6 +560,9 @@ def klaverjas(dataset_dir: Path) -> bool:
 
 
 def santander(dataset_dir: Path) -> bool:
+    """
+    Still doesn't have an loading instruction
+    """
     return False
 
 

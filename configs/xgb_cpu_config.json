@@ -173,11 +173,6 @@
                     {
                         "x":    "data/plasticc_x_train.csv",
                         "y":    "data/plasticc_y_train.csv"
-                    },
-                    "testing":
-                    {
-                        "x":    "data/plasticc_x_test.csv",
-                        "y":    "data/plasticc_y_test.csv"
                     }
                 }
             ],

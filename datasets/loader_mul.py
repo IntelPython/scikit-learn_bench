@@ -98,6 +98,15 @@ def covertype(dataset_dir: Path) -> bool:
 
 
 def covtype(dataset_dir: Path) -> bool:
+    """
+    Cover type dataset from UCI machine learning repository
+    https://archive.ics.uci.edu/ml/datasets/covertype
+
+    y contains 7 unique class labels from 1 to 7 inclusive.
+    TaskType:multiclass
+    NumberOfFeatures:54
+    NumberOfInstances:581012
+    """
     dataset_name = 'covtype'
     os.makedirs(dataset_dir, exist_ok=True)
 
@@ -192,6 +201,7 @@ def mnist(dataset_dir: Path) -> bool:
 def msrank(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
+
     TaskType:binclass
     NumberOfFeatures:700
     NumberOfInstances:10100000
@@ -200,21 +210,23 @@ def msrank(dataset_dir: Path) -> bool:
     os.makedirs(dataset_dir, exist_ok=True)
     url = "https://storage.mds.yandex.net/get-devtools-opensource/471749/msrank.tar.gz"
     local_url = os.path.join(dataset_dir, os.path.basename(url))
+    unzipped_url = os.path.join(dataset_dir, "MSRank")
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')
         retrieve(url, local_url)
+    if not os.path.isdir(unzipped_url):
         logging.info(f'{dataset_name} is loaded, unzipping...')
         tar = tarfile.open(local_url, "r:gz")
         tar.extractall(dataset_dir)
         tar.close()
-        logging.info(f'{dataset_name} is unzipped, started parsing...')
+    logging.info(f'{dataset_name} is unzipped, started parsing...')
 
     sets = []
     labels = []
     n_features = 137
 
     for set_name in ['train.txt', 'vali.txt', 'test.txt']:
-        file_name = str(dataset_dir) + os.path.join('MSRank', set_name)
+        file_name = os.path.join(unzipped_url, set_name)
 
         n_samples = count_lines(file_name)
         with open(file_name, 'r') as file_obj:
@@ -238,6 +250,9 @@ def msrank(dataset_dir: Path) -> bool:
 
 
 def plasticc(dataset_dir: Path) -> bool:
+    """
+    Still doesn't have an loading instruction
+    """
     return False
 
 
