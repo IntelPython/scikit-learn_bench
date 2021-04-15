@@ -172,7 +172,7 @@ def airline_ohe(dataset_dir: Path) -> bool:
     for data, name in zip((sets[0], sets[1], labels[0], labels[1]),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
+        np.save(os.path.join(dataset_dir, filename), data)  # type: ignore
     logging.info(f'dataset {dataset_name} is ready.')
     return True
 
@@ -380,21 +380,21 @@ def gisette(dataset_dir: Path) -> bool:
     df_train = pd.read_csv(filename_train_data, header=None)
     df_labels = pd.read_csv(filename_train_labels, header=None)
     num_train = 6000
-    x_train_arr: Any = df_train.iloc[:num_train].values
+    x_train_arr = df_train.iloc[:num_train].values
     x_train = pd.DataFrame(np.array([np.fromstring(
-        elem[0], dtype=int, count=num_cols, sep=' ').tolist() for elem in x_train_arr]))
+        elem[0], dtype=int, count=num_cols, sep=' ') for elem in x_train_arr]))  # type: ignore
     y_train_arr = df_labels.iloc[:num_train].values
     y_train = pd.DataFrame((y_train_arr > 0).astype(int))
 
     num_train = 1000
     df_test = pd.read_csv(filename_test_data, header=None)
     df_labels = pd.read_csv(filename_test_labels, header=None)
-    x_test_arr: Any = df_test.iloc[:num_train].values
+    x_test_arr = df_test.iloc[:num_train].values
     x_test = pd.DataFrame(np.array(
         [np.fromstring(
             elem[0],
-            dtype=int, count=num_cols, sep=' ').tolist()
-         for elem in x_test_arr]))
+            dtype=int, count=num_cols, sep=' ')
+         for elem in x_test_arr]))  # type: ignore
     y_test_arr = df_labels.iloc[:num_train].values
     y_test = pd.DataFrame((y_test_arr > 0).astype(int))
 
