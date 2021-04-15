@@ -47,9 +47,8 @@ cache_size_bytes = bench.get_optimal_cache_size(X_train.shape[0],
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = y_train[y_train.columns[0]].nunique()
 
-clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
-          cache_size=params.cache_size_mb, tol=params.tol,
-          gamma=params.gamma, random_state=43)
+clf = SVC(C=params.C, kernel=params.kernel, cache_size=params.cache_size_mb,
+          tol=params.tol, gamma=params.gamma, random_state=43)
 
 fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
 params.sv_len = clf.support_.shape[0]
