@@ -35,7 +35,8 @@ def main():
     params.n_classes = len(np.unique(y_train))
 
     clf = SVC(C=params.C, kernel=params.kernel, cache_size=params.cache_size_mb,
-              tol=params.tol, gamma=params.gamma, probability=params.probability)
+              tol=params.tol, gamma=params.gamma, probability=params.probability,
+              random_state=43)
 
     fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
     params.sv_len = clf.support_.shape[0]
