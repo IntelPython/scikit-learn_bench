@@ -2,10 +2,7 @@
 
 ```bash
 pip install -r xgboost_bench/requirements.txt
-```
-or
-
-```bash
+# or
 conda install -c conda-forge xgboost pandas
 ```
 

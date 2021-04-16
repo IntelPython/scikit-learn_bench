@@ -40,31 +40,27 @@ Create a suitable conda environment for each framework to test. Each item in the
 
 ```bash
 pip install -r sklearn_bench/requirements.txt
-```
-or
-```bash
+# or
 conda install -c conda-forge scikit-learn scikit-learn-intelex pandas
 ```
 
 * [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda install -c intel python=3.7 scikit-learn daal4py pandas
+conda install -c conda-forge scikit-learn daal4py pandas
 ```
 
 * [**cuml**](cuml_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda install -c rapidsai -c conda-forge python=3.7 cuml pandas cudf
+conda install -c rapidsai -c conda-forge cuml pandas cudf
 ```
 
 * [**xgboost**](xgboost_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 pip install -r xgboost_bench/requirements.txt
-```
-or
-```bash
+# or
 conda install -c conda-forge xgboost pandas
 ```
 
