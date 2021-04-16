@@ -18,7 +18,6 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.metrics import accuracy_score, log_loss
 
 
 def main():
@@ -49,7 +48,7 @@ def main():
     else:
         state_predict = 'predict'
         accuracy_type = 'accuracy[%]'
-        def metric_call(x, y): return bench.accuracy(x, y)
+        def metric_call(x, y): return bench.accuracy_score(x, y)
         clf_predict = clf.predict
 
     predict_train_time, y_pred = bench.measure_function_time(
