@@ -342,7 +342,9 @@ def accuracy_score(y, yp):
 
 def log_loss(y, yp):
     from sklearn.metrics import log_loss as sklearn_log_loss
-    return columnwise_score(y, yp, sklearn_log_loss)
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    return sklearn_log_loss(y, yp)
 
 
 def rmse_score(y, yp):
