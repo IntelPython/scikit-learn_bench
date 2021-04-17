@@ -179,15 +179,15 @@ def connect(dataset_dir=None):
     http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass.htm
 
     Classification task. n_classes = 3.
-    connect X train dataset (196045, 127)
-    connect y train dataset (196045, 1)
-    connect X test dataset  (49012,  127)
+    connect X train dataset (60801, 126)
+    connect y train dataset (60801, 1)
+    connect X test dataset  (49012,  126)
     connect y test dataset  (49012,  1)
     """
     dataset_name = 'connect'
     os.makedirs(dataset_dir, exist_ok=True)
 
-    X, y = fetch_openml(name='connect-4', return_X_y=True,
+    X, y = fetch_openml(name='connect-4', version=1, return_X_y=True,
                         as_frame=False, data_home=dataset_dir)
     X = pd.DataFrame(X.todense())
     y = pd.DataFrame(y)

@@ -238,6 +238,7 @@ if __name__ == '__main__':
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'
+
                             if stderr != '':
                                 is_successful = False
                                 logging.warning('Error in benchmark: \n' + stderr)

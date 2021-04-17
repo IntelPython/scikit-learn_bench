@@ -24,10 +24,9 @@ import sys
 
 
 def filter_stderr(text):
-    # delete 'Intel(R) DAAL usage in sklearn' messages
-    fake_error_message = 'Intel(R) oneAPI Data Analytics Library solvers ' + \
-                         'for sklearn enabled: ' + \
-                         'https://intelpython.github.io/daal4py/sklearn.html'
+    # delete 'Intel(R) Extension for Scikit-learn usage in sklearn' messages
+    fake_error_message = 'Intel(R) Extension for Scikit-learn* enabled ' + \
+                         '(https://github.com/intel/scikit-learn-intelex)'
     while fake_error_message in text:
         text = text.replace(fake_error_message, '')
     return text

@@ -18,13 +18,11 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.metrics import accuracy_score
 
 
 def main():
     from sklearn.svm import SVC
 
-    # Load data
     X_train, X_test, y_train, y_test = bench.load_data(params)
 
     if params.gamma is None:
@@ -35,26 +33,36 @@ def main():
     params.cache_size_mb = cache_size_bytes / 1024**2
     params.n_classes = len(np.unique(y_train))
 
-    # Create our C-SVM classifier
-    clf = SVC(C=params.C, kernel=params.kernel, max_iter=params.maxiter,
-              cache_size=params.cache_size_mb, tol=params.tol,
-              shrinking=params.shrinking, gamma=params.gamma)
+    clf = SVC(C=params.C, kernel=params.kernel, cache_size=params.cache_size_mb,
+              tol=params.tol, gamma=params.gamma, probability=params.probability,
+              random_state=43)
 
-    # Time fit and predict
     fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
     params.sv_len = clf.support_.shape[0]
 
-    predict_time, y_pred = bench.measure_function_time(
-        clf.predict, X_train, params=params)
-    train_acc = 100 * accuracy_score(y_pred, y_train)
+    if params.probability:
+        state_predict = 'predict_proba'
+        accuracy_type = 'log_loss'
+        def metric_call(x, y): return bench.log_loss(x, y)
+        clf_predict = clf.predict_proba
+    else:
+        state_predict = 'predict'
+        accuracy_type = 'accuracy[%]'
+        def metric_call(x, y): return bench.accuracy_score(x, y)
+        clf_predict = clf.predict
 
-    y_pred = clf.predict(X_test)
-    test_acc = 100 * accuracy_score(y_pred, y_test)
+    predict_train_time, y_pred = bench.measure_function_time(
+        clf_predict, X_train, params=params)
+    train_acc = metric_call(y_train, y_pred)
+
+    predict_test_time, y_pred = bench.measure_function_time(
+        clf_predict, X_test, params=params)
+    test_acc = metric_call(y_test, y_pred)
 
     bench.print_output(library='sklearn', algorithm='svc',
-                       stages=['training', 'prediction'],
-                       params=params, functions=['SVM.fit', 'SVM.predict'],
-                       times=[fit_time, predict_time], accuracy_type='accuracy[%]',
+                       stages=['training', state_predict],
+                       params=params, functions=['SVM.fit', f'SVM.{state_predict}'],
+                       times=[fit_time, predict_train_time], accuracy_type=accuracy_type,
                        accuracies=[train_acc, test_acc], data=[X_train, X_train],
                        alg_instance=clf)
 
@@ -64,18 +72,16 @@ if __name__ == "__main__":
 
     parser.add_argument('-C', dest='C', type=float, default=1.0,
                         help='SVM regularization parameter')
-    parser.add_argument('--kernel', choices=('linear', 'rbf'),
+    parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
                         default='linear', help='SVM kernel function')
     parser.add_argument('--gamma', type=float, default=None,
                         help='Parameter for kernel="rbf"')
-    parser.add_argument('--maxiter', type=int, default=-1,
-                        help='Maximum iterations for the iterative solver. '
-                        '-1 means no limit.')
     parser.add_argument('--max-cache-size', type=int, default=8,
                         help='Maximum cache size, in gigabytes, for SVM.')
     parser.add_argument('--tol', type=float, default=1e-3,
                         help='Tolerance passed to sklearn.svm.SVC')
-    parser.add_argument('--no-shrinking', action='store_false', default=True,
-                        dest='shrinking', help="Don't use shrinking heuristic")
+    parser.add_argument('--probability', action='store_true', default=False,
+                        dest='probability', help="Use probability for SVC")
+
     params = bench.parse_args(parser, loop_types=('fit', 'predict'))
     bench.run_with_context(params, main)
