@@ -41,7 +41,7 @@ Create a suitable conda environment for each framework to test. Each item in the
 ```bash
 pip install -r sklearn_bench/requirements.txt
 # or
-conda install -c conda-forge scikit-learn scikit-learn-intelex pandas
+conda install -c intel scikit-learn scikit-learn-intelex pandas
 ```
 
 * [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
