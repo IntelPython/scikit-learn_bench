@@ -6,7 +6,7 @@ If you want to test scikit-learn, then use
 ```bash
 pip install -r sklearn_bench/requirements.txt
 # or
-conda install -c conda-forge scikit-learn scikit-learn-intelex pandas
+conda install -c intel scikit-learn scikit-learn-intelex pandas
 ```
 
 ##  Algorithms parameters
