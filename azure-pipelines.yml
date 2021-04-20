@@ -72,11 +72,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-<<<<<<< HEAD
-      versionSpec: '3.8'
-=======
       versionSpec: '$(python.version)'
->>>>>>> 4d6bafcd1503b8d13c4ae885d387cf0c523ef49b
       addToPath: true
   - script: |
       python -m pip install --upgrade pip setuptools

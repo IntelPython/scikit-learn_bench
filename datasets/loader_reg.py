@@ -61,7 +61,7 @@ def abalone(dataset_dir: Path) -> bool:
 
 def mortgage_first_q(dataset_dir: Path) -> bool:
     """
-    Still doesn't have an loading instruction
+    # TODO: add an loading instruction
     """
     return False
 

@@ -26,42 +26,42 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 
 ## Table of content
 
-* [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
-* [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
-* [Benchmark supported algorithms](#benchmark-supported-algorithms)
-* [Intel(R) Extension for Scikit-learn* support](#intelr-extension-for-scikit-learn-support)
-* [Algorithms parameters](#algorithms-parameters)
+- [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
+- [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
+- [Benchmark supported algorithms](#benchmark-supported-algorithms)
+- [Intel(R) Extension for Scikit-learn* support](#intelr-extension-for-scikit-learn-support)
+- [Algorithms parameters](#algorithms-parameters)
 
 ## How to create conda environment for benchmarking
 
 Create a suitable conda environment for each framework to test. Each item in the list below links to instructions to create an appropriate conda environment for the framework.
 
-* [**scikit-learn**](sklearn_bench#how-to-create-conda-environment-for-benchmarking)
+- [**scikit-learn**](sklearn_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 pip install -r sklearn_bench/requirements.txt
 # or
-conda install -c intel scikit-learn scikit-learn-intelex pandas
+conda install -c intel scikit-learn scikit-learn-intelex pandas tqdm
 ```
 
-* [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
+- [**daal4py**](daal4py_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda install -c conda-forge scikit-learn daal4py pandas
+conda install -c conda-forge scikit-learn daal4py pandas tqdm
 ```
 
-* [**cuml**](cuml_bench#how-to-create-conda-environment-for-benchmarking)
+- [**cuml**](cuml_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
-conda install -c rapidsai -c conda-forge cuml pandas cudf
+conda install -c rapidsai -c conda-forge cuml pandas cudf tqdm
 ```
 
-* [**xgboost**](xgboost_bench#how-to-create-conda-environment-for-benchmarking)
+- [**xgboost**](xgboost_bench#how-to-create-conda-environment-for-benchmarking)
 
 ```bash
 pip install -r xgboost_bench/requirements.txt
 # or
-conda install -c conda-forge xgboost pandas
+conda install -c conda-forge xgboost scikit-learn pandas tqdm
 ```
 
 ## Running Python benchmarks with runner script
@@ -69,12 +69,13 @@ conda install -c conda-forge xgboost pandas
 Run `python runner.py --configs configs/config_example.json [--output-file result.json --verbose INFO --report]` to launch benchmarks.
 
 Options:
-* ``--configs``: specify the path to a configuration file.
-* ``--no-intel-optimized``: use Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench). By default, the runner uses Intel(R) Extension for Scikit-learn.
-* ``--output-file``: output file name for the benchmark result. The default name is `result.json`
-* ``--report``: create an Excel report based on benchmark results. The `openpyxl` library is required.
-* ``--dummy-run``: run configuration parser and dataset generation without benchmarks running.
-* ``--verbose``: *WARNING*, *INFO*, *DEBUG*. print additional information during benchmarks running. Default is *INFO*.
+
+- ``--configs``: specify the path to a configuration file.
+- ``--no-intel-optimized``: use Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench). By default, the runner uses Intel(R) Extension for Scikit-learn.
+- ``--output-file``: output file name for the benchmark result. The default name is `result.json`
+- ``--report``: create an Excel report based on benchmark results. The `openpyxl` library is required.
+- ``--dummy-run``: run configuration parser and dataset generation without benchmarks running.
+- ``--verbose``: *WARNING*, *INFO*, *DEBUG*. print additional information during benchmarks running. Default is *INFO*.
 
 |   Level   |  Description  |
 |-----------|---------------|
@@ -83,10 +84,11 @@ Options:
 | *WARNING* | An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected. |
 
 Benchmarks currently support the following frameworks:
-* **scikit-learn**
-* **daal4py**
-* **cuml**
-* **xgboost**
+
+- **scikit-learn**
+- **daal4py**
+- **cuml**
+- **xgboost**
 
 The configuration of benchmarks allows you to select the frameworks to run, select datasets for measurements and configure the parameters of the algorithms.
 
@@ -116,27 +118,32 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
 The following benchmarks have a GPU support:
-* dbscan
-* kmeans
-* linear
-* log_reg
+
+- dbscan
+- kmeans
+- linear
+- log_reg
 
 You may use the [configuration file for these benchmarks](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json) to run them on both CPU and GPU.
 
-##  Algorithms parameters
+## Algorithms parameters
 
 You can launch benchmarks for each algorithm separately.
 To do this, go to the directory with the benchmark:
 
-    cd <framework>
+```bash
+cd <framework>
+```
 
 Run the following command:
 
-    python <benchmark_file> --dataset-name <path to the dataset> <other algorithm parameters>
+```bash
+python <benchmark_file> --dataset-name <path to the dataset> <other algorithm parameters>
+```
 
 The list of supported parameters for each algorithm you can find here:
 
-* [**scikit-learn**](sklearn_bench#algorithms-parameters)
-* [**daal4py**](daal4py_bench#algorithms-parameters)
-* [**cuml**](cuml_bench#algorithms-parameters)
-* [**xgboost**](xgboost_bench#algorithms-parameters)
+- [**scikit-learn**](sklearn_bench#algorithms-parameters)
+- [**daal4py**](daal4py_bench#algorithms-parameters)
+- [**cuml**](cuml_bench#algorithms-parameters)
+- [**xgboost**](xgboost_bench#algorithms-parameters)

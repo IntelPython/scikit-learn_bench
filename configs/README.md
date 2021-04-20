@@ -1,4 +1,4 @@
-## Config JSON Schema
+# Config JSON Schema
 
 Configure benchmarks by editing the `config.json` file.
 You can configure some algorithm parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
@@ -11,13 +11,14 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 - [Training Object](#training-object)
 - [Testing Object](#testing-object)
 
-### Root Config Object
+## Root Config Object
+
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
 |common| [Common Object](#common-object)| **REQUIRED** common benchmarks setting: frameworks and input data settings |
 |cases| List[[Case Object](#case-object)] | **REQUIRED**  list of algorithms, their parameters and training data |
 
-### Common Object
+## Common Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
@@ -27,7 +28,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |check-finitness| List[] | Check finiteness in sklearn input check(disabled by default) |
 |device| array[string] | For scikit-learn only. The list of devices to run the benchmarks on.<br/>It can be *None* (default, run on CPU without sycl context) or one of the types of sycl devices: *cpu*, *gpu*, *host*.<br/>Refer to [SYCL specification](https://www.khronos.org/files/sycl/sycl-2020-reference-guide.pdf) for details|
 
-### Case Object
+## Case Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
@@ -36,9 +37,9 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |dataset| List[[Dataset Object](#dataset-object)] | **REQUIRED**  input data specifications. |
 |**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | other specific algorithm parameters. The list of supported parameters can be found here |
 
-#### **Important:** feel free to move any parameter from **cases** to **common** section since this parameter is common for all cases
+### **Important:** feel free to move any parameter from **cases** to **common** section since this parameter is common for all cases
 
-### Dataset Object
+## Dataset Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
@@ -51,7 +52,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |training| [Training Object](#training-object) | **REQUIRED** An object with training dataset paths |
 |testing| [Testing Object](#testing-object) | An object with testing dataset paths. If not provided, training datasets are used |
 
-### Training Object
+## Training Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
@@ -59,7 +60,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 | x | str | **REQUIRED** The path to the training samples |
 | y | str | **REQUIRED** The path to the training labels |
 
-### Testing Object
+## Testing Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
