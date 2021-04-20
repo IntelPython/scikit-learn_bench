@@ -137,10 +137,9 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | C | float | 0.01 | SVM slack parameter |
 | kernel | str | linear | *linear* or *rbf*. SVM kernel function |
 | gamma | float | None | Parameter for kernel="rbf" |
-| maxiter | int | 2000 | Maximum iterations for the iterative solver |
 | max-cache-size | int | 64 | Maximum cache size for SVM. |
 | tol | float | 1e-16 | Tolerance passed to sklearn.svm.SVC |
-| no-shrinking | action | True | Don't use shrinking heuristic |
+| probability | action | True | Use probability for SVC |
 
 #### train_test_split
 

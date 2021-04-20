@@ -25,6 +25,7 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |data-order| Union[str, List[str]] | **REQUIRED**  input data order. Data order: *C* (row-major, default) or *F* (column-major) |
 |dtype| Union[str, List[str]] | **REQUIRED**  input data type. Data type: *float64* (default) or *float32* |
 |check-finitness| List[] | Check finiteness in sklearn input check(disabled by default) |
+|device| array[string] | For scikit-learn only. The list of devices to run the benchmarks on.<br/>It can be *None* (default, run on CPU without sycl context) or one of the types of sycl devices: *cpu*, *gpu*, *host*.<br/>Refer to [SYCL specification](https://www.khronos.org/files/sycl/sycl-2020-reference-guide.pdf) for details|
 
 ### Case Object
 

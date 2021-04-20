@@ -1,29 +1,30 @@
+variables:
+  - name: python.version
+    value: '3.8'
+
 jobs:
 - job: Linux_Sklearn
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python $(python.version)'
+    inputs:
+      versionSpec: '$(python.version)'
   - script: |
-      conda update -y -q conda
-      export FORCE_DAAL4PY_SKLEARN=yes
-      conda create -q -y -n bench -c conda-forge python=3.7 pandas scikit-learn scikit-learn-intelex tqdm
-    displayName: Create Anaconda environment
-  - script: |
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate bench
+      pip install -r sklearn_bench/requirements.txt
       python runner.py --configs configs/testing/sklearn.json
     displayName: Run bench
 - job: Linux_XGBoost
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python $(python.version)'
+    inputs:
+      versionSpec: '$(python.version)'
   - script: |
-      conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn tqdm
-    displayName: Create Anaconda environment
-  - script: |
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate bench
+      pip install -r xgboost_bench/requirements.txt
       python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
     displayName: Run bench
 - job: Linux_daal4py
@@ -58,7 +59,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.7'
+      versionSpec: '$(python.version)'
       addToPath: true
   - script: |
       python -m pip install --upgrade pip setuptools
@@ -71,7 +72,11 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
+<<<<<<< HEAD
       versionSpec: '3.8'
+=======
+      versionSpec: '$(python.version)'
+>>>>>>> 4d6bafcd1503b8d13c4ae885d387cf0c523ef49b
       addToPath: true
   - script: |
       python -m pip install --upgrade pip setuptools
