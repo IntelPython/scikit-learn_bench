@@ -124,14 +124,14 @@ def get_hw_parameters():
         try:
             lsgpu_info, _ = read_output_from_command(
                 'lscl --device-type=gpu --platform-vendor=Intel')
-            platform_num = 0
-            start_idx = lsgpu_info.find('Platform ')
+            device_num = 0
+            start_idx = lsgpu_info.find('Device ')
             while start_idx >= 0:
                 start_idx = lsgpu_info.find(':', start_idx) + 1
-                end_idx = lsgpu_info.find('Platform ', start_idx)
+                end_idx = lsgpu_info.find('Device ', start_idx)
                 platform_info = parse_lscpu_lscl_info(lsgpu_info[start_idx:end_idx])
-                hw_params.update({f'GPU Intel platform {platform_num + 1}': platform_info})
-                platform_num += 1
+                hw_params.update({f'GPU Intel #{device_num + 1}': platform_info})
+                device_num += 1
                 start_idx = end_idx
         except (FileNotFoundError, json.JSONDecodeError):
             pass
