@@ -95,22 +95,23 @@ def get_omp_env():
     return omp_env
 
 
+def parse_lscpu_lscl_info(command_output):
+    command_output = command_output.strip().split('\n')
+    for i in range(len(command_output)):
+        command_output[i] = command_output[i].split(':')
+    return {line[0].strip(): line[1].strip() for line in command_output}
+
+
 def get_hw_parameters():
     hw_params = {}
 
     if 'Linux' in platform.platform():
         # get CPU information
         lscpu_info, _ = read_output_from_command('lscpu')
-        # remove excess spaces in CPU info output
-        while '  ' in lscpu_info:
-            lscpu_info = lscpu_info.replace('  ', ' ')
-        lscpu_info = lscpu_info.split('\n')
-        for i in range(len(lscpu_info)):
-            lscpu_info[i] = lscpu_info[i].split(': ')
-        hw_params.update(
-            {'CPU': {line[0]: line[1] for line in lscpu_info}})
+        hw_params.update({'CPU': parse_lscpu_lscl_info(lscpu_info)})
         if 'CPU MHz' in hw_params['CPU'].keys():
             del hw_params['CPU']['CPU MHz']
+
         # get RAM size
         mem_info, _ = read_output_from_command('free -b')
         mem_info = mem_info.split('\n')[1]
@@ -118,14 +119,31 @@ def get_hw_parameters():
             mem_info = mem_info.replace('  ', ' ')
         mem_info = int(mem_info.split(' ')[1]) / 2 ** 30
         hw_params.update({'RAM size[GB]': mem_info})
-        # get GPU information
+
+        # get Intel GPU information
+        try:
+            lsgpu_info, _ = read_output_from_command(
+                'lscl --device-type=gpu --platform-vendor=Intel')
+            device_num = 0
+            start_idx = lsgpu_info.find('Device ')
+            while start_idx >= 0:
+                start_idx = lsgpu_info.find(':', start_idx) + 1
+                end_idx = lsgpu_info.find('Device ', start_idx)
+                platform_info = parse_lscpu_lscl_info(lsgpu_info[start_idx:end_idx])
+                hw_params.update({f'GPU Intel #{device_num + 1}': platform_info})
+                device_num += 1
+                start_idx = end_idx
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+
+        # get Nvidia GPU information
         try:
             gpu_info, _ = read_output_from_command(
                 'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
                 '--format=csv,noheader')
             gpu_info = gpu_info.split(', ')
             hw_params.update({
-                'GPU': {
+                'GPU Nvidia': {
                     'Name': gpu_info[0],
                     'Memory size': gpu_info[1],
                     'Performance mode': gpu_info[3]
