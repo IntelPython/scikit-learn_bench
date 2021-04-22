@@ -94,11 +94,13 @@ def get_omp_env():
     }
     return omp_env
 
+
 def parse_lscpu_lscl_info(command_output):
-    command_output = command_output.split('\n')
+    command_output = command_output.strip().split('\n')
     for i in range(len(command_output)):
         command_output[i] = command_output[i].split(':')
     return {line[0].strip(): line[1].strip() for line in command_output}
+
 
 def get_hw_parameters():
     hw_params = {}
@@ -120,8 +122,17 @@ def get_hw_parameters():
 
         # get Intel GPU information
         try:
-            lsgpu_info, _ = read_output_from_command('lscl --device-type=gpu --platform-vendor=Intel')
-            hw_params.update({'GPU Intel': parse_lscpu_lscl_info(lsgpu_info)})
+            lsgpu_info, _ = read_output_from_command(
+                'lscl --device-type=gpu --platform-vendor=Intel')
+            platform_num = 0
+            start_idx = lsgpu_info.find('Platform ')
+            while start_idx >= 0:
+                start_idx = lsgpu_info.find(':', start_idx) + 1
+                end_idx = lsgpu_info.find('Platform ', start_idx)
+                platform_info = parse_lscpu_lscl_info(lsgpu_info[start_idx:end_idx])
+                hw_params.update({f'GPU Intel platform {platform_num + 1}': platform_info})
+                platform_num += 1
+                start_idx = end_idx
         except (FileNotFoundError, json.JSONDecodeError):
             pass
 
