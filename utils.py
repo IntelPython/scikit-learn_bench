@@ -15,6 +15,7 @@
 # ===============================================================================
 
 import json
+import logging
 import os
 import pathlib
 import platform
@@ -67,7 +68,7 @@ def read_output_from_command(command: str,
     return res.stdout[:-1], res.stderr[:-1]
 
 
-def get_hw_parameters() -> Dict[str, Union[Dict[str, str], float]]:
+def get_hw_parameters() -> Union[bool, Dict[Any, Any]]:
     if 'Linux' not in platform.platform():
         return {}
 
@@ -89,19 +90,19 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, str], float]]:
 
     # get GPU information
     try:
-        gpu_info, _ = read_output_from_command(
-            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
-            '--format=csv,noheader')
-        info_arr = gpu_info.split(', ')
-        hw_params['GPU'] = {
-            'Name': info_arr[0],
-            'Memory size': info_arr[1],
-            'Performance mode': info_arr[3]
-        }
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
-
-    return hw_params
+        nfo, _ = read_output_from_command('lscpu')
+        cpu_info = nfo.split('\n')
+        for el in cpu_info:
+            if 'Thread(s) per core' in el:
+                threads_per_core = int(el[-1])
+                if threads_per_core > 1:
+                    return True
+                else:
+                    return False
+        return False
+    except FileNotFoundError:
+        logging.info('Impossible to check hyperthreading via lscpu')
+        return False
 
 
 def get_sw_parameters() -> Dict[str, Dict[str, Any]]:

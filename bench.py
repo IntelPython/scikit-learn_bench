@@ -465,6 +465,7 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
         'library': library,
         'algorithm': algorithm,
         'stage': stage,
+        'device': params.device,
         'input_data': {
             'data_format': params.data_format,
             'data_order': params.data_order,
