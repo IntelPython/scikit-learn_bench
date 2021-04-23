@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import json
-import logging
 import os
 import pathlib
 import platform
@@ -68,6 +67,14 @@ def read_output_from_command(command: str,
     return res.stdout[:-1], res.stderr[:-1]
 
 
+def parse_lscpu_lscl_info(command_output: str) -> Dict[str, str]:
+    res: Dict[str, str] = {}
+    for elem in command_output.strip().split('\n'):
+        splt = elem.split(':')
+        res[splt[0]] = splt[1]
+    return res
+
+
 def get_hw_parameters() -> Union[bool, Dict[Any, Any]]:
     if 'Linux' not in platform.platform():
         return {}
@@ -88,21 +95,36 @@ def get_hw_parameters() -> Union[bool, Dict[Any, Any]]:
     mem_info = ' '.join(mem_info.split())
     hw_params['RAM size[GB]'] = int(mem_info.split(' ')[1]) / 2 ** 30
 
-    # get GPU information
+    # get Intel GPU information
     try:
-        nfo, _ = read_output_from_command('lscpu')
-        cpu_info = nfo.split('\n')
-        for el in cpu_info:
-            if 'Thread(s) per core' in el:
-                threads_per_core = int(el[-1])
-                if threads_per_core > 1:
-                    return True
-                else:
-                    return False
-        return False
-    except FileNotFoundError:
-        logging.info('Impossible to check hyperthreading via lscpu')
-        return False
+        lsgpu_info, _ = read_output_from_command(
+            'lscl --device-type=gpu --platform-vendor=Intel')
+        device_num = 0
+        start_idx = lsgpu_info.find('Device ')
+        while start_idx >= 0:
+            start_idx = lsgpu_info.find(':', start_idx) + 1
+            end_idx = lsgpu_info.find('Device ', start_idx)
+            hw_params[f'GPU Intel #{device_num + 1}'] = parse_lscpu_lscl_info(
+                lsgpu_info[start_idx: end_idx])
+            device_num += 1
+            start_idx = end_idx
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+
+    # get Nvidia GPU information
+    try:
+        gpu_info, _ = read_output_from_command(
+            'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
+            '--format=csv,noheader')
+        gpu_info_arr = gpu_info.split(', ')
+        hw_params['GPU Nvidia'] = {
+            'Name': gpu_info_arr[0],
+            'Memory size': gpu_info_arr[1],
+            'Performance mode': gpu_info_arr[3]
+        }
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return hw_params
 
 
 def get_sw_parameters() -> Dict[str, Dict[str, Any]]:
