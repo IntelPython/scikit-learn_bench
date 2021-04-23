@@ -405,7 +405,7 @@ def gisette(dataset_dir: Path) -> bool:
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
+        np.save(os.path.join(dataset_dir, filename), data.to_numpy())
     logging.info('dataset gisette is ready.')
     return True
 

@@ -75,7 +75,7 @@ def parse_lscpu_lscl_info(command_output: str) -> Dict[str, str]:
     return res
 
 
-def get_hw_parameters() -> Union[bool, Dict[Any, Any]]:
+def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
     if 'Linux' not in platform.platform():
         return {}
 
