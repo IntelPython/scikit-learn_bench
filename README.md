@@ -73,10 +73,10 @@ Options:
 
 - ``--configs``: specify the path to a configuration file.
 - ``--no-intel-optimized``: use Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench). By default, the runner uses Intel(R) Extension for Scikit-learn.
-- ``--output-file``: output file name for the benchmark result. The default name is `result.json`
+- ``--output-file``: specify the name of the output file for the benchmark result. The default name is `result.json`
 - ``--report``: create an Excel report based on benchmark results. The `openpyxl` library is required.
 - ``--dummy-run``: run configuration parser and dataset generation without benchmarks running.
-- ``--verbose``: *WARNING*, *INFO*, *DEBUG*. print additional information during benchmarks running. Default is *INFO*.
+- ``--verbose``: *WARNING*, *INFO*, *DEBUG*. Print out additional information when the benchmarks are running. The default is *INFO*.
 
 |   Level   |  Description  |
 |-----------|---------------|

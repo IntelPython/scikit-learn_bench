@@ -22,20 +22,20 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-|data-format| Union[str, List[str]] | **REQUIRED** input data format. Data formats: *numpy*, *pandas* or *cudf* |
-|data-order| Union[str, List[str]] | **REQUIRED**  input data order. Data order: *C* (row-major, default) or *F* (column-major) |
-|dtype| Union[str, List[str]] | **REQUIRED**  input data type. Data type: *float64* (default) or *float32* |
-|check-finitness| List[] | Check finiteness in sklearn input check(disabled by default) |
-|device| array[string] | For scikit-learn only. The list of devices to run the benchmarks on.<br/>It can be *None* (default, run on CPU without sycl context) or one of the types of sycl devices: *cpu*, *gpu*, *host*.<br/>Refer to [SYCL specification](https://www.khronos.org/files/sycl/sycl-2020-reference-guide.pdf) for details|
+|data-format| Union[str, List[str]] | **REQUIRED** Input data format: *numpy*, *pandas*, or *cudf*. |
+|data-order| Union[str, List[str]] | **REQUIRED**  Input data order: *C* (row-major, default) or *F* (column-major). |
+|dtype| Union[str, List[str]] | **REQUIRED**  Input data type: *float64* (default) or *float32*. |
+|check-finitness| List[] | Check finiteness during scikit-learn input check (disabled by default). |
+|device| array[string] | For scikit-learn only. The list of devices to run the benchmarks on.<br/>It can be *None* (default, run on CPU without sycl context) or one of the types of sycl devices: *cpu*, *gpu*, *host*.<br/>Refer to [SYCL specification](https://www.khronos.org/files/sycl/sycl-2020-reference-guide.pdf) for details.|
 
 ## Case Object
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-|lib| Union[str, List[str]] | **REQUIRED** Test framework or list of frameworks. Must be from [*sklearn*, *daal4py*, *cuml* or *xgboost*] |
-|algorithm| string | **REQUIRED** benchmark file name. |
-|dataset| List[[Dataset Object](#dataset-object)] | **REQUIRED**  input data specifications. |
-|**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | Other specific algorithm parameters |
+|lib| Union[str, List[str]] | **REQUIRED** A test framework or a list of frameworks. Must be from [*sklearn*, *daal4py*, *cuml*, *xgboost*]. |
+|algorithm| string | **REQUIRED** Benchmark file name. |
+|dataset| List[[Dataset Object](#dataset-object)] | **REQUIRED**  Input data specifications. |
+|**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | Other algorithm-specific parameters |
 
 **Important:** You can move any parameter from **"cases"** to **"common"** if this parameter is common to all cases
 
@@ -43,14 +43,14 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 
 | Field Name  | Type | Description |
 | ----- | ---- |------------ |
-|source| string | **REQUIRED** data source. It can be *synthetic*, *csv* or *npy* |
-|type| string | **REQUIRED for synthetic data**. The type of task for which the dataset is generated. It can be *classification*, *blobs* or *regression* |
+|source| string | **REQUIRED** Data source: *synthetic*, *csv*, or *npy*. |
+|type| string | **REQUIRED for synthetic data**. The type of task for which the dataset is generated: *classification*, *blobs*, or *regression*. |
 |n_classes| int | For *synthetic* data and for *classification* type only. The number of classes (or labels) of the classification problem |
 |n_clusters| int | For *synthetic* data and for *blobs* type only. The number of centers to generate |
-|n_features| int | **REQUIRED for *synthetic* data**. The number of features to generate |
-|name| string | Name of the dataset |
-|training| [Training Object](#training-object) | **REQUIRED** An object with training dataset paths |
-|testing| [Testing Object](#testing-object) | An object with testing dataset paths. If not provided, training datasets are used |
+|n_features| int | **REQUIRED for *synthetic* data**. The number of features to generate. |
+|name| string | Name of the dataset. |
+|training| [Training Object](#training-object) | **REQUIRED** An object with the paths to the training datasets. |
+|testing| [Testing Object](#testing-object) | An object with the paths to the testing datasets. If not provided, the training datasets are used. |
 
 ## Training Object
 
