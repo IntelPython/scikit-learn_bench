@@ -35,9 +35,9 @@ Refer to the tables below for descriptions of all fields in the configuration fi
 |lib| Union[str, List[str]] | **REQUIRED** Test framework or list of frameworks. Must be from [*sklearn*, *daal4py*, *cuml* or *xgboost*] |
 |algorithm| string | **REQUIRED** benchmark file name. |
 |dataset| List[[Dataset Object](#dataset-object)] | **REQUIRED**  input data specifications. |
-|**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | other specific algorithm parameters. The list of supported parameters can be found here |
+|**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | Other specific algorithm parameters |
 
-### **Important:** feel free to move any parameter from **cases** to **common** section since this parameter is common for all cases
+**Important:** You can move any parameter from **"cases"** to **"common"** if this parameter is common to all cases
 
 ## Dataset Object
 

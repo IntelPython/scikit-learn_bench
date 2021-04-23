@@ -65,7 +65,7 @@ parser.add_argument('--min-split-loss', '--gamma', type=float, default=0,
                     help='Minimum loss reduction required to make'
                          ' partition on a leaf node')
 parser.add_argument('--n-estimators', type=int, default=100,
-                    help='Number of gradient boosted trees')
+                    help='The number of gradient boosted trees')
 parser.add_argument('--objective', type=str, required=True,
                     choices=('reg:squarederror', 'binary:logistic',
                              'multi:softmax', 'multi:softprob'),
