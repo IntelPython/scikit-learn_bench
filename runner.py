@@ -20,6 +20,7 @@ import logging
 import os
 import socket
 import sys
+from typing import Any, Dict, List, Union
 
 import datasets.make_datasets as make_datasets
 import utils
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     # make directory for data if it doesn't exist
     os.makedirs('data', exist_ok=True)
 
-    json_result = {
+    json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
         'software': utils.get_sw_parameters(),
         'results': []
@@ -190,7 +191,8 @@ if __name__ == '__main__':
                                 stderr += f'CASE {case} EXTRA OUTPUT:\n' \
                                     + f'{extra_stdout}\n'
                             try:
-                                json_result['results'] = json.loads(stdout)
+                                if isinstance(json_result['results'], list):
+                                    json_result['results'].extend(json.loads(stdout))
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'

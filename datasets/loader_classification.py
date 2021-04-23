@@ -16,6 +16,7 @@
 
 import logging
 import os
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -50,17 +51,15 @@ def a_nine_a(dataset_dir: Path) -> bool:
 
     y[y == -1] = 0
 
-    logging.info('a9a dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=11)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -152,7 +151,7 @@ def airline_ohe(dataset_dir: Path) -> bool:
     categorical_names = ["Month", "DayofMonth",
                          "DayOfWeek", "UniqueCarrier", "Origin", "Dest"]
 
-    for local_url in [local_url_train, local_url_train]:
+    for local_url in [local_url_train, local_url_test]:
         df = pd.read_csv(local_url, nrows=1000000
                          if local_url.endswith('train-10m.csv') else None)
         X = df.drop('dep_delayed_15min', 1)
@@ -197,9 +196,9 @@ def bosch(dataset_dir: Path) -> bool:
 
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')
-        os.system(
-            "kaggle competitions download -c bosch-production-line-performance -f " +
-            filename + " -p " + str(dataset_dir))
+        args = ["kaggle", "competitions", "download", "-c",
+                "bosch-production-line-performance", "-f", filename, "-p", str(dataset_dir)]
+        _ = subprocess.check_output(args)
     logging.info(f'{dataset_name} is loaded, started parsing...')
     X = pd.read_csv(local_url, index_col=0, compression='zip', dtype=np.float32)
     y = X.iloc[:, -1].to_numpy(dtype=np.float32)
@@ -214,6 +213,13 @@ def bosch(dataset_dir: Path) -> bool:
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
+
+
+def census(dataset_dir: Path) -> bool:
+    """
+    # TODO: add an loading instruction
+    """
+    return False
 
 
 def codrnanorm(dataset_dir: Path) -> bool:
@@ -237,17 +243,15 @@ def codrnanorm(dataset_dir: Path) -> bool:
     X = pd.DataFrame(X.todense())
     y = pd.DataFrame(y)
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -303,7 +307,7 @@ def fraud(dataset_dir: Path) -> bool:
     Contains missing values as NaN.
 
     TaskType:binclass
-    NumberOfFeatures:30
+    NumberOfFeatures:28
     NumberOfInstances:285K
     """
     dataset_name = 'fraud'
@@ -314,8 +318,9 @@ def fraud(dataset_dir: Path) -> bool:
 
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')
-        os.system("kaggle datasets download mlg-ulb/creditcardfraud -f" +
-                  filename + " -p " + str(dataset_dir))
+        args = ["kaggle", "datasets", "download", "mlg-ulb/creditcardfraud", "-f",
+                filename, "-p", str(dataset_dir)]
+        _ = subprocess.check_output(args)
     logging.info(f'{dataset_name} is loaded, started parsing...')
 
     df = pd.read_csv(local_url + ".zip", dtype=np.float32)
@@ -372,8 +377,7 @@ def gisette(dataset_dir: Path) -> bool:
     if not os.path.exists(filename_test_labels):
         retrieve(gisette_test_labels_url, filename_test_labels)
 
-    logging.info('gisette dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     num_cols = 5000
 
@@ -400,11 +404,9 @@ def gisette(dataset_dir: Path) -> bool:
 
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-
-    logging.info('dataset gisette ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info('dataset gisette is ready.')
     return True
 
 
@@ -508,17 +510,15 @@ def ijcnn(dataset_dir: Path) -> bool:
 
     y[y == -1] = 0
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -533,10 +533,10 @@ def klaverjas(dataset_dir: Path) -> bool:
 
     Task Information:
     Classification task. n_classes = 2.
-    klaverjas X train dataset (196045, 3)
-    klaverjas y train dataset (196045, 1)
-    klaverjas X test dataset  (49012,  3)
-    klaverjas y test dataset  (49012,  1)
+    klaverjas X train dataset (196308, 32)
+    klaverjas y train dataset (196308, 1)
+    klaverjas X test dataset  (785233, 32)
+    klaverjas y test dataset  (785233, 1)
     """
     dataset_name = 'klaverjas'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -545,17 +545,15 @@ def klaverjas(dataset_dir: Path) -> bool:
                         as_frame=True, data_home=dataset_dir)
 
     y = y.cat.codes
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, train_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -588,15 +586,13 @@ def skin_segmentation(dataset_dir: Path) -> bool:
     y = y.astype(int)
     y[y == 2] = 0
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True

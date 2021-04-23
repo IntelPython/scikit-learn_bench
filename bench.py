@@ -419,7 +419,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
         # load and convert data from npy/csv file if path is specified
         if param_vars[file_arg] is not None:
             if param_vars[file_arg].name.endswith('.npy'):
-                data = np.load(param_vars[file_arg].name)
+                data = np.load(param_vars[file_arg].name, allow_pickle=True)
             else:
                 data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(

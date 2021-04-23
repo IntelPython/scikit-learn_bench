@@ -68,12 +68,12 @@
         {
             "dataset": [
                 {
-                    "source":   "csv",
+                    "source":   "npy",
                     "name":     "mortgage1Q",
                     "training":
                     {
-                        "x":    "data/mortgage_x.csv",
-                        "y":    "data/mortgage_y.csv"
+                        "x":    "data/mortgage1Q_x_train.npy",
+                        "y":    "data/mortgage1Q_y_train.npy"
                     }
                 }
             ],
@@ -92,16 +92,11 @@
             "dataset": [
                 {
                     "source":   "npy",
-                    "name":     "msrank",
+                    "name":     "mlsr",
                     "training":
                     {
-                        "x":    "data/msrank_x_train.npy",
-                        "y":    "data/msrank_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x":    "data/msrank_x_test.npy",
-                        "y":    "data/msrank_y_test.npy"
+                        "x":    "data/mlsr_x_train.npy",
+                        "y":    "data/mlsr_y_train.npy"
                     }
                 }
             ],

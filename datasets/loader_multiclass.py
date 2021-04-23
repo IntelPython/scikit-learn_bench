@@ -35,10 +35,10 @@ def connect(dataset_dir: Path) -> bool:
     http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass.htm
 
     Classification task. n_classes = 3.
-    connect X train dataset (196045, 127)
-    connect y train dataset (196045, 1)
-    connect X test dataset  (49012,  127)
-    connect y test dataset  (49012,  1)
+    connect X train dataset (60801, 126)
+    connect y train dataset (60801, 1)
+    connect X test dataset  (6756,  126)
+    connect y test dataset  (6756,  1)
     """
     dataset_name = 'connect'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -49,17 +49,15 @@ def connect(dataset_dir: Path) -> bool:
     y = pd.DataFrame(y)
     y = y.astype(int)
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.1, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -83,17 +81,15 @@ def covertype(dataset_dir: Path) -> bool:
                         as_frame=True, data_home=dataset_dir)
     y = y.astype(int)
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42)
+        X, y, test_size=0.4, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -159,6 +155,13 @@ def letters(dataset_dir: Path) -> bool:
     return True
 
 
+def mlsr(dataset: Path) -> bool:
+    """
+    # TODO: add an loading instruction
+    """
+    return False
+
+
 def mnist(dataset_dir: Path) -> bool:
     """
     Abstract:
@@ -184,17 +187,15 @@ def mnist(dataset_dir: Path) -> bool:
     y = y.astype(int)
     X = X / 255
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=10000, shuffle=False)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
@@ -202,9 +203,9 @@ def msrank(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
 
-    TaskType:binclass
-    NumberOfFeatures:700
-    NumberOfInstances:10100000
+    TaskType:multiclass
+    NumberOfFeatures:137
+    NumberOfInstances:1.2M
     """
     dataset_name = 'msrank'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -262,11 +263,11 @@ def sensit(dataset_dir: Path) -> bool:
     Author: M. Duarte, Y. H. Hu
     Source: [original](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets)
 
-    Classification task. n_classes = 2.
-    sensit X train dataset (196045, 3)
-    sensit y train dataset (196045, 1)
-    sensit X test dataset  (49012,  3)
-    sensit y test dataset  (49012,  1)
+    Multiclass classification task
+    sensit X train dataset (78822, 100)
+    sensit y train dataset (78822, 1)
+    sensit X test dataset  (19706, 100)
+    sensit y test dataset  (19706, 1)
     """
     dataset_name = 'sensit'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -277,15 +278,13 @@ def sensit(dataset_dir: Path) -> bool:
     y = pd.DataFrame(y)
     y = y.astype(int)
 
-    logging.info(f'{dataset_name} dataset is downloaded')
-    logging.info('reading CSV file...')
+    logging.info(f'{dataset_name} is loaded, started parsing...')
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.csv'
-        data.to_csv(os.path.join(dataset_dir, filename),
-                    header=False, index=False)
-    logging.info(f'dataset {dataset_name} ready.')
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
     return True

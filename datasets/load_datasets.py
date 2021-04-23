@@ -21,11 +21,12 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict
 
-from .loader_classification import (
-    a_nine_a, airline, airline_ohe, bosch, codrnanorm, epsilon, fraud, gisette,
-    higgs, higgs_one_m, ijcnn, klaverjas, santander, skin_segmentation)
-from .loader_multiclass import (connect, covertype, covtype, letters, mnist,
-                                msrank, plasticc, sensit)
+from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
+                                    census, codrnanorm, epsilon, fraud,
+                                    gisette, higgs, higgs_one_m, ijcnn,
+                                    klaverjas, santander, skin_segmentation)
+from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
+                                mnist, msrank, plasticc, sensit)
 from .loader_regression import abalone, mortgage_first_q, year_prediction_msd
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
@@ -34,6 +35,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "airline": airline,
     "airline-ohe": airline_ohe,
     "bosch": bosch,
+    "census": census,
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covertype": covertype,
@@ -46,6 +48,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "ijcnn": ijcnn,
     "klaverjas": klaverjas,
     "letters": letters,
+    "mlsr": mlsr,
     "mnist": mnist,
     "mortgage1Q": mortgage_first_q,
     "msrank": msrank,
