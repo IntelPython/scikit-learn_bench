@@ -133,8 +133,8 @@ else:
     else:
         params.n_classes = len(np.unique(y_train))
 
-    # BE VERY CAREFUL ON IT!! It should only work for COVTYPE DATASET
-    if params.objective.startswith('multi:softmax'):
+    # Covtype has one class more than there is in train
+    if params.dataset_name == 'covtype':
         params.n_classes += 1
 
     if params.n_classes > 2:
