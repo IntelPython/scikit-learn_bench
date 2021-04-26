@@ -494,7 +494,7 @@ def print_output(library, algorithm, stages, params, functions,
         output = []
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
-                                    data[i], alg_instance, alg_params if i == 0 else None)
+                                    data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
             if accuracy_type is not None:
                 result.update({f'{accuracy_type}': accuracies[i]})

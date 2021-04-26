@@ -1,6 +1,6 @@
 
 ## How to create conda environment for benchmarking
-`conda create -n bench -c rapidsai -c conda-forge python=3.7 cuml pandas cudf`
+`conda create -n bench -c rapidsai -c conda-forge python=3.7 scikit-learn cuml pandas cudf tqdm`
 
 ##  Algorithms parameters
 
