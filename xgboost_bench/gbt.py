@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-import os
 
 import bench
 import numpy as np
@@ -34,57 +33,60 @@ def convert_xgb_predictions(y_pred, objective):
     return y_pred
 
 
-parser = argparse.ArgumentParser(description='xgboost gradient boosted trees '
-                                             'benchmark')
+parser = argparse.ArgumentParser(description='xgboost gradient boosted trees benchmark')
 
-parser.add_argument('--n-estimators', type=int, default=100,
-                    help='Number of gradient boosted trees')
-parser.add_argument('--learning-rate', '--eta', type=float, default=0.3,
-                    help='Step size shrinkage used in update '
-                         'to prevents overfitting')
-parser.add_argument('--min-split-loss', '--gamma', type=float, default=0,
-                    help='Minimum loss reduction required to make'
-                         ' partition on a leaf node')
-parser.add_argument('--max-depth', type=int, default=6,
-                    help='Maximum depth of a tree')
-parser.add_argument('--min-child-weight', type=float, default=1,
-                    help='Minimum sum of instance weight needed in a child')
-parser.add_argument('--max-delta-step', type=float, default=0,
-                    help='Maximum delta step we allow each leaf output to be')
-parser.add_argument('--subsample', type=float, default=1,
-                    help='Subsample ratio of the training instances')
+
 parser.add_argument('--colsample-bytree', type=float, default=1,
                     help='Subsample ratio of columns '
                          'when constructing each tree')
-parser.add_argument('--reg-lambda', type=float, default=1,
-                    help='L2 regularization term on weights')
-parser.add_argument('--reg-alpha', type=float, default=0,
-                    help='L1 regularization term on weights')
-parser.add_argument('--tree-method', type=str, required=True,
-                    help='The tree construction algorithm used in XGBoost')
-parser.add_argument('--scale-pos-weight', type=float, default=1,
-                    help='Controls a balance of positive and negative weights')
+parser.add_argument('--count-dmatrix', default=False, action='store_true',
+                    help='Count DMatrix creation in time measurements')
+parser.add_argument('--enable-experimental-json-serialization', default=True,
+                    choices=('True', 'False'), help='Use JSON to store memory snapshots')
 parser.add_argument('--grow-policy', type=str, default='depthwise',
                     help='Controls a way new nodes are added to the tree')
-parser.add_argument('--max-leaves', type=int, default=0,
-                    help='Maximum number of nodes to be added')
+parser.add_argument('--inplace-predict', default=False, action='store_true',
+                    help='Perform inplace_predict instead of default')
+parser.add_argument('--learning-rate', '--eta', type=float, default=0.3,
+                    help='Step size shrinkage used in update '
+                         'to prevents overfitting')
 parser.add_argument('--max-bin', type=int, default=256,
                     help='Maximum number of discrete bins to '
                          'bucket continuous features')
+parser.add_argument('--max-delta-step', type=float, default=0,
+                    help='Maximum delta step we allow each leaf output to be')
+parser.add_argument('--max-depth', type=int, default=6,
+                    help='Maximum depth of a tree')
+parser.add_argument('--max-leaves', type=int, default=0,
+                    help='Maximum number of nodes to be added')
+parser.add_argument('--min-child-weight', type=float, default=1,
+                    help='Minimum sum of instance weight needed in a child')
+parser.add_argument('--min-split-loss', '--gamma', type=float, default=0,
+                    help='Minimum loss reduction required to make'
+                         ' partition on a leaf node')
+parser.add_argument('--n-estimators', type=int, default=100,
+                    help='The number of gradient boosted trees')
 parser.add_argument('--objective', type=str, required=True,
                     choices=('reg:squarederror', 'binary:logistic',
                              'multi:softmax', 'multi:softprob'),
-                    help='Control a balance of positive and negative weights')
-parser.add_argument('--count-dmatrix', default=False, action='store_true',
-                    help='Count DMatrix creation in time measurements')
-parser.add_argument('--inplace-predict', default=False, action='store_true',
-                    help='Perform inplace_predict instead of default')
+                    help='Specifies the learning task')
+parser.add_argument('--reg-alpha', type=float, default=0,
+                    help='L1 regularization term on weights')
+parser.add_argument('--reg-lambda', type=float, default=1,
+                    help='L2 regularization term on weights')
+parser.add_argument('--scale-pos-weight', type=float, default=1,
+                    help='Controls a balance of positive and negative weights')
 parser.add_argument('--single-precision-histogram', default=False, action='store_true',
                     help='Build histograms instead of double precision')
-parser.add_argument('--enable-experimental-json-serialization', default=True,
-                    choices=('True', 'False'), help='Use JSON to store memory snapshots')
+parser.add_argument('--subsample', type=float, default=1,
+                    help='Subsample ratio of the training instances')
+parser.add_argument('--tree-method', type=str, required=True,
+                    help='The tree construction algorithm used in XGBoost')
 
 params = bench.parse_args(parser)
+# Default seed
+if params.seed == 12345:
+    params.seed = 0
 
 # Load and convert data
 X_train, X_test, y_train, y_test = bench.load_data(params)
@@ -119,9 +121,6 @@ xgb_params = {
 if params.threads != -1:
     xgb_params.update({'nthread': params.threads})
 
-if 'OMP_NUM_THREADS' in os.environ.keys():
-    xgb_params['nthread'] = int(os.environ['OMP_NUM_THREADS'])
-
 if params.objective.startswith('reg'):
     task = 'regression'
     metric_name, metric_func = 'rmse', bench.rmse_score
@@ -133,6 +132,11 @@ else:
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
         params.n_classes = len(np.unique(y_train))
+
+    # Covtype has one class more than there is in train
+    if params.dataset_name == 'covtype':
+        params.n_classes += 1
+
     if params.n_classes > 2:
         xgb_params['num_class'] = params.n_classes
 
@@ -170,4 +174,4 @@ bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}'
                    params=params, functions=['gbt.fit', 'gbt.predict'],
                    times=[fit_time, predict_time], accuracy_type=metric_name,
                    accuracies=[train_metric, test_metric], data=[X_train, X_test],
-                   alg_instance=booster)
+                   alg_instance=booster, alg_params=xgb_params)

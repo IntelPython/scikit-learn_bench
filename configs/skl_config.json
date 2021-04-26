@@ -115,31 +115,31 @@
             "dtype": ["float32"],
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "higgs1m",
                     "training":
                     {
-                        "x": "data/higgs1m_x_train.csv",
-                        "y": "data/higgs1m_y_train.csv"
+                        "x": "data/higgs1m_x_train.npy",
+                        "y": "data/higgs1m_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/higgs1m_x_test.csv",
-                        "y": "data/higgs1m_y_test.csv"
+                        "x": "data/higgs1m_x_test.npy",
+                        "y": "data/higgs1m_y_test.npy"
                     }
                 },
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "airline-ohe",
                     "training":
                     {
-                        "x": "data/airline-ohe_x_train.csv",
-                        "y": "data/airline-ohe_y_train.csv"
+                        "x": "data/airline-ohe_x_train.npy",
+                        "y": "data/airline-ohe_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/airline-ohe_x_test.csv",
-                        "y": "data/airline-ohe_y_test.csv"
+                        "x": "data/airline-ohe_x_test.npy",
+                        "y": "data/airline-ohe_y_test.npy"
                     }
                 }
             ],
@@ -238,17 +238,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "ijcnn",
                     "training":
                     {
-                        "x": "data/ijcnn_x_train.csv",
-                        "y": "data/ijcnn_y_train.csv"
+                        "x": "data/ijcnn_x_train.npy",
+                        "y": "data/ijcnn_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/ijcnn_x_test.csv",
-                        "y": "data/ijcnn_y_test.csv"
+                        "x": "data/ijcnn_x_test.npy",
+                        "y": "data/ijcnn_y_test.npy"
                     }
                 }
             ],
@@ -259,17 +259,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "a9a",
                     "training":
                     {
-                        "x": "data/a9a_x_train.csv",
-                        "y": "data/a9a_y_train.csv"
+                        "x": "data/a9a_x_train.npy",
+                        "y": "data/a9a_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/a9a_x_test.csv",
-                        "y": "data/a9a_y_test.csv"
+                        "x": "data/a9a_x_test.npy",
+                        "y": "data/a9a_y_test.npy"
                     }
                 }
             ],
@@ -280,17 +280,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "gisette",
                     "training":
                     {
-                        "x": "data/gisette_x_train.csv",
-                        "y": "data/gisette_y_train.csv"
+                        "x": "data/gisette_x_train.npy",
+                        "y": "data/gisette_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/gisette_x_test.csv",
-                        "y": "data/gisette_y_test.csv"
+                        "x": "data/gisette_x_test.npy",
+                        "y": "data/gisette_y_test.npy"
                     }
                 }
             ],
@@ -301,17 +301,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "klaverjas",
                     "training":
                     {
-                        "x": "data/klaverjas_x_train.csv",
-                        "y": "data/klaverjas_y_train.csv"
+                        "x": "data/klaverjas_x_train.npy",
+                        "y": "data/klaverjas_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/klaverjas_x_test.csv",
-                        "y": "data/klaverjas_y_test.csv"
+                        "x": "data/klaverjas_x_test.npy",
+                        "y": "data/klaverjas_y_test.npy"
                     }
                 }
             ],
@@ -322,17 +322,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "connect4",
+                    "source": "npy",
+                    "name": "connect",
                     "training":
                     {
-                        "x": "data/connect_x_train.csv",
-                        "y": "data/connect_y_train.csv"
+                        "x": "data/connect_x_train.npy",
+                        "y": "data/connect_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/connect_x_test.csv",
-                        "y": "data/connect_y_test.csv"
+                        "x": "data/connect_x_test.npy",
+                        "y": "data/connect_y_test.npy"
                     }
                 }
             ],
@@ -343,17 +343,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "mnist",
                     "training":
                     {
-                        "x": "data/mnist_x_train.csv",
-                        "y": "data/mnist_y_train.csv"
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/mnist_x_test.csv",
-                        "y": "data/mnist_y_test.csv"
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
                     }
                 }
             ],
@@ -364,17 +364,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "sensit",
                     "training":
                     {
-                        "x": "data/sensit_x_train.csv",
-                        "y": "data/sensit_y_train.csv"
+                        "x": "data/sensit_x_train.npy",
+                        "y": "data/sensit_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/sensit_x_test.csv",
-                        "y": "data/sensit_y_test.csv"
+                        "x": "data/sensit_x_test.npy",
+                        "y": "data/sensit_y_test.npy"
                     }
                 }
             ],
@@ -385,17 +385,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "skin_segmentation",
                     "training":
                     {
-                        "x": "data/skin_segmentation_x_train.csv",
-                        "y": "data/skin_segmentation_y_train.csv"
+                        "x": "data/skin_segmentation_x_train.npy",
+                        "y": "data/skin_segmentation_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/skin_segmentation_x_test.csv",
-                        "y": "data/skin_segmentation_y_test.csv"
+                        "x": "data/skin_segmentation_x_test.npy",
+                        "y": "data/skin_segmentation_y_test.npy"
                     }
                 }
             ],
@@ -406,17 +406,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "covertype",
                     "training":
                     {
-                        "x": "data/covertype_x_train.csv",
-                        "y": "data/covertype_y_train.csv"
+                        "x": "data/covertype_x_train.npy",
+                        "y": "data/covertype_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/covertype_x_test.csv",
-                        "y": "data/covertype_y_test.csv"
+                        "x": "data/covertype_x_test.npy",
+                        "y": "data/covertype_y_test.npy"
                     }
                 }
             ],
@@ -427,17 +427,17 @@
             "algorithm": "svm",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "codrnanorm",
                     "training":
                     {
-                        "x": "data/codrnanorm_x_train.csv",
-                        "y": "data/codrnanorm_y_train.csv"
+                        "x": "data/codrnanorm_x_train.npy",
+                        "y": "data/codrnanorm_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/codrnanorm_x_test.csv",
-                        "y": "data/codrnanorm_y_test.csv"
+                        "x": "data/codrnanorm_x_test.npy",
+                        "y": "data/codrnanorm_y_test.npy"
                     }
                 }
             ],
@@ -570,12 +570,12 @@
             "algorithm": "train_test_split",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "census",
                     "training":
                     {
-                        "x": "data/census_x.csv",
-                        "y": "data/census_y.csv"
+                        "x": "data/census_x_train.npy",
+                        "y": "data/census_y_train.npy"
                     }
                 }
             ],
@@ -589,12 +589,12 @@
             "algorithm": "lasso",
             "dataset": [
                 {
-                    "source": "csv",
-                    "name": "mortgage",
+                    "source":   "npy",
+                    "name":     "mortgage1Q",
                     "training":
                     {
-                        "x": "data/mortgage_x.csv",
-                        "y": "data/mortgage_y.csv"
+                        "x":    "data/mortgage1Q_x_train.npy",
+                        "y":    "data/mortgage1Q_y_train.npy"
                     }
                 }
             ],
@@ -605,17 +605,17 @@
             "algorithm": "elasticnet",
             "dataset": [
                 {
-                    "source": "csv",
+                    "source": "npy",
                     "name": "year_prediction_msd",
                     "training":
                     {
-                        "x": "data/year_prediction_msd_x_train.csv",
-                        "y": "data/year_prediction_msd_y_train.csv"
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/year_prediction_msd_x_test.csv",
-                        "y": "data/year_prediction_msd_y_test.csv"
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
                     }
                 }
             ],

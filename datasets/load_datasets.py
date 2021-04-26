@@ -18,26 +18,50 @@ import argparse
 import logging
 import os
 import sys
+from pathlib import Path
+from typing import Callable, Dict
 
-from .loader import (a9a, codrnanorm, connect, covertype, gisette, ijcnn,
-                     klaverjas, mnist, sensit, skin_segmentation)
+from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
+                                    census, codrnanorm, epsilon, fraud,
+                                    gisette, higgs, higgs_one_m, ijcnn,
+                                    klaverjas, santander, skin_segmentation)
+from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
+                                mnist, msrank, plasticc, sensit)
+from .loader_regression import abalone, mortgage_first_q, year_prediction_msd
 
-dataset_loaders = {
-    "a9a": a9a,
-    "gisette": gisette,
-    "ijcnn": ijcnn,
-    "skin_segmentation": skin_segmentation,
-    "klaverjas": klaverjas,
-    "connect": connect,
-    "mnist": mnist,
-    "sensit": sensit,
-    "covertype": covertype,
+dataset_loaders: Dict[str, Callable[[Path], bool]] = {
+    "a9a": a_nine_a,
+    "abalone": abalone,
+    "airline": airline,
+    "airline-ohe": airline_ohe,
+    "bosch": bosch,
+    "census": census,
     "codrnanorm": codrnanorm,
+    "connect": connect,
+    "covertype": covertype,
+    "covtype": covtype,
+    "epsilon": epsilon,
+    "fraud": fraud,
+    "gisette": gisette,
+    "higgs": higgs,
+    "higgs1m": higgs_one_m,
+    "ijcnn": ijcnn,
+    "klaverjas": klaverjas,
+    "letters": letters,
+    "mlsr": mlsr,
+    "mnist": mnist,
+    "mortgage1Q": mortgage_first_q,
+    "msrank": msrank,
+    "plasticc": plasticc,
+    "santander": santander,
+    "sensit": sensit,
+    "skin_segmentation": skin_segmentation,
+    "year_prediction_msd": year_prediction_msd,
 }
 
 
-def try_load_dataset(dataset_name, output_directory):
-    if dataset_name in dataset_loaders.keys():
+def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
+    if dataset_name in dataset_loaders:
         try:
             return dataset_loaders[dataset_name](output_directory)
         except BaseException as ex:
@@ -60,11 +84,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.list:
-        for key in dataset_loaders.keys():
+        for key in dataset_loaders:
             print(key)
         sys.exit(0)
 
-    root_dir = os.environ['DATASETSROOT']
+    root_dir = Path(os.environ['DATASETSROOT'])
 
     if args.datasets is not None:
         for val in dataset_loaders.values():

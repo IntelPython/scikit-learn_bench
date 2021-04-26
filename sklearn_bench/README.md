@@ -1,15 +1,14 @@
-
-## How to create conda environment for benchmarking
+# How to create conda environment for benchmarking
 
 If you want to test scikit-learn, then use
 
 ```bash
 pip install -r sklearn_bench/requirements.txt
 # or
-conda install -c intel scikit-learn scikit-learn-intelex pandas
+conda install -c intel scikit-learn scikit-learn-intelex pandas tqdm
 ```
 
-##  Algorithms parameters
+## Algorithms parameters
 
 You can launch benchmarks for each algorithm separately. The tables below list all supported parameters for each algorithm:
 
@@ -27,7 +26,8 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 - [SVC](#svc)
 - [train_test_split](#train_test_split)
 
-#### General
+### General
+
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 |num-threads|int|-1| The number of threads to use|
@@ -50,14 +50,14 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 |seed|int|12345|Seed to pass as random_state|
 |dataset-name|str|None|Dataset name|
 
+### DBSCAN
 
-#### DBSCAN
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | epsilon | float | 10 | Radius of neighborhood of a point|
 | min_samples | int | 5 | The minimum number of samples required in a 'neighborhood to consider a point a core point |
 
-#### RandomForestClassifier
+### RandomForestClassifier
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -70,7 +70,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | min-impurity-decrease | float | 0 | Needed impurity decrease for node splitting |
 | no-bootstrap | store_false | True | Don't control bootstraping |
 
-#### RandomForestRegressor
+### RandomForestRegressor
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -84,13 +84,13 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | no-bootstrap | action | True | Don't control bootstraping |
 | use-sklearn-class | action |  | Force use of sklearn.ensemble.RandomForestClassifier |
 
-#### pairwise_distances
+### pairwise_distances
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | metric | str | cosine | *cosine* or *correlation* Metric to test for pairwise distances |
 
-#### KMeans
+### KMeans
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -99,7 +99,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | maxiter | inte | 100 | Maximum number of iterations |
 | n-clusters | int |  | The number of clusters |
 
-#### KNeighborsClassifier
+### KNeighborsClassifier
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -108,13 +108,13 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | method | str | brute | Algorithm used to compute the nearest neighbors |
 | metric | str | euclidean | Distance metric to use |
 
-#### LinearRegression
+### LinearRegression
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | no-fit-intercept | action | True | Don't fit intercept (assume data already centered) |
 
-#### LogisticRegression
+### LogisticRegression
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -125,7 +125,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | C | float | 1.0 | Regularization parameter |
 | tol | float | None | Tolerance for solver |
 
-#### PCA
+### PCA
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -133,7 +133,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | n-components | int | None | The number of components to find |
 | whiten | action | False | Perform whitening |
 
-#### Ridge
+### Ridge
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -141,7 +141,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | solver | str | auto | Solver used for training |
 | alpha | float | 1.0 | Regularization strength |
 
-#### SVC
+### SVC
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
@@ -152,7 +152,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | tol | float | 1e-16 | Tolerance passed to sklearn.svm.SVC |
 | probability | action | True | Use probability for SVC |
 
-#### train_test_split
+### train_test_split
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |

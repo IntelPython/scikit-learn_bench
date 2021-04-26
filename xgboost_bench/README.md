@@ -1,16 +1,17 @@
-## How to create conda environment for benchmarking
+# How to create conda environment for benchmarking
 
 ```bash
 pip install -r xgboost_bench/requirements.txt
 # or
-conda install -c conda-forge xgboost pandas
+conda install -c intel scikit-learn scikit-learn-intelex pandas tqdm
 ```
 
-##  Algorithms parameters
+## Algorithms parameters
 
 You can launch benchmarks for each algorithm separately. The table below lists all supported parameters for each algorithm.
 
-#### General
+### General
+
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 |num-threads|int|-1| The number of threads to use|
@@ -33,7 +34,7 @@ You can launch benchmarks for each algorithm separately. The table below lists a
 |seed|int|12345|Seed to pass as random_state|
 |dataset-name|str|None|Dataset name|
 
-#### GradientBoostingTrees
+### GradientBoostingTrees
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |

@@ -16,6 +16,7 @@
 
 import argparse
 import json
+import logging
 import sys
 import timeit
 
@@ -200,15 +201,16 @@ def parse_args(parser, size=None, loop_types=(),
             from sklearnex import patch_sklearn
             patch_sklearn()
         except ImportError:
-            print('Failed to import sklearnex.patch_sklearn.'
-                  'Use stock version scikit-learn', file=sys.stderr)
+            logging.info('Failed to import sklearnex.patch_sklearn.'
+                         'Use stock version scikit-learn', file=sys.stderr)
             params.device = 'None'
     else:
         if params.device != 'None':
-            print('Device context is not supported for stock scikit-learn.'
-                  'Please use --no-intel-optimized=False with'
-                  f'--device={params.device} parameter. Fallback to --device=None.',
-                  file=sys.stderr)
+            logging.info(
+                'Device context is not supported for stock scikit-learn.'
+                'Please use --no-intel-optimized=False with'
+                f'--device={params.device} parameter. Fallback to --device=None.',
+                file=sys.stderr)
             params.device = 'None'
 
     # disable finiteness check (default)
@@ -218,7 +220,7 @@ def parse_args(parser, size=None, loop_types=(),
     # Ask DAAL what it thinks about this number of threads
     num_threads = prepare_daal_threads(num_threads=params.threads)
     if params.verbose:
-        print(f'@ DAAL gave us {num_threads} threads')
+        logging.info(f'@ DAAL gave us {num_threads} threads')
 
     n_jobs = None
     if n_jobs_supported:
@@ -234,7 +236,7 @@ def parse_args(parser, size=None, loop_types=(),
 
     # Very verbose output
     if params.verbose:
-        print(f'@ params = {params.__dict__}')
+        logging.info(f'@ params = {params.__dict__}')
 
     return params
 
@@ -249,8 +251,8 @@ def set_daal_num_threads(num_threads):
         if num_threads:
             daal4py.daalinit(nthreads=num_threads)
     except ImportError:
-        print('@ Package "daal4py" was not found. Number of threads '
-              'is being ignored')
+        logging.info('@ Package "daal4py" was not found. Number of threads '
+                     'is being ignored')
 
 
 def prepare_daal_threads(num_threads=-1):
@@ -417,7 +419,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
         # load and convert data from npy/csv file if path is specified
         if param_vars[file_arg] is not None:
             if param_vars[file_arg].name.endswith('.npy'):
-                data = np.load(param_vars[file_arg].name)
+                data = np.load(param_vars[file_arg].name, allow_pickle=True)
             else:
                 data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(

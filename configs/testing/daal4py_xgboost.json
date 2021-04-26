@@ -1,20 +1,21 @@
 {
-    "omp_env": ["OMP_NUM_THREADS", "OMP_PLACES"],
     "common": {
-        "lib": ["modelbuilders"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float32"]
+        "lib":          "modelbuilders",
+        "data-format":  "pandas",
+        "data-order":   "F",
+        "dtype":        "float32",
+        "algorithm":    "xgb_mb",
+        "tree-method":  "hist",
+        "count-dmatrix":""
     },
     "cases": [
         {
-            "algorithm": "xgb_mb",
             "dataset": [
                 {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 5,
-                    "n_features": 10,
+                    "source":       "synthetic",
+                    "type":         "classification",
+                    "n_classes":    5,
+                    "n_features":   10,
                     "training": {
                         "n_samples": 100
                     },
@@ -23,10 +24,9 @@
                     }
                 }
             ],
-            "n-estimators": [10],
-            "tree-method": ["hist"],
-            "objective": ["multi:softprob"],
-            "max-depth": [8]
+            "n-estimators": 10,
+            "max-depth":    8,
+            "objective":    "multi:softprob"
         }
     ]
 }
