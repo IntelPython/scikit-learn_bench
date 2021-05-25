@@ -176,7 +176,7 @@ LEFT_OFFSET = len(gen_config['align'])
 
 stages_splitter = {
     'training': ['training', 'computation'],
-    'inference': ['prediction', 'transformation', 'search']
+    'inference': ['prediction', 'transformation', 'search', 'predict_proba']
 }
 
 for stage_key in stages_splitter.keys():
