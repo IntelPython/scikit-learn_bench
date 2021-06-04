@@ -23,8 +23,8 @@ def main():
     from sklearn.linear_model import Ridge
 
     # Load data
-    X_train, X_test, y_train, y_test = bench.load_data(params,
-                                                       generated_data=['X_train', 'y_train'])
+    X_train, X_test, y_train, y_test = bench.load_data(
+        params, generated_data=['X_train', 'y_train'])
 
     # Create our regression object
     regr = Ridge(fit_intercept=params.fit_intercept, alpha=params.alpha,

@@ -29,8 +29,8 @@ def main():
                                           n_jobs=params.n_jobs, params=params)
 
     bench.print_output(library='sklearn', algorithm='distances', stages=['computation'],
-                       params=params, functions=[params.metric.capitalize()], times=[time],
-                       accuracy_type=None, accuracies=[None], data=[X],
+                       params=params, functions=[params.metric.capitalize()],
+                       times=[time], accuracy_type=None, accuracies=[None], data=[X],
                        alg_params={'metric': params.metric})
 
 

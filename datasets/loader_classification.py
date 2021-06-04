@@ -197,7 +197,8 @@ def bosch(dataset_dir: Path) -> bool:
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')
         args = ["kaggle", "competitions", "download", "-c",
-                "bosch-production-line-performance", "-f", filename, "-p", str(dataset_dir)]
+                "bosch-production-line-performance", "-f", filename, "-p",
+                str(dataset_dir)]
         _ = subprocess.check_output(args)
     logging.info(f'{dataset_name} is loaded, started parsing...')
     X = pd.read_csv(local_url, index_col=0, compression='zip', dtype=np.float32)
@@ -386,7 +387,8 @@ def gisette(dataset_dir: Path) -> bool:
     num_train = 6000
     x_train_arr = df_train.iloc[:num_train].values
     x_train = pd.DataFrame(np.array([np.fromstring(
-        elem[0], dtype=int, count=num_cols, sep=' ') for elem in x_train_arr]))  # type: ignore
+        elem[0], dtype=int, count=num_cols, sep=' ')
+        for elem in x_train_arr]))  # type: ignore
     y_train_arr = df_labels.iloc[:num_train].values
     y_train = pd.DataFrame((y_train_arr > 0).astype(int))
 
@@ -466,10 +468,11 @@ def higgs_one_m(dataset_dir: Path) -> bool:
 
     nrows_train, nrows_test, dtype = 1000000, 500000, np.float32
     data: Any = pd.read_csv(local_url, delimiter=",", header=None,
-                            compression="gzip", dtype=dtype, nrows=nrows_train+nrows_test)
+                            compression="gzip", dtype=dtype,
+                            nrows=nrows_train + nrows_test)
 
-    data = data[list(data.columns[1:])+list(data.columns[0:1])]
-    n_features = data.shape[1]-1
+    data = data[list(data.columns[1:]) + list(data.columns[0:1])]
+    n_features = data.shape[1] - 1
     train_data = np.ascontiguousarray(data.values[:nrows_train, :n_features], dtype=dtype)
     train_label = np.ascontiguousarray(data.values[:nrows_train, n_features], dtype=dtype)
     test_data = np.ascontiguousarray(

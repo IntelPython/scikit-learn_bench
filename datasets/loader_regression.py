@@ -49,7 +49,8 @@ def abalone(dataset_dir: Path) -> bool:
     X = abalone.iloc[:, :-1].values
     y = abalone.iloc[:, -1].values
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+                                                        random_state=0)
 
     for data, name in zip((X_train, X_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
@@ -78,8 +79,8 @@ def year_prediction_msd(dataset_dir: Path) -> bool:
     dataset_name = 'year_prediction_msd'
     os.makedirs(dataset_dir, exist_ok=True)
 
-    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00203/YearPredictionMSD.txt' \
-          '.zip'
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00203/' \
+          'YearPredictionMSD.txt.zip'
     local_url = os.path.join(dataset_dir, os.path.basename(url))
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')

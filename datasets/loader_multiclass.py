@@ -145,7 +145,8 @@ def letters(dataset_dir: Path) -> bool:
     y: Any = letters.iloc[:, 0]
     y = y.astype('category').cat.codes.values
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+                                                        random_state=0)
 
     for data, name in zip((X_train, X_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):

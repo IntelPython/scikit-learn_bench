@@ -36,7 +36,8 @@ def main():
                                     n_jobs=params.n_jobs)
 
     # Measure time and accuracy on fitting
-    train_time, _ = bench.measure_function_time(knn_clsf.fit, X_train, y_train, params=params)
+    train_time, _ = bench.measure_function_time(
+        knn_clsf.fit, X_train, y_train, params=params)
     if params.task == 'classification':
         y_pred = knn_clsf.predict(X_train)
         train_acc = 100 * accuracy_score(y_pred, y_train)
