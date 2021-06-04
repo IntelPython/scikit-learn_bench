@@ -185,7 +185,7 @@ possible_metrics = {'accuracy', 'accuracy[%]', 'rmse',
 for stage_key in stages_splitter.keys():
     ws = wb.create_sheet(title=f'Results ({stage_key})')
 
-    for i, col in enumerate(gen_config['align'] + ['time, s', 'metric']):
+    for i, col in enumerate(gen_config['align'] + ['time, s', 'metric type', 'metric']):
         write_cell(ws, i, HEAD_OFFSET, col)
 
     for i, row in enumerate(gen_config['diff']):
@@ -222,7 +222,8 @@ for stage_key in stages_splitter.keys():
         write_cell(ws, LEFT_OFFSET + x, HEAD_OFFSET + 1 + y, res_entry['time[s]'])
         for metric_type in possible_metrics:
             if metric_type in res_entry:
-                write_cell(ws, LEFT_OFFSET + x + 1, HEAD_OFFSET + 1 + y, res_entry[metric_type])
+                write_cell(ws, LEFT_OFFSET + x + 1, HEAD_OFFSET + 1 + y, metric_type)
+                write_cell(ws, LEFT_OFFSET + x + 2, HEAD_OFFSET + 1 + y, res_entry[metric_type])
                 break
 
 # write configs
