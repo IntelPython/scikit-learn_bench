@@ -24,6 +24,7 @@ def main():
     from sklearn.svm import SVC
 
     X_train, X_test, y_train, y_test = bench.load_data(params)
+    y_train = np.asfortranarray(y_train).ravel()
 
     if params.gamma is None:
         params.gamma = 1.0 / X_train.shape[1]
@@ -46,7 +47,7 @@ def main():
         def metric_call(x, y): return bench.log_loss(x, y)
         clf_predict = clf.predict_proba
     else:
-        state_predict = 'predict'
+        state_predict = 'prediction'
         accuracy_type = 'accuracy[%]'
         def metric_call(x, y): return bench.accuracy_score(x, y)
         clf_predict = clf.predict

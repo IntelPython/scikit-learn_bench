@@ -177,7 +177,7 @@ LEFT_OFFSET = len(gen_config['align'])
 stages_splitter = {
     'training': ['training_preparation', 'training', 'computation'],
     'inference': ['prediction_preparation', 'prediction', 'alternative_prediction',
-                  'transformation', 'search']
+                  'transformation', 'search', 'predict_proba']
 }
 possible_metrics = {'accuracy', 'accuracy[%]', 'rmse',
                     'davies_bouldin_score', 'inertia', 'log_loss'}
