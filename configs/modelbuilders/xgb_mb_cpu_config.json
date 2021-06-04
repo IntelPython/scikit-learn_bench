@@ -6,8 +6,7 @@
         "dtype": "float32",
         "algorithm": "xgb_mb",
         "tree-method": "hist",
-        "count-dmatrix": "",
-        "n": 56
+        "count-dmatrix": ""
     },
     "cases": [
         {
