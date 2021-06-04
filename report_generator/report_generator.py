@@ -175,22 +175,24 @@ HEAD_OFFSET = len(gen_config['diff'])
 LEFT_OFFSET = len(gen_config['align'])
 
 stages_splitter = {
-    'training': ['training', 'computation'],
-    'inference': ['prediction', 'transformation', 'search']
+    'training': ['training_preparation', 'training', 'computation'],
+    'inference': ['prediction_preparation', 'prediction', 'alternative_prediction',
+                  'transformation', 'search']
 }
+possible_metrics = {'accuracy', 'accuracy[%]', 'rmse',
+                    'davies_bouldin_score', 'inertia', 'log_loss'}
 
 for stage_key in stages_splitter.keys():
     ws = wb.create_sheet(title=f'Results ({stage_key})')
 
-    for i, col in enumerate(gen_config['align'] + ['time, s']):
+    for i, col in enumerate(gen_config['align'] + ['time, s', 'metric']):
         write_cell(ws, i, HEAD_OFFSET, col)
 
     for i, row in enumerate(gen_config['diff']):
         write_cell(ws, LEFT_OFFSET - 1, i, row)
 
     stage_align_combinations = align_combinations.copy()
-
-    for align_comb in stage_align_combinations:
+    for align_comb in align_combinations:
         if align_comb['stage'] not in stages_splitter[stage_key]:
             stage_align_combinations.remove(align_comb)
 
@@ -218,6 +220,10 @@ for stage_key in stages_splitter.keys():
                 x = j
                 break
         write_cell(ws, LEFT_OFFSET + x, HEAD_OFFSET + 1 + y, res_entry['time[s]'])
+        for metric_type in possible_metrics:
+            if metric_type in res_entry:
+                write_cell(ws, LEFT_OFFSET + x + 1, HEAD_OFFSET + 1 + y, res_entry[metric_type])
+                break
 
 # write configs
 for i, json_res in enumerate(json_results):
