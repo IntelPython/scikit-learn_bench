@@ -155,7 +155,7 @@ if params.inplace_predict:
         return booster.inplace_predict(np.ascontiguousarray(X_test.values,
                                                             dtype=np.float32))
 else:
-    def predict(dmatrix):
+    def predict(dmatrix):  # type: ignore
         if dmatrix is None:
             dmatrix = xgb.DMatrix(X_test, y_test)
         return booster.predict(dmatrix)

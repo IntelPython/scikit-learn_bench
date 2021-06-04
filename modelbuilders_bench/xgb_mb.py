@@ -21,8 +21,6 @@ import daal4py
 import numpy as np
 import xgboost as xgb
 
-import modelbuilders_bench.mb_utils as utils
-
 
 def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
@@ -156,7 +154,7 @@ if params.inplace_predict:
         return booster.inplace_predict(np.ascontiguousarray(X_test.values,
                                                             dtype=np.float32))
 else:
-    def predict(dmatrix):
+    def predict(dmatrix):  # type: ignore
         if dmatrix is None:
             dmatrix = xgb.DMatrix(X_test, y_test)
         return booster.predict(dmatrix)
