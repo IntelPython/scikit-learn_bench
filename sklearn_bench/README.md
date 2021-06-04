@@ -146,7 +146,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
 | C | float | 0.01 | SVM slack parameter |
-| kernel | str | linear | *linear*, *rbf*, or *polynomial*. SVM kernel function |
+| kernel | str | linear | *linear*, *rbf*, or *poly*. SVM kernel function |
 | gamma | float | None | Parameter for kernel="rbf" |
 | max-cache-size | int | 64 | Maximum cache size for SVM. |
 | tol | float | 1e-16 | Tolerance passed to sklearn.svm.SVC |
