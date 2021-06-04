@@ -1,5 +1,5 @@
 # ===============================================================================
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import numpy as np
 
 
 def main():
-    from sklearn.svm import SVC
+    from sklearn.svm import NuSVC
 
     X_train, X_test, y_train, y_test = bench.load_data(params)
     y_train = np.asfortranarray(y_train).ravel()
@@ -34,9 +34,9 @@ def main():
     params.cache_size_mb = cache_size_bytes / 1024**2
     params.n_classes = len(np.unique(y_train))
 
-    clf = SVC(C=params.C, kernel=params.kernel, cache_size=params.cache_size_mb,
-              tol=params.tol, gamma=params.gamma, probability=params.probability,
-              random_state=43)
+    clf = NuSVC(nu=params.nu, kernel=params.kernel, cache_size=params.cache_size_mb,
+                tol=params.tol, gamma=params.gamma, probability=params.probability,
+                random_state=43)
 
     fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
     params.sv_len = clf.support_.shape[0]
@@ -60,29 +60,29 @@ def main():
         clf_predict, X_test, params=params)
     test_acc = metric_call(y_test, y_pred)
 
-    bench.print_output(library='sklearn', algorithm='svc',
+    bench.print_output(library='sklearn', algorithm='nusvc',
                        stages=['training', state_predict],
-                       params=params, functions=['SVM.fit', f'SVM.{state_predict}'],
+                       params=params, functions=['NuSVC.fit', f'NuSVC.{state_predict}'],
                        times=[fit_time, predict_train_time], accuracy_type=accuracy_type,
                        accuracies=[train_acc, test_acc], data=[X_train, X_train],
                        alg_instance=clf)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='scikit-learn SVM benchmark')
+    parser = argparse.ArgumentParser(description='scikit-learn NuSVC benchmark')
 
-    parser.add_argument('-C', dest='C', type=float, default=1.0,
-                        help='SVM regularization parameter')
+    parser.add_argument('--nu', dest='nu', type=float, default=.5,
+                        help='Nu in the nu-SVC model (0 < nu <= 1)')
     parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
-                        default='linear', help='SVM kernel function')
+                        default='linear', help='NuSVC kernel function')
     parser.add_argument('--gamma', type=float, default=None,
                         help='Parameter for kernel="rbf"')
     parser.add_argument('--max-cache-size', type=int, default=8,
-                        help='Maximum cache size, in gigabytes, for SVM.')
+                        help='Maximum cache size, in gigabytes, for NuSVC.')
     parser.add_argument('--tol', type=float, default=1e-3,
-                        help='Tolerance passed to sklearn.svm.SVC')
+                        help='Tolerance passed to sklearn.svm.NuSVC')
     parser.add_argument('--probability', action='store_true', default=False,
-                        dest='probability', help="Use probability for SVC")
+                        dest='probability', help="Use probability for NuSVC")
 
     params = bench.parse_args(parser, loop_types=('fit', 'predict'))
     bench.run_with_context(params, main)

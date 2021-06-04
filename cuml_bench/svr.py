@@ -1,5 +1,5 @@
 # ===============================================================================
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,23 +17,23 @@
 import argparse
 
 import bench
-from cuml.svm import SVC
+from cuml.svm import SVR
 
 
-parser = argparse.ArgumentParser(description='cuML SVM benchmark')
+parser = argparse.ArgumentParser(description='cuML SVR benchmark')
 
 parser.add_argument('-C', dest='C', type=float, default=1.0,
-                    help='SVM regularization parameter')
+                    help='SVR regularization parameter')
+parser.add_argument('--epsilon', dest='epsilon', type=float, default=.1,
+                    help='Epsilon in the epsilon-SVR model')
 parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
-                    default='linear', help='SVM kernel function')
+                    default='linear', help='SVR kernel function')
 parser.add_argument('--gamma', type=float, default=None,
                     help='Parameter for kernel="rbf"')
 parser.add_argument('--max-cache-size', type=int, default=8,
-                    help='Maximum cache size, in gigabytes, for SVM.')
+                    help='Maximum cache size, in gigabytes, for SVR.')
 parser.add_argument('--tol', type=float, default=1e-3,
-                    help='Tolerance passed to sklearn.svm.SVC')
-parser.add_argument('--probability', action='store_true', default=False,
-                    dest='probability', help="Use probability for SVC")
+                    help='Tolerance passed to sklearn.svm.SVR')
 
 params = bench.parse_args(parser)
 
@@ -47,34 +47,22 @@ cache_size_bytes = bench.get_optimal_cache_size(X_train.shape[0],
 params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = y_train[y_train.columns[0]].nunique()
 
-clf = SVC(C=params.C, kernel=params.kernel, cache_size=params.cache_size_mb,
-          tol=params.tol, gamma=params.gamma, probability=params.probability)
+regr = SVR(C=params.C, epsilon=params.epsilon, kernel=params.kernel,
+           cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma)
 
-fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
-
-if params.probability:
-    state_predict = 'predict_proba'
-    accuracy_type = 'log_loss'
-    metric_call = bench.log_loss
-    clf_predict = clf.predict_proba
-else:
-    state_predict = 'prediction'
-    accuracy_type = 'accuracy[%]'
-    metric_call = bench.accuracy_score
-    clf_predict = clf.predict
-
+fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
 predict_train_time, y_pred = bench.measure_function_time(
-    clf_predict, X_train, params=params)
-train_acc = metric_call(y_train, y_pred)
+    regr.predict, X_train, params=params)
+train_rmse = bench.rmse_score(y_train, y_pred)
 
 predict_test_time, y_pred = bench.measure_function_time(
-    clf_predict, X_test, params=params)
-test_acc = metric_call(y_test, y_pred)
+    regr.predict, X_test, params=params)
+test_rmse = bench.rmse_score(y_test, y_pred)
 
-bench.print_output(library='cuml', algorithm='svc',
-                   stages=['training', state_predict], params=params,
-                   functions=['SVM.fit', 'SVM.predict'],
-                   times=[fit_time, predict_train_time], accuracy_type=accuracy_type,
-                   accuracies=[train_acc, test_acc], data=[X_train, X_train],
-                   alg_instance=clf)
+bench.print_output(library='cuml', algorithm='svr',
+                   stages=['training', 'prediction'], params=params,
+                   functions=['SVR.fit', 'SVR.predict'],
+                   times=[fit_time, predict_train_time], accuracy_type='rmse',
+                   accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
+                   alg_instance=regr)
