@@ -14,5 +14,5 @@ data
 *.npy
 
 # Results
-results.json
+results*.json
 *.xlsx
