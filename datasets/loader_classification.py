@@ -387,8 +387,7 @@ def gisette(dataset_dir: Path) -> bool:
     num_train = 6000
     x_train_arr = df_train.iloc[:num_train].values
     x_train = pd.DataFrame(np.array([np.fromstring(
-        elem[0], dtype=int, count=num_cols, sep=' ')
-        for elem in x_train_arr]))  # type: ignore
+        elem[0], dtype=int, count=num_cols, sep=' ') for elem in x_train_arr]))  # type: ignore
     y_train_arr = df_labels.iloc[:num_train].values
     y_train = pd.DataFrame((y_train_arr > 0).astype(int))
 
