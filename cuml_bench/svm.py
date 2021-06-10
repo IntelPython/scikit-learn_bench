@@ -58,12 +58,12 @@ fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=para
 if params.probability:
     state_predict = 'predict_proba'
     accuracy_type = 'log_loss'
-    metric_call = bench.log_loss
+    def metric_call(x, y): return bench.log_loss(x, y)
     clf_predict = clf.predict_proba
 else:
     state_predict = 'prediction'
     accuracy_type = 'accuracy[%]'
-    metric_call = bench.accuracy_score
+    def metric_call(x, y): return 100 * bench.accuracy_score(x, y)
     clf_predict = clf.predict
 
 
