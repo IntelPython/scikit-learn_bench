@@ -44,13 +44,17 @@ def main():
     if params.probability:
         state_predict = 'predict_proba'
         accuracy_type = 'log_loss'
-        def metric_call(x, y): return bench.log_loss(x, y)
         clf_predict = clf.predict_proba
+
+        def metric_call(x, y):
+            return bench.log_loss(x, y)
     else:
         state_predict = 'prediction'
         accuracy_type = 'accuracy[%]'
-        def metric_call(x, y): return bench.accuracy_score(x, y)
         clf_predict = clf.predict
+
+        def metric_call(x, y):
+            return bench.accuracy_score(x, y)
 
     predict_train_time, y_pred = bench.measure_function_time(
         clf_predict, X_train, params=params)
