@@ -22,12 +22,14 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
-                                    census, codrnanorm, epsilon, fraud,
+                                    census, codrnanorm, creditcard, epsilon, fraud,
                                     gisette, higgs, higgs_one_m, ijcnn,
                                     klaverjas, santander, skin_segmentation)
 from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
-from .loader_regression import abalone, mortgage_first_q, year_prediction_msd
+from .loader_regression import (abalone, california_housing, fried,
+                                medical_charges_nominal, mortgage_first_q,
+                                twodplanes, year_prediction_msd, yolanda)
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
@@ -35,13 +37,16 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "airline": airline,
     "airline-ohe": airline_ohe,
     "bosch": bosch,
+    "california_housing": california_housing,
     "census": census,
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covertype": covertype,
     "covtype": covtype,
+    "creditcard": creditcard,
     "epsilon": epsilon,
     "fraud": fraud,
+    "fried": fried,
     "gisette": gisette,
     "higgs": higgs,
     "higgs1m": higgs_one_m,
@@ -49,6 +54,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "klaverjas": klaverjas,
     "letters": letters,
     "mlsr": mlsr,
+    "medical_charges_nominal": medical_charges_nominal,
     "mnist": mnist,
     "mortgage1Q": mortgage_first_q,
     "msrank": msrank,
@@ -56,7 +62,9 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "santander": santander,
     "sensit": sensit,
     "skin_segmentation": skin_segmentation,
+    "twodplanes": twodplanes,
     "year_prediction_msd": year_prediction_msd,
+    "yolanda": yolanda,
 }
 
 

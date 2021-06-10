@@ -35,7 +35,8 @@ def main():
     params.n_classes = len(np.unique(y_train))
 
     regr = SVR(C=params.C, epsilon=params.epsilon, kernel=params.kernel,
-               cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma)
+               cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma,
+               degree=params.degree)
 
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
     params.sv_len = regr.support_.shape[0]
@@ -65,6 +66,8 @@ if __name__ == "__main__":
                         help='Epsilon in the epsilon-SVR model')
     parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
                         default='linear', help='SVR kernel function')
+    parser.add_argument('--degree', type=int, default=3,
+                        help='Degree of the polynomial kernel function')
     parser.add_argument('--gamma', type=float, default=None,
                         help='Parameter for kernel="rbf"')
     parser.add_argument('--max-cache-size', type=int, default=8,

@@ -28,6 +28,8 @@ parser.add_argument('--epsilon', dest='epsilon', type=float, default=.1,
                     help='Epsilon in the epsilon-SVR model')
 parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
                     default='linear', help='SVR kernel function')
+parser.add_argument('--degree', type=int, default=3,
+                    help='Degree of the polynomial kernel function')
 parser.add_argument('--gamma', type=float, default=None,
                     help='Parameter for kernel="rbf"')
 parser.add_argument('--max-cache-size', type=int, default=8,
@@ -48,7 +50,8 @@ params.cache_size_mb = cache_size_bytes / 1024**2
 params.n_classes = y_train[y_train.columns[0]].nunique()
 
 regr = SVR(C=params.C, epsilon=params.epsilon, kernel=params.kernel,
-           cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma)
+           cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma,
+           degree=params.degree)
 
 fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 

@@ -253,28 +253,7 @@
                 }
             ],
             "C": [1000.0],
-            "kernel": ["linear"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "a9a",
-                    "training":
-                    {
-                        "x": "data/a9a_x_train.npy",
-                        "y": "data/a9a_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/a9a_x_test.npy",
-                        "y": "data/a9a_y_test.npy"
-                    }
-                }
-            ],
-            "C": [500.0],
-            "kernel": ["rbf"]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svm",
@@ -295,28 +274,7 @@
                 }
             ],
             "C": [1.5e-3],
-            "kernel": ["linear"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "klaverjas",
-                    "training":
-                    {
-                        "x": "data/klaverjas_x_train.npy",
-                        "y": "data/klaverjas_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/klaverjas_x_test.npy",
-                        "y": "data/klaverjas_y_test.npy"
-                    }
-                }
-            ],
-            "C": [1.0],
-            "kernel": ["rbf"]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svm",
@@ -337,28 +295,7 @@
                 }
             ],
             "C": [100.0],
-            "kernel": ["linear"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "mnist",
-                    "training":
-                    {
-                        "x": "data/mnist_x_train.npy",
-                        "y": "data/mnist_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/mnist_x_test.npy",
-                        "y": "data/mnist_y_test.npy"
-                    }
-                }
-            ],
-            "C": [50.0],
-            "kernel": ["rbf"]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svm",
@@ -379,7 +316,7 @@
                 }
             ],
             "C": [500.0],
-            "kernel": ["linear"]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svm",
@@ -424,7 +361,70 @@
             "kernel": ["rbf"]
         },
         {
-            "algorithm": "svm",
+            "algorithm": "nusvc",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "a9a",
+                    "training":
+                    {
+                        "x": "data/a9a_x_train.npy",
+                        "y": "data/a9a_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/a9a_x_test.npy",
+                        "y": "data/a9a_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.25],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "nusvc",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "klaverjas",
+                    "training":
+                    {
+                        "x": "data/klaverjas_x_train.npy",
+                        "y": "data/klaverjas_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/klaverjas_x_test.npy",
+                        "y": "data/klaverjas_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.7],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "nusvc",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.5],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "nusvc",
             "dataset": [
                 {
                     "source": "npy",
@@ -441,7 +441,158 @@
                     }
                 }
             ],
+            "nu": [0.15],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "nusvc",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "creditcard",
+                    "training":
+                    {
+                        "x": "data/creditcard_x_train.npy",
+                        "y": "data/creditcard_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/creditcard_x_test.npy",
+                        "y": "data/creditcard_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.002],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "california_housing",
+                    "training":
+                    {
+                        "x": "data/california_housing_x_train.npy",
+                        "y": "data/california_housing_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/california_housing_x_test.npy",
+                        "y": "data/california_housing_y_test.npy"
+                    }
+                }
+            ],
             "C": [0.1],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "twodplanes",
+                    "training":
+                    {
+                        "x": "data/twodplanes_x_train.npy",
+                        "y": "data/twodplanes_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/twodplanes_x_test.npy",
+                        "y": "data/twodplanes_y_test.npy"
+                    }
+                }
+            ],
+            "C": [10.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ],
+            "C": [1.0],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "nusvr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "fried",
+                    "training":
+                    {
+                        "x": "data/fried_x_train.npy",
+                        "y": "data/fried_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/fried_x_test.npy",
+                        "y": "data/fried_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.8],
+            "C": [2.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "nusvr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "medical_charges_nominal",
+                    "training":
+                    {
+                        "x": "data/medical_charges_nominal_x_train.npy",
+                        "y": "data/medical_charges_nominal_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/medical_charges_nominal_x_test.npy",
+                        "y": "data/medical_charges_nominal_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.5],
+            "C": [10.0],
+            "kernel": ["poly"],
+            "degree": [2]
+        },
+        {
+            "algorithm": "nusvr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "yolanda",
+                    "training":
+                    {
+                        "x": "data/yolanda_x_train.npy",
+                        "y": "data/yolanda_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/yolanda_x_test.npy",
+                        "y": "data/yolanda_y_test.npy"
+                    }
+                }
+            ],
+            "nu": [0.8],
+            "C": [2.0],
             "kernel": ["rbf"]
         },
         {
