@@ -241,7 +241,7 @@
                 }
             ],
             "C": [1000.0],
-            "kernel": ["poly"]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -262,7 +262,7 @@
                 }
             ],
             "C": [1.5e-3],
-            "kernel": ["poly"]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -283,7 +283,7 @@
                 }
             ],
             "C": [100.0],
-            "kernel": ["poly"]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -304,7 +304,7 @@
                 }
             ],
             "C": [500.0],
-            "kernel": ["poly"]
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -389,27 +389,6 @@
             ],
             "C": [10.0],
             "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "svr",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "year_prediction_msd",
-                    "training":
-                    {
-                        "x": "data/year_prediction_msd_x_train.npy",
-                        "y": "data/year_prediction_msd_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/year_prediction_msd_x_test.npy",
-                        "y": "data/year_prediction_msd_y_test.npy"
-                    }
-                }
-            ],
-            "C": [1.0],
-            "kernel": ["poly"]
         },
         {
             "algorithm": "dbscan",
