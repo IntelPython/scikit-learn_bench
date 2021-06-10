@@ -70,7 +70,7 @@ def fit(X, y):
                                  n_estimators=params.num_trees,
                                  max_depth=params.max_depth,
                                  max_features=params.max_features,
-                                 min_rows_per_node=params.min_samples_split,
+                                 min_samples_split=params.min_samples_split,
                                  max_leaves=params.max_leaf_nodes,
                                  min_impurity_decrease=params.min_impurity_decrease,
                                  bootstrap=params.bootstrap)
