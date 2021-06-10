@@ -145,8 +145,7 @@
                 }
             ],
             "nu": [0.1],
-            "kernel": ["poly"],
-            "degree": [2]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svr",
@@ -167,7 +166,7 @@
             "kernel": ["rbf"]
         },
         {
-            "algorithm": "svr",
+            "algorithm": "nusvr",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -183,7 +182,8 @@
             ],
             "nu": [0.1],
             "C": [1.0],
-            "kernel": ["poly"]
+            "kernel": ["poly"],
+            "degree": [2]
         },
         {
             "algorithm": "dbscan",
