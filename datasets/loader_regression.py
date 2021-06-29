@@ -73,7 +73,7 @@ def california_housing(dataset_dir: Path) -> bool:
 
     X, y = fetch_california_housing(return_X_y=True, as_frame=False,
                                     data_home=dataset_dir)
-    X = pd.DataFrame(X.todense())
+    X = pd.DataFrame(X)
     y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} is loaded, started parsing...')
@@ -100,7 +100,7 @@ def fried(dataset_dir: Path) -> bool:
 
     X, y = fetch_openml(
         name='fried', return_X_y=True, as_frame=False, data_home=dataset_dir)
-    X = pd.DataFrame(X.todense())
+    X = pd.DataFrame(X)
     y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} is loaded, started parsing...')
@@ -127,7 +127,7 @@ def medical_charges_nominal(dataset_dir: Path) -> bool:
 
     X, y = fetch_openml(name='medical_charges_nominal', return_X_y=True,
                         as_frame=False, data_home=dataset_dir)
-    X = pd.DataFrame(X.todense())
+    X = pd.DataFrame(X)
     y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} is loaded, started parsing...')
@@ -161,7 +161,7 @@ def twodplanes(dataset_dir: Path) -> bool:
 
     X, y = fetch_openml(
         name='BNG(2dplanes)', return_X_y=True, as_frame=False, data_home=dataset_dir)
-    X = pd.DataFrame(X.todense())
+    X = pd.DataFrame(X)
     y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} is loaded, started parsing...')
@@ -224,7 +224,7 @@ def yolanda(dataset_dir: Path) -> bool:
 
     X, y = fetch_openml(name='yolanda', return_X_y=True,
                         as_frame=False, data_home=dataset_dir)
-    X = pd.DataFrame(X.todense())
+    X = pd.DataFrame(X)
     y = pd.DataFrame(y)
 
     logging.info(f'{dataset_name} is loaded, started parsing...')
