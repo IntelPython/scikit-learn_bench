@@ -64,7 +64,7 @@ if __name__ == "__main__":
                         help='SVR regularization parameter')
     parser.add_argument('--epsilon', dest='epsilon', type=float, default=.1,
                         help='Epsilon in the epsilon-SVR model')
-    parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
+    parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly', 'sigmoid'),
                         default='linear', help='SVR kernel function')
     parser.add_argument('--degree', type=int, default=3,
                         help='Degree of the polynomial kernel function')

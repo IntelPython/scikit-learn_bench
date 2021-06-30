@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser(description='cuML SVM benchmark')
 
 parser.add_argument('-C', dest='C', type=float, default=1.0,
                     help='SVM regularization parameter')
-parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
+parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly', 'sigmoid'),
                     default='linear', help='SVM kernel function')
 parser.add_argument('--degree', type=int, default=3,
                     help='Degree of the polynomial kernel function')

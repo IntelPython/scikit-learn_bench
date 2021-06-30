@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--nu', dest='nu', type=float, default=.5,
                         help='Nu in the nu-SVC model (0 < nu <= 1)')
-    parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly'),
+    parser.add_argument('--kernel', choices=('linear', 'rbf', 'poly', 'sigmoid'),
                         default='linear', help='NuSVC kernel function')
     parser.add_argument('--degree', type=int, default=3,
                         help='Degree of the polynomial kernel function')

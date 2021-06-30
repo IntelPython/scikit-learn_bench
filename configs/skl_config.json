@@ -379,7 +379,7 @@
                 }
             ],
             "nu": [0.25],
-            "kernel": ["rbf"]
+            "kernel": ["sigmoid"]
         },
         {
             "algorithm": "nusvc",
