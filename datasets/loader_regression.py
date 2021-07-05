@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_openml, fetch_california_housing
+from sklearn.preprocessing import StandardScaler
 
 from .loader_utils import retrieve
 
@@ -80,6 +81,11 @@ def california_housing(dataset_dir: Path) -> bool:
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.1, random_state=42)
+
+    scaler = StandardScaler().fit(x_train, y_train)
+    x_train = scaler.transform(x_train)
+    x_test = scaler.transform(x_test)
+
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
@@ -134,6 +140,15 @@ def medical_charges_nominal(dataset_dir: Path) -> bool:
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
+
+    scaler = StandardScaler().fit(x_train, y_train)
+    x_train = scaler.transform(x_train)
+    x_test = scaler.transform(x_test)
+
+    scaler = StandardScaler().fit(y_train)
+    y_train = scaler.transform(y_train)
+    y_test = scaler.transform(y_test)
+
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
@@ -231,6 +246,11 @@ def yolanda(dataset_dir: Path) -> bool:
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
+
+    scaler = StandardScaler().fit(x_train, y_train)
+    x_train = scaler.transform(x_train)
+    x_test = scaler.transform(x_test)
+
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
