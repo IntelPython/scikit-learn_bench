@@ -118,7 +118,7 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
             '--format=csv,noheader')
         gpu_info_arr = gpu_info.split(', ')
         if len(gpu_info_arr) == 0:
-            return
+            return hw_params
         hw_params['GPU Nvidia'] = {
             'Name': gpu_info_arr[0],
             'Memory size': gpu_info_arr[1],
