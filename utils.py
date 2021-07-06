@@ -117,12 +117,14 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
             'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
             '--format=csv,noheader')
         gpu_info_arr = gpu_info.split(', ')
+        if len(gpu_info_arr) == 0:
+            return
         hw_params['GPU Nvidia'] = {
             'Name': gpu_info_arr[0],
             'Memory size': gpu_info_arr[1],
             'Performance mode': gpu_info_arr[3]
         }
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError, IndexError):
         pass
     return hw_params
 
