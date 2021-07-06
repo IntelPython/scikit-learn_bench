@@ -30,14 +30,12 @@ jobs:
 - job: Linux_daal4py
   pool:
     vmImage: 'ubuntu-20.04'
-  steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python $(python.version)'
+    inputs:
+      versionSpec: '$(python.version)'
   - script: |
-      conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.8 pandas scikit-learn daal4py tqdm
-    displayName: Create Anaconda environment
-  - script: |
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate bench
+      pip install -r daal4py/requirements.txt
       python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
     displayName: Run bench
 - job: Linux_XGBoost_and_daal4py
