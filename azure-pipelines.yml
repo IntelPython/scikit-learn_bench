@@ -33,7 +33,7 @@ jobs:
   steps:
   - script: |
       conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas scikit-learn daal4py tqdm
+      conda create -n bench -q -y -c conda-forge python=3.8 pandas scikit-learn daal4py tqdm
     displayName: Create Anaconda environment
   - script: |
       . /usr/share/miniconda/etc/profile.d/conda.sh
