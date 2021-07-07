@@ -129,6 +129,63 @@
             "kernel": ["linear"]
         },
         {
+            "algorithm": "nusvc",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ],
+            "nu": [0.1],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 200
+                    }
+                }
+            ],
+            "C": [10.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "nusvr",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 200
+                    }
+                }
+            ],
+            "nu": [0.1],
+            "C": [1.0],
+            "kernel": ["poly"],
+            "degree": [2]
+        },
+        {
             "algorithm": "dbscan",
             "dataset": [
                 {

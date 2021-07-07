@@ -197,7 +197,8 @@ def bosch(dataset_dir: Path) -> bool:
     if not os.path.isfile(local_url):
         logging.info(f'Started loading {dataset_name}')
         args = ["kaggle", "competitions", "download", "-c",
-                "bosch-production-line-performance", "-f", filename, "-p", str(dataset_dir)]
+                "bosch-production-line-performance", "-f", filename, "-p",
+                str(dataset_dir)]
         _ = subprocess.check_output(args)
     logging.info(f'{dataset_name} is loaded, started parsing...')
     X = pd.read_csv(local_url, index_col=0, compression='zip', dtype=np.float32)
@@ -247,6 +248,34 @@ def codrnanorm(dataset_dir: Path) -> bool:
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def creditcard(dataset_dir: Path) -> bool:
+    """
+    Classification task. n_classes = 2.
+    creditcard X train dataset (256326, 29)
+    creditcard y train dataset (256326, 1)
+    creditcard X test dataset  (28481,  29)
+    creditcard y test dataset  (28481,  1)
+    """
+    dataset_name = 'creditcard'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    X, y = fetch_openml(name='creditcard', return_X_y=True,
+                        as_frame=False, data_home=dataset_dir)
+    X = pd.DataFrame(X.todense())
+    y = pd.DataFrame(y)
+
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=777)
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
@@ -466,10 +495,11 @@ def higgs_one_m(dataset_dir: Path) -> bool:
 
     nrows_train, nrows_test, dtype = 1000000, 500000, np.float32
     data: Any = pd.read_csv(local_url, delimiter=",", header=None,
-                            compression="gzip", dtype=dtype, nrows=nrows_train+nrows_test)
+                            compression="gzip", dtype=dtype,
+                            nrows=nrows_train + nrows_test)
 
-    data = data[list(data.columns[1:])+list(data.columns[0:1])]
-    n_features = data.shape[1]-1
+    data = data[list(data.columns[1:]) + list(data.columns[0:1])]
+    n_features = data.shape[1] - 1
     train_data = np.ascontiguousarray(data.values[:nrows_train, :n_features], dtype=dtype)
     train_label = np.ascontiguousarray(data.values[:nrows_train, n_features], dtype=dtype)
     test_data = np.ascontiguousarray(

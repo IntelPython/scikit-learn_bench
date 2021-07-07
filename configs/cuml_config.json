@@ -248,27 +248,6 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "a9a",
-                    "training":
-                    {
-                        "x": "data/a9a_x_train.npy",
-                        "y": "data/a9a_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/a9a_x_test.npy",
-                        "y": "data/a9a_y_test.npy"
-                    }
-                }
-            ],
-            "C": [500.0],
-            "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
                     "name": "gisette",
                     "training":
                     {
@@ -290,21 +269,42 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "klaverjas",
+                    "name": "connect",
                     "training":
                     {
-                        "x": "data/klaverjas_x_train.npy",
-                        "y": "data/klaverjas_y_train.npy"
+                        "x": "data/connect_x_train.npy",
+                        "y": "data/connect_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/klaverjas_x_test.npy",
-                        "y": "data/klaverjas_y_test.npy"
+                        "x": "data/connect_x_test.npy",
+                        "y": "data/connect_y_test.npy"
                     }
                 }
             ],
-            "C": [1.0],
-            "kernel": ["rbf"]
+            "C": [100.0],
+            "kernel": ["linear"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "sensit",
+                    "training":
+                    {
+                        "x": "data/sensit_x_train.npy",
+                        "y": "data/sensit_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/sensit_x_test.npy",
+                        "y": "data/sensit_y_test.npy"
+                    }
+                }
+            ],
+            "C": [500.0],
+            "kernel": ["linear"]
         },
         {
             "algorithm": "svm",
@@ -325,6 +325,69 @@
                 }
             ],
             "C": [1.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "svm",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "covertype",
+                    "training":
+                    {
+                        "x": "data/covertype_x_train.npy",
+                        "y": "data/covertype_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/covertype_x_test.npy",
+                        "y": "data/covertype_y_test.npy"
+                    }
+                }
+            ],
+            "C": [100.0],
+            "kernel": ["rbf"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "california_housing",
+                    "training":
+                    {
+                        "x": "data/california_housing_x_train.npy",
+                        "y": "data/california_housing_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/california_housing_x_test.npy",
+                        "y": "data/california_housing_y_test.npy"
+                    }
+                }
+            ],
+            "C": [0.1],
+            "kernel": ["poly"]
+        },
+        {
+            "algorithm": "svr",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "twodplanes",
+                    "training":
+                    {
+                        "x": "data/twodplanes_x_train.npy",
+                        "y": "data/twodplanes_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/twodplanes_x_test.npy",
+                        "y": "data/twodplanes_y_test.npy"
+                    }
+                }
+            ],
+            "C": [10.0],
             "kernel": ["rbf"]
         },
         {
