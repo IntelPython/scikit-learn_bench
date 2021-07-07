@@ -289,90 +289,6 @@
             "kernel": ["rbf"]
         },
         {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "ijcnn",
-                    "training":
-                    {
-                        "x": "data/ijcnn_x_train.npy",
-                        "y": "data/ijcnn_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/ijcnn_x_test.npy",
-                        "y": "data/ijcnn_y_test.npy"
-                    }
-                }
-            ],
-            "C": [1000.0],
-            "kernel": ["linear"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "sensit",
-                    "training":
-                    {
-                        "x": "data/sensit_x_train.npy",
-                        "y": "data/sensit_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/sensit_x_test.npy",
-                        "y": "data/sensit_y_test.npy"
-                    }
-                }
-            ],
-            "C": [500.0],
-            "kernel": ["linear"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "skin_segmentation",
-                    "training":
-                    {
-                        "x": "data/skin_segmentation_x_train.npy",
-                        "y": "data/skin_segmentation_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/skin_segmentation_x_test.npy",
-                        "y": "data/skin_segmentation_y_test.npy"
-                    }
-                }
-            ],
-            "C": [1.0],
-            "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "svm",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "covertype",
-                    "training":
-                    {
-                        "x": "data/covertype_x_train.npy",
-                        "y": "data/covertype_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/covertype_x_test.npy",
-                        "y": "data/covertype_y_test.npy"
-                    }
-                }
-            ],
-            "C": [100.0],
-            "kernel": ["rbf"]
-        },
-        {
             "algorithm": "nusvc",
             "dataset": [
                 {
@@ -392,69 +308,6 @@
             ],
             "nu": [0.25],
             "kernel": ["sigmoid"]
-        },
-        {
-            "algorithm": "nusvc",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "klaverjas",
-                    "training":
-                    {
-                        "x": "data/klaverjas_x_train.npy",
-                        "y": "data/klaverjas_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/klaverjas_x_test.npy",
-                        "y": "data/klaverjas_y_test.npy"
-                    }
-                }
-            ],
-            "nu": [0.7],
-            "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "nusvc",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "mnist",
-                    "training":
-                    {
-                        "x": "data/mnist_x_train.npy",
-                        "y": "data/mnist_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/mnist_x_test.npy",
-                        "y": "data/mnist_y_test.npy"
-                    }
-                }
-            ],
-            "nu": [0.5],
-            "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "nusvc",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "codrnanorm",
-                    "training":
-                    {
-                        "x": "data/codrnanorm_x_train.npy",
-                        "y": "data/codrnanorm_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/codrnanorm_x_test.npy",
-                        "y": "data/codrnanorm_y_test.npy"
-                    }
-                }
-            ],
-            "nu": [0.15],
-            "kernel": ["poly"]
         },
         {
             "algorithm": "svr",
@@ -478,27 +331,6 @@
             "kernel": ["poly"]
         },
         {
-            "algorithm": "svr",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "twodplanes",
-                    "training":
-                    {
-                        "x": "data/twodplanes_x_train.npy",
-                        "y": "data/twodplanes_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/twodplanes_x_test.npy",
-                        "y": "data/twodplanes_y_test.npy"
-                    }
-                }
-            ],
-            "C": [10.0],
-            "kernel": ["rbf"]
-        },
-        {
             "algorithm": "nusvr",
             "dataset": [
                 {
@@ -513,51 +345,6 @@
                     {
                         "x": "data/fried_x_test.npy",
                         "y": "data/fried_y_test.npy"
-                    }
-                }
-            ],
-            "nu": [0.8],
-            "C": [2.0],
-            "kernel": ["rbf"]
-        },
-        {
-            "algorithm": "nusvr",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "medical_charges_nominal",
-                    "training":
-                    {
-                        "x": "data/medical_charges_nominal_x_train.npy",
-                        "y": "data/medical_charges_nominal_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/medical_charges_nominal_x_test.npy",
-                        "y": "data/medical_charges_nominal_y_test.npy"
-                    }
-                }
-            ],
-            "nu": [0.5],
-            "C": [10.0],
-            "kernel": ["poly"],
-            "degree": [2]
-        },
-        {
-            "algorithm": "nusvr",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "yolanda",
-                    "training":
-                    {
-                        "x": "data/yolanda_x_train.npy",
-                        "y": "data/yolanda_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/yolanda_x_test.npy",
-                        "y": "data/yolanda_y_test.npy"
                     }
                 }
             ],
