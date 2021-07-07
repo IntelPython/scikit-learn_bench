@@ -36,7 +36,7 @@ jobs:
     inputs:
       versionSpec: '$(python.version)'
   - script: |
-      pip install -r daal4py/requirements.txt
+      pip install -r daal4py_bench/requirements.txt
       python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
     displayName: Run bench
 - job: Linux_XGBoost_and_daal4py
