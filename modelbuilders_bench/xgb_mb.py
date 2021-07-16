@@ -85,6 +85,9 @@ parser.add_argument('--tree-method', type=str, required=True,
                     help='The tree construction algorithm used in XGBoost')
 
 params = bench.parse_args(parser)
+# Default seed
+if params.seed == 12345:
+    params.seed = 0
 
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
@@ -198,4 +201,5 @@ bench.print_output(
            predict_time_daal],
     accuracy_type=metric_name,
     accuracies=[None, train_metric, None, test_metric, None, test_metric_daal],
-    data=[X_train, X_train, X_test, X_test, X_test, X_test])
+    data=[X_train, X_train, X_test, X_test, X_test, X_test],
+    alg_instance=booster, alg_params=xgb_params)

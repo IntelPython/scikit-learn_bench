@@ -140,8 +140,10 @@ else:
     if params.n_classes > 2:
         xgb_params['num_class'] = params.n_classes
 
-dtrain = xgb.DMatrix(X_train, y_train)
-dtest = xgb.DMatrix(X_test, y_test)
+t_creat_train, dtrain = bench.measure_function_time(xgb.DMatrix, X_train,
+                                                    params=params, label=y_train)
+t_creat_test, dtest = bench.measure_function_time(
+    xgb.DMatrix, X_test, params=params, label=y_test)
 
 
 def fit(dmatrix):
@@ -173,9 +175,12 @@ predict_time, y_pred = bench.measure_function_time(
     predict, None if params.inplace_predict or params.count_dmatrix else dtest, params=params)
 test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
 
-bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
-                   stages=['training', 'prediction'],
-                   params=params, functions=['gbt.fit', 'gbt.predict'],
-                   times=[fit_time, predict_time], accuracy_type=metric_name,
-                   accuracies=[train_metric, test_metric], data=[X_train, X_test],
-                   alg_instance=booster, alg_params=xgb_params)
+bench.print_output(
+    library='xgboost', algorithm=f'xgboost_{task}',
+    stages=['training_preparation', 'training', 'prediction_preparation', 'prediction'],
+    params=params,
+    functions=['xgb.dmatrix.train', 'xgb.train', 'xgb.dmatrix.test', 'xgb.predict'],
+    times=[t_creat_train, fit_time, t_creat_test, predict_time],
+    accuracy_type=metric_name, accuracies=[None, train_metric, None, test_metric],
+    data=[X_train, X_train, X_test, X_test],
+    alg_instance=booster, alg_params=xgb_params)
