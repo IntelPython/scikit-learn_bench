@@ -1,12 +1,11 @@
 {
     "common": {
         "lib": "xgboost",
-        "data-format": "cudf",
+        "data-format": "pandas",
         "data-order": "F",
         "dtype": "float32",
         "algorithm": "gbt",
-        "tree-method": "gpu_hist",
-        "count-dmatrix": ""
+        "tree-method": "gpu_hist"
     },
     "cases": [
         {
