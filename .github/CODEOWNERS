@@ -1,8 +1,9 @@
 #owners and reviewers
-sklearn_bench/*       @PetrovKP @Alexsandruss
-daal4py_bench/*       @PetrovKP @Alexsandruss
 cuml_bench/*          @PetrovKP @Alexsandruss
-datasets/*            @PetrovKP @Alexsandruss
+daal4py_bench/*       @PetrovKP @Alexsandruss
+datasets/*            @PetrovKP @Alexsandruss @RukhovichIV
 modelbuilders_bench/* @ShvetsKS @RukhovichIV
+report_generator/*    @PetrovKP @Alexsandruss @RukhovichIV
+sklearn_bench/*       @PetrovKP @Alexsandruss
 xgboost_bench/*       @ShvetsKS @RukhovichIV
 *.md                  @outoftardis
