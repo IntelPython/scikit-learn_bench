@@ -87,6 +87,7 @@ if __name__ == "__main__":
     parser.add_argument('--algorithm', type=str, default='full',
                         help='K-means algorithm to use')
     parser.add_argument('--n_init', type=int, default=10,
-                        help='Number of time the k-means algorithm will be run with different centroid seeds')
+                        help='Number of time the k-means algorithm '
+                        'will be run with different centroid seeds')
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
