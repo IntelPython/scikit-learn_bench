@@ -49,7 +49,7 @@ def main():
     def fit_kmeans(X, X_init):
         alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
                      max_iter=params.maxiter, init=X_init, n_init=params.n_init,
-                     algorithm=params.algorithm)
+                     algorithm=params.algorithm, random_state=params.random_state)
         alg.fit(X)
         return alg
 
@@ -89,5 +89,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_init', type=int, default=10,
                         help='Number of time the k-means algorithm '
                         'will be run with different centroid seeds')
+    parser.add_argument('--random_state', type=int, default=777,
+                        help='Random state')
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
