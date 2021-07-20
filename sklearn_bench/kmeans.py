@@ -48,7 +48,8 @@ def main():
 
     def fit_kmeans(X, X_init):
         alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
-                     max_iter=params.maxiter, init=X_init, n_init=1)
+                     max_iter=params.maxiter, init=X_init, n_init=params.n_init,
+                     algorithm=params.algorithm)
         alg.fit(X)
         return alg
 
@@ -83,5 +84,9 @@ if __name__ == "__main__":
     parser.add_argument('--maxiter', type=int, default=100,
                         help='Maximum number of iterations')
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
+    parser.add_argument('--algorithm', type=str, default='full',
+                        help='K-means algorithm to use')
+    parser.add_argument('--n_init', type=int, default=10,
+                        help='Number of time the k-means algorithm will be run with different centroid seeds')
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
