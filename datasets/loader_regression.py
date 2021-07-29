@@ -32,9 +32,10 @@ def abalone(dataset_dir: Path) -> bool:
     """
     https://archive.ics.uci.edu/ml/machine-learning-databases/abalone
 
-    TaskType:regression
-    NumberOfFeatures:8
-    NumberOfInstances:4177
+    abalone x train dataset (3341, 8)
+    abalone y train dataset (3341, 1)
+    abalone x test dataset  (836,  8)
+    abalone y train dataset (836,  1)
     """
     dataset_name = 'abalone'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -196,9 +197,10 @@ def year_prediction_msd(dataset_dir: Path) -> bool:
     YearPredictionMSD dataset from UCI repository
     https://archive.ics.uci.edu/ml/datasets/yearpredictionmsd
 
-    TaskType:regression
-    NumberOfFeatures:90
-    NumberOfInstances:515345
+    year_prediction_msd x train dataset (463715, 11)
+    year_prediction_msd y train dataset (463715, 1)
+    year_prediction_msd x test dataset  (51630,  11)
+    year_prediction_msd y train dataset (51630,  1)
     """
     dataset_name = 'year_prediction_msd'
     os.makedirs(dataset_dir, exist_ok=True)

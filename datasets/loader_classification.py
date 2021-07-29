@@ -68,9 +68,11 @@ def airline(dataset_dir: Path) -> bool:
     Airline dataset
     http://kt.ijs.si/elena_ikonomovska/data.html
 
-    TaskType:binclass
-    NumberOfFeatures:13
-    NumberOfInstances:115M
+    Classification task. n_classes = 2.
+    airline X train dataset (92055213, 13)
+    airline y train dataset (92055213, 1)
+    airline X test dataset  (23013804,  13)
+    airline y test dataset  (23013804,  1)
     """
     dataset_name = 'airline'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -126,9 +128,12 @@ def airline(dataset_dir: Path) -> bool:
 def airline_ohe(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
-    TaskType:binclass
-    NumberOfFeatures:700
-    NumberOfInstances:10100000
+    
+    Classification task. n_classes = 2.
+    airline-ohe X train dataset (1000000, 692)
+    airline-ohe y train dataset (1000000, 1)
+    airline-ohe X test dataset  (100000,  692)
+    airline-ohe y test dataset  (100000,  1)
     """
     dataset_name = 'airline-ohe'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -289,9 +294,11 @@ def epsilon(dataset_dir: Path) -> bool:
     Epsilon dataset
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
 
-    TaskType:binclass
-    NumberOfFeatures:2000
-    NumberOfInstances:500K
+    Classification task. n_classes = 2.
+    epsilon X train dataset (400000, 2000)
+    epsilon y train dataset (400000, 1)
+    epsilon X test dataset  (100000,  2000)
+    epsilon y test dataset  (100000,  1)
     """
     dataset_name = 'epsilon'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -444,9 +451,11 @@ def higgs(dataset_dir: Path) -> bool:
     Higgs dataset from UCI machine learning repository
     https://archive.ics.uci.edu/ml/datasets/HIGGS
 
-    TaskType:binclass
-    NumberOfFeatures:28
-    NumberOfInstances:11M
+    Classification task. n_classes = 2.
+    higgs X train dataset (8799999, 28)
+    higgs y train dataset (8799999, 1)
+    higgs X test dataset  (2200000,  28)
+    higgs y test dataset  (2200000,  1)
     """
     dataset_name = 'higgs'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -479,9 +488,11 @@ def higgs_one_m(dataset_dir: Path) -> bool:
 
     Only first 1.5M samples is taken
 
-    TaskType:binclass
-    NumberOfFeatures:28
-    NumberOfInstances:1.5M
+    Classification task. n_classes = 2.
+    higgs1m X train dataset (1000000, 28)
+    higgs1m y train dataset (1000000, 1)
+    higgs1m X test dataset  (500000,  28)
+    higgs1m y test dataset  (500000,  1)
     """
     dataset_name = 'higgs1m'
     os.makedirs(dataset_dir, exist_ok=True)
