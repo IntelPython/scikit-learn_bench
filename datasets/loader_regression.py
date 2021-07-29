@@ -197,9 +197,9 @@ def year_prediction_msd(dataset_dir: Path) -> bool:
     YearPredictionMSD dataset from UCI repository
     https://archive.ics.uci.edu/ml/datasets/yearpredictionmsd
 
-    year_prediction_msd x train dataset (463715, 11)
+    year_prediction_msd x train dataset (463715, 90)
     year_prediction_msd y train dataset (463715, 1)
-    year_prediction_msd x test dataset  (51630,  11)
+    year_prediction_msd x test dataset  (51630,  90)
     year_prediction_msd y train dataset (51630,  1)
     """
     dataset_name = 'year_prediction_msd'

@@ -208,7 +208,7 @@ def msrank(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
 
-    Multiclass classification task
+    Classification task. n_classes = 5.
     msrank X train dataset (958671, 137)
     msrank y train dataset (958671, 1)
     msrank X test dataset  (241521,  137)
@@ -270,7 +270,7 @@ def sensit(dataset_dir: Path) -> bool:
     Author: M. Duarte, Y. H. Hu
     Source: [original](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets)
 
-    Multiclass classification task
+    Classification task. n_classes = 3.
     sensit X train dataset (78822, 100)
     sensit y train dataset (78822, 1)
     sensit X test dataset  (19706, 100)

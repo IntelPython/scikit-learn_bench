@@ -128,7 +128,7 @@ def airline(dataset_dir: Path) -> bool:
 def airline_ohe(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
-    
+
     Classification task. n_classes = 2.
     airline-ohe X train dataset (1000000, 692)
     airline-ohe y train dataset (1000000, 1)
