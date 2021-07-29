@@ -179,7 +179,7 @@ stages_splitter = {
     'inference': ['prediction_preparation', 'prediction', 'alternative_prediction',
                   'transformation', 'search', 'predict_proba']
 }
-possible_metrics = {'accuracy', 'accuracy[%]', 'rmse',
+possible_metrics = {'accuracy', 'accuracy[%]', 'rmse', 'r2',
                     'davies_bouldin_score', 'inertia', 'log_loss'}
 
 for stage_key in stages_splitter.keys():
