@@ -50,7 +50,7 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn DBSCAN benchmark')
-    parser.add_argument('-e', '--eps', '--epsilon', type=float, default=10.,
+    parser.add_argument('-e', '--eps', '--epsilon', type=float, default=0.5,
                         help='Radius of neighborhood of a point')
     parser.add_argument('-m', '--min-samples', default=5, type=int,
                         help='The minimum number of samples required in a '
