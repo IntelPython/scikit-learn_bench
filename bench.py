@@ -33,7 +33,7 @@ def get_dtype(data):
     elif hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
     elif hasattr(data, 'values'):
-        return data.values.dtype    
+        return data.values.dtype
     else:
         raise ValueError(f'Impossible to get data type of {type(data)}')
 
