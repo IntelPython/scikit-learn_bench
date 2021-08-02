@@ -533,7 +533,6 @@ def print_output(library, algorithm, stages, params, functions,
                 if 'handle' in result['algorithm_parameters'].keys():
                     del result['algorithm_parameters']['handle']
             output.append(result)
-        print(output)
         print(json.dumps(output, indent=4))
 
 
