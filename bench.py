@@ -30,9 +30,9 @@ def get_dtype(data):
     '''
     if hasattr(data, 'dtype'):
         return data.dtype
-    elif hasattr(data, 'dtypes'):
+    if hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
-    elif hasattr(data, 'values'):
+    if hasattr(data, 'values'):
         return data.values.dtype
     else:
         raise ValueError(f'Impossible to get data type of {type(data)}')
@@ -66,10 +66,7 @@ def _parse_size(string, dim=2):
 
 
 def float_or_int(string):
-    if '.' in string:
-        return float(string)
-    else:
-        return int(string)
+    return float(string) if '.' in string else int(string)
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
@@ -90,10 +87,8 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     optimal_cache_size_bytes = byte_size * (n_rows ** 2)
     one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
-    if optimal_cache_size_bytes > max_cache_bytes:
-        return max_cache_bytes
-    else:
-        return optimal_cache_size_bytes
+    return max_cache_bytes if optimal_cache_size_bytes > max_cache_bytes \
+        else optimal_cache_size_bytes
 
 
 def parse_args(parser, size=None, loop_types=(),
@@ -324,20 +319,6 @@ def convert_to_numpy(data):
     return data
 
 
-def columnwise_score(y, yp, score_func):
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    if y.ndim + yp.ndim > 2:
-        if 1 in (y.shape + yp.shape)[1:]:
-            if y.ndim > 1:
-                y = y[:, 0]
-            if yp.ndim > 1:
-                yp = yp[:, 0]
-        else:
-            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
-    return score_func(y, yp)
-
-
 def accuracy_score(y, yp):
     from sklearn.metrics import accuracy_score as sklearn_accuracy
     y = convert_to_numpy(y)
@@ -362,7 +343,7 @@ def roc_auc_score(y, yp, multi_class='ovr'):
     yp = convert_to_numpy(yp)
     try:
         res = sklearn_roc_auc(y, yp, multi_class=multi_class)
-    except:
+    except Exception:
         res = -1
     return res
 
@@ -394,14 +375,11 @@ def convert_data(data, dtype, data_order, data_format):
     # Secondly, change format of data
     if data_format == 'numpy':
         return data
-    elif data_format == 'pandas':
+    if data_format == 'pandas':
         import pandas as pd
 
-        if data.ndim == 1:
-            return pd.Series(data)
-        else:
-            return pd.DataFrame(data)
-    elif data_format == 'cudf':
+        return pd.Series(data) if data.ndim == 1 else pd.DataFrame(data)
+    if data_format == 'cudf':
         import cudf
         import pandas as pd
 
@@ -527,9 +505,9 @@ def print_output(library, algorithm, stages, params, functions,
                 if isinstance(accuracy_type, str):
                     result.update({f'{accuracy_type}': accuracies[i]})
                 elif isinstance(accuracy_type, list):
-                    for j in range(len(accuracy_type)):
-                        if accuracies[j][i] is not None:
-                            result.update({f'{accuracy_type[j]}': accuracies[j][i]})
+                    for ind, val in enumerate(accuracy_type):
+                        if accuracies[ind][i] is not None:
+                            result.update({f'{val}': accuracies[ind][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
