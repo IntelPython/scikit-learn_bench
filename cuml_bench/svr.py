@@ -66,6 +66,6 @@ test_rmse = bench.rmse_score(y_test, y_pred)
 bench.print_output(library='cuml', algorithm='svr',
                    stages=['training', 'prediction'], params=params,
                    functions=['SVR.fit', 'SVR.predict'],
-                   times=[fit_time, predict_train_time], accuracy_type='rmse',
-                   accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
+                   times=[fit_time, predict_train_time], metric_type='rmse',
+                   metrics=[train_rmse, test_rmse], data=[X_train, X_train],
                    alg_instance=regr)

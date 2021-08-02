@@ -43,7 +43,7 @@ def main():
 
     bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
                        params=params, functions=['DBSCAN'], times=[time],
-                       accuracies=[acc], accuracy_type='davies_bouldin_score',
+                       metrics=[acc], metric_type='davies_bouldin_score',
                        data=[X], alg_instance=dbscan)
 
 

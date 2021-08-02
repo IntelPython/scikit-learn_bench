@@ -176,6 +176,6 @@ test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_t
 bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
                    stages=['training', 'prediction'],
                    params=params, functions=['gbt.fit', 'gbt.predict'],
-                   times=[fit_time, predict_time], accuracy_type=metric_name,
-                   accuracies=[train_metric, test_metric], data=[X_train, X_test],
+                   times=[fit_time, predict_time], metric_type=metric_name,
+                   metrics=[train_metric, test_metric], data=[X_train, X_test],
                    alg_instance=booster, alg_params=xgb_params)

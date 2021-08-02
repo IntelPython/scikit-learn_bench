@@ -146,6 +146,6 @@ utils.print_output(
     params=params, functions=['lgbm_dataset', 'lgbm_dataset', 'lgbm_train',
                               'lgbm_predict', 'lgbm_to_daal', 'daal_compute'],
     times=[t_creat_train, t_train, t_creat_test, t_lgbm_pred, t_trans, t_daal_pred],
-    accuracy_type=metric_name, accuracies=[train_metric, test_metric_lgbm,
+    metric_type=metric_name, metrics=[train_metric, test_metric_lgbm,
                                            test_metric_daal],
     data=[X_train, X_test, X_test])

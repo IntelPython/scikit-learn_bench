@@ -48,7 +48,7 @@ def main():
         functions=['PCA.fit', 'PCA.transform'],
         times=[fit_time, transform_time],
         accuracy_type='noise_variance',
-        accuracies=[pca.noise_variance_, pca.noise_variance_],
+        metrics=[pca.noise_variance_, pca.noise_variance_],
         data=[X_train, X_test],
         alg_instance=pca,
     )

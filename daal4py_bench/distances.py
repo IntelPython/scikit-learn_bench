@@ -43,5 +43,5 @@ time, _ = bench.measure_function_time(
 
 bench.print_output(library='daal4py', algorithm='distances', stages=['computation'],
                    params=params, functions=[params.metric.capitalize()], times=[time],
-                   accuracy_type=None, accuracies=[None], data=[X],
+                   metric_type=None, metrics=[None], data=[X],
                    alg_params={'metric': params.metric})

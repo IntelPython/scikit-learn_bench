@@ -68,8 +68,8 @@ def main():
         stages=['training', state_predict],
         params=params, functions=['NuSVC.fit', f'NuSVC.{state_predict}'],
         times=[fit_time, predict_train_time],
-        accuracy_type=['accuracy', 'log_loss', 'roc_auc'],
-        accuracies=[
+        metric_type=['accuracy', 'log_loss', 'roc_auc'],
+        metrics=[
             [train_acc, test_acc],
             [train_log_loss, test_log_loss],
             [train_roc_auc, test_roc_auc],

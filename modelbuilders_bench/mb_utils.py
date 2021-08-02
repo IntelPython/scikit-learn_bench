@@ -37,7 +37,7 @@ def get_accuracy(true_labels, prediction):
 
 
 def print_output(library, algorithm, stages, params, functions,
-                 times, accuracy_type, accuracies, data):
+                 times, metric_type, metrics, data):
     if params.output_format == 'json':
         output = []
         output.append({
@@ -67,7 +67,7 @@ def print_output(library, algorithm, stages, params, functions,
             else:
                 result.update({'matrix_creation_time': times[2 * i],
                                'prediction_time': times[2 * i + 1]})
-            if accuracies[i] is not None:
-                result.update({f'{accuracy_type}': accuracies[i]})
+            if metrics[i] is not None:
+                result.update({f'{metric_type}': metrics[i]})
             output.append(result)
         print(json.dumps(output, indent=4))

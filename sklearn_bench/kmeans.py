@@ -73,8 +73,8 @@ def main():
         params=params,
         functions=['KMeans.fit', 'KMeans.predict'],
         times=[fit_time, predict_time],
-        accuracy_type=['davies_bouldin_score', 'inertia'],
-        accuracies=[[acc_train, acc_test], [kmeans.inertia_, kmeans.inertia_]],
+        metric_type=['davies_bouldin_score', 'inertia'],
+        metrics=[[acc_train, acc_test], [kmeans.inertia_, kmeans.inertia_]],
         data=[X_train, X_test],
         alg_instance=kmeans,
     )

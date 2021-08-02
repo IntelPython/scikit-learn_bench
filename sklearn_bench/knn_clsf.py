@@ -62,8 +62,8 @@ def main():
             params=params,
             functions=['knn_clsf.fit', 'knn_clsf.predict'],
             times=[train_time, predict_time],
-            accuracy_type=['accuracy', 'log_loss', 'roc_auc'],
-            accuracies=[
+            metric_type=['accuracy', 'log_loss', 'roc_auc'],
+            metrics=[
                 [train_acc, test_acc],
                 [train_log_loss, test_log_loss],
                 [train_roc_auc, test_roc_auc],
@@ -79,8 +79,8 @@ def main():
             params=params,
             functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
             times=[train_time, predict_time],
-            accuracy_type=None,
-            accuracies=[],
+            metric_type=None,
+            metrics=[],
             data=[X_train, X_test],
             alg_instance=knn_clsf,
         )

@@ -511,7 +511,7 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
 
 
 def print_output(library, algorithm, stages, params, functions,
-                 times, accuracy_type, accuracies, data, alg_instance=None,
+                 times, metric_type, metrics, data, alg_instance=None,
                  alg_params=None):
     if params.output_format == 'json':
         output = []
@@ -519,13 +519,13 @@ def print_output(library, algorithm, stages, params, functions,
             result = gen_basic_dict(library, algorithm, stages[i], params,
                                     data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
-            if accuracy_type is not None:
-                if isinstance(accuracy_type, str):
-                    result.update({f'{accuracy_type}': accuracies[i]})
-                elif isinstance(accuracy_type, list):
-                    for j in range(len(accuracy_type)):
-                        if accuracies[j][i] is not None:
-                            result.update({f'{accuracy_type[j]}': accuracies[j][i]})
+            if metric_type is not None:
+                if isinstance(metric_type, str):
+                    result.update({f'{metric_type}': metrics[i]})
+                elif isinstance(metric_type, list):
+                    for ind, val in enumerate(metric_type):
+                        if metrics[ind][i] is not None:
+                            result.update({f'{val}': metrics[ind][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):

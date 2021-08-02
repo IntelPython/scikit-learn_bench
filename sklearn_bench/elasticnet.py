@@ -49,8 +49,8 @@ def main():
         params=params,
         functions=['ElasticNet.fit', 'ElasticNet.predict'],
         times=[fit_time, predict_time],
-        accuracy_type=['rmse', 'r2_score'],
-        accuracies=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        metric_type=['rmse', 'r2_score'],
+        metrics=[[train_rmse, test_rmse], [train_r2, test_r2]],
         data=[X_train, X_train],
         alg_instance=regr,
     )

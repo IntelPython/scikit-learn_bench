@@ -126,5 +126,5 @@ if __name__ == '__main__':
     bench.print_output(library='daal4py', algorithm='decision_forest_classification',
                        stages=['training', 'prediction'], params=params,
                        functions=['df_clsf.fit', 'df_clsf.predict'],
-                       times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                       accuracies=[train_acc, test_acc], data=[X_train, X_test])
+                       times=[fit_time, predict_time], metric_type='accuracy[%]',
+                       metrics=[train_acc, test_acc], data=[X_train, X_test])
