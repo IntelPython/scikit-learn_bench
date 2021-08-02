@@ -352,14 +352,14 @@ def rmse_score(y, yp):
     from sklearn.metrics import mean_squared_error as sklearn_mse
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    return sklearn_mse(y, yp) 
+    return sklearn_mse(y, yp)
 
 
 def r2_score(y, yp):
     from sklearn.metrics import r2_score as sklearn_r2_score
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    return sklearn_r2_score(y, yp)    
+    return sklearn_r2_score(y, yp)
 
 
 def convert_data(data, dtype, data_order, data_format):

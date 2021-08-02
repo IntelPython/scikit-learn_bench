@@ -34,7 +34,7 @@ def main():
 
     # Time predict
     predict_time, y_pred = bench.measure_function_time(regr.predict,
-                                                           X_train, params=params)
+                                                       X_train, params=params)
 
     train_rmse = bench.rmse_score(y_train, y_pred)
     train_r2 = bench.r2_score(y_train, y_pred)
