@@ -324,11 +324,22 @@ def convert_to_numpy(data):
     return data
 
 
+def columnwise_score(y, yp, score_func):
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    if y.ndim + yp.ndim > 2:
+        if 1 in (y.shape + yp.shape)[1:]:
+            if y.ndim > 1:
+                y = y[:, 0]
+            if yp.ndim > 1:
+                yp = yp[:, 0]
+        else:
+            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
+    return score_func(y, yp)
+
+
 def accuracy_score(y_true, y_pred):
-    from sklearn.metrics import accuracy_score as sklearn_accuracy
-    y_true = convert_to_numpy(y_true)
-    y_pred = convert_to_numpy(y_pred)
-    return sklearn_accuracy(y_true, y_pred)
+    return columnwise_score(y_true, y_pred, lambda y1, y2: np.mean(y1 == y2))
 
 
 def log_loss(y_true, y_pred):
@@ -345,11 +356,9 @@ def roc_auc_score(y_true, y_pred, multi_class='ovr'):
     return sklearn_roc_auc(y_true, y_pred, multi_class=multi_class)
 
 
-def rmse_score(y_true, y_pred, squared=False):
-    from sklearn.metrics import mean_squared_error as sklearn_mse
-    y_true = convert_to_numpy(y_true)
-    y_pred = convert_to_numpy(y_pred)
-    return sklearn_mse(y_true, y_pred, squared=squared)
+def rmse_score(y_true, y_pred):
+    return columnwise_score(
+        y_true, y_pred, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
 
 
 def r2_score(y_true, y_pred):
