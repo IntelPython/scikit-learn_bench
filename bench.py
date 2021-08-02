@@ -324,58 +324,49 @@ def convert_to_numpy(data):
     return data
 
 
-def columnwise_score(y, yp, score_func):
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    if y.ndim + yp.ndim > 2:
-        if 1 in (y.shape + yp.shape)[1:]:
-            if y.ndim > 1:
-                y = y[:, 0]
-            if yp.ndim > 1:
-                yp = yp[:, 0]
-        else:
-            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
-    return score_func(y, yp)
+def accuracy_score(y_true, y_pred):
+    from sklearn.metrics import accuracy_score as sklearn_accuracy
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_accuracy(y_true, y_pred)
 
 
-def accuracy_score(y, yp):
-    return columnwise_score(y, yp, lambda y1, y2: np.mean(y1 == y2))
-
-
-def log_loss(y, yp):
+def log_loss(y_true, y_pred):
     from sklearn.metrics import log_loss as sklearn_log_loss
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_log_loss(y, yp)
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_log_loss(y_true, y_pred)
 
 
-def roc_auc_score(y, yp, multi_class='ovr'):
+def roc_auc_score(y_true, y_pred, multi_class='ovr'):
     from sklearn.metrics import roc_auc_score as sklearn_roc_auc
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_roc_auc(y, yp, multi_class=multi_class)
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_roc_auc(y_true, y_pred, multi_class=multi_class)
 
 
-def rmse_score(y, yp):
-    return columnwise_score(
-        y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
+def rmse_score(y_true, y_pred, squared=False):
+    from sklearn.metrics import mean_squared_error as sklearn_mse
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_mse(y_true, y_pred, squared=squared)
 
 
-def r2_score(y, yp):
+def r2_score(y_true, y_pred):
     from sklearn.metrics import r2_score as sklearn_r2_score
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_r2_score(y, yp)
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_r2_score(y_true, y_pred)
 
 
-def davies_bouldin_score(y, yp):
+def davies_bouldin_score(y_true, y_pred):
     from sklearn.metrics.cluster import davies_bouldin_score as sklearn_dbs
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
     try:
-        res = sklearn_dbs(y, yp)
-    except ValueError:  # Number of labels is 1
-        res = "Error"
+        res = sklearn_dbs(y_true, y_pred)
+    except ValueError:
+        res = "Number of labels is 1"
     return res
 
 
