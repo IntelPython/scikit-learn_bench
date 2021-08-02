@@ -353,6 +353,8 @@ def roc_auc_score(y_true, y_pred, multi_class='ovr'):
     from sklearn.metrics import roc_auc_score as sklearn_roc_auc
     y_true = convert_to_numpy(y_true)
     y_pred = convert_to_numpy(y_pred)
+    if y_pred.shape[1] == 2:  # binary case
+        y_pred = y_pred[:, 1]
     return sklearn_roc_auc(y_true, y_pred, multi_class=multi_class)
 
 
