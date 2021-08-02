@@ -324,7 +324,7 @@ def convert_to_numpy(data):
     return data
 
 
-def columnwise_score(y, yp, score_func, **params):
+def columnwise_score(y, yp, score_func):
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
     if y.ndim + yp.ndim > 2:
@@ -334,8 +334,8 @@ def columnwise_score(y, yp, score_func, **params):
             if yp.ndim > 1:
                 yp = yp[:, 0]
         else:
-            return [score_func(y[i], yp[i], **params) for i in range(y.shape[1])]
-    return score_func(y, yp, **params)
+            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
+    return score_func(y, yp)
 
 
 def accuracy_score(y, yp):
@@ -351,7 +351,9 @@ def log_loss(y, yp):
 
 def roc_auc_score(y, yp, multi_class='ovr'):
     from sklearn.metrics import roc_auc_score as sklearn_roc_auc
-    return columnwise_score(y, yp, sklearn_roc_auc, multi_class=multi_class)
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    return sklearn_roc_auc(y, yp, multi_class=multi_class)
 
 
 def rmse_score(y, yp):

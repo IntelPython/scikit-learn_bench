@@ -42,15 +42,17 @@ def main():
 
     fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
     y_pred = clf.predict(X_train)
+    y_proba = clf.predict_proba(X_train)
     train_acc = bench.accuracy_score(y_train, y_pred)
-    train_log_loss = bench.log_loss(y_train, clf.predict_proba(X_train))
-    train_roc_auc = bench.roc_auc_score(y_train, y_pred)
+    train_log_loss = bench.log_loss(y_train, y_proba)
+    train_roc_auc = bench.roc_auc_score(y_train, y_proba[:,1])
 
     predict_time, y_pred = bench.measure_function_time(
         clf.predict, X_test, params=params)
+    y_proba = clf.predict_proba(X_test)
     test_acc = bench.accuracy_score(y_test, y_pred)
-    test_log_loss = bench.log_loss(y_test, clf.predict_proba(X_test))
-    test_roc_auc = bench.roc_auc_score(y_test, y_pred)
+    test_log_loss = bench.log_loss(y_test, y_proba)
+    test_roc_auc = bench.roc_auc_score(y_test, y_proba[:,1])
 
     bench.print_output(
         library='sklearn',
