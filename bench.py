@@ -30,10 +30,10 @@ def get_dtype(data):
     '''
     if hasattr(data, 'dtype'):
         return data.dtype
-    if hasattr(data, 'dtypes'):
+    elif hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
-    if hasattr(data, 'values'):
-        return data.values.dtype
+    elif hasattr(data, 'values'):
+        return data.values.dtype    
     else:
         raise ValueError(f'Impossible to get data type of {type(data)}')
 
@@ -66,7 +66,10 @@ def _parse_size(string, dim=2):
 
 
 def float_or_int(string):
-    return float(string) if '.' in string else int(string)
+    if '.' in string:
+        return float(string)
+    else:
+        return int(string)
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
@@ -87,8 +90,10 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     optimal_cache_size_bytes = byte_size * (n_rows ** 2)
     one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
-    return max_cache_bytes if optimal_cache_size_bytes > max_cache_bytes \
-        else optimal_cache_size_bytes
+    if optimal_cache_size_bytes > max_cache_bytes:
+        return max_cache_bytes
+    else:
+        return optimal_cache_size_bytes
 
 
 def parse_args(parser, size=None, loop_types=(),
@@ -330,29 +335,21 @@ def log_loss(y, yp):
     from sklearn.metrics import log_loss as sklearn_log_loss
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    try:
-        res = sklearn_log_loss(y, yp)
-    except Exception:
-        res = None
-    return res
+    return sklearn_log_loss(y, yp)
 
 
 def roc_auc_score(y, yp, multi_class='ovr'):
     from sklearn.metrics import roc_auc_score as sklearn_roc_auc
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    try:
-        res = sklearn_roc_auc(y, yp, multi_class=multi_class)
-    except Exception:
-        res = None
-    return res
+    return sklearn_roc_auc(y, yp, multi_class=multi_class)
 
 
-def rmse_score(y, yp):
+def rmse_score(y, yp, squared=False):
     from sklearn.metrics import mean_squared_error as sklearn_mse
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    return sklearn_mse(y, yp)
+    return sklearn_mse(y, yp, squared=squared)
 
 
 def r2_score(y, yp):
@@ -375,11 +372,14 @@ def convert_data(data, dtype, data_order, data_format):
     # Secondly, change format of data
     if data_format == 'numpy':
         return data
-    if data_format == 'pandas':
+    elif data_format == 'pandas':
         import pandas as pd
 
-        return pd.Series(data) if data.ndim == 1 else pd.DataFrame(data)
-    if data_format == 'cudf':
+        if data.ndim == 1:
+            return pd.Series(data)
+        else:
+            return pd.DataFrame(data)
+    elif data_format == 'cudf':
         import cudf
         import pandas as pd
 
@@ -500,14 +500,14 @@ def print_output(library, algorithm, stages, params, functions,
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
                                     data[i], alg_instance, alg_params)
-            result.update({'time[s]': times[i]})
+            result.update({'time[s]': str(times[i])})
             if accuracy_type is not None:
                 if isinstance(accuracy_type, str):
-                    result.update({f'{accuracy_type}': accuracies[i]})
+                    result.update({f'{accuracy_type}': str(accuracies[i])})
                 elif isinstance(accuracy_type, list):
                     for ind, val in enumerate(accuracy_type):
                         if accuracies[ind][i] is not None:
-                            result.update({f'{val}': accuracies[ind][i]})
+                            result.update({f'{val}': str(accuracies[ind][i])})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):

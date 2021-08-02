@@ -45,13 +45,13 @@ def main():
 
     y_pred = clf.predict(X_train)
     train_acc = bench.accuracy_score(y_train, y_pred)
-    train_log_loss = bench.log_loss(y_train, y_pred)
+    train_log_loss = bench.log_loss(y_train, clf.predict_proba(X_train))
     train_roc_auc = bench.roc_auc_score(y_train, y_pred)
 
     predict_time, y_pred = bench.measure_function_time(
         clf.predict, X_test, params=params)
     test_acc = bench.accuracy_score(y_test, y_pred)
-    test_log_loss = bench.log_loss(y_test, y_pred)
+    test_log_loss = bench.log_loss(y_test, clf.predict_proba(X_test))
     test_roc_auc = bench.roc_auc_score(y_test, y_pred)
 
     bench.print_output(

@@ -44,20 +44,22 @@ def main():
     if params.probability:
         state_predict = 'predict_proba'
         clf_predict = clf.predict_proba
+        train_log_loss = bench.log_loss(y_train, clf_predict(X_train))
+        test_log_loss = bench.log_loss(y_test, clf_predict(X_test))
     else:
         state_predict = 'prediction'
         clf_predict = clf.predict
+        train_log_loss = None
+        test_log_loss = None
 
     predict_train_time, y_pred = bench.measure_function_time(
         clf_predict, X_train, params=params)
     train_acc = bench.accuracy_score(y_train, y_pred)
-    train_log_loss = bench.log_loss(y_train, y_pred)
     train_roc_auc = bench.roc_auc_score(y_train, y_pred)
 
     _, y_pred = bench.measure_function_time(
         clf_predict, X_test, params=params)
     test_acc = bench.accuracy_score(y_test, y_pred)
-    test_log_loss = bench.log_loss(y_test, y_pred)
     test_roc_auc = bench.roc_auc_score(y_test, y_pred)
 
     bench.print_output(

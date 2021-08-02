@@ -40,7 +40,7 @@ def main():
     if params.task == 'classification':
         y_pred = knn_clsf.predict(X_train)
         train_acc = bench.accuracy_score(y_train, y_pred)
-        train_log_loss = bench.log_loss(y_train, y_pred)
+        train_log_loss = bench.log_loss(y_train, knn_clsf.predict_proba(X_train))
         train_roc_auc = bench.roc_auc_score(y_train, y_pred)
 
     # Measure time and accuracy on prediction
@@ -48,7 +48,7 @@ def main():
         predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test,
                                                        params=params)
         test_acc = bench.accuracy_score(y_test, yp)
-        test_log_loss = bench.log_loss(y_test, yp)
+        test_log_loss = bench.log_loss(y_test, knn_clsf.predict_proba(X_test))
         test_roc_auc = bench.roc_auc_score(y_test, yp)
     else:
         predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test,
