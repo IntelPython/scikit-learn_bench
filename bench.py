@@ -324,11 +324,22 @@ def convert_to_numpy(data):
     return data
 
 
-def accuracy_score(y, yp):
-    from sklearn.metrics import accuracy_score as sklearn_accuracy
+def columnwise_score(y, yp, score_func):
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    return sklearn_accuracy(y, yp)
+    if y.ndim + yp.ndim > 2:
+        if 1 in (y.shape + yp.shape)[1:]:
+            if y.ndim > 1:
+                y = y[:, 0]
+            if yp.ndim > 1:
+                yp = yp[:, 0]
+        else:
+            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
+    return score_func(y, yp)
+
+
+def accuracy_score(y, yp):
+    return columnwise_score(y, yp, lambda y1, y2: np.mean(y1 == y2))
 
 
 def log_loss(y, yp):
@@ -346,10 +357,8 @@ def roc_auc_score(y, yp, multi_class='ovr'):
 
 
 def rmse_score(y, yp, squared=False):
-    from sklearn.metrics import mean_squared_error as sklearn_mse
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_mse(y, yp, squared=squared)
+    return columnwise_score(
+        y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
 
 
 def r2_score(y, yp):
@@ -500,14 +509,14 @@ def print_output(library, algorithm, stages, params, functions,
         for i in range(len(stages)):
             result = gen_basic_dict(library, algorithm, stages[i], params,
                                     data[i], alg_instance, alg_params)
-            result.update({'time[s]': str(times[i])})
+            result.update({'time[s]': times[i]})
             if accuracy_type is not None:
                 if isinstance(accuracy_type, str):
-                    result.update({f'{accuracy_type}': str(accuracies[i])})
+                    result.update({f'{accuracy_type}': accuracies[i]})
                 elif isinstance(accuracy_type, list):
-                    for ind, val in enumerate(accuracy_type):
-                        if accuracies[ind][i] is not None:
-                            result.update({f'{val}': str(accuracies[ind][i])})
+                    for j in range(len(accuracy_type)):
+                        if accuracies[j][i] is not None:
+                            result.update({f'{accuracy_type[j]}': accuracies[j][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
@@ -524,6 +533,7 @@ def print_output(library, algorithm, stages, params, functions,
                 if 'handle' in result['algorithm_parameters'].keys():
                     del result['algorithm_parameters']['handle']
             output.append(result)
+        print(output)
         print(json.dumps(output, indent=4))
 
 
