@@ -77,7 +77,7 @@ def main():
         metrics=[
             [acc_train, acc_test],
             [kmeans.inertia_, kmeans.inertia_],
-            [kmeans.iter_, kmeans.iter_]
+            [kmeans.n_iter_, kmeans.n_iter_]
         ],
         data=[X_train, X_test],
         alg_instance=kmeans,
