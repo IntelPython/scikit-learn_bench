@@ -333,7 +333,7 @@ def log_loss(y, yp):
     try:
         res = sklearn_log_loss(y, yp)
     except Exception:
-        res = -1
+        res = None
     return res
 
 
@@ -344,7 +344,7 @@ def roc_auc_score(y, yp, multi_class='ovr'):
     try:
         res = sklearn_roc_auc(y, yp, multi_class=multi_class)
     except Exception:
-        res = -1
+        res = None
     return res
 
 

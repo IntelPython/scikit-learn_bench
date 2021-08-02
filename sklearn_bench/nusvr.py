@@ -22,7 +22,6 @@ import numpy as np
 
 def main():
     from sklearn.svm import NuSVR
-    from sklearn.metrics import r2_score
 
     X_train, X_test, y_train, y_test = bench.load_data(params)
     y_train = np.asfortranarray(y_train).ravel()
