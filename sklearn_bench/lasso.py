@@ -33,19 +33,27 @@ def main():
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     # Time predict
-    predict_time, pred_train = bench.measure_function_time(
+    predict_time, yp = bench.measure_function_time(
         regr.predict, X_train, params=params)
 
-    train_rmse = bench.rmse_score(pred_train, y_train)
-    pred_test = regr.predict(X_test)
-    test_rmse = bench.rmse_score(pred_test, y_test)
+    train_rmse = bench.rmse_score(y_train, yp)
+    train_r2 = bench.r2_score(y_train, yp)
+    yp = regr.predict(X_test)
+    test_rmse = bench.rmse_score(y_test, yp)
+    test_r2 = bench.r2_score(y_test, yp)
 
-    bench.print_output(library='sklearn', algorithm='lasso',
-                       stages=['training', 'prediction'], params=params,
-                       functions=['Lasso.fit', 'Lasso.predict'],
-                       times=[fit_time, predict_time], accuracy_type='rmse',
-                       accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-                       alg_instance=regr)
+    bench.print_output(
+        library='sklearn',
+        algorithm='lasso',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['Lasso.fit', 'Lasso.predict'],
+        times=[fit_time, predict_time],
+        accuracy_type=['rmse', 'r2_score'],
+        accuracies=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        data=[X_train, X_test],
+        alg_instance=regr,
+    )
 
 
 if __name__ == "__main__":

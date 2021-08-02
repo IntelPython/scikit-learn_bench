@@ -339,19 +339,46 @@ def columnwise_score(y, yp, score_func):
 
 
 def accuracy_score(y, yp):
-    return columnwise_score(y, yp, lambda y1, y2: np.mean(y1 == y2))
+    from sklearn.metrics import accuracy_score as sklearn_accuracy
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    return sklearn_accuracy(y, yp)
 
 
 def log_loss(y, yp):
     from sklearn.metrics import log_loss as sklearn_log_loss
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
-    return sklearn_log_loss(y, yp)
+    try:
+        res = sklearn_log_loss(y, yp)
+    except Exception:
+        res = -1
+    return res
+
+
+def roc_auc_score(y, yp, multi_class='ovr'):
+    from sklearn.metrics import roc_auc_score as sklearn_roc_auc
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    try:
+        res = sklearn_roc_auc(y, yp, multi_class=multi_class)
+    except:
+        res = -1
+    return res
 
 
 def rmse_score(y, yp):
-    return columnwise_score(
-        y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
+    from sklearn.metrics import mean_squared_error as sklearn_mse
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    return sklearn_mse(y, yp) 
+
+
+def r2_score(y, yp):
+    from sklearn.metrics import r2_score as sklearn_r2_score
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    return sklearn_r2_score(y, yp)    
 
 
 def convert_data(data, dtype, data_order, data_format):
@@ -497,7 +524,12 @@ def print_output(library, algorithm, stages, params, functions,
                                     data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
             if accuracy_type is not None:
-                result.update({f'{accuracy_type}': accuracies[i]})
+                if isinstance(accuracy_type, str):
+                    result.update({f'{accuracy_type}': accuracies[i]})
+                elif isinstance(accuracy_type, list):
+                    for j in range(len(accuracy_type)):
+                        if accuracies[j][i] is not None:
+                            result.update({f'{accuracy_type[j]}': accuracies[j][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):

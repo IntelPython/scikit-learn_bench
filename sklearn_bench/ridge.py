@@ -36,16 +36,24 @@ def main():
     # Time predict
     predict_time, yp = bench.measure_function_time(regr.predict, X_test, params=params)
 
-    test_rmse = bench.rmse_score(yp, y_test)
+    test_rmse = bench.rmse_score(y_test, yp)
+    test_r2 = bench.r2_score(y_test, yp)
     yp = regr.predict(X_train)
-    train_rmse = bench.rmse_score(yp, y_train)
+    train_rmse = bench.rmse_score(y_train, yp)
+    train_r2 = bench.r2_score(y_train, yp)
 
-    bench.print_output(library='sklearn', algorithm='ridge_regression',
-                       stages=['training', 'prediction'], params=params,
-                       functions=['Ridge.fit', 'Ridge.predict'],
-                       times=[fit_time, predict_time], accuracy_type='rmse',
-                       accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-                       alg_instance=regr)
+    bench.print_output(
+        library='sklearn',
+        algorithm='ridge_regression',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['Ridge.fit', 'Ridge.predict'],
+        times=[fit_time, predict_time],
+        accuracy_type=['rmse', 'r2_score'],
+        accuracies=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        data=[X_train, X_test],
+        alg_instance=regr,
+    )
 
 
 if __name__ == "__main__":

@@ -40,12 +40,18 @@ def main():
     transform_time, _ = bench.measure_function_time(
         pca.transform, X_train, params=params)
 
-    bench.print_output(library='sklearn', algorithm='pca',
-                       stages=['training', 'transformation'],
-                       params=params, functions=['PCA.fit', 'PCA.transform'],
-                       times=[fit_time, transform_time], accuracy_type=None,
-                       accuracies=[None, None], data=[X_train, X_test],
-                       alg_instance=pca)
+    bench.print_output(
+        library='sklearn',
+        algorithm='pca',
+        stages=['training', 'transformation'],
+        params=params,
+        functions=['PCA.fit', 'PCA.transform'],
+        times=[fit_time, transform_time],
+        accuracy_type='noise_variance',
+        accuracies=[pca.noise_variance_, pca.noise_variance_],
+        data=[X_train, X_test],
+        alg_instance=pca,
+    )
 
 
 if __name__ == "__main__":

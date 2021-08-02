@@ -40,18 +40,26 @@ def main():
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     y_pred = regr.predict(X_train)
-    train_rmse = bench.rmse_score(y_pred, y_train)
+    train_rmse = bench.rmse_score(y_train, y_pred)
+    train_r2 = bench.r2_score(y_train, y_pred)
 
     predict_time, y_pred = bench.measure_function_time(
         regr.predict, X_test, params=params)
-    test_rmse = bench.rmse_score(y_pred, y_test)
+    test_rmse = bench.rmse_score(y_test, y_pred)
+    test_r2 = bench.r2_score(y_test, y_pred)
 
-    bench.print_output(library='sklearn', algorithm='decision_forest_regression',
-                       stages=['training', 'prediction'], params=params,
-                       functions=['df_regr.fit', 'df_regr.predict'],
-                       times=[fit_time, predict_time], accuracy_type='rmse',
-                       accuracies=[train_rmse, test_rmse], data=[X_train, X_test],
-                       alg_instance=regr)
+    bench.print_output(
+        library='sklearn',
+        algorithm='decision_forest_regression',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['df_regr.fit', 'df_regr.predict'],
+        times=[fit_time, predict_time],
+        accuracy_type=['rmse', 'r2_score'],
+        accuracies=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        data=[X_train, X_test],
+        alg_instance=regr,
+    )
 
 
 if __name__ == "__main__":

@@ -66,13 +66,18 @@ def main():
 
     acc_test = davies_bouldin_score(X_test, test_predict)
 
-    bench.print_output(library='sklearn', algorithm='kmeans',
-                       stages=['training', 'prediction'],
-                       params=params, functions=['KMeans.fit', 'KMeans.predict'],
-                       times=[fit_time, predict_time],
-                       accuracy_type='davies_bouldin_score',
-                       accuracies=[acc_train, acc_test], data=[X_train, X_test],
-                       alg_instance=kmeans)
+    bench.print_output(
+        library='sklearn',
+        algorithm='kmeans',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['KMeans.fit', 'KMeans.predict'],
+        times=[fit_time, predict_time],
+        accuracy_type=['davies_bouldin_score', 'inertia'],
+        accuracies=[[acc_train, acc_test], [kmeans.inertia_, kmeans.inertia_]],
+        data=[X_train, X_test],
+        alg_instance=kmeans,
+    )
 
 
 if __name__ == "__main__":
@@ -86,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
     parser.add_argument('--algorithm', type=str, default='full',
                         help='K-means algorithm to use')
-    parser.add_argument('--n_init', type=int, default=10,
+    parser.add_argument('--n_init', type=int, default=1,
                         help='Number of time the k-means algorithm '
                         'will be run with different centroid seeds')
     parser.add_argument('--random_state', type=int, default=777,

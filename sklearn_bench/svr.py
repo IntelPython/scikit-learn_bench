@@ -44,17 +44,25 @@ def main():
     predict_train_time, y_pred = bench.measure_function_time(
         regr.predict, X_train, params=params)
     train_rmse = bench.rmse_score(y_train, y_pred)
+    train_r2 = bench.r2_score(y_train, y_pred)
 
     _, y_pred = bench.measure_function_time(
         regr.predict, X_test, params=params)
     test_rmse = bench.rmse_score(y_test, y_pred)
+    test_r2 = bench.r2_score(y_test, y_pred)
 
-    bench.print_output(library='sklearn', algorithm='svr',
-                       stages=['training', 'prediction'],
-                       params=params, functions=['SVR.fit', 'SVR.predict'],
-                       times=[fit_time, predict_train_time], accuracy_type='rmse',
-                       accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
-                       alg_instance=regr)
+    bench.print_output(
+        library='sklearn',
+        algorithm='svr',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['SVR.fit', 'SVR.predict'],
+        times=[fit_time, predict_train_time],
+        accuracy_type=['rmse', 'r2_score'],
+        accuracies=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        data=[X_train, X_train],
+        alg_instance=regr,
+    )
 
 
 if __name__ == "__main__":

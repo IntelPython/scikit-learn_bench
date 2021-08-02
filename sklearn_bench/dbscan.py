@@ -40,7 +40,10 @@ def main():
     labels = dbscan.labels_
 
     params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-    acc = davies_bouldin_score(X, labels)
+    try:
+        acc = davies_bouldin_score(X, labels)
+    except:
+        acc = -1
 
     bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
                        params=params, functions=['DBSCAN'], times=[time],
