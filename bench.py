@@ -324,7 +324,7 @@ def convert_to_numpy(data):
     return data
 
 
-def columnwise_score(y, yp, score_func):
+def columnwise_score(y, yp, score_func, **params):
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
     if y.ndim + yp.ndim > 2:
@@ -334,8 +334,8 @@ def columnwise_score(y, yp, score_func):
             if yp.ndim > 1:
                 yp = yp[:, 0]
         else:
-            return [score_func(y[i], yp[i]) for i in range(y.shape[1])]
-    return score_func(y, yp)
+            return [score_func(y[i], yp[i], **params) for i in range(y.shape[1])]
+    return score_func(y, yp, **params)
 
 
 def accuracy_score(y, yp):
@@ -351,12 +351,10 @@ def log_loss(y, yp):
 
 def roc_auc_score(y, yp, multi_class='ovr'):
     from sklearn.metrics import roc_auc_score as sklearn_roc_auc
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_roc_auc(y, yp, multi_class=multi_class)
+    return columnwise_score(y, yp, sklearn_roc_auc, multi_class=multi_class)
 
 
-def rmse_score(y, yp, squared=False):
+def rmse_score(y, yp):
     return columnwise_score(
         y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
 
@@ -366,6 +364,17 @@ def r2_score(y, yp):
     y = convert_to_numpy(y)
     yp = convert_to_numpy(yp)
     return sklearn_r2_score(y, yp)
+
+
+def davies_bouldin_score(y, yp):
+    from sklearn.metrics.cluster import davies_bouldin_score as sklearn_dbs
+    y = convert_to_numpy(y)
+    yp = convert_to_numpy(yp)
+    try:
+        res = sklearn_dbs(y, yp)
+    except ValueError: # Number of labels is 1
+        res = "Error"
+    return res
 
 
 def convert_data(data, dtype, data_order, data_format):
