@@ -48,8 +48,8 @@ def main():
         y_proba_test = clf_predict(X_test)
         train_log_loss = bench.log_loss(y_train, y_proba_train)
         test_log_loss = bench.log_loss(y_test, y_proba_test)
-        train_roc_auc = bench.roc_auc_score(y_train, y_proba_train[:,1])
-        test_roc_auc = bench.roc_auc_score(y_test, y_proba_test[:,1])
+        train_roc_auc = bench.roc_auc_score(y_train, y_proba_train[:, 1])
+        test_roc_auc = bench.roc_auc_score(y_test, y_proba_test[:, 1])
     else:
         state_predict = 'prediction'
         clf_predict = clf.predict
