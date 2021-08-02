@@ -372,7 +372,7 @@ def davies_bouldin_score(y, yp):
     yp = convert_to_numpy(yp)
     try:
         res = sklearn_dbs(y, yp)
-    except ValueError: # Number of labels is 1
+    except ValueError:  # Number of labels is 1
         res = "Error"
     return res
 
