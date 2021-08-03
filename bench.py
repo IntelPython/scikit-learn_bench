@@ -370,14 +370,14 @@ def r2_score(y_true, y_pred):
     return sklearn_r2_score(y_true, y_pred)
 
 
-def davies_bouldin_score(y_true, y_pred):
+def davies_bouldin_score(X, labels):
     from sklearn.metrics.cluster import davies_bouldin_score as sklearn_dbs
-    y_true = convert_to_numpy(y_true)
-    y_pred = convert_to_numpy(y_pred)
+    X = convert_to_numpy(X)
+    labels = convert_to_numpy(labels)
     try:
-        res = sklearn_dbs(y_true, y_pred)
-    except ValueError:
-        res = "Number of labels is 1"
+        res = sklearn_dbs(X, labels)
+    except ValueError as ex:
+        res = ex
     return res
 
 
