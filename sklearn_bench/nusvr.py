@@ -58,8 +58,12 @@ def main():
         params=params,
         functions=['NuSVR.fit', 'NuSVR.predict'],
         times=[fit_time, predict_train_time],
-        metric_type=['rmse', 'r2_score'],
-        metrics=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        metric_type=['rmse', 'r2_score', 'n_sv'],
+        metrics=[
+            [train_rmse, test_rmse],
+            [train_r2, test_r2],
+            [int(regr.n_support_.sum()), int(regr.n_support_.sum())],
+        ],
         data=[X_train, X_train],
         alg_instance=regr,
     )

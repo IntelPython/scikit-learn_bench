@@ -72,11 +72,12 @@ def main():
         stages=['training', state_predict],
         params=params, functions=['NuSVC.fit', f'NuSVC.{state_predict}'],
         times=[fit_time, predict_train_time],
-        metric_type=['accuracy', 'log_loss', 'roc_auc'],
+        metric_type=['accuracy', 'log_loss', 'roc_auc', 'n_sv'],
         metrics=[
             [train_acc, test_acc],
             [train_log_loss, test_log_loss],
             [train_roc_auc, test_roc_auc],
+            [int(clf.n_support_.sum()), int(clf.n_support_.sum())],
         ],
         data=[X_train, X_train],
         alg_instance=clf,
