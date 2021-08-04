@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-from typing import Any
 
 import bench
 from cuml.ensemble import RandomForestRegressor
@@ -59,35 +58,35 @@ if params.split_algorithm == 'hist':
     params.split_algorithm = 0
 else:
     params.split_algorithm = 1
-regr: Any
-
 
 # Create our random forest regressor
-def fit(X, y):
-    global regr
-    regr = RandomForestRegressor(split_criterion=params.criterion,
-                                 split_algo=params.split_algorithm,
-                                 n_estimators=params.num_trees,
-                                 max_depth=params.max_depth,
-                                 max_features=params.max_features,
-                                 min_samples_split=params.min_samples_split,
-                                 max_leaves=params.max_leaf_nodes,
-                                 min_impurity_decrease=params.min_impurity_decrease,
-                                 bootstrap=params.bootstrap)
+regr = RandomForestRegressor(
+    split_criterion=params.criterion,
+    split_algo=params.split_algorithm,
+    n_estimators=params.num_trees,
+    max_depth=params.max_depth,
+    max_features=params.max_features,
+    min_samples_split=params.min_samples_split,
+    max_leaves=params.max_leaf_nodes,
+    min_impurity_decrease=params.min_impurity_decrease,
+    bootstrap=params.bootstrap,
+)
+
+
+def fit(regr, X, y):
     return regr.fit(X, y)
 
 
-def predict(X):
-    global regr
+def predict(regr, X):
     return regr.predict(X, predict_model='GPU')
 
 
-fit_time, _ = bench.measure_function_time(fit, X_train, y_train, params=params)
+fit_time, _ = bench.measure_function_time(fit, regr, X_train, y_train, params=params)
 
 y_pred = predict(X_train)
 train_rmse = bench.rmse_score(y_pred, y_train)
 
-predict_time, y_pred = bench.measure_function_time(predict, X_test, params=params)
+predict_time, y_pred = bench.measure_function_time(predict, regr, X_test, params=params)
 test_rmse = bench.rmse_score(y_pred, y_test)
 
 bench.print_output(library='cuml', algorithm='decision_forest_regression',

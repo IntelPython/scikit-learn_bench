@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-from typing import Any
 
 import bench
 import cuml
@@ -62,36 +61,36 @@ else:
     params.split_algorithm = 1
 
 params.n_classes = y_train[y_train.columns[0]].nunique()
-clf: Any
+
+clf = RandomForestClassifier(
+    split_criterion=params.criterion,
+    split_algo=params.split_algorithm,
+    n_estimators=params.num_trees,
+    max_depth=params.max_depth,
+    max_features=params.max_features,
+    min_samples_split=params.min_samples_split,
+    max_leaves=params.max_leaf_nodes,
+    min_impurity_decrease=params.min_impurity_decrease,
+    bootstrap=params.bootstrap,
+)
 
 
-def fit(X, y):
-    global clf
-    clf = RandomForestClassifier(split_criterion=params.criterion,
-                                 split_algo=params.split_algorithm,
-                                 n_estimators=params.num_trees,
-                                 max_depth=params.max_depth,
-                                 max_features=params.max_features,
-                                 min_samples_split=params.min_samples_split,
-                                 max_leaves=params.max_leaf_nodes,
-                                 min_impurity_decrease=params.min_impurity_decrease,
-                                 bootstrap=params.bootstrap)
+def fit(clf, X, y):
     return clf.fit(X, y)
 
 
-def predict(X):
-    global clf
+def predict(clf, X):
     prediction_args = {'predict_model': 'GPU'}
     if int(cuml.__version__.split('.')[1]) <= 14:
         prediction_args.update({'num_classes': params.n_classes})
     return clf.predict(X, **prediction_args)
 
 
-fit_time, _ = bench.measure_function_time(fit, X_train, y_train, params=params)
+fit_time, _ = bench.measure_function_time(fit, clf, X_train, y_train, params=params)
 y_pred = predict(X_train)
 train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 
-predict_time, y_pred = bench.measure_function_time(predict, X_test, params=params)
+predict_time, y_pred = bench.measure_function_time(predict, clf, X_test, params=params)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
 bench.print_output(library='cuml', algorithm='decision_forest_classification',
