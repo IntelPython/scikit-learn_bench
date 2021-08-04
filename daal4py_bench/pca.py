@@ -121,9 +121,8 @@ def pca_fit_full_daal(X, n_components):
 def test_fit(X):
     if params.svd_solver == 'full':
         return pca_fit_full_daal(X, params.n_components)
-    else:
-        method = 'correlationDense' if params.svd_solver == 'correlation' else 'svdDense'
-        return pca_fit_daal(X, params.n_components, method)
+    method = 'correlationDense' if params.svd_solver == 'correlation' else 'svdDense'
+    return pca_fit_daal(X, params.n_components, method)
 
 
 def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
