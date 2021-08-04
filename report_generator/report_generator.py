@@ -141,6 +141,7 @@ def write_header_of_sheet(
             )
     # write names of metrics and jsons
     metric_offset = 0
+    json_results_len = len(json_results)
     for metric in metrics:
         write_cell(
             work_sheet,
@@ -158,8 +159,9 @@ def write_header_of_sheet(
                 bold=True,
             )
             metric_offset += 1
-        for i in range(len(json_results)):
-            for j in range(i + 1, len(json_results)):
+        
+        for i in range(json_results_len):
+            for j in range(i + 1, json_results_len):
                 write_cell(
                     work_sheet,
                     LEFT_OFFSET + metric_offset,
@@ -464,15 +466,15 @@ for i, json_res in enumerate(json_results):
     ws[xy_to_excel_cell(0, 0)] = \
         f"Software configuration {i} (hash: {json_res['software_hash']})"
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
-    for j in range(len(sw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
+    for j, val in enumerate(sw_conf):
+        ws[xy_to_excel_cell(0, 1 + j)] = val
 
     ws = wb.create_sheet(title=f"HW config n{i}_{json_res['hardware_hash']}")
     ws[xy_to_excel_cell(0, 0)] = \
         f"Hardware configuration {i} (hash: {json_res['hardware_hash']})"
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
-    for j in range(len(hw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]
+    for j, val in enumerate(hw_conf):
+        ws[xy_to_excel_cell(0, 1 + j)] = val
 
 wb.remove(wb['Sheet'])
 wb.save(args.report_file)
