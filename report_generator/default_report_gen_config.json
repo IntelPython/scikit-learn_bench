@@ -1,5 +1,5 @@
 {
-    "align": [
+    "header": [
         "algorithm",
         "stage",
         "input_data:data_order",
@@ -10,9 +10,22 @@
         "input_data:classes",
         "input_data:n_clusters"
     ],
-    "diff": [
-        "software_hash",
-        "hardware_hash",
-        "measurement_time"
+    "comparison_method": {
+        "time[s]": "2 / 1",
+        "davies_bouldin_score": "2 / 1",
+        "inertia": "2 / 1",
+        "iter": "2 / 1",
+        "noise_variance": "2 / 1",
+        "accuracy": "2 / 1",
+        "log_loss": "2 / 1",
+        "roc_auc": "2 / 1",
+        "rmse": "2 / 1",
+        "r2_score": "2 / 1",
+        "n_sv": "2 / 1",
+        "n_clusters": "2 / 1"
+    },
+    "aggregation_metrics": [
+        "geomean",
+        "average"
     ]
 }
