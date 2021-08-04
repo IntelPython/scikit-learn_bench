@@ -159,7 +159,6 @@ def write_header_of_sheet(
                 bold=True,
             )
             metric_offset += 1
-        
         for i in range(json_results_len):
             for j in range(i + 1, json_results_len):
                 write_cell(
