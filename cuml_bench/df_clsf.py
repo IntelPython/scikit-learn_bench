@@ -87,7 +87,7 @@ def predict(clf, X):
 
 
 fit_time, _ = bench.measure_function_time(fit, clf, X_train, y_train, params=params)
-y_pred = predict(X_train)
+y_pred = predict(clf, X_train)
 train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 
 predict_time, y_pred = bench.measure_function_time(predict, clf, X_test, params=params)

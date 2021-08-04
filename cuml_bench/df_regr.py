@@ -83,7 +83,7 @@ def predict(regr, X):
 
 fit_time, _ = bench.measure_function_time(fit, regr, X_train, y_train, params=params)
 
-y_pred = predict(X_train)
+y_pred = predict(regr, X_train)
 train_rmse = bench.rmse_score(y_pred, y_train)
 
 predict_time, y_pred = bench.measure_function_time(predict, regr, X_test, params=params)
