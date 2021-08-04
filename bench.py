@@ -169,9 +169,10 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Seed to pass as random_state')
     parser.add_argument('--dataset-name', type=str, default=None,
                         help='Dataset name')
-    _ = parser.add_argument('--no-intel-optimized', default=False, action='store_true',
-                            help='Use no intel optimized version. '
-                            'Now avalible for scikit-learn benchmarks'),
+    parser.add_argument('--no-intel-optimized', default=False,
+                        action='store_true',
+                        help='Use no intel optimized version. '
+                        'Now avalible for scikit-learn benchmarks')
     parser.add_argument('--device', default='None', type=str,
                         choices=('host', 'cpu', 'gpu', 'None'),
                         help='Execution context device')
