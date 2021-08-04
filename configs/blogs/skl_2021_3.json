@@ -307,7 +307,7 @@
                 }
             ],
             "nu": [0.25],
-            "kernel": ["sigmoid"]
+            "kernel": ["poly"]
         },
         {
             "algorithm": "svr",

@@ -87,5 +87,5 @@ test_inertia = float(res.objectiveFunction[0, 0])
 bench.print_output(library='daal4py', algorithm='kmeans',
                    stages=['training', 'prediction'],
                    params=params, functions=['KMeans.fit', 'KMeans.predict'],
-                   times=[fit_time, predict_time], accuracy_type='inertia',
-                   accuracies=[train_inertia, test_inertia], data=[X_train, X_test])
+                   times=[fit_time, predict_time], metric_type='inertia',
+                   metrics=[train_inertia, test_inertia], data=[X_train, X_test])

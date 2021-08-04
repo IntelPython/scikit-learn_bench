@@ -99,9 +99,11 @@ def covtype(dataset_dir: Path) -> bool:
     https://archive.ics.uci.edu/ml/datasets/covertype
 
     y contains 7 unique class labels from 1 to 7 inclusive.
-    TaskType:multiclass
-    NumberOfFeatures:54
-    NumberOfInstances:581012
+    Classification task. n_classes = 7.
+    covtype X train dataset (464809, 54)
+    covtype y train dataset (464809, 1)
+    covtype X test dataset  (116203,  54)
+    covtype y test dataset  (116203,  1)
     """
     dataset_name = 'covtype'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -125,9 +127,11 @@ def letters(dataset_dir: Path) -> bool:
     """
     http://archive.ics.uci.edu/ml/datasets/Letter+Recognition
 
-    TaskType:multiclass
-    NumberOfFeatures:16
-    NumberOfInstances:20.000
+    Classification task. n_classes = 26.
+    letters X train dataset (16000, 16)
+    letters y train dataset (16000, 1)
+    letters X test dataset  (4000,  16)
+    letters y test dataset  (4000,  1)
     """
     dataset_name = 'letters'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -204,9 +208,11 @@ def msrank(dataset_dir: Path) -> bool:
     """
     Dataset from szilard benchmarks: https://github.com/szilard/GBM-perf
 
-    TaskType:multiclass
-    NumberOfFeatures:137
-    NumberOfInstances:1.2M
+    Classification task. n_classes = 5.
+    msrank X train dataset (958671, 137)
+    msrank y train dataset (958671, 1)
+    msrank X test dataset  (241521,  137)
+    msrank y test dataset  (241521,  1)
     """
     dataset_name = 'msrank'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -264,7 +270,7 @@ def sensit(dataset_dir: Path) -> bool:
     Author: M. Duarte, Y. H. Hu
     Source: [original](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets)
 
-    Multiclass classification task
+    Classification task. n_classes = 3.
     sensit X train dataset (78822, 100)
     sensit y train dataset (78822, 1)
     sensit X test dataset  (19706, 100)

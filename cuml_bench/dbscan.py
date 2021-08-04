@@ -48,5 +48,5 @@ params.n_clusters = len(set(labels_host)) - (1 if -1 in labels_host else 0)
 
 bench.print_output(library='cuml', algorithm='dbscan', stages=['training'],
                    params=params, functions=['DBSCAN'], times=[time],
-                   accuracies=[acc], accuracy_type='davies_bouldin_score', data=[X],
+                   metrics=[acc], metric_type='davies_bouldin_score', data=[X],
                    alg_instance=dbscan)

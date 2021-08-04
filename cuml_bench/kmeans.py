@@ -88,6 +88,6 @@ acc_test = davies_bouldin_score(X_test_host, test_predict_host)
 bench.print_output(library='cuml', algorithm='kmeans',
                    stages=['training', 'prediction'], params=params,
                    functions=['KMeans.fit', 'KMeans.predict'],
-                   times=[fit_time, predict_time], accuracy_type='davies_bouldin_score',
-                   accuracies=[acc_train, acc_test], data=[X_train, X_test],
+                   times=[fit_time, predict_time], metric_type='davies_bouldin_score',
+                   metrics=[acc_train, acc_test], data=[X_train, X_test],
                    alg_instance=kmeans)

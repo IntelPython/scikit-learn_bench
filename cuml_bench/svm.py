@@ -57,14 +57,14 @@ fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=para
 
 if params.probability:
     state_predict = 'predict_proba'
-    accuracy_type = 'log_loss'
+    metric_type = 'log_loss'
     clf_predict = clf.predict_proba
 
     def metric_call(x, y):
         return bench.log_loss(x, y)
 else:
     state_predict = 'prediction'
-    accuracy_type = 'accuracy[%]'
+    metric_type = 'accuracy[%]'
     clf_predict = clf.predict
 
     def metric_call(x, y):
@@ -82,6 +82,6 @@ test_acc = metric_call(y_test, y_pred)
 bench.print_output(library='cuml', algorithm='svc',
                    stages=['training', state_predict], params=params,
                    functions=['SVM.fit', 'SVM.predict'],
-                   times=[fit_time, predict_train_time], accuracy_type=accuracy_type,
-                   accuracies=[train_acc, test_acc], data=[X_train, X_train],
+                   times=[fit_time, predict_train_time], metric_type=metric_type,
+                   metrics=[train_acc, test_acc], data=[X_train, X_train],
                    alg_instance=clf)

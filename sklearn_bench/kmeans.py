@@ -48,7 +48,8 @@ def main():
 
     def fit_kmeans(X, X_init):
         alg = KMeans(n_clusters=params.n_clusters, tol=params.tol,
-                     max_iter=params.maxiter, init=X_init, n_init=1)
+                     max_iter=params.maxiter, init=X_init, n_init=params.n_init,
+                     algorithm=params.algorithm, random_state=params.random_state)
         alg.fit(X)
         return alg
 
@@ -65,13 +66,22 @@ def main():
 
     acc_test = davies_bouldin_score(X_test, test_predict)
 
-    bench.print_output(library='sklearn', algorithm='kmeans',
-                       stages=['training', 'prediction'],
-                       params=params, functions=['KMeans.fit', 'KMeans.predict'],
-                       times=[fit_time, predict_time],
-                       accuracy_type='davies_bouldin_score',
-                       accuracies=[acc_train, acc_test], data=[X_train, X_test],
-                       alg_instance=kmeans)
+    bench.print_output(
+        library='sklearn',
+        algorithm='kmeans',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['KMeans.fit', 'KMeans.predict'],
+        times=[fit_time, predict_time],
+        metric_type=['davies_bouldin_score', 'inertia', 'iter'],
+        metrics=[
+            [acc_train, acc_test],
+            [kmeans.inertia_, kmeans.inertia_],
+            [kmeans.n_iter_, kmeans.n_iter_]
+        ],
+        data=[X_train, X_test],
+        alg_instance=kmeans,
+    )
 
 
 if __name__ == "__main__":
@@ -83,5 +93,12 @@ if __name__ == "__main__":
     parser.add_argument('--maxiter', type=int, default=100,
                         help='Maximum number of iterations')
     parser.add_argument('--n-clusters', type=int, help='Number of clusters')
+    parser.add_argument('--algorithm', type=str, default='full',
+                        help='K-means algorithm to use')
+    parser.add_argument('--n_init', type=int, default=1,
+                        help='Number of time the k-means algorithm '
+                        'will be run with different centroid seeds')
+    parser.add_argument('--random_state', type=int, default=777,
+                        help='Random state')
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)

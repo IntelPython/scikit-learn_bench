@@ -142,7 +142,7 @@ transform_time, tr = bench.measure_function_time(
 bench.print_output(library='daal4py', algorithm='pca',
                    stages=['training', 'transformation'],
                    params=params, functions=['PCA.fit', 'PCA.transform'],
-                   times=[fit_time, transform_time], accuracy_type=None,
-                   accuracies=[None, None], data=[X_train, X_test],
+                   times=[fit_time, transform_time], metric_type=None,
+                   metrics=[None, None], data=[X_train, X_test],
                    alg_params={'svd_solver': params.svd_solver,
                                'n_components': params.n_components})

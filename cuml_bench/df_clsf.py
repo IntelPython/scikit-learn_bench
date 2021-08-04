@@ -97,6 +97,6 @@ test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 bench.print_output(library='cuml', algorithm='decision_forest_classification',
                    stages=['training', 'prediction'],
                    params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
-                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                   accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                   times=[fit_time, predict_time], metric_type='accuracy[%]',
+                   metrics=[train_acc, test_acc], data=[X_train, X_test],
                    alg_instance=clf)

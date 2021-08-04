@@ -18,7 +18,6 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.metrics import accuracy_score
 
 
 def main():
@@ -43,18 +42,34 @@ def main():
 
     fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
     y_pred = clf.predict(X_train)
-    train_acc = 100 * accuracy_score(y_pred, y_train)
+    y_proba = clf.predict_proba(X_train)
+    train_acc = bench.accuracy_score(y_train, y_pred)
+    train_log_loss = bench.log_loss(y_train, y_proba)
+    train_roc_auc = bench.roc_auc_score(y_train, y_proba)
 
     predict_time, y_pred = bench.measure_function_time(
         clf.predict, X_test, params=params)
-    test_acc = 100 * accuracy_score(y_pred, y_test)
+    y_proba = clf.predict_proba(X_test)
+    test_acc = bench.accuracy_score(y_test, y_pred)
+    test_log_loss = bench.log_loss(y_test, y_proba)
+    test_roc_auc = bench.roc_auc_score(y_test, y_proba)
 
-    bench.print_output(library='sklearn', algorithm='decision_forest_classification',
-                       stages=['training', 'prediction'], params=params,
-                       functions=['df_clsf.fit', 'df_clsf.predict'],
-                       times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                       accuracies=[train_acc, test_acc], data=[X_train, X_test],
-                       alg_instance=clf)
+    bench.print_output(
+        library='sklearn',
+        algorithm='decision_forest_classification',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['df_clsf.fit', 'df_clsf.predict'],
+        times=[fit_time, predict_time],
+        metric_type=['accuracy', 'log_loss', 'roc_auc'],
+        metrics=[
+            [train_acc, test_acc],
+            [train_log_loss, test_log_loss],
+            [train_roc_auc, test_roc_auc],
+        ],
+        data=[X_train, X_test],
+        alg_instance=clf,
+    )
 
 
 if __name__ == "__main__":

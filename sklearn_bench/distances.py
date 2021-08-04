@@ -30,7 +30,7 @@ def main():
 
     bench.print_output(library='sklearn', algorithm='distances', stages=['computation'],
                        params=params, functions=[params.metric.capitalize()],
-                       times=[time], accuracy_type=None, accuracies=[None], data=[X],
+                       times=[time], metric_type=None, metrics=[None], data=[X],
                        alg_params={'metric': params.metric})
 
 
