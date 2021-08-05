@@ -20,7 +20,6 @@ import hashlib
 import json
 from typing import Any, List, Dict
 from openpyxl.formatting.rule import ColorScaleRule
-from openpyxl.styles.numbers import FORMAT_NUMBER_00
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
@@ -45,9 +44,9 @@ def get_excel_cell(work_sheet, x: int, y: int):
     return work_sheet[xy_to_excel_cell(x, y)]
 
 
-def write_cell(work_sheet, x: int, y: int, value: str, bold=False) -> None:
+def write_cell(work_sheet, x: int, y: int, value: str, *, bold=False, number_format='General') -> None:
     work_sheet[xy_to_excel_cell(x, y)] = value
-    work_sheet[xy_to_excel_cell(x, y)].number_format = FORMAT_NUMBER_00
+    work_sheet[xy_to_excel_cell(x, y)].number_format = number_format
     if bold:
         work_sheet[xy_to_excel_cell(x, y)].font = Font(bold=True)
 
@@ -113,6 +112,7 @@ def write_aggregation_metric(
         write_x,
         write_y,
         metric_string,
+        number_format='0.00',
     )
 
 
@@ -141,7 +141,6 @@ def write_header_of_sheet(
             )
     # write names of metrics and jsons
     metric_offset = 0
-    json_results_len = len(json_results)
     for metric in metrics:
         write_cell(
             work_sheet,
@@ -159,8 +158,8 @@ def write_header_of_sheet(
                 bold=True,
             )
             metric_offset += 1
-        for i in range(json_results_len):
-            for j in range(i + 1, json_results_len):
+        for i in range(len(json_results)):
+            for j in range(i + 1, len(json_results)):
                 write_cell(
                     work_sheet,
                     LEFT_OFFSET + metric_offset,
@@ -238,8 +237,8 @@ for ind, val in enumerate(available_algos_and_metrics):
     available_algos_and_metrics[val] = ['time[s]'] + make_unique(available_algos_and_metrics[val])
 
 
-HEAD_OFFSET = 3
-LEFT_OFFSET = len(gen_config['header'])
+HEAD_OFFSET = 4
+LEFT_OFFSET = len(gen_config['align'])
 JSON_RESULTS_LEN = len(json_results)
 
 stages: List[str] = [
@@ -281,7 +280,7 @@ for algo in available_algos_and_metrics:
                    used[json_res_ind][report_ind] is True:
                     continue
                 # write parameters
-                for offset, config in enumerate(gen_config['header']):
+                for offset, config in enumerate(gen_config['align']):
                     write_cell(ws, offset, HEAD_OFFSET + 1 + y_offset, get_property(report, config))
                 # write all metrics in report
                 metric_offset = 0
@@ -290,6 +289,7 @@ for algo in available_algos_and_metrics:
                         ws,
                         LEFT_OFFSET + metric_offset + json_res_ind, HEAD_OFFSET + 1 + y_offset,
                         get_property(report, metric),
+                        number_format='0.00',
                     )
                     metric_offset += JSON_RESULTS_LEN * (JSON_RESULTS_LEN + 1) // 2
                 used[json_res_ind][report_ind] = True
@@ -301,7 +301,7 @@ for algo in available_algos_and_metrics:
                         if report_comp['stage'] != stage_key or \
                            report_comp['algorithm'] != algo or \
                            used[original_index][report_comp_ind] is True or \
-                           not is_equal_dict(report, report_comp, gen_config['header']):
+                           not is_equal_dict(report, report_comp, gen_config['align']):
                             continue
                         metric_offset = 0
                         for metric in available_algos_and_metrics[algo]:
@@ -309,7 +309,8 @@ for algo in available_algos_and_metrics:
                                 ws,
                                 LEFT_OFFSET + original_index + metric_offset,
                                 HEAD_OFFSET + y_offset + 1,
-                                get_property(report_comp, metric)
+                                get_property(report_comp, metric),
+                                number_format='0.00',
                             )
                             metric_offset += JSON_RESULTS_LEN * (JSON_RESULTS_LEN + 1) // 2
                         used[original_index][report_comp_ind] = True
@@ -320,7 +321,7 @@ for algo in available_algos_and_metrics:
             continue
         write_header_of_sheet(
             ws,
-            gen_config['header'],
+            gen_config['align'],
             HEAD_OFFSET + begin_y_offset,
             available_algos_and_metrics[algo],
             HEAD_OFFSET + y_offset + 1,
@@ -358,7 +359,8 @@ for algo in available_algos_and_metrics:
                                 xy_to_excel_cell(first_offset, y),
                                 xy_to_excel_cell(second_offset, y),
                                 gen_config['comparison_method'][metric],
-                            )
+                            ),
+                            number_format='0.00',
                         )
                     # fill comparison range by color rule
                     ws.conditional_formatting.add(
@@ -444,7 +446,8 @@ for agg_metric in gen_config['aggregation_metrics']:
                     ws,
                     metric_ind + 1,
                     y_offset + algo_ind + 2,
-                    summary[agg_metric][name][algo][metric]
+                    summary[agg_metric][name][algo][metric],
+                    number_format='0.00',
                 )
 
         # color some range by color rule
@@ -465,15 +468,15 @@ for i, json_res in enumerate(json_results):
     ws[xy_to_excel_cell(0, 0)] = \
         f"Software configuration {i} (hash: {json_res['software_hash']})"
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
-    for j, val in enumerate(sw_conf):
-        ws[xy_to_excel_cell(0, 1 + j)] = val
+    for j in range(len(sw_conf)):
+        ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
 
     ws = wb.create_sheet(title=f"HW config n{i}_{json_res['hardware_hash']}")
     ws[xy_to_excel_cell(0, 0)] = \
         f"Hardware configuration {i} (hash: {json_res['hardware_hash']})"
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
-    for j, val in enumerate(hw_conf):
-        ws[xy_to_excel_cell(0, 1 + j)] = val
+    for j in range(len(hw_conf)):
+        ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]
 
 wb.remove(wb['Sheet'])
 wb.save(args.report_file)
