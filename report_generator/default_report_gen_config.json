@@ -25,7 +25,6 @@
         "n_clusters": "2 / 1"
     },
     "aggregation_metrics": [
-        "geomean",
-        "average"
+        "geomean"
     ]
 }
