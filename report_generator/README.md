@@ -10,6 +10,6 @@ runner options:
 * ``generation-config`` : generation configuration file path
 
 config parameters:
-* ``header`` : Column names in the table header. These parameters are also used to compare reports. If the name is compound, then it should be separated by the '':'' symbol
-* ``comparison_method`` : Comparison of two results. The options are: ``1 operation 2`` or ``2 operation 1``
+* ``header`` : Column names in the table header. These parameters are also used to compare reports. If the name is compound, then it should be separated by the '':'' symbol.
+* ``comparison_method`` : Comparison of two results. The options are: ``1 operation 2`` or ``2 operation 1``. Default is ``2 / 1``.
 * ``aggregation_metrics`` : Metric applied to columns with comparisons of two reports. For each of these metrics, a separate sheet with a summary is compiled. It is important that the function is in Excel. For example: ``geomean`` or ``average``.

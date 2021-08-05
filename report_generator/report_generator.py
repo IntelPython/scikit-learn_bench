@@ -126,23 +126,24 @@ def write_aggregation_metric(
 
 def write_header_of_sheet(
     work_sheet,
+    algorithm: str,
     header_columns: List[str],
     y_offset: int,
     metrics: List[str],
     agg_offset: int,
     agg_metrics: List[str],
     json_results: List[Dict[str, Any]],
-    LEFT_OFFSET: int,
+    left_offset: int,
 ) -> None:
     # write header
     for ind, val in enumerate(header_columns):
-        write_cell(work_sheet, ind, y_offset, val, bold=True)
+        write_cell(work_sheet, ind, y_offset, val.split(':')[-1], bold=True)
     # write aggregation metrics
     if len(json_results) >= 2:
         for ind, val in enumerate(agg_metrics):
             write_cell(
                 work_sheet,
-                LEFT_OFFSET + len(json_results) - 1,
+                left_offset + len(json_results) - 1,
                 agg_offset + ind,
                 val,
                 bold=True,
@@ -153,7 +154,7 @@ def write_header_of_sheet(
     for metric in metrics:
         write_cell(
             work_sheet,
-            LEFT_OFFSET + metric_offset,
+            left_offset + metric_offset,
             y_offset - 1,
             metric,
             bold=True,
@@ -161,7 +162,7 @@ def write_header_of_sheet(
         for json_res in json_results:
             write_cell(
                 work_sheet,
-                LEFT_OFFSET + metric_offset,
+                left_offset + metric_offset,
                 y_offset,
                 json_res["file_name"],
                 bold=True,
@@ -171,7 +172,7 @@ def write_header_of_sheet(
             for j in range(i + 1, json_results_len):
                 write_cell(
                     work_sheet,
-                    LEFT_OFFSET + metric_offset,
+                    left_offset + metric_offset,
                     y_offset,
                     json_results[i]['file_name'] + ' vs ' + json_results[j]['file_name'],
                     bold=True,
@@ -180,27 +181,51 @@ def write_header_of_sheet(
 
 
 def get_color_rule(metric: str) -> Any:
+    red = 'F85D5E'
+    yellow = 'FAF52E'
+    green = '58C144'
     if metric in ['geomean', 'time[s]']:
         return ColorScaleRule(
-            start_type='num', start_value=0.5, start_color='FF0000',
-            mid_type='num', mid_value=1, mid_color='FFFF00',
-            end_type='num', end_value=5, end_color='00FF00')
+            start_type='num', start_value=0.5, start_color=red,
+            mid_type='num', mid_value=1, mid_color=yellow,
+            end_type='num', end_value=5, end_color=green)
     if metric == 'average':
         return ColorScaleRule(
-            start_type='num', start_value=-3, start_color='FF0000',
-            mid_type='num', mid_value=0, mid_color='FFFF00',
-            end_type='num', end_value=3, end_color='00FF00')
+            start_type='num', start_value=-3, start_color=red,
+            mid_type='num', mid_value=0, mid_color=yellow,
+            end_type='num', end_value=3, end_color=green)
     return ColorScaleRule(
-        start_type='percentile', start_value=10, start_color='FF0000',
-        mid_type='percentile', mid_value=50, mid_color='FFFF00',
-        end_type='percentile', end_value=90, end_color='00FF00')
+        start_type='percentile', start_value=10, start_color=red,
+        mid_type='percentile', mid_value=50, mid_color=yellow,
+        end_type='percentile', end_value=90, end_color=green)
+
+
+def get_comparison_method(config: Dict[str, str], metric: str) -> str:
+    return config[metric] if metric in config else config['default']
 
 
 def get_ratio_string(a: str, b: str, comparison_method: str) -> str:
-    splited_comparison_method = comparison_method.split(' ')
-    if splited_comparison_method[0] == "2":
+    splitted_comparison_method = comparison_method.split(' ')
+    if splitted_comparison_method[0] == "2":
         a, b = b, a
-    return '=' + a + splited_comparison_method[1] + b
+    return '=' + a + splitted_comparison_method[1] + b
+
+
+def get_header_parameters(
+    json_results: List[Dict[str, Any]],
+    full_header_parameters: List[str],
+    algorithm: str,
+) -> List[str]:
+    for json_res in json_results:
+        for report in json_res['results']:
+            if report['algorithm'] != algorithm:
+                continue
+            result = list()
+            for param in full_header_parameters:
+                if get_property(report, param) is not None:
+                    result.append(param)
+            return result
+    raise ValueError(f'There is no {algorithm} in input json(s)')
 
 
 parser = argparse.ArgumentParser()
@@ -247,7 +272,6 @@ for ind, val in enumerate(available_algos_and_metrics):
 
 
 HEAD_OFFSET = 4
-LEFT_OFFSET = len(gen_config['header'])
 JSON_RESULTS_LEN = len(json_results)
 
 stages: List[str] = [
@@ -268,6 +292,8 @@ wb = openpyxl.Workbook()
 for algo in available_algos_and_metrics:
     # algo[:31] because excel warning about length of sheet name no more than 31 symbols
     ws = wb.create_sheet(title=f'{algo[:31]}')
+    header_params = get_header_parameters(json_results, gen_config['header'], algo)
+    LEFT_OFFSET = len(header_params)
     # writing table header
     for offset, val in enumerate(['file_name', 'software_hash', 'hardware_hash']):
         write_cell(ws, 0, offset, val)
@@ -289,7 +315,7 @@ for algo in available_algos_and_metrics:
                    used[json_res_ind][report_ind] is True:
                     continue
                 # write parameters
-                for offset, config in enumerate(gen_config['header']):
+                for offset, config in enumerate(header_params):
                     write_cell(ws, offset, HEAD_OFFSET + 1 + y_offset, get_property(report, config))
                 # write all metrics in report
                 metric_offset = 0
@@ -310,7 +336,7 @@ for algo in available_algos_and_metrics:
                         if report_comp['stage'] != stage_key or \
                            report_comp['algorithm'] != algo or \
                            used[original_index][report_comp_ind] is True or \
-                           not is_equal_dict(report, report_comp, gen_config['header']):
+                           not is_equal_dict(report, report_comp, header_params):
                             continue
                         metric_offset = 0
                         for metric in available_algos_and_metrics[algo]:
@@ -330,7 +356,8 @@ for algo in available_algos_and_metrics:
             continue
         write_header_of_sheet(
             ws,
-            gen_config['header'],
+            algo,
+            header_params,
             HEAD_OFFSET + begin_y_offset,
             available_algos_and_metrics[algo],
             HEAD_OFFSET + y_offset + 1,
@@ -356,10 +383,6 @@ for algo in available_algos_and_metrics:
                            not can_convert_to_float(str(first_cell.value)) or \
                            not can_convert_to_float(str(second_cell.value)):
                             continue
-                        if metric not in gen_config['comparison_method']:
-                            raise ValueError(
-                                f'Please add comparison_method '
-                                f'for {metric} in configuration file')
                         write_cell(
                             ws,
                             LEFT_OFFSET + metric_offset + comparison_offset,
@@ -367,7 +390,7 @@ for algo in available_algos_and_metrics:
                             get_ratio_string(
                                 xy_to_excel_cell(first_offset, y),
                                 xy_to_excel_cell(second_offset, y),
-                                gen_config['comparison_method'][metric],
+                                get_comparison_method(gen_config['comparison_method'], metric),
                             ),
                             number_format='0.00',
                         )
