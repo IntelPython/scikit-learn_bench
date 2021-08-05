@@ -141,6 +141,7 @@ def write_header_of_sheet(
             )
     # write names of metrics and jsons
     metric_offset = 0
+	json_results_len = len(json_results)
     for metric in metrics:
         write_cell(
             work_sheet,
@@ -158,8 +159,8 @@ def write_header_of_sheet(
                 bold=True,
             )
             metric_offset += 1
-        for i in range(len(json_results)):
-            for j in range(i + 1, len(json_results)):
+        for i in range(json_results_len):
+            for j in range(i + 1, json_results_len):
                 write_cell(
                     work_sheet,
                     LEFT_OFFSET + metric_offset,
@@ -238,7 +239,7 @@ for ind, val in enumerate(available_algos_and_metrics):
 
 
 HEAD_OFFSET = 4
-LEFT_OFFSET = len(gen_config['align'])
+LEFT_OFFSET = len(gen_config['header'])
 JSON_RESULTS_LEN = len(json_results)
 
 stages: List[str] = [
@@ -280,7 +281,7 @@ for algo in available_algos_and_metrics:
                    used[json_res_ind][report_ind] is True:
                     continue
                 # write parameters
-                for offset, config in enumerate(gen_config['align']):
+                for offset, config in enumerate(gen_config['header']):
                     write_cell(ws, offset, HEAD_OFFSET + 1 + y_offset, get_property(report, config))
                 # write all metrics in report
                 metric_offset = 0
@@ -301,7 +302,7 @@ for algo in available_algos_and_metrics:
                         if report_comp['stage'] != stage_key or \
                            report_comp['algorithm'] != algo or \
                            used[original_index][report_comp_ind] is True or \
-                           not is_equal_dict(report, report_comp, gen_config['align']):
+                           not is_equal_dict(report, report_comp, gen_config['header']):
                             continue
                         metric_offset = 0
                         for metric in available_algos_and_metrics[algo]:
@@ -321,7 +322,7 @@ for algo in available_algos_and_metrics:
             continue
         write_header_of_sheet(
             ws,
-            gen_config['align'],
+            gen_config['header'],
             HEAD_OFFSET + begin_y_offset,
             available_algos_and_metrics[algo],
             HEAD_OFFSET + y_offset + 1,
@@ -468,15 +469,15 @@ for i, json_res in enumerate(json_results):
     ws[xy_to_excel_cell(0, 0)] = \
         f"Software configuration {i} (hash: {json_res['software_hash']})"
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
-    for j in range(len(sw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
+    for j, val in enumerate(sw_conf):
+        ws[xy_to_excel_cell(0, 1 + j)] = val
 
     ws = wb.create_sheet(title=f"HW config n{i}_{json_res['hardware_hash']}")
     ws[xy_to_excel_cell(0, 0)] = \
         f"Hardware configuration {i} (hash: {json_res['hardware_hash']})"
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
-    for j in range(len(hw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]
+    for j, val in enumerate(hw_conf):
+        ws[xy_to_excel_cell(0, 1 + j)] = val
 
 wb.remove(wb['Sheet'])
 wb.save(args.report_file)
