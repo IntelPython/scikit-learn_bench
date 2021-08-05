@@ -44,7 +44,15 @@ def get_excel_cell(work_sheet, x: int, y: int):
     return work_sheet[xy_to_excel_cell(x, y)]
 
 
-def write_cell(work_sheet, x: int, y: int, value: str, *, bold=False, number_format='General') -> None:
+def write_cell(
+    work_sheet,
+    x: int,
+    y: int,
+    value: str,
+    *,
+    bold=False,
+    number_format='General',
+) -> None:
     work_sheet[xy_to_excel_cell(x, y)] = value
     work_sheet[xy_to_excel_cell(x, y)].number_format = number_format
     if bold:
@@ -137,11 +145,11 @@ def write_header_of_sheet(
                 LEFT_OFFSET + len(json_results) - 1,
                 agg_offset + ind,
                 val,
-                bold=True
+                bold=True,
             )
     # write names of metrics and jsons
     metric_offset = 0
-	json_results_len = len(json_results)
+    json_results_len = len(json_results)
     for metric in metrics:
         write_cell(
             work_sheet,
