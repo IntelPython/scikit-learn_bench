@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-import os
 
 import bench
 import daal4py
