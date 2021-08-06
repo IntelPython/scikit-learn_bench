@@ -11,5 +11,5 @@ runner options:
 
 config parameters:
 * ``header`` : Column names in the table header. These parameters are also used to compare reports. If the name is compound, then it should be separated by the '':'' symbol.
-* ``comparison_method`` : Comparison of two results. The options are: ``1 operation 2`` or ``2 operation 1``. Default is ``2 / 1``.
+* ``comparison_method``: The formula for the comparison of two results. The options are: ``1 operation 2`` or ``2 operation 1``, where ``1`` is the first result and ``2`` is the second result. The default is ``2 / 1``, which returns the ratio of the second result to the first one.
 * ``aggregation_metrics`` : Metric applied to columns with comparisons of two reports. For each of these metrics, a separate sheet with a summary is compiled. It is important that the function is in Excel. For example: ``geomean`` or ``average``.
