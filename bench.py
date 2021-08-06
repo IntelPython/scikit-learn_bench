@@ -376,13 +376,6 @@ def davies_bouldin_score(X, labels):
     return res
 
 
-def r2_score(y, yp):
-    from sklearn.metrics import r2_score as sklearn_r2_score
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_r2_score(y, yp)
-
-
 def convert_data(data, dtype, data_order, data_format):
     '''
     Convert input data (numpy array) to needed format, type and order
