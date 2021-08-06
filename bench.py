@@ -389,14 +389,13 @@ def convert_data(data, dtype, data_order, data_format):
     # Secondly, change format of data
     if data_format == 'numpy':
         return data
-    elif data_format == 'pandas':
+    if data_format == 'pandas':
         import pandas as pd
 
         if data.ndim == 1:
             return pd.Series(data)
-        else:
-            return pd.DataFrame(data)
-    elif data_format == 'cudf':
+        return pd.DataFrame(data)
+    if data_format == 'cudf':
         import cudf
         import pandas as pd
 
@@ -512,36 +511,42 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
 def print_output(library, algorithm, stages, params, functions,
                  times, metric_type, metrics, data, alg_instance=None,
                  alg_params=None):
-    if params.output_format == 'json':
-        output = []
-        for i, stage in enumerate(stages):
-            result = gen_basic_dict(library, algorithm, stage, params,
-                                    data[i], alg_instance, alg_params)
-            result.update({'time[s]': times[i]})
-            if metric_type is not None:
-                if isinstance(metric_type, str):
-                    result.update({f'{metric_type}': metrics[i]})
-                elif isinstance(metric_type, list):
-                    for ind, val in enumerate(metric_type):
-                        if metrics[ind][i] is not None:
-                            result.update({f'{val}': metrics[ind][i]})
-            if hasattr(params, 'n_classes'):
-                result['input_data'].update({'classes': params.n_classes})
-            if hasattr(params, 'n_clusters'):
-                if algorithm == 'kmeans':
-                    result['input_data'].update(
-                        {'n_clusters': params.n_clusters})
-                elif algorithm == 'dbscan':
-                    result.update({'n_clusters': params.n_clusters})
-            # replace non-string init with string for kmeans benchmarks
-            if alg_instance is not None:
-                if 'init' in result['algorithm_parameters'].keys():
-                    if not isinstance(result['algorithm_parameters']['init'], str):
-                        result['algorithm_parameters']['init'] = 'random'
-                if 'handle' in result['algorithm_parameters'].keys():
-                    del result['algorithm_parameters']['handle']
-            output.append(result)
-        print(json.dumps(output, indent=4))
+    if params.output_format != 'json':
+        return
+
+    output = []
+    for i, stage in enumerate(stages):
+        result = gen_basic_dict(library, algorithm, stage, params,
+                                data[i], alg_instance, alg_params)
+        result.update({'time[s]': times[i]})
+
+        if metric_type is not None:
+            if isinstance(metric_type, str):
+                result.update({f'{metric_type}': metrics[i]})
+            elif isinstance(metric_type, list):
+                for ind, val in enumerate(metric_type):
+                    if metrics[ind][i] is not None:
+                        result.update({f'{val}': metrics[ind][i]})
+
+        if hasattr(params, 'n_classes'):
+            result['input_data'].update({'classes': params.n_classes})
+        if hasattr(params, 'n_clusters'):
+            if algorithm == 'kmeans':
+                result['input_data'].update(
+                    {'n_clusters': params.n_clusters})
+            elif algorithm == 'dbscan':
+                result.update({'n_clusters': params.n_clusters})
+
+        # replace non-string init with string for kmeans benchmarks
+        if alg_instance is not None:
+            if 'init' in result['algorithm_parameters'].keys():
+                if not isinstance(result['algorithm_parameters']['init'], str):
+                    result['algorithm_parameters']['init'] = 'random'
+            if 'handle' in result['algorithm_parameters'].keys():
+                del result['algorithm_parameters']['handle']
+        output.append(result)
+
+    print(json.dumps(output, indent=4))
 
 
 def run_with_context(params, function):

@@ -65,10 +65,9 @@ def results_are_mergeable(first_res, second_res, merging):
     sw_hash_equality = first_res['software_hash'] == second_res['software_hash']
     if merging == 'hw_only':
         return hw_hash_equality
-    elif merging == 'sw_only':
+    if merging == 'sw_only':
         return sw_hash_equality
-    else:
-        return sw_hash_equality and hw_hash_equality
+    return sw_hash_equality and hw_hash_equality
 
 
 excel_header_columns = list(ascii_uppercase)
@@ -232,14 +231,14 @@ for i, json_res in enumerate(json_results):
     ws[xy_to_excel_cell(0, 0)] = \
         f"Software configuration {i} (hash: {json_res['software_hash']})"
     sw_conf = json.dumps(json_res['software'], indent=4).split('\n')
-    for j in range(len(sw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = sw_conf[j]
+    for j, elem in enumerate(sw_conf):
+        ws[xy_to_excel_cell(0, j + 1)] = elem
 
     ws = wb.create_sheet(title=f"HW config n{i}_{json_res['hardware_hash']}")
     ws[xy_to_excel_cell(0, 0)] = \
         f"Hardware configuration {i} (hash: {json_res['hardware_hash']})"
     hw_conf = json.dumps(json_res['hardware'], indent=4).split('\n')
-    for j in range(len(hw_conf)):
-        ws[xy_to_excel_cell(0, 1 + j)] = hw_conf[j]
+    for j, elem in enumerate(hw_conf):
+        ws[xy_to_excel_cell(0, j + 1)] = elem
 
 wb.save(args.report_file)
