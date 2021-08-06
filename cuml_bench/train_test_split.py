@@ -44,5 +44,5 @@ time, _ = bench.measure_function_time(train_test_split, X=X, y=y, params=params)
 
 bench.print_output(library='cuml', algorithm='train_test_split',
                    stages=['training'], params=params,
-                   functions=['train_test_split'], times=[time], accuracies=[None],
-                   accuracy_type=None, data=[X], alg_params=tts_params)
+                   functions=['train_test_split'], times=[time], metrics=[None],
+                   metric_type=None, data=[X], alg_params=tts_params)

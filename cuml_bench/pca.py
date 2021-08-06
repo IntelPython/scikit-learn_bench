@@ -51,6 +51,6 @@ transform_time, _ = bench.measure_function_time(
 bench.print_output(library='cuml', algorithm='pca',
                    stages=['training', 'transformation'],
                    params=params, functions=['PCA.fit', 'PCA.transform'],
-                   times=[fit_time, transform_time], accuracy_type=None,
-                   accuracies=[None, None], data=[X_train, X_test],
+                   times=[fit_time, transform_time], metric_type=None,
+                   metrics=[None, None], data=[X_train, X_test],
                    alg_instance=pca)

@@ -68,5 +68,5 @@ train_rmse = bench.rmse_score(pres.prediction, y_train)
 bench.print_output(library='daal4py', algorithm='linear_regression',
                    stages=['training', 'prediction'],
                    params=params, functions=['Linear.fit', 'Linear.predict'],
-                   times=[fit_time, predict_time], accuracy_type='rmse',
-                   accuracies=[train_rmse, test_rmse], data=[X_train, X_test])
+                   times=[fit_time, predict_time], metric_type='rmse',
+                   metrics=[train_rmse, test_rmse], data=[X_train, X_test])

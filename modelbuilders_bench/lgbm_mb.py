@@ -162,7 +162,7 @@ bench.print_output(
                'daal4py.get_gbt_model_from_lightgbm', 'daal4py.compute'],
     times=[t_creat_train, fit_time, t_creat_test, predict_time, transform_time,
            predict_time_daal],
-    accuracy_type=metric_name,
-    accuracies=[None, train_metric, None, test_metric, None, test_metric_daal],
+    metric_type=metric_name,
+    metrics=[None, train_metric, None, test_metric, None, test_metric_daal],
     data=[X_train, X_train, X_test, X_test, X_test, X_test],
     alg_instance=model_lgbm, alg_params=lgbm_params)

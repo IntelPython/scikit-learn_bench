@@ -21,7 +21,6 @@ import bench
 
 def main():
     from sklearn.cluster import DBSCAN
-    from sklearn.metrics.cluster import davies_bouldin_score
 
     # Load generated data
     X, _, _, _ = bench.load_data(params, add_dtype=True)
@@ -40,11 +39,11 @@ def main():
     labels = dbscan.labels_
 
     params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-    acc = davies_bouldin_score(X, labels)
+    acc = bench.davies_bouldin_score(X, labels)
 
     bench.print_output(library='sklearn', algorithm='dbscan', stages=['training'],
                        params=params, functions=['DBSCAN'], times=[time],
-                       accuracies=[acc], accuracy_type='davies_bouldin_score',
+                       metrics=[acc], metric_type='davies_bouldin_score',
                        data=[X], alg_instance=dbscan)
 
 

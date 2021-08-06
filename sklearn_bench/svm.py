@@ -43,33 +43,46 @@ def main():
 
     if params.probability:
         state_predict = 'predict_proba'
-        accuracy_type = 'log_loss'
         clf_predict = clf.predict_proba
-
-        def metric_call(x, y):
-            return bench.log_loss(x, y)
+        y_proba_train = clf_predict(X_train)
+        y_proba_test = clf_predict(X_test)
+        train_log_loss = bench.log_loss(y_train, y_proba_train)
+        test_log_loss = bench.log_loss(y_test, y_proba_test)
+        train_roc_auc = bench.roc_auc_score(y_train, y_proba_train)
+        test_roc_auc = bench.roc_auc_score(y_test, y_proba_test)
     else:
         state_predict = 'prediction'
-        accuracy_type = 'accuracy[%]'
         clf_predict = clf.predict
-
-        def metric_call(x, y):
-            return bench.accuracy_score(x, y)
+        train_log_loss = None
+        test_log_loss = None
+        train_roc_auc = None
+        test_roc_auc = None
 
     predict_train_time, y_pred = bench.measure_function_time(
         clf_predict, X_train, params=params)
-    train_acc = metric_call(y_train, y_pred)
+    train_acc = bench.accuracy_score(y_train, y_pred)
 
     _, y_pred = bench.measure_function_time(
         clf_predict, X_test, params=params)
-    test_acc = metric_call(y_test, y_pred)
+    test_acc = bench.accuracy_score(y_test, y_pred)
 
-    bench.print_output(library='sklearn', algorithm='svc',
-                       stages=['training', state_predict],
-                       params=params, functions=['SVM.fit', f'SVM.{state_predict}'],
-                       times=[fit_time, predict_train_time], accuracy_type=accuracy_type,
-                       accuracies=[train_acc, test_acc], data=[X_train, X_train],
-                       alg_instance=clf)
+    bench.print_output(
+        library='sklearn',
+        algorithm='svc',
+        stages=['training', state_predict],
+        params=params,
+        functions=['SVM.fit', f'SVM.{state_predict}'],
+        times=[fit_time, predict_train_time],
+        metric_type=['accuracy', 'log_loss', 'roc_auc', 'n_sv'],
+        metrics=[
+            [train_acc, test_acc],
+            [train_log_loss, test_log_loss],
+            [train_roc_auc, test_roc_auc],
+            [int(clf.n_support_.sum()), int(clf.n_support_.sum())],
+        ],
+        data=[X_train, X_train],
+        alg_instance=clf,
+    )
 
 
 if __name__ == "__main__":

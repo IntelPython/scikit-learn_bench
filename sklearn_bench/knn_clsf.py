@@ -18,7 +18,6 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.metrics import accuracy_score
 
 
 def main():
@@ -40,33 +39,53 @@ def main():
         knn_clsf.fit, X_train, y_train, params=params)
     if params.task == 'classification':
         y_pred = knn_clsf.predict(X_train)
-        train_acc = 100 * accuracy_score(y_pred, y_train)
+        y_proba = knn_clsf.predict_proba(X_train)
+        train_acc = bench.accuracy_score(y_train, y_pred)
+        train_log_loss = bench.log_loss(y_train, y_proba)
+        train_roc_auc = bench.roc_auc_score(y_train, y_proba)
 
     # Measure time and accuracy on prediction
     if params.task == 'classification':
         predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test,
                                                        params=params)
-        test_acc = 100 * accuracy_score(yp, y_test)
+        y_proba = knn_clsf.predict_proba(X_test)
+        test_acc = bench.accuracy_score(y_test, yp)
+        test_log_loss = bench.log_loss(y_test, y_proba)
+        test_roc_auc = bench.roc_auc_score(y_test, y_proba)
     else:
         predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test,
                                                       params=params)
 
     if params.task == 'classification':
-        bench.print_output(library='sklearn',
-                           algorithm=knn_clsf._fit_method + '_knn_classification',
-                           stages=['training', 'prediction'], params=params,
-                           functions=['knn_clsf.fit', 'knn_clsf.predict'],
-                           times=[train_time, predict_time],
-                           accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
-                           data=[X_train, X_test], alg_instance=knn_clsf)
+        bench.print_output(
+            library='sklearn',
+            algorithm=knn_clsf._fit_method + '_knn_classification',
+            stages=['training', 'prediction'],
+            params=params,
+            functions=['knn_clsf.fit', 'knn_clsf.predict'],
+            times=[train_time, predict_time],
+            metric_type=['accuracy', 'log_loss', 'roc_auc'],
+            metrics=[
+                [train_acc, test_acc],
+                [train_log_loss, test_log_loss],
+                [train_roc_auc, test_roc_auc],
+            ],
+            data=[X_train, X_test],
+            alg_instance=knn_clsf,
+        )
     else:
-        bench.print_output(library='sklearn',
-                           algorithm=knn_clsf._fit_method + '_knn_search',
-                           stages=['training', 'search'], params=params,
-                           functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
-                           times=[train_time, predict_time],
-                           accuracies=[], accuracy_type=None,
-                           data=[X_train, X_test], alg_instance=knn_clsf)
+        bench.print_output(
+            library='sklearn',
+            algorithm=knn_clsf._fit_method + '_knn_search',
+            stages=['training', 'search'],
+            params=params,
+            functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
+            times=[train_time, predict_time],
+            metric_type=None,
+            metrics=[],
+            data=[X_train, X_test],
+            alg_instance=knn_clsf,
+        )
 
 
 if __name__ == "__main__":

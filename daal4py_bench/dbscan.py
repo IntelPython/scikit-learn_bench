@@ -51,4 +51,4 @@ params.n_clusters = int(result.nClusters[0, 0])
 
 bench.print_output(library='daal4py', algorithm='dbscan', stages=['training'],
                    params=params, functions=['DBSCAN'], times=[time],
-                   accuracies=[None], accuracy_type=None, data=[X])
+                   metrics=[None], metric_type=None, data=[X])

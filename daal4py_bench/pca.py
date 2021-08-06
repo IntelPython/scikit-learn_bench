@@ -121,9 +121,8 @@ def pca_fit_full_daal(X, n_components):
 def test_fit(X):
     if params.svd_solver == 'full':
         return pca_fit_full_daal(X, params.n_components)
-    else:
-        method = 'correlationDense' if params.svd_solver == 'correlation' else 'svdDense'
-        return pca_fit_daal(X, params.n_components, method)
+    method = 'correlationDense' if params.svd_solver == 'correlation' else 'svdDense'
+    return pca_fit_daal(X, params.n_components, method)
 
 
 def test_transform(Xp, pca_result, eigenvalues, eigenvectors):
@@ -142,7 +141,7 @@ transform_time, tr = bench.measure_function_time(
 bench.print_output(library='daal4py', algorithm='pca',
                    stages=['training', 'transformation'],
                    params=params, functions=['PCA.fit', 'PCA.transform'],
-                   times=[fit_time, transform_time], accuracy_type=None,
-                   accuracies=[None, None], data=[X_train, X_test],
+                   times=[fit_time, transform_time], metric_type=None,
+                   metrics=[None, None], data=[X_train, X_test],
                    alg_params={'svd_solver': params.svd_solver,
                                'n_components': params.n_components})

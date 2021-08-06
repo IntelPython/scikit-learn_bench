@@ -68,7 +68,7 @@ if params.task == 'classification':
                        stages=['training', 'prediction'], params=params,
                        functions=['knn_clsf.fit', 'knn_clsf.predict'],
                        times=[train_time, predict_time],
-                       accuracies=[train_acc, test_acc], accuracy_type='accuracy[%]',
+                       metrics=[train_acc, test_acc], metric_type='accuracy[%]',
                        data=[X_train, X_test], alg_instance=knn_clsf)
 else:
     bench.print_output(library='cuml',
@@ -76,5 +76,5 @@ else:
                        stages=['training', 'search'], params=params,
                        functions=['knn_clsf.fit', 'knn_clsf.kneighbors'],
                        times=[train_time, predict_time],
-                       accuracies=[], accuracy_type=None,
+                       metrics=[], metric_type=None,
                        data=[X_train, X_test], alg_instance=knn_clsf)

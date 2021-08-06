@@ -33,19 +33,27 @@ def main():
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     # Time predict
-    predict_time, pred_train = bench.measure_function_time(regr.predict,
-                                                           X_train, params=params)
+    predict_time, y_pred = bench.measure_function_time(regr.predict,
+                                                       X_train, params=params)
 
-    train_rmse = bench.rmse_score(pred_train, y_train)
-    pred_test = regr.predict(X_test)
-    test_rmse = bench.rmse_score(pred_test, y_test)
+    train_rmse = bench.rmse_score(y_train, y_pred)
+    train_r2 = bench.r2_score(y_train, y_pred)
+    y_pred = regr.predict(X_test)
+    test_rmse = bench.rmse_score(y_test, y_pred)
+    test_r2 = bench.r2_score(y_test, y_pred)
 
-    bench.print_output(library='sklearn', algorithm='elastic-net',
-                       stages=['training', 'prediction'], params=params,
-                       functions=['ElasticNet.fit', 'ElasticNet.predict'],
-                       times=[fit_time, predict_time], accuracy_type='rmse',
-                       accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
-                       alg_instance=regr)
+    bench.print_output(
+        library='sklearn',
+        algorithm='elastic-net',
+        stages=['training', 'prediction'],
+        params=params,
+        functions=['ElasticNet.fit', 'ElasticNet.predict'],
+        times=[fit_time, predict_time],
+        metric_type=['rmse', 'r2_score'],
+        metrics=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        data=[X_train, X_train],
+        alg_instance=regr,
+    )
 
 
 if __name__ == "__main__":

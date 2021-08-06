@@ -61,6 +61,6 @@ test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 bench.print_output(library='cuml', algorithm='logistic_regression',
                    stages=['training', 'prediction'], params=params,
                    functions=['LogReg.fit', 'LogReg.predict'],
-                   times=[fit_time, predict_time], accuracy_type='accuracy[%]',
-                   accuracies=[train_acc, test_acc], data=[X_train, X_test],
+                   times=[fit_time, predict_time], metric_type='accuracy[%]',
+                   metrics=[train_acc, test_acc], data=[X_train, X_test],
                    alg_instance=clf)

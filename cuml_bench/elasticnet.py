@@ -56,6 +56,6 @@ test_rmse = bench.rmse_score(pred_test, y_test)
 bench.print_output(library='cuml', algorithm='elastic-net',
                    stages=['training', 'prediction'], params=params,
                    functions=['ElasticNet.fit', 'ElasticNet.predict'],
-                   times=[fit_time, predict_time], accuracy_type='rmse',
-                   accuracies=[train_rmse, test_rmse], data=[X_train, X_train],
+                   times=[fit_time, predict_time], metric_type='rmse',
+                   metrics=[train_rmse, test_rmse], data=[X_train, X_train],
                    alg_instance=regr)

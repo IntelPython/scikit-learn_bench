@@ -182,6 +182,6 @@ bench.print_output(
     params=params,
     functions=['xgb.dmatrix.train', 'xgb.train', 'xgb.dmatrix.test', 'xgb.predict'],
     times=[t_creat_train, fit_time, t_creat_test, predict_time],
-    accuracy_type=metric_name, accuracies=[None, train_metric, None, test_metric],
+    metric_type=metric_name, metrics=[None, train_metric, None, test_metric],
     data=[X_train, X_train, X_test, X_test],
     alg_instance=booster, alg_params=xgb_params)

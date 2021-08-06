@@ -30,12 +30,11 @@ def get_dtype(data):
     '''
     if hasattr(data, 'dtype'):
         return data.dtype
-    elif hasattr(data, 'dtypes'):
+    if hasattr(data, 'dtypes'):
         return str(data.dtypes[0])
-    elif hasattr(data, 'values'):
+    if hasattr(data, 'values'):
         return data.values.dtype
-    else:
-        raise ValueError(f'Impossible to get data type of {type(data)}')
+    raise ValueError(f'Impossible to get data type of {type(data)}')
 
 
 def sklearn_disable_finiteness_check():
@@ -66,10 +65,7 @@ def _parse_size(string, dim=2):
 
 
 def float_or_int(string):
-    if '.' in string:
-        return float(string)
-    else:
-        return int(string)
+    return float(string) if '.' in string else int(string)
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
@@ -90,10 +86,8 @@ def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     optimal_cache_size_bytes = byte_size * (n_rows ** 2)
     one_gb = 2 ** 30
     max_cache_bytes = max_cache * one_gb
-    if optimal_cache_size_bytes > max_cache_bytes:
-        return max_cache_bytes
-    else:
-        return optimal_cache_size_bytes
+    return max_cache_bytes \
+        if optimal_cache_size_bytes > max_cache_bytes else optimal_cache_size_bytes
 
 
 def parse_args(parser, size=None, loop_types=(),
@@ -175,9 +169,10 @@ def parse_args(parser, size=None, loop_types=(),
                         help='Seed to pass as random_state')
     parser.add_argument('--dataset-name', type=str, default=None,
                         help='Dataset name')
-    parser.add_argument('--no-intel-optimized', default=False, action='store_true',
+    parser.add_argument('--no-intel-optimized', default=False,
+                        action='store_true',
                         help='Use no intel optimized version. '
-                             'Now avalible for scikit-learn benchmarks'),
+                        'Now avalible for scikit-learn benchmarks')
     parser.add_argument('--device', default='None', type=str,
                         choices=('host', 'cpu', 'gpu', 'None'),
                         help='Execution context device')
@@ -338,20 +333,47 @@ def columnwise_score(y, yp, score_func):
     return score_func(y, yp)
 
 
-def accuracy_score(y, yp):
-    return columnwise_score(y, yp, lambda y1, y2: np.mean(y1 == y2))
+def accuracy_score(y_true, y_pred):
+    return columnwise_score(y_true, y_pred, lambda y1, y2: np.mean(y1 == y2))
 
 
-def log_loss(y, yp):
+def log_loss(y_true, y_pred):
     from sklearn.metrics import log_loss as sklearn_log_loss
-    y = convert_to_numpy(y)
-    yp = convert_to_numpy(yp)
-    return sklearn_log_loss(y, yp)
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_log_loss(y_true, y_pred)
 
 
-def rmse_score(y, yp):
+def roc_auc_score(y_true, y_pred, multi_class='ovr'):
+    from sklearn.metrics import roc_auc_score as sklearn_roc_auc
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    if y_pred.shape[1] == 2:  # binary case
+        y_pred = y_pred[:, 1]
+    return sklearn_roc_auc(y_true, y_pred, multi_class=multi_class)
+
+
+def rmse_score(y_true, y_pred):
     return columnwise_score(
-        y, yp, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
+        y_true, y_pred, lambda y1, y2: float(np.sqrt(np.mean((y1 - y2)**2))))
+
+
+def r2_score(y_true, y_pred):
+    from sklearn.metrics import r2_score as sklearn_r2_score
+    y_true = convert_to_numpy(y_true)
+    y_pred = convert_to_numpy(y_pred)
+    return sklearn_r2_score(y_true, y_pred)
+
+
+def davies_bouldin_score(X, labels):
+    from sklearn.metrics.cluster import davies_bouldin_score as sklearn_dbs
+    X = convert_to_numpy(X)
+    labels = convert_to_numpy(labels)
+    try:
+        res = sklearn_dbs(X, labels)
+    except ValueError as ex:
+        res = ex
+    return res
 
 
 def r2_score(y, yp):
@@ -495,16 +517,21 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
 
 
 def print_output(library, algorithm, stages, params, functions,
-                 times, accuracy_type, accuracies, data, alg_instance=None,
+                 times, metric_type, metrics, data, alg_instance=None,
                  alg_params=None):
     if params.output_format == 'json':
         output = []
-        for i in range(len(stages)):
-            result = gen_basic_dict(library, algorithm, stages[i], params,
+        for i, stage in enumerate(stages):
+            result = gen_basic_dict(library, algorithm, stage, params,
                                     data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
-            if accuracy_type is not None:
-                result.update({f'{accuracy_type}': accuracies[i]})
+            if metric_type is not None:
+                if isinstance(metric_type, str):
+                    result.update({f'{metric_type}': metrics[i]})
+                elif isinstance(metric_type, list):
+                    for ind, val in enumerate(metric_type):
+                        if metrics[ind][i] is not None:
+                            result.update({f'{val}': metrics[ind][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
