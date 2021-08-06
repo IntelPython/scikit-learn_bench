@@ -204,11 +204,11 @@ def get_comparison_method(config: Dict[str, str], metric: str) -> str:
     return config[metric] if metric in config else config['default']
 
 
-def get_ratio_string(a: str, b: str, comparison_method: str) -> str:
+def get_ratio_string(a: str, b: str, comparison_method: str, num_digits=3) -> str:
     splitted_comparison_method = comparison_method.split(' ')
     if splitted_comparison_method[0] == "2":
         a, b = b, a
-    return '=' + a + splitted_comparison_method[1] + b
+    return '=ROUND(' + a + splitted_comparison_method[1] + b + f',{num_digits})'
 
 
 def get_header_parameters(
@@ -392,7 +392,7 @@ for algo in available_algos_and_metrics:
                                 xy_to_excel_cell(second_offset, y),
                                 get_comparison_method(gen_config['comparison_method'], metric),
                             ),
-                            number_format='0.00',
+                            number_format='0.000',
                         )
                     # fill comparison range by color rule
                     ws.conditional_formatting.add(
