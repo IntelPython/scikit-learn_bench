@@ -218,6 +218,23 @@
             "method": ["brute", "kd_tree"]
         },
         {
+            "algorithm": "knn_regr",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 200
+                    }
+                }
+            ],
+            "method": ["brute", "kd_tree"]
+        },
+        {
             "algorithm": "train_test_split",
             "dataset": [
                 {
