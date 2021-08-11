@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
                         default='configs/config_example.json',
-                        help='Path to configuration files')
+                        help='Path to configuration files or Path to directory which contains configuration files')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
@@ -60,7 +60,9 @@ if __name__ == '__main__':
         'results': []
     }
     is_successful = True
-
+    if os.path.isdir(args.configs):
+        files = [(args.configs + f) for f in os.listdir(args.configs) if f.endswith('.json')]
+        args.configs = ','.join(files)
     for config_name in args.configs.split(','):
         logging.info(f'Config: {config_name}')
         with open(config_name, 'r') as config_file:
