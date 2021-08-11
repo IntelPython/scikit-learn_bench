@@ -1,5 +1,5 @@
 {
-    "align": [
+    "header": [
         "algorithm",
         "stage",
         "input_data:data_order",
@@ -10,9 +10,10 @@
         "input_data:classes",
         "input_data:n_clusters"
     ],
-    "diff": [
-        "software_hash",
-        "hardware_hash",
-        "measurement_time"
+    "comparison_method": {
+        "default": "2 / 1"
+    },
+    "aggregation_metrics": [
+        "geomean"
     ]
 }

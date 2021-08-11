@@ -49,8 +49,12 @@ def main():
         params=params,
         functions=['Lasso.fit', 'Lasso.predict'],
         times=[fit_time, predict_time],
-        metric_type=['rmse', 'r2_score'],
-        metrics=[[train_rmse, test_rmse], [train_r2, test_r2]],
+        metric_type=['rmse', 'r2_score', 'iter'],
+        metrics=[
+            [train_rmse, test_rmse],
+            [train_r2, test_r2],
+            [int(regr.n_iter_), int(regr.n_iter_)],
+        ],
         data=[X_train, X_test],
         alg_instance=regr,
     )
