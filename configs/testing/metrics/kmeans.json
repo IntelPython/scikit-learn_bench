@@ -23,7 +23,20 @@
                         "x": "data/ijcnn_x_test.npy",
                         "y": "data/ijcnn_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [10],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "a9a",
@@ -37,7 +50,20 @@
                         "x": "data/a9a_x_test.npy",
                         "y": "data/a9a_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [45],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "gisette",
@@ -51,7 +77,20 @@
                         "x": "data/gisette_x_test.npy",
                         "y": "data/gisette_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [70],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "klaverjas",
@@ -65,7 +104,20 @@
                         "x": "data/klaverjas_x_test.npy",
                         "y": "data/klaverjas_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [60],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "mnist",
@@ -79,7 +131,20 @@
                         "x": "data/mnist_x_test.npy",
                         "y": "data/mnist_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [25],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "sensit",
@@ -93,7 +158,20 @@
                         "x": "data/sensit_x_test.npy",
                         "y": "data/sensit_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [40],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "skin_segmentation",
@@ -107,7 +185,20 @@
                         "x": "data/skin_segmentation_x_test.npy",
                         "y": "data/skin_segmentation_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [5],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "covertype",
@@ -121,7 +212,20 @@
                         "x": "data/covertype_x_test.npy",
                         "y": "data/covertype_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [8],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "codrnanorm",
@@ -135,7 +239,20 @@
                         "x": "data/codrnanorm_x_test.npy",
                         "y": "data/codrnanorm_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [12],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "abalone",
@@ -147,19 +264,20 @@
                         "x": "data/abalone_x_test.npy",
                         "y": "data/abalone_y_test.npy"
                     }
-                },
-                {
-                    "source": "npy",
-                    "name": "airline-ohe",
-                    "training": {
-                        "x": "data/airline-ohe_x_train.npy",
-                        "y": "data/airline-ohe_y_train.npy"
-                    },
-                    "testing": {
-                        "x": "data/airline-ohe_x_test.npy",
-                        "y": "data/airline-ohe_y_test.npy"
-                    }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [3],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "higgs1m",
@@ -171,7 +289,20 @@
                         "x": "data/higgs1m_x_test.npy",
                         "y": "data/higgs1m_y_test.npy"
                     }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [35],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "letters",
@@ -183,19 +314,20 @@
                         "x": "data/letters_x_test.npy",
                         "y": "data/letters_y_test.npy"
                     }
-                },
-                {
-                    "source": "npy",
-                    "name": "airline",
-                    "training": {
-                        "x": "data/airline_x_train.npy",
-                        "y": "data/airline_y_train.npy"
-                    },
-                    "testing": {
-                        "x": "data/airline_x_test.npy",
-                        "y": "data/airline_y_test.npy"
-                    }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [9],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "covtype",
@@ -207,19 +339,20 @@
                         "x": "data/covtype_x_test.npy",
                         "y": "data/covtype_y_test.npy"
                     }
-                },
-                {
-                    "source": "npy",
-                    "name": "epsilon",
-                    "training": {
-                        "x": "data/epsilon_x_train.npy",
-                        "y": "data/epsilon_y_train.npy"
-                    },
-                    "testing": {
-                        "x": "data/epsilon_x_test.npy",
-                        "y": "data/epsilon_y_test.npy"
-                    }
-                },
+                }
+            ],
+            "time-method": ["box_filter"],
+            "time-limit": [50],
+            "n-clusters": [10],
+            "n_init": [10],
+            "maxiter": [300],
+            "init": ["k-means++"],
+            "tol": [1e-4]
+        },
+        {
+            "algorithm": "kmeans",
+            "dtype": ["float64"],
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "higgs",
@@ -236,6 +369,7 @@
             "time-method": ["box_filter"],
             "time-limit": [50],
             "n-clusters": [20],
+            "n_init": [10],
             "maxiter": [300],
             "init": ["k-means++"],
             "tol": [1e-4]
