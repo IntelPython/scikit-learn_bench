@@ -29,13 +29,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
                         default='configs/config_example.json',
-                        help='Path to configuration files or Path to directory which contains configuration files')
+                        help='Path to configuration files or '
+                             'Path to directory which contains configuration files')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use no intel optimized version. '
-                             'Now avalible for scikit-learn benchmarks'),
+                             'Now avalible for scikit-learn benchmarks')
     parser.add_argument('--output-file', default='results.json',
                         type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
