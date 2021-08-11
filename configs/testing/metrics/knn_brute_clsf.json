@@ -1,0 +1,85 @@
+{
+    "common": {
+        "lib": ["sklearn"],
+        "data-format": ["pandas"],
+        "data-order": ["F"],
+        "dtype": ["float64"]
+    },
+    "cases": [
+        {
+            "algorithm": "knn_clsf",
+            "dtype": ["float64"],
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "gisette",
+                    "training":
+                    {
+                        "x": "data/gisette_x_train.npy",
+                        "y": "data/gisette_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/gisette_x_test.npy",
+                        "y": "data/gisette_y_test.npy"
+                    }
+                },
+                {
+                    "source": "npy",
+                    "name": "letters",
+                    "training": {
+                        "x": "data/letters_x_train.npy",
+                        "y": "data/letters_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/letters_x_test.npy",
+                        "y": "data/letters_y_test.npy"
+                    }
+                },
+                {
+                    "source": "npy",
+                    "name": "a9a",
+                    "training":
+                    {
+                        "x": "data/a9a_x_train.npy",
+                        "y": "data/a9a_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/a9a_x_test.npy",
+                        "y": "data/a9a_y_test.npy"
+                    }
+                },
+                {
+                    "source": "npy",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
+                    }
+                },
+                {
+                    "source": "npy",
+                    "name": "sensit",
+                    "training":
+                    {
+                        "x": "data/sensit_x_train.npy",
+                        "y": "data/sensit_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/sensit_x_test.npy",
+                        "y": "data/sensit_y_test.npy"
+                    }
+                }
+            ],
+            "method": ["brute"]
+        }
+    ]
+}
