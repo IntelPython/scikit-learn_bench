@@ -79,7 +79,7 @@ predict_test_time, y_pred = bench.measure_function_time(
     clf_predict, X_test, params=params)
 test_acc = metric_call(y_test, y_pred)
 
-bench.print_output(library='cuml', algorithm='svc',
+bench.print_output(library='cuml', algorithm='SVC',
                    stages=['training', state_predict], params=params,
                    functions=['SVM.fit', 'SVM.predict'],
                    times=[fit_time, predict_train_time], metric_type=metric_type,

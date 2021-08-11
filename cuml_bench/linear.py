@@ -47,7 +47,7 @@ test_rmse = bench.rmse_score(yp, y_test)
 yp = regr.predict(X_train)
 train_rmse = bench.rmse_score(yp, y_train)
 
-bench.print_output(library='cuml', algorithm='linear_regression',
+bench.print_output(library='cuml', algorithm='lin_reg',
                    stages=['training', 'prediction'], params=params,
                    functions=['Linear.fit', 'Linear.predict'],
                    times=[fit_time, predict_time], metric_type='rmse',

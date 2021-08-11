@@ -64,7 +64,7 @@ else:
 
 if params.task == 'classification':
     bench.print_output(library='cuml',
-                       algorithm=knn_clsf.algorithm + '_knn_classification',
+                       algorithm=knn_clsf.algorithm + '_knn_clsf',
                        stages=['training', 'prediction'], params=params,
                        functions=['knn_clsf.fit', 'knn_clsf.predict'],
                        times=[train_time, predict_time],

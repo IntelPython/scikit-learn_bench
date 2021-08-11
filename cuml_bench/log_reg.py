@@ -58,7 +58,7 @@ predict_time, y_pred = bench.measure_function_time(
     clf.predict, X_test, params=params)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
-bench.print_output(library='cuml', algorithm='logistic_regression',
+bench.print_output(library='cuml', algorithm='log_reg',
                    stages=['training', 'prediction'], params=params,
                    functions=['LogReg.fit', 'LogReg.predict'],
                    times=[fit_time, predict_time], metric_type='accuracy[%]',

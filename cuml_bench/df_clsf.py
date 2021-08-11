@@ -93,7 +93,7 @@ train_acc = 100 * bench.accuracy_score(y_pred, y_train)
 predict_time, y_pred = bench.measure_function_time(predict, clf, X_test, params=params)
 test_acc = 100 * bench.accuracy_score(y_pred, y_test)
 
-bench.print_output(library='cuml', algorithm='decision_forest_classification',
+bench.print_output(library='cuml', algorithm='df_clsf',
                    stages=['training', 'prediction'],
                    params=params, functions=['df_clsf.fit', 'df_clsf.predict'],
                    times=[fit_time, predict_time], metric_type='accuracy[%]',
