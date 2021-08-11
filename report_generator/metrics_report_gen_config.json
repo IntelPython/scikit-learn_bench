@@ -12,6 +12,7 @@
         "algorithm_parameters:algorithm",
         "algorithm_parameters:tol",
         "algorithm_parameters:max_iter",
+        "algorithm_parameters:init",
         "algorithm_parameters:n_init",
         "algorithm_parameters:alpha",
         "algorithm_parameters:l1_ratio",
