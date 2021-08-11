@@ -50,7 +50,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='decision_forest_regression',
+        algorithm='df_regr',
         stages=['training', 'prediction'],
         params=params,
         functions=['df_regr.fit', 'df_regr.predict'],

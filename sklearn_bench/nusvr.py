@@ -53,7 +53,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='nusvr',
+        algorithm='nuSVR',
         stages=['training', 'prediction'],
         params=params,
         functions=['NuSVR.fit', 'NuSVR.predict'],

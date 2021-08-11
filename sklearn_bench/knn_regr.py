@@ -55,7 +55,7 @@ def main():
     if params.task == 'regression':
         bench.print_output(
             library='sklearn',
-            algorithm=knn_regr._fit_method + '_knn_regression',
+            algorithm=knn_regr._fit_method + '_knn_regr',
             stages=['training', 'prediction'],
             params=params,
             functions=['knn_regr.fit', 'knn_regr.predict'],

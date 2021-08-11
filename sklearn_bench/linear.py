@@ -42,7 +42,7 @@ def main():
     train_r2 = bench.r2_score(y_train, yp)
 
     bench.print_output(
-        library='sklearn', algorithm='linear_regression',
+        library='sklearn', algorithm='lin_reg',
         stages=['training', 'prediction'],
         params=params, functions=['Linear.fit', 'Linear.predict'],
         times=[fit_time, predict_time],

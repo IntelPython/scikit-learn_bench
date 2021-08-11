@@ -42,7 +42,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='pca',
+        algorithm='PCA',
         stages=['training', 'transformation'],
         params=params,
         functions=['PCA.fit', 'PCA.transform'],

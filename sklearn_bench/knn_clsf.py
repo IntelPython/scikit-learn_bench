@@ -59,7 +59,7 @@ def main():
     if params.task == 'classification':
         bench.print_output(
             library='sklearn',
-            algorithm=knn_clsf._fit_method + '_knn_classification',
+            algorithm=knn_clsf._fit_method + '_knn_clsf',
             stages=['training', 'prediction'],
             params=params,
             functions=['knn_clsf.fit', 'knn_clsf.predict'],

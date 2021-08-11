@@ -68,7 +68,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='nusvc',
+        algorithm='nuSVC',
         stages=['training', state_predict],
         params=params, functions=['NuSVC.fit', f'NuSVC.{state_predict}'],
         times=[fit_time, predict_train_time],

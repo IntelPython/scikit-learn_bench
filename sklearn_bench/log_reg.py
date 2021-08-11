@@ -58,7 +58,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='logistic_regression',
+        algorithm='log_reg',
         stages=['training', 'prediction'],
         params=params,
         functions=['LogReg.fit', 'LogReg.predict'],
