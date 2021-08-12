@@ -24,6 +24,19 @@ from typing import Any, Dict, List, Union
 
 import datasets.make_datasets as make_datasets
 import utils
+from pathlib import Path
+
+
+def get_configs(path: Path) -> List[str]:
+    result = list()
+    for dir_or_file in os.listdir(path):
+        new_path = Path(path, dir_or_file)
+        if dir_or_file.endswith('.json'):
+            result.append(str(new_path))
+        elif os.path.isdir(new_path):
+            result += get_configs(new_path)
+    return result
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -62,8 +75,7 @@ if __name__ == '__main__':
     }
     is_successful = True
     if os.path.isdir(args.configs):
-        files = [(args.configs + f) for f in os.listdir(args.configs) if f.endswith('.json')]
-        args.configs = ','.join(files)
+        args.configs = ','.join(get_configs(args.configs))
     for config_name in args.configs.split(','):
         logging.info(f'Config: {config_name}')
         with open(config_name, 'r') as config_file:
