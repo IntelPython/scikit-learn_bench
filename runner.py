@@ -74,8 +74,16 @@ if __name__ == '__main__':
         'results': []
     }
     is_successful = True
-    if os.path.isdir(args.configs):
-        args.configs = ','.join(get_configs(args.configs))
+    # getting jsons from folders
+    paths_to_configs: List[str] = list()
+    for config_name in args.configs.split(','):
+        if os.path.isdir(config_name):
+            config_name = get_configs(Path(config_name))
+        else:
+            config_name = [config_name]
+        paths_to_configs += config_name
+    args.configs = ','.join(paths_to_configs)
+
     for config_name in args.configs.split(','):
         logging.info(f'Config: {config_name}')
         with open(config_name, 'r') as config_file:
