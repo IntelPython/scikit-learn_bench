@@ -1,14 +1,14 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "knn_regr",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "method": "kd_tree"
     },
     "cases": [
         {
-            "algorithm": "knn_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -80,8 +80,7 @@
                         "y": "data/medical_charges_nominal_y_test.npy"
                     }
                 }
-            ],
-            "method": ["kd_tree"]
+            ]
         }
     ]
 }

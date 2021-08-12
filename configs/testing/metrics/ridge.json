@@ -1,13 +1,14 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "ridge",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "alpha": 1.0
     },
     "cases": [
         {
-            "algorithm": "ridge",
             "dataset": [
                 {
                     "source": "npy",
@@ -23,8 +24,7 @@
                         "y": "data/abalone_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -43,8 +43,7 @@
                         "y": "data/california_housing_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -63,8 +62,7 @@
                         "y": "data/fried_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -83,8 +81,7 @@
                         "y": "data/twodplanes_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -103,8 +100,7 @@
                         "y": "data/medical_charges_nominal_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -123,8 +119,7 @@
                         "y": "data/yolanda_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         },
         {
             "algorithm": "ridge",
@@ -143,8 +138,7 @@
                         "y": "data/year_prediction_msd_y_test.npy"
                     }
                 }
-            ],
-            "alpha": [1.0]
+            ]
         }
     ]
 }

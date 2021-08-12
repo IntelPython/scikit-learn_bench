@@ -1,9 +1,9 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
@@ -19,11 +19,11 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [1000],
-            "maxiter": [50],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 1000,
+            "maxiter": 50,
+            "tol": 0.0
         },
         {
             "algorithm": "kmeans",
@@ -38,12 +38,12 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [5],
-            "maxiter": [50],
-            "init": ["k-means++"],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 5,
+            "maxiter": 50,
+            "init": "k-means++",
+            "tol": 0.0
         },
         {
             "algorithm": "kmeans",
@@ -58,11 +58,11 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [20],
-            "maxiter": [50],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 20,
+            "maxiter": 50,
+            "tol": 0.0
         },
         {
             "algorithm": "pca",
@@ -107,12 +107,12 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [10]
+            "svd-solver": "full",
+            "n-components": 10
         },
         {
             "algorithm": "df_clsf",
-            "dtype": ["float32"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
@@ -129,10 +129,10 @@
                     }
                 }
             ],
-            "num-trees": [50],
-            "max-depth": [16],
-            "max-leaf-nodes": [131072],
-            "max-features": [0.2]
+            "num-trees": 50,
+            "max-depth": 16,
+            "max-leaf-nodes": 131072,
+            "max-features": 0.2
         },
         {
             "algorithm": "ridge",
@@ -146,7 +146,7 @@
                     }
                 }
             ],
-            "alpha": [5]
+            "alpha": 5
         },
         {
             "algorithm": "linear",
@@ -201,8 +201,8 @@
                     }
                 }
             ],
-            "maxiter": [100],
-            "tol": [0]
+            "maxiter": 100,
+            "tol": 0
         },
         {
             "algorithm": "svm",
@@ -222,8 +222,8 @@
                     }
                 }
             ],
-            "C": [500.0],
-            "kernel": ["rbf"]
+            "C": 500.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "svm",
@@ -243,8 +243,8 @@
                     }
                 }
             ],
-            "C": [1.5e-3],
-            "kernel": ["linear"]
+            "C": 1.5e-3,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -264,8 +264,8 @@
                     }
                 }
             ],
-            "C": [100.0],
-            "kernel": ["linear"]
+            "C": 100.0,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -285,8 +285,8 @@
                     }
                 }
             ],
-            "C": [50.0],
-            "kernel": ["rbf"]
+            "C": 50.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "nusvc",
@@ -306,8 +306,8 @@
                     }
                 }
             ],
-            "nu": [0.25],
-            "kernel": ["poly"]
+            "nu": 0.25,
+            "kernel": "poly"
         },
         {
             "algorithm": "svr",
@@ -327,8 +327,8 @@
                     }
                 }
             ],
-            "C": [0.1],
-            "kernel": ["poly"]
+            "C": 0.1,
+            "kernel": "poly"
         },
         {
             "algorithm": "nusvr",
@@ -348,9 +348,9 @@
                     }
                 }
             ],
-            "nu": [0.8],
-            "C": [2.0],
-            "kernel": ["rbf"]
+            "nu": 0.8,
+            "C": 2.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "dbscan",
@@ -386,7 +386,7 @@
         },
         {
             "algorithm": "knn_clsf",
-            "dtype": ["float32"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -437,11 +437,11 @@
                     }
                 }
             ],
-            "method": ["brute"]
+            "method": "brute"
         },
         {
             "algorithm": "knn_clsf",
-            "dtype": ["float32"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -468,7 +468,7 @@
                     }
                 }
             ],
-            "method": ["kd_tree"]
+            "method": "kd_tree"
         },
         {
             "algorithm": "train_test_split",
@@ -483,9 +483,9 @@
                     }
                 }
             ],
-            "include-y": [""],
-            "train-size": [0.75],
-            "test-size": [0.25]
+            "include-y": "",
+            "train-size": 0.75,
+            "test-size": 0.25
         }
     ]
 }

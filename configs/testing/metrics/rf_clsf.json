@@ -1,14 +1,14 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "df_clsf",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "num-trees": 500
     },
     "cases": [
-        {
-            "algorithm": "df_clsf",
-            "dtype": ["float64"],
+        {            
             "dataset": [
                 {
                     "source": "npy",
@@ -21,7 +21,11 @@
                         "x": "data/letters_x_test.npy",
                         "y": "data/letters_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "skin_segmentation",
@@ -35,7 +39,11 @@
                         "x": "data/skin_segmentation_x_test.npy",
                         "y": "data/skin_segmentation_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "codrnanorm",
@@ -49,7 +57,11 @@
                         "x": "data/codrnanorm_x_test.npy",
                         "y": "data/codrnanorm_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "ijcnn",
@@ -63,7 +75,11 @@
                         "x": "data/ijcnn_x_test.npy",
                         "y": "data/ijcnn_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "a9a",
@@ -77,7 +93,11 @@
                         "x": "data/a9a_x_test.npy",
                         "y": "data/a9a_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "klaverjas",
@@ -91,8 +111,11 @@
                         "x": "data/klaverjas_x_test.npy",
                         "y": "data/klaverjas_y_test.npy"
                     }
-                },
-
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "gisette",
@@ -106,7 +129,11 @@
                         "x": "data/gisette_x_test.npy",
                         "y": "data/gisette_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "sensit",
@@ -120,7 +147,11 @@
                         "x": "data/sensit_x_test.npy",
                         "y": "data/sensit_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "covertype",
@@ -134,7 +165,11 @@
                         "x": "data/covertype_x_test.npy",
                         "y": "data/covertype_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {            
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "covtype",
@@ -147,8 +182,7 @@
                         "y": "data/covtype_y_test.npy"
                     }
                 }
-            ],
-            "num-trees": [500]
+            ]
         }
     ]
 }

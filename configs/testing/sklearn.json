@@ -1,9 +1,9 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
@@ -19,8 +19,8 @@
                     }
                 }
             ],
-            "init": ["k-means++"],
-            "n-clusters": [10]
+            "init": "k-means++",
+            "n-clusters": 10
         },
         {
             "algorithm": "df_clsf",
@@ -38,7 +38,7 @@
                     }
                 }
             ],
-            "num-trees": [10]
+            "num-trees": 10
         },
         {
             "algorithm": "df_regr",
@@ -56,7 +56,7 @@
                     }
                 }
             ],
-            "num-trees": [10]
+            "num-trees": 10
         },
         {
             "algorithm": "ridge",
@@ -73,7 +73,7 @@
                     }
                 }
             ],
-            "alpha": [5]
+            "alpha": 5
         },
         {
             "algorithm": "linear",
@@ -107,7 +107,7 @@
                     }
                 }
             ],
-            "tol": [0.01]
+            "tol": 0.01
         },
         {
             "algorithm": "svm",
@@ -125,8 +125,8 @@
                     }
                 }
             ],
-            "C": [10.0],
-            "kernel": ["linear"]
+            "C": 10.0,
+            "kernel": "linear"
         },
         {
             "algorithm": "nusvc",
@@ -144,8 +144,8 @@
                     }
                 }
             ],
-            "nu": [0.1],
-            "kernel": ["poly"]
+            "nu": 0.1,
+            "kernel": "poly"
         },
         {
             "algorithm": "svr",
@@ -162,8 +162,8 @@
                     }
                 }
             ],
-            "C": [10.0],
-            "kernel": ["rbf"]
+            "C": 10.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "nusvr",
@@ -180,10 +180,10 @@
                     }
                 }
             ],
-            "nu": [0.1],
-            "C": [1.0],
-            "kernel": ["poly"],
-            "degree": [2]
+            "nu": 0.1,
+            "C": 1.0,
+            "kernel": "poly",
+            "degree": 2
         },
         {
             "algorithm": "dbscan",
@@ -247,9 +247,9 @@
                     }                
                 }
             ],
-            "include-y": [""],
-            "train-size": [0.75],
-            "test-size": [0.25]
+            "include-y": "",
+            "train-size": 0.75,
+            "test-size": 0.25
         },
         {
             "algorithm": "lasso",
@@ -267,8 +267,8 @@
                     }
                 }
             ],
-            "alpha": [1.0],
-            "tol": [1e-4]
+            "alpha": 1.0,
+            "tol": 1e-4
         },
         {
             "algorithm": "elasticnet",
@@ -286,9 +286,9 @@
                     }
                 }
             ],
-            "alpha": [2.0],
-            "l1_ratio": [0.5],
-            "tol": [1e-4]
+            "alpha": 2.0,
+            "l1_ratio": 0.5,
+            "tol": 1e-4
         },
         {
             "algorithm": "pca",

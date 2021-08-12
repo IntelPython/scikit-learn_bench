@@ -1,13 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "linear",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "linear",
             "dataset": [
                 {
                     "source": "npy",

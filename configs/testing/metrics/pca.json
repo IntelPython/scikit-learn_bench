@@ -1,13 +1,14 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "pca",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "svd-solver": "full"
     },
     "cases": [
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -19,11 +20,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -35,11 +34,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.6]
+            "n-components": 0.6
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -51,11 +48,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -67,11 +62,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.6]
+            "n-components": 0.6
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -83,11 +76,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -99,8 +90,7 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.6]
+            "n-components": 0.6
         },
         {
             "algorithm": "pca",
@@ -115,11 +105,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -131,11 +119,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.6]
+            "n-components": 0.6
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -147,11 +133,9 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         },
         {
-            "algorithm": "pca",
             "dataset": [
                 {
                     "source": "npy",
@@ -163,8 +147,7 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [0.8]
+            "n-components": 0.8
         }
     ]
 }

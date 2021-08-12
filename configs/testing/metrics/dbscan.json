@@ -1,14 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "dbscan",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -28,8 +27,6 @@
             "eps": [0.5]
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -49,8 +46,6 @@
             "eps": [0.5]
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -67,11 +62,9 @@
                     }
                 }
             ],
-            "eps": [18800]
+            "eps": 18800
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -88,11 +81,9 @@
                     }
                 }
             ],
-            "eps": [2]
+            "eps": 2
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -109,11 +100,9 @@
                     }
                 }
             ],
-            "eps": [0.5]
+            "eps": 0.5
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -130,11 +119,9 @@
                     }
                 }
             ],
-            "eps": [0.5]
+            "eps": 0.5
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -149,11 +136,9 @@
                     }
                 }
             ],
-            "eps": [0.5]
+            "eps": 0.5
         },
         {
-            "algorithm": "dbscan",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -168,7 +153,7 @@
                     }
                 }
             ],
-            "eps": [0.5]
+            "eps": 0.5
         }
     ]
 }

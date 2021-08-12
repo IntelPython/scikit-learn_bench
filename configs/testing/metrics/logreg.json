@@ -1,13 +1,15 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "log_reg",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "maxiter": 5000,
+        "tol": 0
     },
     "cases": [
         {
-            "algorithm": "log_reg",
             "dataset": [
                 {
                     "source": "npy",
@@ -22,7 +24,11 @@
                         "x": "data/gisette_x_test.npy",
                         "y": "data/gisette_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "letters",
@@ -34,7 +40,11 @@
                         "x": "data/letters_x_test.npy",
                         "y": "data/letters_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "a9a",
@@ -48,7 +58,11 @@
                         "x": "data/a9a_x_test.npy",
                         "y": "data/a9a_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "sensit",
@@ -62,7 +76,11 @@
                         "x": "data/sensit_x_test.npy",
                         "y": "data/sensit_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "ijcnn",
@@ -76,7 +94,11 @@
                         "x": "data/ijcnn_x_test.npy",
                         "y": "data/ijcnn_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "skin_segmentation",
@@ -90,7 +112,11 @@
                         "x": "data/skin_segmentation_x_test.npy",
                         "y": "data/skin_segmentation_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "klaverjas",
@@ -104,7 +130,11 @@
                         "x": "data/klaverjas_x_test.npy",
                         "y": "data/klaverjas_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "codrnanorm",
@@ -118,7 +148,11 @@
                         "x": "data/codrnanorm_x_test.npy",
                         "y": "data/codrnanorm_y_test.npy"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "higgs1m",
@@ -131,10 +165,7 @@
                         "y": "data/higgs1m_y_test.npy"
                     }
                 }
-                
-            ],
-            "maxiter": [5000],
-            "tol": [0]
+            ]
         }
     ]
 }

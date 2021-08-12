@@ -1,14 +1,19 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "kmeans",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "time-method": "box_filter",
+        "time-limit": 50,
+        "n_init": 10,
+        "maxiter": 300,
+        "tol": 1e-4,
+        "init": "k-means++"
     },
     "cases": [
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -25,17 +30,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [10],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 10
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -52,17 +49,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [45],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 45
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -79,17 +68,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [70],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 70
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -106,17 +87,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [60],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 60
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -133,17 +106,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [25],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 25
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -160,17 +125,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [40],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 40
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -187,17 +144,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [5],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 5
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -214,17 +163,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [8],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 8
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -241,17 +182,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [12],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 12
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -266,17 +199,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [3],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 3
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -291,17 +216,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [35],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 35
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -316,17 +233,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [9],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 9
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -341,17 +250,9 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [10],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 10
         },
         {
-            "algorithm": "kmeans",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -366,13 +267,7 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "time-limit": [50],
-            "n-clusters": [20],
-            "n_init": [10],
-            "maxiter": [300],
-            "init": ["k-means++"],
-            "tol": [1e-4]
+            "n-clusters": 20
         }
     ]
 }

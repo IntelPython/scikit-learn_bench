@@ -1,14 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "df_regr",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -27,8 +26,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -47,8 +44,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -67,8 +62,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -87,8 +80,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -107,8 +98,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -127,8 +116,6 @@
             ]
         },
         {
-            "algorithm": "df_regr",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",

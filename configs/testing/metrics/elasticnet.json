@@ -1,13 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "elasticnet",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "elasticnet",
             "dataset": [
                 {
                     "source": "npy",
@@ -24,12 +24,11 @@
                     }
                 }
             ],
-            "alpha": [0.005],
-            "tol": [1e-4],
-            "l1_ratio": [0.85]
+            "alpha": 0.005,
+            "tol": 1e-4,
+            "l1_ratio": 0.85
         },
         {
-            "algorithm": "elasticnet",
             "dataset": [
                 {
                     "source": "npy",
@@ -46,12 +45,11 @@
                     }
                 }
             ],
-            "alpha": [0.01],
-            "tol": [1e-4],
-            "l1_ratio": [0.7]
+            "alpha": 0.01,
+            "tol": 1e-4,
+            "l1_ratio": 0.7
         },
         {
-            "algorithm": "elasticnet",
             "dataset": [
                 {
                     "source": "npy",
@@ -68,12 +66,11 @@
                     }
                 }
             ],
-            "alpha": [0.0625],
-            "tol": [1e-4],
-            "l1_ratio": [0.75]
+            "alpha": 0.0625,
+            "tol": 1e-4,
+            "l1_ratio": 0.75
         },
         {
-            "algorithm": "elasticnet",
             "dataset": [
                 {
                     "source": "npy",
@@ -90,12 +87,11 @@
                     }
                 }
             ],
-            "alpha": [0.006],
-            "tol": [1e-4],
-            "l1_ratio": [0.25]
+            "alpha": 0.006,
+            "tol": 1e-4,
+            "l1_ratio": 0.25
         },
         {
-            "algorithm": "elasticnet",
             "dataset": [
                 {
                     "source": "npy",
@@ -112,9 +108,9 @@
                     }
                 }
             ],
-            "alpha": [0.15],
-            "tol": [1e-4],
-            "l1_ratio": [0.4]
+            "alpha": 0.15,
+            "tol": 1e-4,
+            "l1_ratio": 0.4
         }
     ]
 }

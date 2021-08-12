@@ -1,13 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "svr",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "svr",
             "dataset": [
                 {
                     "source": "npy",
@@ -26,7 +26,6 @@
             ]
         },
         {
-            "algorithm": "svr",
             "dataset": [
                 {
                     "source": "npy",
@@ -43,11 +42,10 @@
                     }
                 }
             ],
-            "C": [0.1],
-            "kernel": ["poly"]
+            "C": 0.1,
+            "kernel": "poly"
         },
         {
-            "algorithm": "svr",
             "dataset": [
                 {
                     "source": "npy",
@@ -64,8 +62,8 @@
                     }
                 }
             ],
-            "C": [2.0],
-            "kernel": ["rbf"]
+            "C": 2.0,
+            "kernel": "rbf"
         }
     ]
 }

@@ -1,13 +1,13 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "nusvr",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "algorithm": "nusvr",
             "dataset": [
                 {
                     "source": "npy",
@@ -26,7 +26,6 @@
             ]
         },
         {
-            "algorithm": "nusvr",
             "dataset": [
                 {
                     "source": "npy",
@@ -43,12 +42,11 @@
                     }
                 }
             ],
-            "C": [0.1],
-            "kernel": ["poly"],
-            "nu": [0.17]
+            "C": 0.1,
+            "kernel": "poly",
+            "nu": 0.17
         },
         {
-            "algorithm": "nusvr",
             "dataset": [
                 {
                     "source": "npy",
@@ -65,9 +63,9 @@
                     }
                 }
             ],
-            "C": [2.0],
-            "kernel": ["rbf"],
-            "nu": [0.8]
+            "C": 2.0,
+            "kernel": "rbf",
+            "nu": 0.8
         }
     ]
 }

@@ -1,14 +1,14 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "sklearn",
+        "algorithm": "knn_clsf",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
+        "method": "brute"
     },
     "cases": [
         {
-            "algorithm": "knn_clsf",
-            "dtype": ["float64"],
             "dataset": [
                 {
                     "source": "npy",
@@ -78,8 +78,7 @@
                         "y": "data/sensit_y_test.npy"
                     }
                 }
-            ],
-            "method": ["brute"]
+            ]            
         }
     ]
 }
