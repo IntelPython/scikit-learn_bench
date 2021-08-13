@@ -112,12 +112,12 @@ if __name__ == "__main__":
                                                  'boosting benchmark')
 
     parser.add_argument('--n-estimators', type=int, default=100,
-                        help='The number of gradient boosted trees'),
+                        help='The number of gradient boosted trees')
     parser.add_argument('--objective', type=str, required=True,
                         choices=('reg:squarederror', 'binary:logistic',
-                                 'multi:softmax', 'multi:softprob')),
+                                 'multi:softmax', 'multi:softprob'))
     parser.add_argument('--reg-lambda', type=float, default=0,
-                        help='L2 regularization term on weights'),
+                        help='L2 regularization term on weights')
     parser.add_argument('--learning-rate', '--eta', type=float, default=0.3,
                         help='Step size shrinkage used in update '
                         'to prevents overfitting')
