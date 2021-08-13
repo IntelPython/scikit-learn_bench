@@ -90,6 +90,18 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | ----- | ---- |---- |---- |
 | metric | str | cosine | *cosine* or *correlation* Metric to test for pairwise distances |
 
+### HistGradientBoostingClassifier & HistGradientBoostingRegressor
+
+| parameter Name  | Type | default value | description |
+| ----- | ---- |---- |---- |
+| n-estimators | int | 100 | The number of gradient boosted trees |
+| objective | str | | *reg:squarederror*, *binary:logistic*, *multi:softprob* |
+| reg-lambda | float | 0 | L2 regularization term on weights |
+| learning-rate | float | 0.3 | Step size shrinkage used in update to prevents overfitting |
+| max-bin | int | 255 | Maximum number of discrete bins to bucket continuous features (from 2 to 255) |
+| max-depth | int | 6 | Maximum depth of a tree |
+| max-leaves | int | 31 | Maximum number of nodes to be added |
+
 ### KMeans
 
 | parameter Name  | Type | default value | description |
