@@ -27,10 +27,7 @@ def convert_probs_to_classes(y_prob):
 
 
 def convert_cb_predictions(y_pred, objective, metric_name):
-    if objective == 'multi:softprob' or objective == 'multi:softmax':
-        if metric_name == 'accuracy':
-            y_pred = convert_probs_to_classes(y_pred)
-    elif objective == 'Logloss':
+    if objective != 'RMSE':
         if metric_name == 'accuracy':
             y_pred = convert_probs_to_classes(y_pred)
     return y_pred
@@ -130,8 +127,10 @@ else:
     if params.n_classes > 2:
         cb_params['bootstrap_type'] = 'Bernoulli'
         cb_params['classes_count'] = params.n_classes
+        cb_params['objective'] = 'MultiClass'
     else:
         cb_params['scale_pos_weight'] = params.scale_pos_weight
+        cb_params['objective'] = 'Logloss'
 
 t_creat_train, dtrain = bench.measure_function_time(cb.Pool, X_train, params=params,
                                                     label=y_train)
@@ -139,23 +138,16 @@ t_creat_train, dtrain = bench.measure_function_time(cb.Pool, X_train, params=par
 t_creat_test, dtest = bench.measure_function_time(
     cb.Pool, X_test,  params=params, label=y_test)
 
-
 def fit(pool):
     if pool is None:
         pool = cb.Pool(X_train, label=y_train)
     return cb.CatBoost(cb_params).fit(pool)
-
-
-fit_time, booster = bench.measure_function_time(
-    fit, None if params.count_pool else dtrain, params=params)
-
 
 if params.objective.startswith('multi'):
     def predict(pool):
         if pool is None:
             pool = cb.Pool(X_test, label=y_test)
         return booster.predict(pool, prediction_type='Probability')
-    cb_params['objective'] = 'MultiClass'
 else:
     if cb_params['objective'] == 'Logloss':
         def predict(pool):
@@ -167,6 +159,10 @@ else:
             if pool is None:
                 pool = cb.Pool(X_test, label=y_test)
             return booster.predict(pool)
+
+
+fit_time, booster = bench.measure_function_time(
+    fit, None if params.count_pool else dtrain, params=params)
 
 # Create array where each metric has all the stages
 metrics = [[None] * 6 for i in range(len(metric_name))]
@@ -213,6 +209,6 @@ bench.print_output(
                'daal4py.get_gbt_model_from_catboost', 'daal4py.compute'],
     times=[t_creat_train, fit_time, t_creat_test, predict_time, transform_time,
            predict_time_daal],
-    accuracy_type=metric_name,
-    accuracies=metrics,
+    metric_type=metric_name,
+    metrics=metrics,
     data=[X_train, X_train, X_test, X_test, X_test, X_test])
