@@ -18,7 +18,7 @@ import argparse
 
 import bench
 import numpy as np
-
+from sklearn.experimental import enable_hist_gradient_boosting
 
 def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
@@ -35,8 +35,7 @@ def main():
     # Load and convert data
     X_train, X_test, y_train, y_test = bench.load_data(params)
 
-    if params.objective.startswith('reg'):
-        from sklearn.experimental import enable_hist_gradient_boosting
+    if params.objective.startswith('reg'):        
         from sklearn.ensemble import HistGradientBoostingRegressor
         model = HistGradientBoostingRegressor(max_iter=params.n_estimators,
                                               n_iter_no_change=params.n_estimators,
@@ -51,7 +50,6 @@ def main():
         task = 'regression'
 
     else:
-        from sklearn.experimental import enable_hist_gradient_boosting
         from sklearn.ensemble import HistGradientBoostingClassifier
         model = HistGradientBoostingClassifier(max_iter=params.n_estimators,
                                                n_iter_no_change=params.n_estimators,
