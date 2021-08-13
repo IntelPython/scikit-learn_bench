@@ -77,8 +77,8 @@ def main():
     else:
         y_pred = model.predict(X_train)
 
-    for i in range(len(metric_funs)):
-        metrics[i][0] = metric_funs[i](y_train, convert_predictions(
+    for i, func in enumerate(metric_funs):
+        metrics[i][0] = func(y_train, convert_predictions(
             y_pred, params.objective, metric_name[i]))
 
     if not params.objective.startswith('reg'):
@@ -89,7 +89,7 @@ def main():
         predict_time, y_pred = bench.measure_function_time(
             model.predict, X_test, params=params)
 
-    for i in range(len(metric_funs)):
+    for i, func in enumerate(metric_funs):
         metrics[i][1] = metric_funs[i](y_test, convert_predictions(
             y_pred, params.objective, metric_name[i]))
 
