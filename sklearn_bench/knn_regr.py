@@ -27,7 +27,7 @@ def main():
     X_train, X_test, y_train, y_test = bench.load_data(params)
     params.n_classes = len(np.unique(y_train))
 
-    # Create regression object
+    # Create a regression object
     knn_regr = KNeighborsRegressor(n_neighbors=params.n_neighbors,
                                    weights=params.weights,
                                    algorithm=params.method,

@@ -42,8 +42,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
                         default='configs/config_example.json',
-                        help='Path to configuration files or '
-                             'Path to directory which contains configuration files')
+                        help='The path to a configuration file or '
+                             'a directory that contains configuration files')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
