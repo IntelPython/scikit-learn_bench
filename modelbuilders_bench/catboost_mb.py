@@ -110,11 +110,11 @@ metric_func: tp.List[tp.Callable]
 if params.objective == "RMSE":
     task = 'regression'
     metric_name = ['rmse']
-    metric_func [bench.rmse_score]
+    metric_func = [bench.rmse_score]
 else:
     task = 'classification'
-    metric_name = [ 'accuracy','log_loss' ]
-    metric_func = [bench.accuracy_score, bench.log_loss] 
+    metric_name = ['accuracy', 'log_loss']
+    metric_func = [bench.accuracy_score, bench.log_loss]
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
