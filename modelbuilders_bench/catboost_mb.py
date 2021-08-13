@@ -15,12 +15,12 @@
 # ===============================================================================
 
 import argparse
-from typing import Callable, Optional
 
 import bench
 import numpy as np
 import catboost as cb
 import daal4py
+import typing as tp
 
 
 def convert_probs_to_classes(y_prob):
@@ -104,17 +104,17 @@ if cb_params['grow_policy'] == 'Lossguide':
 if params.threads != -1:
     cb_params.update({'thread_count': params.threads})
 
+metric_name: tp.List[str]
+metric_func: tp.List[tp.Callable]
+
 if params.objective == "RMSE":
     task = 'regression'
-    metric_name: Optional[str] = [None]
-    metric_func: Optional[Callable] = [None]
-    metric_name[0], metric_func[0] = 'rmse', bench.rmse_score
+    metric_name = ['rmse']
+    metric_func [bench.rmse_score]
 else:
     task = 'classification'
-    metric_name: Optional[str] = [None] * 2
-    metric_func: Optional[Callable] = [None] * 2
-    metric_name[0], metric_func[0] = 'accuracy', bench.accuracy_score
-    metric_name[1], metric_func[1] = 'log_loss', bench.log_loss
+    metric_name = [ 'accuracy','log_loss' ]
+    metric_func = [bench.accuracy_score, bench.log_loss] 
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
