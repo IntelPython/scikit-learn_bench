@@ -138,10 +138,12 @@ t_creat_train, dtrain = bench.measure_function_time(cb.Pool, X_train, params=par
 t_creat_test, dtest = bench.measure_function_time(
     cb.Pool, X_test,  params=params, label=y_test)
 
+
 def fit(pool):
     if pool is None:
         pool = cb.Pool(X_train, label=y_train)
     return cb.CatBoost(cb_params).fit(pool)
+
 
 if params.objective.startswith('multi'):
     def predict(pool):
