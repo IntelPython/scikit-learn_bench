@@ -48,8 +48,7 @@ if __name__ == '__main__':
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
-                        help='Use no intel optimized version. '
-                             'Now avalible for scikit-learn benchmarks')
+                        help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
                         type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
