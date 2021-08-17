@@ -29,13 +29,14 @@ from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
 from .loader_regression import (abalone, california_housing, fried,
                                 medical_charges_nominal, mortgage_first_q,
-                                twodplanes, year_prediction_msd, yolanda)
+                                twodplanes, year_prediction_msd, yolanda, airline_regression)
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
     "abalone": abalone,
     "airline": airline,
     "airline-ohe": airline_ohe,
+    "airline_regression": airline_regression,
     "bosch": bosch,
     "california_housing": california_housing,
     "census": census,

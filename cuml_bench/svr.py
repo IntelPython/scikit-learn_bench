@@ -63,7 +63,7 @@ predict_test_time, y_pred = bench.measure_function_time(
     regr.predict, X_test, params=params)
 test_rmse = bench.rmse_score(y_test, y_pred)
 
-bench.print_output(library='cuml', algorithm='svr',
+bench.print_output(library='cuml', algorithm='SVR',
                    stages=['training', 'prediction'], params=params,
                    functions=['SVR.fit', 'SVR.predict'],
                    times=[fit_time, predict_train_time], metric_type='rmse',

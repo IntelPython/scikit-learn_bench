@@ -56,7 +56,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='decision_forest_classification',
+        algorithm='df_clsf',
         stages=['training', 'prediction'],
         params=params,
         functions=['df_clsf.fit', 'df_clsf.predict'],

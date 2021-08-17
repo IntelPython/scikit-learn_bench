@@ -24,18 +24,31 @@ from typing import Any, Dict, List, Union
 
 import datasets.make_datasets as make_datasets
 import utils
+from pathlib import Path
+
+
+def get_configs(path: Path) -> List[str]:
+    result = list()
+    for dir_or_file in os.listdir(path):
+        new_path = Path(path, dir_or_file)
+        if dir_or_file.endswith('.json'):
+            result.append(str(new_path))
+        elif os.path.isdir(new_path):
+            result += get_configs(new_path)
+    return result
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--configs', metavar='ConfigPath', type=str,
                         default='configs/config_example.json',
-                        help='Path to configuration files')
+                        help='The path to a configuration file or '
+                             'a directory that contains configuration files')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
-                        help='Use no intel optimized version. '
-                             'Now avalible for scikit-learn benchmarks'),
+                        help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
                         type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
@@ -60,6 +73,15 @@ if __name__ == '__main__':
         'results': []
     }
     is_successful = True
+    # getting jsons from folders
+    paths_to_configs: List[str] = list()
+    for config_name in args.configs.split(','):
+        if os.path.isdir(config_name):
+            config_name = get_configs(Path(config_name))
+        else:
+            config_name = [config_name]
+        paths_to_configs += config_name
+    args.configs = ','.join(paths_to_configs)
 
     for config_name in args.configs.split(','):
         logging.info(f'Config: {config_name}')

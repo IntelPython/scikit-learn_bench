@@ -1,9 +1,9 @@
 {
     "common": {
-        "lib": ["cuml"],
-        "data-format": ["cudf"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "cuml",
+        "data-format": "cudf",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
@@ -19,10 +19,10 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "n-clusters": [1000],
-            "maxiter": [50],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "n-clusters": 1000,
+            "maxiter": 50,
+            "tol": 0.0
         },
         {
             "algorithm": "kmeans",
@@ -37,11 +37,11 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "n-clusters": [5],
-            "maxiter": [50],
-            "init": ["k-means++"],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "n-clusters": 5,
+            "maxiter": 50,
+            "init": "k-means++",
+            "tol": 0.0
         },
         {
             "algorithm": "kmeans",
@@ -56,10 +56,10 @@
                     }
                 }
             ],
-            "time-method": ["box_filter"],
-            "n-clusters": [20],
-            "maxiter": [50],
-            "tol": [0.0]
+            "time-method": "box_filter",
+            "n-clusters": 20,
+            "maxiter": 50,
+            "tol": 0.0
         },
         {
             "algorithm": "pca",
@@ -95,12 +95,12 @@
                     }
                 }
             ],
-            "svd-solver": ["full"],
-            "n-components": [10]
+            "svd-solver": "full",
+            "n-components": 10
         },
         {
             "algorithm": "df_clsf",
-            "dtype": ["float32"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
@@ -131,10 +131,44 @@
                     }
                 }
             ],
-            "num-trees": [50],
-            "max-depth": [16],
-            "max-leaf-nodes": [131072],
-            "max-features": [0.2]
+            "num-trees": 50,
+            "max-depth": 16,
+            "max-leaf-nodes": 131072,
+            "max-features": 0.2
+        },
+        {
+            "algorithm": "df_regr",
+            "dtype": "float32",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                },
+                {
+                    "source": "npy",
+                    "name": "airline_regression",
+                    "training":
+                    {
+                        "x": "data/airline_regression_x_train.npy",
+                        "y": "data/airline_regression_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/airline_regression_x_test.npy",
+                        "y": "data/airline_regression_y_test.npy"
+                    }
+                }
+            ]
         },
         {
             "algorithm": "ridge",
@@ -156,7 +190,7 @@
                     }
                 }
             ],
-            "alpha": [5]
+            "alpha": 5
         },
         {
             "algorithm": "linear",
@@ -219,8 +253,8 @@
                     }
                 }
             ],
-            "maxiter": [100],
-            "tol": [0]
+            "maxiter": 100,
+            "tol": 0
         },
         {
             "algorithm": "svm",
@@ -240,8 +274,8 @@
                     }
                 }
             ],
-            "C": [1000.0],
-            "kernel": ["linear"]
+            "C": 1000.0,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -261,8 +295,8 @@
                     }
                 }
             ],
-            "C": [1.5e-3],
-            "kernel": ["linear"]
+            "C": 1.5e-3,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -282,8 +316,8 @@
                     }
                 }
             ],
-            "C": [100.0],
-            "kernel": ["linear"]
+            "C": 100.0,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -303,8 +337,8 @@
                     }
                 }
             ],
-            "C": [500.0],
-            "kernel": ["linear"]
+            "C": 500.0,
+            "kernel": "linear"
         },
         {
             "algorithm": "svm",
@@ -324,8 +358,8 @@
                     }
                 }
             ],
-            "C": [1.0],
-            "kernel": ["rbf"]
+            "C": 1.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "svm",
@@ -345,8 +379,8 @@
                     }
                 }
             ],
-            "C": [100.0],
-            "kernel": ["rbf"]
+            "C": 100.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "svr",
@@ -366,8 +400,8 @@
                     }
                 }
             ],
-            "C": [0.1],
-            "kernel": ["poly"]
+            "C": 0.1,
+            "kernel": "poly"
         },
         {
             "algorithm": "svr",
@@ -387,8 +421,8 @@
                     }
                 }
             ],
-            "C": [10.0],
-            "kernel": ["rbf"]
+            "C": 10.0,
+            "kernel": "rbf"
         },
         {
             "algorithm": "dbscan",
@@ -424,7 +458,7 @@
         },
         {
             "algorithm": "knn_clsf",
-            "dtype": ["float32"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -475,7 +509,7 @@
                     }
                 }
             ],
-            "method": ["brute"]
+            "method": "brute"
         },
         {
             "algorithm": "train_test_split",
@@ -508,8 +542,8 @@
                     }
                 }
             ],
-            "train-size": [0.75],
-            "test-size": [0.25]
+            "train-size": 0.75,
+            "test-size": 0.25
         },
         {
             "algorithm": "train_test_split",
@@ -524,8 +558,8 @@
                     }
                 }
             ],
-            "train-size": [0.9],
-            "test-size": [0.1]
+            "train-size": 0.9,
+            "test-size": 0.1
         },
         {
             "algorithm": "lasso",
@@ -540,8 +574,8 @@
                     }
                 }
             ],
-            "alpha": [1.0],
-            "tol": [1e-4]
+            "alpha": 1.0,
+            "tol": 1e-4
         },
         {
             "algorithm": "elasticnet",
@@ -561,9 +595,29 @@
                     }
                 }
             ],
-            "alpha": [2.0],
-            "l1_ratio": [0.5],
-            "tol": [1e-4]
+            "alpha": 2.0,
+            "l1_ratio": 0.5,
+            "tol": 1e-4
+        },
+        {
+            "algorithm": "tsne",
+            "dtype": "float32",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
+                    }
+                }
+            ]
         }
     ]
 }

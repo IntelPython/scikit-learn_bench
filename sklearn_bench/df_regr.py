@@ -24,6 +24,8 @@ def main():
 
     # Load and convert data
     X_train, X_test, y_train, y_test = bench.load_data(params)
+    y_train = y_train.values.ravel()
+    y_test = y_test.values.ravel()
 
     # Create our random forest regressor
     regr = RandomForestRegressor(criterion=params.criterion,
@@ -50,7 +52,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='decision_forest_regression',
+        algorithm='df_regr',
         stages=['training', 'prediction'],
         params=params,
         functions=['df_regr.fit', 'df_regr.predict'],

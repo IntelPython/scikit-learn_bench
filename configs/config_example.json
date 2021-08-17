@@ -1,12 +1,12 @@
 {
     "common": {
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
-            "lib": ["daal4py"],
+            "lib": "daal4py",
             "algorithm": "linear",
             "dataset": [
                 {
@@ -20,7 +20,7 @@
             ]
         },
         {
-            "lib": ["sklearn"],
+            "lib": "sklearn",
             "algorithm": "svm",
             "dataset": [
                 {
@@ -33,11 +33,11 @@
                     }
                 }
             ],
-            "max-cache-size": [4],
-            "kernel": ["rbf"]
+            "max-cache-size": 4,
+            "kernel": "rbf"
         },
         {
-            "lib": ["xgboost"],
+            "lib": "xgboost",
             "algorithm": "gbt",
             "dataset": [
                 {
@@ -49,12 +49,12 @@
                     }
                 }
             ],
-            "n-estimators": [1000],
-            "objective": ["reg:squarederror"],
-            "tree-method": ["hist"],
-            "max-depth": [1],
-            "subsample": [0.5],
-            "eta": [0.1]
+            "n-estimators": 1000,
+            "objective": "reg:squarederror",
+            "tree-method": "hist",
+            "max-depth": 1,
+            "subsample": 0.5,
+            "eta": 0.1
         }
     ]
 }

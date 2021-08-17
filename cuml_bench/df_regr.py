@@ -15,7 +15,7 @@
 # ===============================================================================
 
 import argparse
-
+import pandas as pd
 import bench
 from cuml.ensemble import RandomForestRegressor
 
@@ -48,6 +48,8 @@ params = bench.parse_args(parser)
 
 # Load and convert data
 X_train, X_test, y_train, y_test = bench.load_data(params)
+y_train = y_test.values.ravel()
+y_train = y_test.values.ravel()
 
 if params.criterion == 'mse':
     params.criterion = 2
@@ -89,7 +91,7 @@ train_rmse = bench.rmse_score(y_pred, y_train)
 predict_time, y_pred = bench.measure_function_time(predict, regr, X_test, params=params)
 test_rmse = bench.rmse_score(y_pred, y_test)
 
-bench.print_output(library='cuml', algorithm='decision_forest_regression',
+bench.print_output(library='cuml', algorithm='df_regr',
                    stages=['training', 'prediction'], params=params,
                    functions=['df_regr.fit', 'df_regr.predict'],
                    times=[fit_time, predict_time], metric_type='rmse',

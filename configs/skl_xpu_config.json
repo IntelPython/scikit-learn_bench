@@ -1,9 +1,9 @@
 {
     "common": {
-        "lib": ["sklearn"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"],
+        "lib": "sklearn",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64",
         "device": ["host", "cpu", "gpu", "None"]
     },
     "cases": [
@@ -20,7 +20,7 @@
                     }
                 }
             ],
-            "n-clusters": [10]
+            "n-clusters": 10
         },
         {
             "algorithm": "dbscan",

@@ -68,7 +68,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='svc',
+        algorithm='SVC',
         stages=['training', state_predict],
         params=params,
         functions=['SVM.fit', f'SVM.{state_predict}'],

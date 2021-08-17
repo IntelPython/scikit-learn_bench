@@ -1,9 +1,9 @@
 {
     "common": {
-        "lib": ["daal4py"],
-        "data-format": ["pandas"],
-        "data-order": ["F"],
-        "dtype": ["float64"]
+        "lib": "daal4py",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float64"
     },
     "cases": [
         {
@@ -19,7 +19,7 @@
                     }
                 }
             ],
-            "n-clusters": [10]
+            "n-clusters": 10
         },
         {
             "algorithm": "df_clsf",
@@ -37,7 +37,7 @@
                     }
                 }
             ],
-            "num-trees": [10]
+            "num-trees": 10
         },
         {
             "algorithm": "df_regr",
@@ -55,7 +55,7 @@
                     }
                 }
             ],
-            "num-trees": [10]
+            "num-trees": 10
         },
         {
             "algorithm": "ridge",
@@ -72,7 +72,7 @@
                     }
                 }
             ],
-            "alpha": [5]
+            "alpha": 5
         },
         {
             "algorithm": "linear",
