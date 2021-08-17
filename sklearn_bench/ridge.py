@@ -44,7 +44,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='ridge_regression',
+        algorithm='ridge_regr',
         stages=['training', 'prediction'],
         params=params,
         functions=['Ridge.fit', 'Ridge.predict'],

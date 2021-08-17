@@ -53,7 +53,7 @@ def main():
 
     bench.print_output(
         library='sklearn',
-        algorithm='svr',
+        algorithm='SVR',
         stages=['training', 'prediction'],
         params=params,
         functions=['SVR.fit', 'SVR.predict'],

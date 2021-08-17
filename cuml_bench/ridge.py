@@ -49,7 +49,7 @@ test_rmse = bench.rmse_score(yp, y_test)
 yp = regr.predict(X_train)
 train_rmse = bench.rmse_score(yp, y_train)
 
-bench.print_output(library='cuml', algorithm='ridge_regression',
+bench.print_output(library='cuml', algorithm='ridge_regr',
                    stages=['training', 'prediction'], params=params,
                    functions=['Ridge.fit', 'Ridge.predict'],
                    times=[fit_time, predict_time], metric_type='rmse',

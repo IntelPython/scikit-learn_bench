@@ -53,7 +53,7 @@ train_rmse = bench.rmse_score(pred_train, y_train)
 pred_test = regr.predict(X_test)
 test_rmse = bench.rmse_score(pred_test, y_test)
 
-bench.print_output(library='cuml', algorithm='elastic-net',
+bench.print_output(library='cuml', algorithm='elasticnet',
                    stages=['training', 'prediction'], params=params,
                    functions=['ElasticNet.fit', 'ElasticNet.predict'],
                    times=[fit_time, predict_time], metric_type='rmse',
