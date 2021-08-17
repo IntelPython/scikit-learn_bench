@@ -48,7 +48,7 @@ fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
 transform_time, _ = bench.measure_function_time(
     pca.transform, X_train, params=params)
 
-bench.print_output(library='cuml', algorithm='pca',
+bench.print_output(library='cuml', algorithm='PCA',
                    stages=['training', 'transformation'],
                    params=params, functions=['PCA.fit', 'PCA.transform'],
                    times=[fit_time, transform_time], metric_type=None,
