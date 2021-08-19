@@ -18,7 +18,7 @@ import argparse
 
 import bench
 import numpy as np
-from sklearn.experimental import enable_hist_gradient_boosting # noqa
+from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 
 
 def convert_probs_to_classes(y_prob):
@@ -46,8 +46,8 @@ def main():
                                               max_leaf_nodes=params.max_leaves,
                                               l2_regularization=params.reg_lambda,
                                               random_state=params.seed)
-        metric_funs = [bench.r2_score]
-        metric_name = ['r2_score']
+        metric_funs = [bench.r2_score, bench.rmse_score]
+        metric_name = ['r2_score', 'rmse']
         task = 'regression'
 
     else:
@@ -62,8 +62,8 @@ def main():
                                                random_state=params.seed)
 
         metric_funs = [bench.accuracy_score,
-                       bench.log_loss, bench.roc_auc_score]
-        metric_name = ['accuracy', 'log_loss', 'roc_auc']
+                       bench.log_loss]
+        metric_name = ['accuracy', 'log_loss']
         task = 'classification'
 
     metrics = [[None] * 2 for i in range(len(metric_funs))]
