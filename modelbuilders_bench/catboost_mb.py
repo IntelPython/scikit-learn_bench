@@ -89,7 +89,7 @@ cb_params = {
     'max_bin': params.max_bin,
     'objective': params.objective,
     'random_seed': params.seed,
-    'iterations': params.n_estimators
+    'iterations': params.n_estimators,
 }
 
 # CatBoost restriction
@@ -104,8 +104,8 @@ metric_func: tp.List[tp.Callable]
 
 if params.objective == "RMSE":
     task = 'regression'
-    metric_name = ['rmse']
-    metric_func = [bench.rmse_score]
+    metric_name = ['rmse', 'r2']
+    metric_func = [bench.rmse_score, bench.r2_score]
 else:
     task = 'classification'
     metric_name = ['accuracy', 'log_loss']
