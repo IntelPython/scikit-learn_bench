@@ -147,6 +147,7 @@
             "max-depth": 16,
             "max-leaf-nodes": 131072,
             "max-features": 0.2
+<<<<<<< HEAD
         },
         {
             "algorithm": "df_regr",
@@ -181,6 +182,8 @@
                     }
                 }
             ]
+=======
+>>>>>>> ed89e1e8a25e21192ae5d70e4db203b08033dfcc
         },
         {
             "algorithm": "ridge",
@@ -765,6 +768,7 @@
             "alpha": 2.0,
             "l1_ratio": 0.5,
             "tol": 1e-4
+<<<<<<< HEAD
         },
         {
             "algorithm": "tsne",
@@ -785,6 +789,8 @@
                     }
                 }
             ]
+=======
+>>>>>>> ed89e1e8a25e21192ae5d70e4db203b08033dfcc
         }
     ]
 }
