@@ -1,5 +1,6 @@
 import argparse
 import pandas as pd
+import cuml
 import bench
 from cuml.manifold import TSNE
 
@@ -16,25 +17,22 @@ parser.add_argument('--angle', type=float, default=0.5,
 parser.add_argument('--min-grad-norm', type=float, default=1e-7,
                     help='If the gradient norm is below this threshold, the optimization will be stopped.')
 parser.add_argument('--random-state', type=int, default=1234)
-
 params = bench.parse_args(parser)
 
 # Load and convert data
-X_train, X_test, _, _ = bench.load_data(params)
-full_x = pd.concat([X_train, X_test])
+X, _, _, _ = bench.load_data(params)
 
 # Create our random forest regressor
 tsne = TSNE(n_components=params.n_components, early_exaggeration=params.early_exaggeration,
             learning_rate=params.learning_rate, angle=params.angle,
             min_grad_norm=params.min_grad_norm, random_state=params.random_state)
 
-fit_time, _ = bench.measure_function_time(tsne.fit, full_x, params=params)
-
-divergence = tsne.kl_divergence_
+fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params)
+# divergence = tsne.kl_divergence_
 
 bench.print_output(library='cuml', algorithm='tsne',
                    stages=['training'], params=params,
                    functions=['tsne.fit'],
-                   times=[fit_time], metric_type='divergence',
-                   metrics=[divergence], data=[full_x],
+                   times=[fit_time], metric_type=None,
+                   metrics=None, data=[X],
                    alg_instance=tsne)

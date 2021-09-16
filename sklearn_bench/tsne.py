@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-
 import bench
 import pandas as pd
 
@@ -23,17 +22,14 @@ def main():
     from sklearn.manifold import TSNE
 
     # Load and convert data
-    X_train, X_test, _, _ = bench.load_data(params)
-    full_x = pd.concat([X_train, X_test])
+    X, _, _, _ = bench.load_data(params)
 
     # Create our TSNE model
     tsne = TSNE(n_components=params.n_components, early_exaggeration=params.early_exaggeration,
                 learning_rate=params.learning_rate, angle=params.angle,
                 min_grad_norm=params.min_grad_norm, random_state=params.random_state)
 
-    fit_time, _ = bench.measure_function_time(tsne.fit, full_x, params=params)
-
-    divergence = tsne.kl_divergence_
+    fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params)
 
     bench.print_output(
         library='sklearn',
@@ -44,7 +40,7 @@ def main():
         times=[fit_time],
         metric_type='divergence',
         metrics=[divergence],
-        data=[full_x],
+        data=[X],
         alg_instance=tsne,
     )
 
@@ -64,6 +60,6 @@ if __name__ == "__main__":
     parser.add_argument('--min-grad-norm', type=float, default=1e-7,
                         help='If the gradient norm is below this threshold, the optimization will be stopped.')
     parser.add_argument('--random-state', type=int, default=1234)
-    
+
     params = bench.parse_args(parser)
     bench.run_with_context(params, main)
