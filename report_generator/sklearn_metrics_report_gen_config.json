@@ -1,10 +1,7 @@
 {
     "header": [
         "stage",
-<<<<<<< HEAD
-=======
         "device",
->>>>>>> ed89e1e8a25e21192ae5d70e4db203b08033dfcc
         "input_data:data_order",
         "input_data:data_type",
         "input_data:dataset_name",
