@@ -16,7 +16,6 @@
 
 import argparse
 import bench
-import cuml
 from cuml.ensemble import RandomForestRegressor
 
 parser = argparse.ArgumentParser(description='cuml random forest '
@@ -63,7 +62,6 @@ regr = RandomForestRegressor(
     bootstrap=params.bootstrap,
 
 )
-
 
 
 def fit(regr, X, y):

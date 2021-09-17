@@ -504,7 +504,9 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
         else:
             alg_instance_params = dict(alg_instance.get_params())
             print(alg_instance_params)
-            if 'min_samples_split' in alg_instance_params:
+            if 'min_samples_split' in alg_instance_params \
+            and 'handle' in alg_instance_params \
+            and 'cuml' in str(alg_instance_params['handle']):
                 print(str(alg_instance_params['dtype']))
                 alg_instance_params['dtype'] = str(alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)

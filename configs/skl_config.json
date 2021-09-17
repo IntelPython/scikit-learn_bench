@@ -150,6 +150,7 @@
         },
         {
             "algorithm": "df_regr",
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
