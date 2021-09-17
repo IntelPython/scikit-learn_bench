@@ -1,9 +1,9 @@
 {
     "common": {
         "lib": "sklearn",
-        "data-format": "pandas",
-        "data-order": "F",
-        "dtype": "float64"
+        "data-format": 'pandas',
+        "data-order": 'F',
+        "dtype": 'float64'
     },
     "cases": [
         {
