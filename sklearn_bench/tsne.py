@@ -53,8 +53,8 @@ if __name__ == "__main__":
     parser.add_argument('--n-components', type=int, default=2,
                         help='Dimension of the embedded space.')
     parser.add_argument('--early-exaggeration', type=float, default=12.0,
-                        help='Controls how tight natural clusters in the original space are in the embedded space'
-                        'and how much space will be between them.')
+                        help='Controls how tight natural clusters in the'
+                        'original space are in the embedded space and how much space will be between them.')
     parser.add_argument('--learning-rate', type=float, default=200.0,
                         help='The learning rate for t-SNE is usually in the range [10.0, 1000.0].')
     parser.add_argument('--angle', type=float, default=0.5,

@@ -260,6 +260,7 @@ def yolanda(dataset_dir: Path) -> bool:
     logging.info(f'dataset {dataset_name} is ready.')
     return True
 
+
 def airline_regression(dataset_dir: Path) -> bool:
     """
     yolanda x train dataset (8500000, 9)

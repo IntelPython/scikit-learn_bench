@@ -24,6 +24,7 @@
         },
         {
             "algorithm": "df_clsf",
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -42,6 +43,7 @@
         },
         {
             "algorithm": "df_regr",
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "synthetic",
