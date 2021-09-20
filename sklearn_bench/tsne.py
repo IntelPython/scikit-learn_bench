@@ -53,14 +53,13 @@ if __name__ == "__main__":
     parser.add_argument('--n-components', type=int, default=2,
                         help='Dimension of the embedded space.')
     parser.add_argument('--early-exaggeration', type=float, default=12.0,
-                        help='Controls how tight natural clusters in the'
-                        'original space are in the embedded space and how '
-                        'much space will be between them.')
+                        help='This factor increases the attractive forces between points '
+                        'and allows points to move around more freely, '
+                        'finding their nearest neighbors more easily.')
     parser.add_argument('--learning-rate', type=float, default=200.0,
                         help='The learning rate for t-SNE is usually in the range [10.0, 1000.0].')
     parser.add_argument('--angle', type=float, default=0.5,
-                        help='Only used if method=’barnes_hut’'
-                        'This is the trade-off between speed and accuracy for Barnes-Hut T-SNE.')
+                        help='Angular size. This is the trade-off between speed and accuracy.')
     parser.add_argument('--min-grad-norm', type=float, default=1e-7,
                         help='If the gradient norm is below this threshold,'
                         'the optimization will be stopped.')
