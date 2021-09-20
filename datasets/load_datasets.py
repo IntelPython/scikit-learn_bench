@@ -85,11 +85,11 @@ def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Use \'-d\' or \'--datasets\' option to enumerate '
-                    'dataset(s) which should be downloaded')
+                    'dataset(s) that should be downloaded')
     parser.add_argument('-l', '--list', action='store_const',
-                        const=True, help='list of available datasets')
+                        const=True, help='The list of available datasets')
     parser.add_argument('-d', '--datasets', type=str, nargs='*',
-                        help='datasets which should be downloaded')
+                        help='The datasets that should be downloaded.')
     args = parser.parse_args()
 
     if args.list:
@@ -104,4 +104,4 @@ if __name__ == '__main__':
             val(root_dir)
     else:
         logging.warning(
-            'Warning: Enumerate dataset(s) which should be downloaded')
+            'Warning: Enumerate dataset(s) that should be downloaded')

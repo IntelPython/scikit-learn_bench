@@ -51,7 +51,7 @@ if __name__ == "__main__":
                                      'regression benchmark')
 
     parser.add_argument('--n-components', type=int, default=2,
-                        help='Dimension of the embedded space.')
+                        help='The dimension of the embedded space.')
     parser.add_argument('--early-exaggeration', type=float, default=12.0,
                         help='This factor increases the attractive forces between points '
                         'and allows points to move around more freely, '
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         help='Angular size. This is the trade-off between speed and accuracy.')
     parser.add_argument('--min-grad-norm', type=float, default=1e-7,
                         help='If the gradient norm is below this threshold,'
-                        'the optimization will be stopped.')
+                        'the optimization is stopped.')
     parser.add_argument('--random-state', type=int, default=1234)
 
     params = bench.parse_args(parser)
