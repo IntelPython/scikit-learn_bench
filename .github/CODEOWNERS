@@ -1,9 +1,9 @@
 #owners and reviewers
 cuml_bench/*          @Pahandrovich @Alexsandruss @masdevas
-daal4py_bench/*       @Pahandrovich @Alexsandruss
+daal4py_bench/*       @Pahandrovich @Alexsandruss @agorshk
 datasets/*            @Alexsandruss @itearsl @masdevas
 modelbuilders_bench/* @Pahandrovich @makart19
 report_generator/*    @Pahandrovich @Alexsandruss
-sklearn_bench/*       @Pahandrovich @Alexsandruss
+sklearn_bench/*       @Pahandrovich @Alexsandruss @agorshk
 xgboost_bench/*       @Pahandrovich @makart19
 *.md                  @outoftardis
