@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn PCA benchmark')
     parser.add_argument('--svd-solver', type=str, choices=['full'],
                         default='full', help='SVD solver to use')
-    parser.add_argument('--n-components', type=float, default=None,
+    parser.add_argument('--n-components', type=int, default=None,
                         help='The number of components to find')
     parser.add_argument('--whiten', action='store_true', default=False,
                         help='Perform whitening')
