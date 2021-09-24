@@ -480,6 +480,10 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             full_data[f'{data}_test'] = full_data[f'{data}_train']
     return tuple(full_data.values())
 
+def is_cuml_rf(alg_instance_params):
+    return ('min_samples_split' in alg_instance_params
+            and 'handle' in alg_instance_params
+            and 'cuml' in str(alg_instance_params['handle']))
 
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
                    alg_params=None):
@@ -503,10 +507,8 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
             alg_instance_params = dict(alg_instance.attributes())
         else:
             alg_instance_params = dict(alg_instance.get_params())
-            if 'min_samples_split' in alg_instance_params:
-                if ('handle' in alg_instance_params
-                        and 'cuml' in str(alg_instance_params['handle'])):
-                    alg_instance_params['dtype'] = str(alg_instance_params['dtype'])
+            if is_cuml_rf(alg_instance_params):
+                alg_instance_params['dtype'] = str(alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)
     if alg_params is not None:
         result['algorithm_parameters'].update(alg_params)
