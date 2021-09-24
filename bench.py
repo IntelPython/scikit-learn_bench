@@ -481,10 +481,10 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     return tuple(full_data.values())
 
 
-def is_cuml_rf(alg_instance_params):
-    return ('min_samples_split' in alg_instance_params
-            and 'handle' in alg_instance_params
-            and 'cuml' in str(alg_instance_params['handle']))
+def is_cuml_rf(params):
+    x1 = 'min_samples_split' in params
+    x2 = 'handle' in params and 'cuml' in str(params['handle'])
+    return (x1 and x2)
 
 
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
