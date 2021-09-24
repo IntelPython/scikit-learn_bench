@@ -481,16 +481,6 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     return tuple(full_data.values())
 
 
-def is_cuml_rf(params):
-    x1 = 'min_samples_split' in params
-    x2 = 'handle' in params
-    # if x2:
-    #     x3 = 'cuml' in str(params['handle'])
-    # else:
-    #     x3 = False
-    return (x1 and x2)
-
-
 def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
                    alg_params=None):
     result = {
@@ -513,7 +503,8 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
             alg_instance_params = dict(alg_instance.attributes())
         else:
             alg_instance_params = dict(alg_instance.get_params())
-            if is_cuml_rf(alg_instance_params):
+            if ('min_samples_split' in alg_instance_params
+                    and 'handle' in alg_instance_params):
                 alg_instance_params['dtype'] = str(
                     alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)
