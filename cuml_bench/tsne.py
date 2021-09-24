@@ -29,7 +29,7 @@ tsne = TSNE(n_components=params.n_components, early_exaggeration=params.early_ex
             min_grad_norm=params.min_grad_norm, random_state=params.random_state)
 
 fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params)
-# divergence = tsne.kl_divergence_
+# TODO: investigate how to compare sklearn and cuml metrics for tsne
 
 bench.print_output(library='cuml', algorithm='tsne',
                    stages=['training'], params=params,
