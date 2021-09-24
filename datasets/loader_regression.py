@@ -259,3 +259,39 @@ def yolanda(dataset_dir: Path) -> bool:
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
+
+
+def airline_regression(dataset_dir: Path) -> bool:
+    """
+    yolanda x train dataset (8500000, 9)
+    yolanda y train dataset (8500000, 1)
+    yolanda x test dataset  (1500000, 9)
+    yolanda y train dataset (1500000, 1)
+    """
+    dataset_name = 'airline_regression'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    X, y = fetch_openml(name='Airlines_DepDelay_10M', return_X_y=True,
+                        as_frame=False, data_home=dataset_dir)
+    X = pd.DataFrame(X)
+    y = pd.DataFrame(y)
+
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42)
+
+    scaler = StandardScaler().fit(x_train, y_train)
+    x_train = scaler.transform(x_train)
+    x_test = scaler.transform(x_test)
+
+    scaler = StandardScaler().fit(y_train)
+    y_train = scaler.transform(y_train)
+    y_test = scaler.transform(y_test)
+
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True

@@ -244,7 +244,7 @@
                     "n_features": 10,
                     "training": {
                         "n_samples": 1000
-                    }                
+                    }
                 }
             ],
             "include-y": "",
@@ -309,6 +309,23 @@
         },
         {
             "algorithm": "distances",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 5,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 20
+                    }
+                }
+            ]
+        },
+        {
+            "algorithm": "tsne",
             "dataset": [
                 {
                     "source": "synthetic",

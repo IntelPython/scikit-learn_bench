@@ -15,31 +15,27 @@
 # ===============================================================================
 
 import argparse
-
 import bench
 from cuml.ensemble import RandomForestRegressor
 
 parser = argparse.ArgumentParser(description='cuml random forest '
                                              'regression benchmark')
 
-parser.add_argument('--criterion', type=str, default='mse',
-                    choices=('mse', 'mae'),
-                    help='The function to measure the quality of a split')
 parser.add_argument('--split-algorithm', type=str, default='hist',
                     choices=('hist', 'global_quantile'),
                     help='The algorithm to determine how '
                          'nodes are split in the tree')
 parser.add_argument('--num-trees', type=int, default=100,
                     help='Number of trees in the forest')
-parser.add_argument('--max-features', type=bench.float_or_int, default=None,
+parser.add_argument('--max-features', type=bench.float_or_int, default=1.0,
                     help='Upper bound on features used at each split')
-parser.add_argument('--max-depth', type=int, default=None,
+parser.add_argument('--max-depth', type=int, default=16,
                     help='Upper bound on depth of constructed trees')
 parser.add_argument('--min-samples-split', type=bench.float_or_int, default=2,
                     help='Minimum samples number for node splitting')
 parser.add_argument('--max-leaf-nodes', type=int, default=-1,
                     help='Maximum leaf nodes per tree')
-parser.add_argument('--min-impurity-decrease', type=float, default=0.,
+parser.add_argument('--min-impurity-decrease', type=float, default=0.0,
                     help='Needed impurity decrease for node splitting')
 parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
                     action='store_false', help="Don't control bootstraping")
@@ -47,12 +43,7 @@ parser.add_argument('--no-bootstrap', dest='bootstrap', default=True,
 params = bench.parse_args(parser)
 
 # Load and convert data
-X_train, X_test, y_train, y_test = bench.load_data(params)
-
-if params.criterion == 'mse':
-    params.criterion = 2
-else:
-    params.criterion = 3
+X_train, X_test, y_train, y_test = bench.load_data(params, int_label=True)
 
 if params.split_algorithm == 'hist':
     params.split_algorithm = 0
@@ -61,15 +52,15 @@ else:
 
 # Create our random forest regressor
 regr = RandomForestRegressor(
-    split_criterion=params.criterion,
-    split_algo=params.split_algorithm,
     n_estimators=params.num_trees,
-    max_depth=params.max_depth,
+    split_algo=params.split_algorithm,
     max_features=params.max_features,
     min_samples_split=params.min_samples_split,
+    max_depth=params.max_depth,
     max_leaves=params.max_leaf_nodes,
     min_impurity_decrease=params.min_impurity_decrease,
     bootstrap=params.bootstrap,
+
 )
 
 
@@ -82,7 +73,6 @@ def predict(regr, X):
 
 
 fit_time, _ = bench.measure_function_time(fit, regr, X_train, y_train, params=params)
-
 y_pred = predict(regr, X_train)
 train_rmse = bench.rmse_score(y_pred, y_train)
 

@@ -503,6 +503,10 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
             alg_instance_params = dict(alg_instance.attributes())
         else:
             alg_instance_params = dict(alg_instance.get_params())
+            if ('min_samples_split' in alg_instance_params
+                    and 'handle' in alg_instance_params):
+                alg_instance_params['dtype'] = str(
+                    alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)
     if alg_params is not None:
         result['algorithm_parameters'].update(alg_params)

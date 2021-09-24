@@ -15,7 +15,6 @@
 # ===============================================================================
 
 import argparse
-
 import bench
 
 
@@ -24,6 +23,8 @@ def main():
 
     # Load and convert data
     X_train, X_test, y_train, y_test = bench.load_data(params)
+    y_train = y_train.values.ravel()
+    y_test = y_test.values.ravel()
 
     # Create our random forest regressor
     regr = RandomForestRegressor(criterion=params.criterion,
