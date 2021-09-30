@@ -25,11 +25,12 @@ def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
 
 
-def convert_xgb_predictions(y_pred, objective):
-    if objective == 'multi:softprob':
-        y_pred = convert_probs_to_classes(y_pred)
-    elif objective == 'binary:logistic':
-        y_pred = y_pred.astype(np.int32)
+def convert_xgb_predictions(y_pred, objective, metric_name):
+    if metric_name == "accuracy":
+        if objective == 'multi:softprob':
+            y_pred = convert_probs_to_classes(y_pred)
+        elif objective == 'binary:logistic':
+            y_pred = y_pred.astype(np.int32)
     return y_pred
 
 
@@ -126,8 +127,7 @@ if params.objective.startswith('reg'):
     metric_name, metric_func = 'rmse', bench.rmse_score
 else:
     task = 'classification'
-    metric_name = 'accuracy'
-    metric_func = bench.accuracy_score
+    metric_name, metric_func = 'accuracy', bench.accuracy_score
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
@@ -140,8 +140,10 @@ else:
     if params.n_classes > 2:
         xgb_params['num_class'] = params.n_classes
 
-dtrain = xgb.DMatrix(X_train, y_train)
-dtest = xgb.DMatrix(X_test, y_test)
+t_creat_train, dtrain = bench.measure_function_time(xgb.DMatrix, X_train,
+                                                    params=params, label=y_train)
+t_creat_test, dtest = bench.measure_function_time(
+    xgb.DMatrix, X_test, params=params, label=y_test)
 
 
 def fit(dmatrix):
@@ -166,16 +168,20 @@ fit_time, booster = bench.measure_function_time(
 train_metric = metric_func(
     convert_xgb_predictions(
         booster.predict(dtrain),
-        params.objective),
+        params.objective, metric_name),
     y_train)
 
 predict_time, y_pred = bench.measure_function_time(
     predict, None if params.inplace_predict or params.count_dmatrix else dtest, params=params)
-test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
+test_metric = metric_func(convert_xgb_predictions(
+    y_pred, params.objective, metric_name), y_test)
 
-bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',
-                   stages=['training', 'prediction'],
-                   params=params, functions=['gbt.fit', 'gbt.predict'],
-                   times=[fit_time, predict_time], metric_type=metric_name,
-                   metrics=[train_metric, test_metric], data=[X_train, X_test],
-                   alg_instance=booster, alg_params=xgb_params)
+bench.print_output(
+    library='xgboost', algorithm=f'xgboost_{task}',
+    stages=['training_preparation', 'training', 'prediction_preparation', 'prediction'],
+    params=params,
+    functions=['xgb.dmatrix.train', 'xgb.train', 'xgb.dmatrix.test', 'xgb.predict'],
+    times=[t_creat_train, fit_time, t_creat_test, predict_time],
+    metric_type=metric_name, metrics=[None, train_metric, None, test_metric],
+    data=[X_train, X_train, X_test, X_test],
+    alg_instance=booster, alg_params=xgb_params)

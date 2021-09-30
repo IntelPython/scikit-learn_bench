@@ -26,11 +26,12 @@ def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
 
 
-def convert_xgb_predictions(y_pred, objective):
-    if objective == 'multi:softprob':
-        y_pred = convert_probs_to_classes(y_pred)
-    elif objective == 'binary:logistic':
-        y_pred = y_pred.astype(np.int32)
+def convert_xgb_predictions(y_pred, objective, metric_name):
+    if metric_name == "accuracy":
+        if objective == 'multi:softprob':
+            y_pred = convert_probs_to_classes(y_pred)
+        elif objective == 'binary:logistic':
+            y_pred = y_pred.astype(np.int32)
     return y_pred
 
 
@@ -85,6 +86,9 @@ parser.add_argument('--tree-method', type=str, required=True,
                     help='The tree construction algorithm used in XGBoost')
 
 params = bench.parse_args(parser)
+# Default seed
+if params.seed == 12345:
+    params.seed = 0
 
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
@@ -123,8 +127,7 @@ if params.objective.startswith('reg'):
     metric_name, metric_func = 'rmse', bench.rmse_score
 else:
     task = 'classification'
-    metric_name = 'accuracy'
-    metric_func = bench.accuracy_score
+    metric_name, metric_func = 'accuracy', bench.accuracy_score
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
@@ -165,12 +168,13 @@ fit_time, booster = bench.measure_function_time(
 train_metric = metric_func(
     convert_xgb_predictions(
         booster.predict(dtrain),
-        params.objective),
+        params.objective, metric_name),
     y_train)
 
 predict_time, y_pred = bench.measure_function_time(
     predict, None if params.inplace_predict or params.count_dmatrix else dtest, params=params)
-test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
+test_metric = metric_func(convert_xgb_predictions(
+    y_pred, params.objective, metric_name), y_test)
 
 transform_time, model_daal = bench.measure_function_time(
     daal4py.get_gbt_model_from_xgboost, booster, params=params)
@@ -198,4 +202,5 @@ bench.print_output(
            predict_time_daal],
     metric_type=metric_name,
     metrics=[None, train_metric, None, test_metric, None, test_metric_daal],
-    data=[X_train, X_train, X_test, X_test, X_test, X_test])
+    data=[X_train, X_train, X_test, X_test, X_test, X_test],
+    alg_instance=booster, alg_params=xgb_params)

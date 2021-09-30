@@ -1,15 +1,15 @@
 {
     "common": {
         "lib": "xgboost",
-        "data-format": "cudf",
         "data-order": "F",
         "dtype": "float32",
         "algorithm": "gbt",
-        "tree-method": "gpu_hist",
-        "count-dmatrix": ""
+        "tree-method": "gpu_hist"
     },
     "cases": [
         {
+            "objective": "reg:squarederror",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -26,10 +26,11 @@
             ],
             "learning-rate": 0.03,
             "max-depth": 6,
-            "n-estimators": 1000,
-            "objective": "reg:squarederror"
+            "n-estimators": 1000
         },
         {
+            "objective": "binary:logistic",
+            "data-format": "pandas",
             "dataset": [
                 {
                     "source": "npy",
@@ -53,10 +54,11 @@
             "min-child-weight": 0,
             "max-depth": 8,
             "max-leaves": 256,
-            "n-estimators": 1000,
-            "objective": "binary:logistic"
+            "n-estimators": 1000
         },
         {
+            "objective": "binary:logistic",
+            "data-format": "pandas",
             "dataset": [
                 {
                     "source": "npy",
@@ -81,10 +83,11 @@
             "max-depth": 8,
             "max-leaves": 256,
             "n-estimators": 1000,
-            "objective": "binary:logistic",
             "inplace-predict": ""
         },
         {
+            "objective": "multi:softprob",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -101,10 +104,11 @@
             ],
             "learning-rate": 0.03,
             "max-depth": 6,
-            "n-estimators": 1000,
-            "objective": "multi:softprob"
+            "n-estimators": 1000
         },
         {
+            "objective": "multi:softprob",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -122,10 +126,11 @@
             "min-child-weight": 1,
             "min-split-loss": 0.1,
             "max-depth": 8,
-            "n-estimators": 200,
-            "objective": "multi:softprob"
+            "n-estimators": 200
         },
         {
+            "objective": "reg:squarederror",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -137,7 +142,6 @@
                 }
             ],
             "n-estimators": 100,
-            "objective": "reg:squarederror",
             "max-depth": 8,
             "scale-pos-weight": 2,
             "learning-rate": 0.1,
@@ -148,6 +152,8 @@
             "max-leaves": 256
         },
         {
+            "objective": "multi:softprob",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -163,12 +169,13 @@
                 }
             ],
             "n-estimators": 60,
-            "objective": "multi:softprob",
             "max-depth": 7,
             "subsample": 0.7,
             "colsample-bytree": 0.7
         },
         {
+            "objective": "binary:logistic",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -184,7 +191,6 @@
                 }
             ],
             "n-estimators": 10000,
-            "objective": "binary:logistic",
             "max-depth": 1,
             "subsample": 0.5,
             "eta": 0.1,

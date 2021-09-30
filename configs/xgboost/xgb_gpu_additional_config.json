@@ -1,12 +1,10 @@
 {
     "common": {
         "lib": "xgboost",
-        "data-format": "cudf",
         "data-order": "F",
         "dtype": "float32",
         "algorithm": "gbt",
         "tree-method": "gpu_hist",
-        "count-dmatrix": "",
         "max-depth": 8,
         "learning-rate": 0.1,
         "reg-lambda": 1,
@@ -15,6 +13,7 @@
     "cases": [
         {
             "objective": "binary:logistic",
+            "data-format": "pandas",
             "scale-pos-weight": 2.1067817411664587,
             "dataset": [
                 {
@@ -33,6 +32,7 @@
         },
         {
             "objective": "binary:logistic",
+            "data-format": "cudf",
             "scale-pos-weight": 173.63348001466812,
             "dataset": [
                 {
@@ -51,6 +51,7 @@
         },
         {
             "objective": "multi:softmax",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
@@ -68,6 +69,7 @@
         },
         {
             "objective": "binary:logistic",
+            "data-format": "pandas",
             "scale-pos-weight": 2.0017715678375363,
             "dataset": [
                 {
@@ -86,6 +88,7 @@
         },
         {
             "objective": "binary:logistic",
+            "data-format": "cudf",
             "scale-pos-weight": 578.2868020304569,
             "dataset": [
                 {
@@ -104,6 +107,7 @@
         },
         {
             "objective": "binary:logistic",
+            "data-format": "cudf",
             "scale-pos-weight": 1.8872389605086624,
             "dataset": [
                 {
@@ -122,6 +126,7 @@
         },
         {
             "objective": "reg:squarederror",
+            "data-format": "cudf",
             "dataset": [
                 {
                     "source": "npy",
