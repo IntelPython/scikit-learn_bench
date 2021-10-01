@@ -480,7 +480,8 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     return tuple(full_data.values())
 
 
-def gen_basic_dict(library, algorithm, stage, params, data):
+def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
+                   alg_params=None):
     result = {
         'library': library,
         'algorithm': algorithm,
@@ -495,9 +496,6 @@ def gen_basic_dict(library, algorithm, stage, params, data):
             'columns': data.shape[1]
         }
     }
-    return result
-
-def update_algorithm_parameters(result, alg_instance=None, alg_params=None):
     result['algorithm_parameters'] = {}
     if alg_instance is not None:
         if 'Booster' in str(type(alg_instance)):
@@ -509,15 +507,8 @@ def update_algorithm_parameters(result, alg_instance=None, alg_params=None):
                 alg_instance_params['dtype'] = str(
                     alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)
-        if 'init' in result['algorithm_parameters']:
-            if not isinstance(result['algorithm_parameters']['init'], str):
-                result['algorithm_parameters']['init'] = 'random'
     if alg_params is not None:
         result['algorithm_parameters'].update(alg_params)
-        if 'init' in result['algorithm_parameters'].keys():
-            if not isinstance(result['algorithm_parameters']['init'], str):
-                result['algorithm_parameters']['init'] = 'random'
-    result['algorithm_parameters'].pop('handle',None)
     return result
 
 
@@ -545,7 +536,11 @@ def print_output(library, algorithm, stages, params, functions,
             elif algorithm == 'dbscan':
                 result.update({'n_clusters': params.n_clusters})
         # replace non-string init with string for kmeans benchmarks
-        result = update_algorithm_parameters(result, alg_instance, alg_params)
+        if alg_instance is not None:
+            if 'init' in result['algorithm_parameters'].keys():
+                if not isinstance(result['algorithm_parameters']['init'], str):
+                    result['algorithm_parameters']['init'] = 'random'
+        result['algorithm_parameters'].pop('handle',None)
         output.append(result)
     print(json.dumps(output, indent=4))
 
