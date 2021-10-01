@@ -438,6 +438,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     for element in full_data:
         file_arg = f'file_{element}'
         # load and convert data from npy/csv file if path is specified
+        new_dtype = int_dtype if 'y' in element and int_label else params.dtype
         if param_vars[file_arg] is not None:
             if param_vars[file_arg].name.endswith('.npy'):
                 data = np.load(param_vars[file_arg].name, allow_pickle=True)
@@ -445,7 +446,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                 data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(
                 data,
-                int_dtype if 'y' in element and int_label else params.dtype,
+                new_dtype,
                 params.data_order, params.data_format
             )
         if full_data[element] is None:
@@ -453,7 +454,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             if element in generated_data:
                 full_data[element] = convert_data(
                     np.random.rand(*params.shape),
-                    int_dtype if 'y' in element and int_label else params.dtype,
+                    new_dtype,
                     params.data_order, params.data_format)
         else:
             # convert existing labels from 1- to 2-dimensional
