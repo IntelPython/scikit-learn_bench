@@ -458,9 +458,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
         else:
             # convert existing labels from 1- to 2-dimensional
             # if it's forced and possible
-            condition1: bool = 'y' in element and label_2d
-            condition1 = condition1 and hasattr(full_data[element], 'reshape')
-            if condition1:
+            if 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
                 full_data[element] = full_data[element].reshape(
                     (full_data[element].shape[0], 1))
             # add dtype property to data if it's needed and doesn't exist
@@ -482,8 +480,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     return tuple(full_data.values())
 
 
-def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
-                   alg_params=None):
+def gen_basic_dict(library, algorithm, stage, params, data):
     result = {
         'library': library,
         'algorithm': algorithm,
@@ -498,6 +495,9 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
             'columns': data.shape[1]
         }
     }
+    return result
+
+def update_algorithm_parameters(result, alg_instance=None, alg_params=None):
     result['algorithm_parameters'] = {}
     if alg_instance is not None:
         if 'Booster' in str(type(alg_instance)):
@@ -509,8 +509,15 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
                 alg_instance_params['dtype'] = str(
                     alg_instance_params['dtype'])
         result['algorithm_parameters'].update(alg_instance_params)
+        if 'init' in result['algorithm_parameters']:
+            if not isinstance(result['algorithm_parameters']['init'], str):
+                result['algorithm_parameters']['init'] = 'random'
     if alg_params is not None:
         result['algorithm_parameters'].update(alg_params)
+        if 'init' in result['algorithm_parameters'].keys():
+            if not isinstance(result['algorithm_parameters']['init'], str):
+                result['algorithm_parameters']['init'] = 'random'
+    result['algorithm_parameters'].pop('handle',None)
     return result
 
 
@@ -521,8 +528,7 @@ def print_output(library, algorithm, stages, params, functions,
         return
     output = []
     for i, stage in enumerate(stages):
-        result = gen_basic_dict(library, algorithm, stage, params,
-                                data[i], alg_instance, alg_params)
+        result = gen_basic_dict(library, algorithm, stage, params, data[i])
         result.update({'time[s]': times[i]})
         if isinstance(metric_type, str):
             result.update({f'{metric_type}': metrics[i]})
@@ -539,11 +545,7 @@ def print_output(library, algorithm, stages, params, functions,
             elif algorithm == 'dbscan':
                 result.update({'n_clusters': params.n_clusters})
         # replace non-string init with string for kmeans benchmarks
-        if alg_instance is not None:
-            if 'init' in result['algorithm_parameters'].keys():
-                if not isinstance(result['algorithm_parameters']['init'], str):
-                    result['algorithm_parameters']['init'] = 'random'
-            result['algorithm_parameters'].pop('handle',None)
+        result = update_algorithm_parameters(result, alg_instance, alg_params)
         output.append(result)
     print(json.dumps(output, indent=4))
 
