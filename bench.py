@@ -515,7 +515,8 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
 def print_output(library, algorithm, stages, params, functions,
                  times, metric_type, metrics, data, alg_instance=None,
                  alg_params=None):
-    if params.output_format != 'json': return
+    if params.output_format != 'json':
+        return
     output = []
     for i, stage in enumerate(stages):
         result = gen_basic_dict(library, algorithm, stage, params,
@@ -538,8 +539,8 @@ def print_output(library, algorithm, stages, params, functions,
                 result.update({'n_clusters': params.n_clusters})
         # replace non-string init with string for kmeans benchmarks
         if alg_instance is not None:
-            if 'init' in result['algorithm_parameters'].keys() and \
-                not isinstance(result['algorithm_parameters']['init'], str):
+            if 'init' in result['algorithm_parameters'].keys():
+                if isinstance(result['algorithm_parameters']['init'], str):
                     result['algorithm_parameters']['init'] = 'random'
             if 'handle' in result['algorithm_parameters'].keys():
                 del result['algorithm_parameters']['handle']
