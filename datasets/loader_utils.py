@@ -20,13 +20,9 @@ from urllib.request import urlretrieve
 import numpy as np
 import tqdm
 
-pbar: tqdm.tqdm = None
-
 
 def _show_progress(block_num: int, block_size: int, total_size: int) -> None:
-    global pbar
-    if pbar is None:
-        pbar = tqdm.tqdm(total=total_size / 1024, unit='kB')
+    pbar: tqdm.tqdm = tqdm.tqdm(total=total_size / 1024, unit='kB')
 
     downloaded = block_num * block_size
     if downloaded < total_size:
