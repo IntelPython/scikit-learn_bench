@@ -465,9 +465,8 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
             if condition:
                 full_data[element] = full_data[element].reshape(
                     (full_data[element].shape[0], 1))
-            add_dtype = add_dtype and not hasattr(full_data[element], 'dtype')
             # add dtype property to data if it's needed and doesn't exist
-            if add_dtype:
+            if add_dtype and not hasattr(full_data[element], 'dtype'):
                 if hasattr(full_data[element], 'values'):
                     full_data[element].dtype = full_data[element].values.dtype
                 elif hasattr(full_data[element], 'dtypes'):
