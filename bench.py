@@ -539,9 +539,10 @@ def print_output(library, algorithm, stages, params, functions,
                 result.update({'n_clusters': params.n_clusters})
         # replace non-string init with string for kmeans benchmarks
         if alg_instance is not None:
-            if 'init' in result['algorithm_parameters'].keys():
-                if isinstance(result['algorithm_parameters']['init'], str):
-                    result['algorithm_parameters']['init'] = 'random'
+            condition = 'init' in result['algorithm_parameters'].keys() and\
+            not isinstance(result['algorithm_parameters']['init'], str)
+            if condition:
+                result['algorithm_parameters']['init'] = 'random'
             if 'handle' in result['algorithm_parameters'].keys():
                 del result['algorithm_parameters']['handle']
         output.append(result)
