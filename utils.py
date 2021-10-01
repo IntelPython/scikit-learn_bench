@@ -175,11 +175,11 @@ def generate_cases(params: Dict[str, Union[List[Any], Any]]) -> List[str]:
             commands *= len(values)
             dashes = '-' if len(param) == 1 else '--'
             for command_num in range(prev_len):
-                for value_num in range(len(values)):
-                    commands[prev_len * value_num + command_num] += ' ' + \
-                        dashes + param + ' ' + str(values[value_num])
+                for idx, val in enumerate(values):
+                    commands[prev_len * idx + command_num] += ' ' + \
+                        dashes + param + ' ' + str(val)
         else:
             dashes = '-' if len(param) == 1 else '--'
-            for command_num in range(len(commands)):
+            for command_num,_ in enumerate(commands):
                 commands[command_num] += ' ' + dashes + param + ' ' + str(values)
     return commands
