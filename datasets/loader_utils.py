@@ -15,14 +15,17 @@
 # ===============================================================================
 
 import re
-from urllib.request import urlretrieve
-
+from urllib.request import urlretrieve, Request
+import os
 import numpy as np
 import tqdm
 
+pbar: tqdm.tqdm = None
 
 def _show_progress(block_num: int, block_size: int, total_size: int) -> None:
-    pbar: tqdm.tqdm = tqdm.tqdm(total=total_size / 1024, unit='kB')
+    global pbar
+    if pbar is None:
+        pbar = tqdm.tqdm(total=total_size / 1024, unit='kB')
 
     downloaded = block_num * block_size
     if downloaded < total_size:
@@ -33,7 +36,11 @@ def _show_progress(block_num: int, block_size: int, total_size: int) -> None:
 
 
 def retrieve(url: str, filename: str) -> None:
-    urlretrieve(url, filename, reporthook=_show_progress)
+    if url.lower().startswith('http'):
+        req = Request(url)
+    elif not os.path.isfile(url):
+        raise ValueError, None
+    urlretrieve(url, filename, reporthook=_show_progress) #nosec
 
 
 def read_libsvm_msrank(file_obj, n_samples, n_features, dtype):
