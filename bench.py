@@ -458,7 +458,9 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
         else:
             # convert existing labels from 1- to 2-dimensional
             # if it's forced and possible
-            if 'y' in element and label_2d and hasattr(full_data[element], 'reshape'):
+            condition1: bool = 'y' in element and label_2d
+            condition1 = condition1 and hasattr(full_data[element], 'reshape')
+            if condition1:
                 full_data[element] = full_data[element].reshape(
                     (full_data[element].shape[0], 1))
             # add dtype property to data if it's needed and doesn't exist
