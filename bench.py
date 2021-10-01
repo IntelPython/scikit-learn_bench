@@ -512,31 +512,6 @@ def gen_basic_dict(library, algorithm, stage, params, data, alg_instance=None,
     return result
 
 
-def update_result_dict(result) -> None:
-    result.update({'time[s]': times[i]})
-    if metric_type is not None:
-        if isinstance(metric_type, str):
-            result.update({f'{metric_type}': metrics[i]})
-        elif isinstance(metric_type, list):
-            for ind, val in enumerate(metric_type):
-                if metrics[ind][i] is not None:
-                    result.update({f'{val}': metrics[ind][i]})
-    if hasattr(params, 'n_classes'):
-        result['input_data'].update({'classes': params.n_classes})
-    if hasattr(params, 'n_clusters'):
-        if algorithm == 'kmeans':
-            result['input_data'].update(
-                {'n_clusters': params.n_clusters})
-        elif algorithm == 'dbscan':
-            result.update({'n_clusters': params.n_clusters})
-    # replace non-string init with string for kmeans benchmarks
-    if alg_instance is not None:
-        if 'init' in result['algorithm_parameters'].keys():
-            if not isinstance(result['algorithm_parameters']['init'], str):
-                result['algorithm_parameters']['init'] = 'random'
-        if 'handle' in result['algorithm_parameters'].keys():
-            del result['algorithm_parameters']['handle']
-
 def print_output(library, algorithm, stages, params, functions,
                  times, metric_type, metrics, data, alg_instance=None,
                  alg_params=None):
@@ -546,30 +521,27 @@ def print_output(library, algorithm, stages, params, functions,
     for i, stage in enumerate(stages):
         result = gen_basic_dict(library, algorithm, stage, params,
                                 data[i], alg_instance, alg_params)
-        update_result_dict(result)
-        # result.update({'time[s]': times[i]})
-        # if metric_type is not None:
-        #     if isinstance(metric_type, str):
-        #         result.update({f'{metric_type}': metrics[i]})
-        #     elif isinstance(metric_type, list):
-        #         for ind, val in enumerate(metric_type):
-        #             if metrics[ind][i] is not None:
-        #                 result.update({f'{val}': metrics[ind][i]})
-        # if hasattr(params, 'n_classes'):
-        #     result['input_data'].update({'classes': params.n_classes})
-        # if hasattr(params, 'n_clusters'):
-        #     if algorithm == 'kmeans':
-        #         result['input_data'].update(
-        #             {'n_clusters': params.n_clusters})
-        #     elif algorithm == 'dbscan':
-        #         result.update({'n_clusters': params.n_clusters})
-        # # replace non-string init with string for kmeans benchmarks
-        # if alg_instance is not None:
-        #     if 'init' in result['algorithm_parameters'].keys():
-        #         if not isinstance(result['algorithm_parameters']['init'], str):
-        #             result['algorithm_parameters']['init'] = 'random'
-        #     if 'handle' in result['algorithm_parameters'].keys():
-        #         del result['algorithm_parameters']['handle']
+        result.update({'time[s]': times[i]})
+        if isinstance(metric_type, str):
+            result.update({f'{metric_type}': metrics[i]})
+        elif isinstance(metric_type, list):
+            for ind, val in enumerate(metric_type):
+                if metrics[ind][i] is not None:
+                    result.update({f'{val}': metrics[ind][i]})
+        if hasattr(params, 'n_classes'):
+            result['input_data'].update({'classes': params.n_classes})
+        if hasattr(params, 'n_clusters'):
+            if algorithm == 'kmeans':
+                result['input_data'].update(
+                    {'n_clusters': params.n_clusters})
+            elif algorithm == 'dbscan':
+                result.update({'n_clusters': params.n_clusters})
+        # replace non-string init with string for kmeans benchmarks
+        if alg_instance is not None:
+            if 'init' in result['algorithm_parameters'].keys():
+                if not isinstance(result['algorithm_parameters']['init'], str):
+                    result['algorithm_parameters']['init'] = 'random'
+            result['algorithm_parameters'].pop('handle',None)
         output.append(result)
     print(json.dumps(output, indent=4))
 
