@@ -3,3 +3,4 @@ pandas < 1.3.0
 daal4py
 openpyxl
 tqdm
+requests
