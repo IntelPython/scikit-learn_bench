@@ -3,3 +3,4 @@ pandas
 scikit-learn-intelex
 openpyxl
 tqdm
+requests
