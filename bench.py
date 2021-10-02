@@ -456,7 +456,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                     np.random.rand(*params.shape),
                     new_dtype,
                     params.data_order, params.data_format)
-        else:
+        if full_data[element] is not None:
             # convert existing labels from 1- to 2-dimensional
             # if it's forced and possible
             condition = 'y' in element
