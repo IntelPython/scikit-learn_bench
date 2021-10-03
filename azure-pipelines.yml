@@ -75,6 +75,6 @@ jobs:
           addToPath: true
       - script: |
           python -m pip install --upgrade pip setuptools
-          pip install mypy data-science-types requests
+          pip install mypy data-science-types requests types-requests
           mypy . --ignore-missing-imports
         displayName: "mypy check"
