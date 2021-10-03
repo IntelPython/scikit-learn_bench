@@ -29,8 +29,12 @@ def main():
                 learning_rate=params.learning_rate, angle=params.angle,
                 min_grad_norm=params.min_grad_norm, random_state=params.random_state)
 
+    print("Created TSNE model")
+
     fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params)
     divergence = tsne.kl_divergence_
+
+    print("Ready to print output")
 
     bench.print_output(
         library='sklearn',
