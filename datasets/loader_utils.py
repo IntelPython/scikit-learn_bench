@@ -17,7 +17,6 @@
 import re
 import requests
 import os
-from urllib.request import urlretrieve
 from shutil import copyfile
 import numpy as np
 from tqdm import tqdm

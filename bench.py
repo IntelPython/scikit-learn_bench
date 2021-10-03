@@ -456,7 +456,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                     np.random.rand(*params.shape),
                     new_dtype,
                     params.data_order, params.data_format)
-       # generate and convert data if it's marked and path isn't specified
+        # generate and convert data if it's marked and path isn't specified
         if full_data[element] is None and element in generated_data:
             full_data[element] = convert_data(
                 np.random.rand(*params.shape),
