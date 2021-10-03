@@ -527,7 +527,8 @@ def print_output(library, algorithm, stages, params, functions,
         return
     output = []
     for i, stage in enumerate(stages):
-        result = gen_basic_dict(library, algorithm, stage, params, data[i])
+        result = gen_basic_dict(library, algorithm, stage, params,
+                                data[i], alg_instance, alg_params)
         result.update({'time[s]': times[i]})
         if isinstance(metric_type, str):
             result.update({f'{metric_type}': metrics[i]})
@@ -548,7 +549,7 @@ def print_output(library, algorithm, stages, params, functions,
             if 'init' in result['algorithm_parameters'].keys():
                 if not isinstance(result['algorithm_parameters']['init'], str):
                     result['algorithm_parameters']['init'] = 'random'
-        result['algorithm_parameters'].pop('handle',None)
+        result['algorithm_parameters'].pop('handle', None)
         output.append(result)
     print(json.dumps(output, indent=4))
 
