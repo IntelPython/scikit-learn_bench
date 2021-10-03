@@ -222,8 +222,7 @@ if __name__ == '__main__':
                                     + f'{decoding_exception}\n{stdout}\n'
 
                             if stderr != '':
-                                if stderr != 'root:Device support is limited in daal4py patching. ' \
-                                        + 'Use Intel(R) Extension for Scikit-learn * for full experience.':
+                                if not 'daal4py' in stderr:
                                     is_successful = False
                                     logging.warning(
                                         'Error in benchmark: \n' + stderr)
