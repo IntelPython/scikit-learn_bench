@@ -222,7 +222,7 @@ if __name__ == '__main__':
                                     + f'{decoding_exception}\n{stdout}\n'
 
                             if stderr != '':
-                                if not 'daal4py' in stderr:
+                                if 'daal4py' not in stderr:
                                     is_successful = False
                                     logging.warning(
                                         'Error in benchmark: \n' + stderr)
