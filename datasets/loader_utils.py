@@ -32,7 +32,8 @@ def retrieve(url: str, filename: str) -> None:
     elif url.startswith('http'):
         response = requests.get(url,stream=True)
         if response.status_code != 200:
-            raise AssertionError(f"Failed to download from {url},\nResponse returned status code {response.status_code}")
+            raise AssertionError(f"Failed to download from {url},\n"+\
+                "Response returned status code {response.status_code}")
         total_size = int(response.headers.get('content-length', 0))
         block_size = 8192
         pbar = tqdm(total=total_size/1024, unit='kB')
