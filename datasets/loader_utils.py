@@ -30,10 +30,10 @@ def retrieve(url: str, filename: str) -> None:
         # reporthook is ignored for local urls
         copyfile(url, filename)
     elif url.startswith('http'):
-        response = requests.get(url,stream=True)
+        response = requests.get(url, stream=True)
         if response.status_code != 200:
-            raise AssertionError(f"Failed to download from {url},\n"+\
-                "Response returned status code {response.status_code}")
+            raise AssertionError(f"Failed to download from {url},\n" +
+                                 "Response returned status code {response.status_code}")
         total_size = int(response.headers.get('content-length', 0))
         block_size = 8192
         pbar = tqdm(total=total_size/1024, unit='kB')
@@ -43,7 +43,8 @@ def retrieve(url: str, filename: str) -> None:
                 file.write(data)
         pbar.close()
         if total_size != 0 and pbar.n != total_size/1024:
-            raise AssertionError("Some content was present but not downloaded/written")
+            raise AssertionError(
+                "Some content was present but not downloaded/written")
 
 
 def read_libsvm_msrank(file_obj, n_samples, n_features, dtype):
