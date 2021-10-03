@@ -549,7 +549,7 @@ def print_output(library, algorithm, stages, params, functions,
             if 'init' in result['algorithm_parameters'].keys():
                 if not isinstance(result['algorithm_parameters']['init'], str):
                     result['algorithm_parameters']['init'] = 'random'
-        result['algorithm_parameters'].pop('handle', None)
+            result['algorithm_parameters'].pop('handle', None)
         output.append(result)
     print(json.dumps(output, indent=4))
 
