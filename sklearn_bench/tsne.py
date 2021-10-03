@@ -14,8 +14,10 @@
 # limitations under the License.
 # ===============================================================================
 
-import argparse
 import bench
+import argparse
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def main():
