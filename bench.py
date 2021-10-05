@@ -389,14 +389,13 @@ def convert_data(data, dtype, data_order, data_format):
     # Secondly, change format of data
     if data_format == 'numpy':
         return data
-    elif data_format == 'pandas':
+    if data_format == 'pandas':
         import pandas as pd
 
         if data.ndim == 1:
             return pd.Series(data)
-        else:
-            return pd.DataFrame(data)
-    elif data_format == 'cudf':
+        return pd.DataFrame(data)
+    if data_format == 'cudf':
         import cudf
         import pandas as pd
 
@@ -439,6 +438,7 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
     for element in full_data:
         file_arg = f'file_{element}'
         # load and convert data from npy/csv file if path is specified
+        new_dtype = int_dtype if 'y' in element and int_label else params.dtype
         if param_vars[file_arg] is not None:
             if param_vars[file_arg].name.endswith('.npy'):
                 data = np.load(param_vars[file_arg].name, allow_pickle=True)
@@ -446,9 +446,16 @@ def load_data(params, generated_data=[], add_dtype=False, label_2d=False,
                 data = read_csv(param_vars[file_arg].name, params)
             full_data[element] = convert_data(
                 data,
-                int_dtype if 'y' in element and int_label else params.dtype,
+                new_dtype,
                 params.data_order, params.data_format
             )
+        if full_data[element] is None:
+            # generate and convert data if it's marked and path isn't specified
+            if element in generated_data:
+                full_data[element] = convert_data(
+                    np.random.rand(*params.shape),
+                    new_dtype,
+                    params.data_order, params.data_format)
         # generate and convert data if it's marked and path isn't specified
         if full_data[element] is None and element in generated_data:
             full_data[element] = convert_data(
@@ -522,13 +529,12 @@ def print_output(library, algorithm, stages, params, functions,
             result = gen_basic_dict(library, algorithm, stage, params,
                                     data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
-            if metric_type is not None:
-                if isinstance(metric_type, str):
-                    result.update({f'{metric_type}': metrics[i]})
-                elif isinstance(metric_type, list):
-                    for ind, val in enumerate(metric_type):
-                        if metrics[ind][i] is not None:
-                            result.update({f'{val}': metrics[ind][i]})
+            if isinstance(metric_type, str):
+                result.update({f'{metric_type}': metrics[i]})
+            elif isinstance(metric_type, list):
+                for ind, val in enumerate(metric_type):
+                    if metrics[ind][i] is not None:
+                        result.update({f'{val}': metrics[ind][i]})
             if hasattr(params, 'n_classes'):
                 result['input_data'].update({'classes': params.n_classes})
             if hasattr(params, 'n_clusters'):
@@ -542,8 +548,7 @@ def print_output(library, algorithm, stages, params, functions,
                 if 'init' in result['algorithm_parameters'].keys():
                     if not isinstance(result['algorithm_parameters']['init'], str):
                         result['algorithm_parameters']['init'] = 'random'
-                if 'handle' in result['algorithm_parameters'].keys():
-                    del result['algorithm_parameters']['handle']
+                result['algorithm_parameters'].pop('handle', None)
             output.append(result)
         print(json.dumps(output, indent=4))
 

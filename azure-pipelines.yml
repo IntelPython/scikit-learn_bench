@@ -1,80 +1,80 @@
 variables:
   - name: python.version
-    value: '3.8'
+    value: "3.8"
 
 jobs:
-- job: Linux_Sklearn
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-    displayName: 'Use Python $(python.version)'
-    inputs:
-      versionSpec: '$(python.version)'
-  - script: |
-      pip install -r sklearn_bench/requirements.txt
-      python runner.py --configs configs/testing/sklearn.json
-    displayName: Run bench
-- job: Linux_XGBoost
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-    displayName: 'Use Python $(python.version)'
-    inputs:
-      versionSpec: '$(python.version)'
-  - script: |
-      pip install -r xgboost_bench/requirements.txt
-      python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
-    displayName: Run bench
-- job: Linux_daal4py
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-    displayName: 'Use Python $(python.version)'
-    inputs:
-      versionSpec: '$(python.version)'
-  - script: |
-      pip install -r daal4py_bench/requirements.txt
-      python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
-    displayName: Run bench
-- job: Linux_XGBoost_and_daal4py
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - script: |
-      conda update -y -q conda
-      conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py tqdm
-    displayName: Create Anaconda environment
-  - script: |
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate bench
-      python runner.py --configs configs/testing/daal4py_xgboost.json --no-intel-optimized
-    displayName: Run bench
-- job: Pep8
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      addToPath: true
-  - script: |
-      python -m pip install --upgrade pip setuptools
-      pip install flake8
-      flake8 --max-line-length=100 --count
-    displayName: 'PEP 8 check'
-- job: Mypy
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      addToPath: true
-  - script: |
-      python -m pip install --upgrade pip setuptools
-      pip install mypy data-science-types
-      mypy . --ignore-missing-imports
-    displayName: 'mypy check'
+  - job: Linux_Sklearn
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - task: UsePythonVersion@0
+        displayName: "Use Python $(python.version)"
+        inputs:
+          versionSpec: "$(python.version)"
+      - script: |
+          pip install -r sklearn_bench/requirements.txt
+          python runner.py --configs configs/testing/sklearn.json
+        displayName: Run bench
+  - job: Linux_XGBoost
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - task: UsePythonVersion@0
+        displayName: "Use Python $(python.version)"
+        inputs:
+          versionSpec: "$(python.version)"
+      - script: |
+          pip install -r xgboost_bench/requirements.txt
+          python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
+        displayName: Run bench
+  - job: Linux_daal4py
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - task: UsePythonVersion@0
+        displayName: "Use Python $(python.version)"
+        inputs:
+          versionSpec: "$(python.version)"
+      - script: |
+          pip install -r daal4py_bench/requirements.txt
+          python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
+        displayName: Run bench
+  - job: Linux_XGBoost_and_daal4py
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - script: |
+          conda update -y -q conda
+          conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py tqdm requests
+        displayName: Create Anaconda environment
+      - script: |
+          . /usr/share/miniconda/etc/profile.d/conda.sh
+          conda activate bench
+          python runner.py --configs configs/testing/daal4py_xgboost.json --no-intel-optimized
+        displayName: Run bench
+  - job: Pep8
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: "$(python.version)"
+          addToPath: true
+      - script: |
+          python -m pip install --upgrade pip setuptools
+          pip install flake8 requests
+          flake8 --max-line-length=100 --count
+        displayName: "PEP 8 check"
+  - job: Mypy
+    pool:
+      vmImage: "ubuntu-20.04"
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: "$(python.version)"
+          addToPath: true
+      - script: |
+          python -m pip install --upgrade pip setuptools
+          pip install mypy data-science-types requests types-requests
+          mypy . --ignore-missing-imports
+        displayName: "mypy check"

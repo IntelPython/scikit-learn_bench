@@ -120,7 +120,8 @@ if __name__ == '__main__':
                     if 'testing' in dataset:
                         paths += ' --file-X-test ' + dataset["testing"]["x"]
                         if 'y' in dataset['testing']:
-                            paths += ' --file-y-test ' + dataset["testing"]["y"]
+                            paths += ' --file-y-test ' + \
+                                dataset["testing"]["y"]
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
                         classes: int
@@ -214,14 +215,17 @@ if __name__ == '__main__':
                                     + f'{extra_stdout}\n'
                             try:
                                 if isinstance(json_result['results'], list):
-                                    json_result['results'].extend(json.loads(stdout))
+                                    json_result['results'].extend(
+                                        json.loads(stdout))
                             except json.JSONDecodeError as decoding_exception:
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'
 
                             if stderr != '':
-                                is_successful = False
-                                logging.warning('Error in benchmark: \n' + stderr)
+                                if 'daal4py' not in stderr:
+                                    is_successful = False
+                                    logging.warning(
+                                        'Error in benchmark: \n' + stderr)
 
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name

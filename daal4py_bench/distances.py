@@ -17,7 +17,7 @@
 import argparse
 
 import bench
-import daal4py
+from daal4py import cosine_distance, correlation_distance
 from daal4py.sklearn._utils import getFPType
 
 
@@ -34,9 +34,10 @@ parser.add_argument('--metric', default='cosine',
 params = bench.parse_args(parser)
 
 # Load data
-X, _, _, _ = bench.load_data(params, generated_data=['X_train'], add_dtype=True)
+X, _, _, _ = bench.load_data(params, generated_data=[
+                             'X_train'], add_dtype=True)
 
-pairwise_distances = getattr(daal4py, f'{params.metric}_distance')
+pairwise_distances = cosine_distance if params.metric == 'cosine' else correlation_distance
 
 time, _ = bench.measure_function_time(
     compute_distances, pairwise_distances, X, params=params)
