@@ -1,5 +1,5 @@
 
-# Machine Learning Benchmarks
+# Machine Learning Benchmarks <!-- omit in toc -->
 
 [![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
 
@@ -10,7 +10,7 @@ and algorithms. It currently supports the [scikit-learn](https://scikit-learn.or
 and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used
 [machine learning algorithms](#supported-algorithms).
 
-## Follow us on Medium
+## Follow us on Medium <!-- omit in toc -->
 
 We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-software/tagged/machine-learning) to learn tips and tricks for more efficient data analysis. Here are our latest blogs:
 
@@ -28,16 +28,13 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 - [Accelerate K-Means Clustering](https://medium.com/intel-analytics-software/accelerate-k-means-clustering-6385088788a1)
 - [Fast Gradient Boosting Tree Inference](https://medium.com/intel-analytics-software/fast-gradient-boosting-tree-inference-for-intel-xeon-processors-35756f174f55)
 
-## Table of content
+## Table of content <!-- omit in toc -->
 
-- [Machine Learning Benchmarks](#machine-learning-benchmarks)
-  - [Follow us on Medium](#follow-us-on-medium)
-  - [Table of content](#table-of-content)
-  - [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
-  - [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
-  - [Benchmark supported algorithms](#benchmark-supported-algorithms)
-    - [Scikit-learn benchmakrs](#scikit-learn-benchmakrs)
-  - [Algorithm parameters](#algorithm-parameters)
+- [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
+- [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
+- [Benchmark supported algorithms](#benchmark-supported-algorithms)
+  - [Scikit-learn benchmakrs](#scikit-learn-benchmakrs)
+- [Algorithm parameters](#algorithm-parameters)
 
 ## How to create conda environment for benchmarking
 
