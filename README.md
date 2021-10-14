@@ -1,5 +1,5 @@
 
-# Machine Learning Benchmarks
+# Machine Learning Benchmarks <!-- omit in toc -->
 
 [![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
 
@@ -10,7 +10,7 @@ and algorithms. It currently supports the [scikit-learn](https://scikit-learn.or
 and [XGBoost](https://github.com/dmlc/xgboost) frameworks for commonly used
 [machine learning algorithms](#supported-algorithms).
 
-## Follow us on Medium
+## Follow us on Medium <!-- omit in toc -->
 
 We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-software/tagged/machine-learning) to learn tips and tricks for more efficient data analysis. Here are our latest blogs:
 
@@ -28,13 +28,13 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 - [Accelerate K-Means Clustering](https://medium.com/intel-analytics-software/accelerate-k-means-clustering-6385088788a1)
 - [Fast Gradient Boosting Tree Inference](https://medium.com/intel-analytics-software/fast-gradient-boosting-tree-inference-for-intel-xeon-processors-35756f174f55)
 
-## Table of content
+## Table of content <!-- omit in toc -->
 
 - [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
 - [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 - [Benchmark supported algorithms](#benchmark-supported-algorithms)
-- [Intel(R) Extension for Scikit-learn* support](#intelr-extension-for-scikit-learn-support)
-- [Algorithms parameters](#algorithms-parameters)
+  - [Scikit-learn benchmakrs](#scikit-learn-benchmakrs)
+- [Algorithm parameters](#algorithm-parameters)
 
 ## How to create conda environment for benchmarking
 
@@ -100,37 +100,30 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
 ## Benchmark supported algorithms
 
-| algorithm  | benchmark name | sklearn | daal4py | cuml | xgboost |
-|---|---|---|---|---|---|
-|**[DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html)**|dbscan|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)**|df_clfs|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)**|df_regr|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[pairwise_distances](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html)**|distances|:white_check_mark:|:white_check_mark:|:x:|:x:|
-|**[KMeans](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)**|kmeans|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[KNeighborsClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html)**|knn_clsf|:white_check_mark:|:x:|:white_check_mark:|:x:|
-|**[LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)**|linear|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[LogisticRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)**|log_reg|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)**|pca|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)**|ridge|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[SVM](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)**|svm|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
-|**[train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)**|train_test_split|:white_check_mark:|:x:|:white_check_mark:|:x:|
-|**[GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)**|gbt|:x:|:x:|:x:|:white_check_mark:|
-|**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:white_check_mark:|
+| algorithm  | benchmark name | sklearn (CPU) | sklearn (GPU) | daal4py | cuml | xgboost |
+|---|---|---|---|---|---|---|
+|**[DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html)**|dbscan|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
+|**[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)**|df_clfs|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)**|df_regr|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[pairwise_distances](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html)**|distances|:white_check_mark:|:x:|:white_check_mark:|:x:|:x:|
+|**[KMeans](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)**|kmeans|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
+|**[KNeighborsClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html)**|knn_clsf|:white_check_mark:|:x:|:x:|:white_check_mark:|:x:|
+|**[LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)**|linear|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
+|**[LogisticRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)**|log_reg|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
+|**[PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)**|pca|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)**|ridge|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[SVM](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)**|svm|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)**|train_test_split|:white_check_mark:|:x:|:x:|:white_check_mark:|:x:|
+|**[GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
+|**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 
-## Intel(R) Extension for Scikit-learn support
+### Scikit-learn benchmakrs
 
 When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
-The following benchmarks have a GPU support:
+For the algorithms with both CPU and GPU support, you may use the same [configuration file](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json) to run the scikit-learn benchmarks on CPU and GPU.
 
-- dbscan
-- kmeans
-- linear
-- log_reg
-
-You may use the [configuration file for these benchmarks](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json) to run them on both CPU and GPU.
-
-## Algorithms parameters
+## Algorithm parameters
 
 You can launch benchmarks for each algorithm separately.
 To do this, go to the directory with the benchmark:
