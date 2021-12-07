@@ -476,11 +476,11 @@ def hepmass_150K(dataset_dir: Path) -> bool:
 
     nrows_train, nrows_test, dtype = 100000, 50000, np.float32
     data_test: Any = pd.read_csv(local_url_test, delimiter=",",
-                            compression="gzip", dtype=dtype,
-                            nrows=nrows_test)
+                                 compression="gzip", dtype=dtype,
+                                 nrows=nrows_test)
     data_train: Any = pd.read_csv(local_url_train, delimiter=",",
-                            compression="gzip", dtype=dtype,
-                            nrows=nrows_train)
+                                  compression="gzip", dtype=dtype,
+                                  nrows=nrows_train)
 
     x_test = np.ascontiguousarray(data_test.values[:nrows_test, 1:], dtype=dtype)
     y_test = np.ascontiguousarray(data_test.values[:nrows_test, 0], dtype=dtype)
@@ -493,7 +493,6 @@ def hepmass_150K(dataset_dir: Path) -> bool:
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
-
 
 
 def higgs(dataset_dir: Path) -> bool:
@@ -716,7 +715,7 @@ def susy(dataset_dir: Path) -> bool:
                             nrows=nrows_train + nrows_test)
 
     X = data[data.columns[1:]]
-    y =  data[data.columns[0:1]]
+    y = data[data.columns[0:1]]
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
