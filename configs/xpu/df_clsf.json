@@ -4,7 +4,7 @@
         "algorithm": "df_clsf",
         "data-format": "pandas",
         "data-order": "F",
-        "dtype": ["float32", "float64"],
+        "dtype": "float32",
         "device": "gpu"
     },
     "cases": [
