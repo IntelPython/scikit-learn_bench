@@ -68,6 +68,10 @@ def float_or_int(string):
     return float(string) if '.' in string else int(string)
 
 
+def float_or_int_or_str(string):
+    return float(string) if '.' in string else int(string) if string.isdigit() else string
+
+
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
     '''
     Get an optimal cache size for sklearn.svm.SVC.

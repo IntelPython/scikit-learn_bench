@@ -5,6 +5,7 @@
         "data-format": "pandas",
         "data-order": "F",
         "dtype": "float32",
+        "max-features": "sqrt",
         "device": "gpu"
     },
     "cases": [

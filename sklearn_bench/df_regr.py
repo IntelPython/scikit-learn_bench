@@ -72,7 +72,7 @@ if __name__ == "__main__":
                         help='The function to measure the quality of a split')
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
-    parser.add_argument('--max-features', type=bench.float_or_int, default=None,
+    parser.add_argument('--max-features', type=bench.float_or_int_or_str, default=None,
                         help='Upper bound on features used at each split')
     parser.add_argument('--max-depth', type=int, default=None,
                         help='Upper bound on depth of constructed trees')
