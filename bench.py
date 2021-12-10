@@ -73,7 +73,7 @@ def float_or_int_or_str(string):
         return float(string)
     elif string.isdigit():
         return int(string)
-    else
+    else:
         return string
 
 
