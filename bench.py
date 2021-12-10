@@ -69,12 +69,7 @@ def float_or_int(string):
 
 
 def float_or_int_or_str(string):
-    if '.' in string:
-        return float(string)
-    elif string.isdigit():
-        return int(string)
-    else:
-        return string
+    return float(string) if '.' in string else int(string) if string.isdigit() else string
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
