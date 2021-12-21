@@ -48,7 +48,8 @@ if __name__ == '__main__':
                         choices=('host', 'cpu', 'gpu', 'None'),
                         help='Availible execution context devices. '
                         'This parameter only marks devices as available, '
-                        'make sure to add the device to the config file to run it on a specific device')
+                        'make sure to add the device to the config file '
+                        'to run it on a specific device')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
@@ -105,9 +106,10 @@ if __name__ == '__main__':
             device = []
             if 'device' not in params:
                 if 'sklearn' in params['lib']:
-                    logging.info('The device parameter value is not defined in config, None is used')
+                    logging.info('The device parameter value is not defined in config, '
+                                 'None is used')
                 device = ['None']
-            elif not isinstance(params['device'] , list):
+            elif not isinstance(params['device'], list):
                 device = [params['device']]
             else:
                 device = params['device']
@@ -116,7 +118,7 @@ if __name__ == '__main__':
             dtype = []
             if 'dtype' not in params:
                 dtype = ['float64']
-            elif not isinstance(params['dtype'] , list):
+            elif not isinstance(params['dtype'], list):
                 dtype = [params['dtype']]
             else:
                 dtype = params['dtype']
