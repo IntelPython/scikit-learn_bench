@@ -44,8 +44,8 @@ if __name__ == '__main__':
                         default='configs/config_example.json',
                         help='The path to a configuration file or '
                              'a directory that contains configuration files')
-    parser.add_argument('--device', '--devices', default='host cpu gpu None', type=str, nargs='+',
-                        choices=('host', 'cpu', 'gpu', 'None'),
+    parser.add_argument('--device', '--devices', default='host cpu gpu none', type=str, nargs='+',
+                        choices=('host', 'cpu', 'gpu', 'none'),
                         help='Availible execution context devices. '
                         'This parameter only marks devices as available, '
                         'make sure to add the device to the config file '
@@ -107,8 +107,8 @@ if __name__ == '__main__':
             if 'device' not in params:
                 if 'sklearn' in params['lib']:
                     logging.info('The device parameter value is not defined in config, '
-                                 'None is used')
-                device = ['None']
+                                 'none is used')
+                device = ['none']
             elif not isinstance(params['device'], list):
                 device = [params['device']]
             else:
