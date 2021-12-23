@@ -55,7 +55,9 @@ if __name__ == '__main__':
                              'without benchmarks running')
     parser.add_argument('--dtype', '--dtypes', type=str, default="float32 float64", nargs='+',
                         choices=("float32", "float64"),
-                        help='Available Data types')
+                        help='Available floating point data types'
+                        'This parameter only marks dtype as available, '
+                        'make sure to add the dtype parameter to the config file ')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
