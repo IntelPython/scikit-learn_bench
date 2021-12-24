@@ -44,9 +44,20 @@ if __name__ == '__main__':
                         default='configs/config_example.json',
                         help='The path to a configuration file or '
                              'a directory that contains configuration files')
+    parser.add_argument('--device', '--devices', default='host cpu gpu none', type=str, nargs='+',
+                        choices=('host', 'cpu', 'gpu', 'none'),
+                        help='Availible execution context devices. '
+                        'This parameter only marks devices as available, '
+                        'make sure to add the device to the config file '
+                        'to run it on a specific device')
     parser.add_argument('--dummy-run', default=False, action='store_true',
                         help='Run configuration parser and datasets generation '
                              'without benchmarks running')
+    parser.add_argument('--dtype', '--dtypes', type=str, default="float32 float64", nargs='+',
+                        choices=("float32", "float64"),
+                        help='Available floating point data types'
+                        'This parameter only marks dtype as available, '
+                        'make sure to add the dtype parameter to the config file ')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
@@ -93,6 +104,28 @@ if __name__ == '__main__':
         for params_set in config['cases']:
             params = common_params.copy()
             params.update(params_set.copy())
+
+            device = []
+            if 'device' not in params:
+                if 'sklearn' in params['lib']:
+                    logging.info('The device parameter value is not defined in config, '
+                                 'none is used')
+                device = ['none']
+            elif not isinstance(params['device'], list):
+                device = [params['device']]
+            else:
+                device = params['device']
+            params["device"] = [dv for dv in device if dv in args.device]
+
+            dtype = []
+            if 'dtype' not in params:
+                dtype = ['float64']
+            elif not isinstance(params['dtype'], list):
+                dtype = [params['dtype']]
+            else:
+                dtype = params['dtype']
+            params['dtype'] = [dt for dt in dtype if dt in args.dtype]
+
             algorithm = params['algorithm']
             libs = params['lib']
             if not isinstance(libs, list):
