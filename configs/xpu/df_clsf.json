@@ -6,7 +6,7 @@
         "data-order": "F",
         "dtype": ["float32", "float64"],
         "max-features": "sqrt",
-        "device": ["host", "cpu", "gpu", "None"]
+        "device": ["host", "cpu", "gpu", "none"]
     },
     "cases": [
         {
