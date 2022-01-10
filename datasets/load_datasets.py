@@ -23,11 +23,11 @@ from typing import Callable, Dict
 
 from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
                                     census, codrnanorm, creditcard, epsilon, fraud,
-                                    gisette, higgs, higgs_one_m, ijcnn,
-                                    klaverjas, santander, skin_segmentation)
+                                    gisette, hepmass_150K, higgs, higgs_one_m, ijcnn,
+                                    klaverjas, santander, skin_segmentation, susy)
 from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
-from .loader_regression import (abalone, california_housing, fried,
+from .loader_regression import (abalone, california_housing, fried, higgs_10500K,
                                 medical_charges_nominal, mortgage_first_q,
                                 twodplanes, year_prediction_msd, yolanda, airline_regression)
 
@@ -49,8 +49,10 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "fraud": fraud,
     "fried": fried,
     "gisette": gisette,
+    "hepmass_150K": hepmass_150K,
     "higgs": higgs,
     "higgs1m": higgs_one_m,
+    "higgs_10500K": higgs_10500K,
     "ijcnn": ijcnn,
     "klaverjas": klaverjas,
     "letters": letters,
@@ -63,6 +65,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "santander": santander,
     "sensit": sensit,
     "skin_segmentation": skin_segmentation,
+    "susy": susy,
     "twodplanes": twodplanes,
     "year_prediction_msd": year_prediction_msd,
     "yolanda": yolanda,

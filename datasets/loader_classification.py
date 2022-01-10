@@ -446,6 +446,55 @@ def gisette(dataset_dir: Path) -> bool:
     return True
 
 
+def hepmass_150K(dataset_dir: Path) -> bool:
+    """
+    HEPMASS dataset from UCI machine learning repository (
+    https://archive.ics.uci.edu/ml/datasets/HEPMASS).
+
+    Classification task. n_classes = 2.
+    hepmass_150K X train dataset (100000, 28)
+    hepmass_150K y train dataset (100000, 1)
+    hepmass_150K X test dataset  (50000,  28)
+    hepmass_150K y test dataset  (50000,  1)
+    """
+    dataset_name = 'hepmass_150K'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_test = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00347/all_test.csv.gz'
+    url_train = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00347/all_train.csv.gz'
+
+    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+
+    if not os.path.isfile(local_url_test):
+        logging.info(f'Started loading {dataset_name}, test')
+        retrieve(url_test, local_url_test)
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    nrows_train, nrows_test, dtype = 100000, 50000, np.float32
+    data_test: Any = pd.read_csv(local_url_test, delimiter=",",
+                                 compression="gzip", dtype=dtype,
+                                 nrows=nrows_test)
+    data_train: Any = pd.read_csv(local_url_train, delimiter=",",
+                                  compression="gzip", dtype=dtype,
+                                  nrows=nrows_train)
+
+    x_test = np.ascontiguousarray(data_test.values[:nrows_test, 1:], dtype=dtype)
+    y_test = np.ascontiguousarray(data_test.values[:nrows_test, 0], dtype=dtype)
+    x_train = np.ascontiguousarray(data_train.values[:nrows_train, 1:], dtype=dtype)
+    y_train = np.ascontiguousarray(data_train.values[:nrows_train, 0], dtype=dtype)
+
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
 def higgs(dataset_dir: Path) -> bool:
     """
     Higgs dataset from UCI machine learning repository
@@ -631,6 +680,46 @@ def skin_segmentation(dataset_dir: Path) -> bool:
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def susy(dataset_dir: Path) -> bool:
+    """
+    SUSY dataset from UCI machine learning repository (
+    https://archive.ics.uci.edu/ml/datasets/SUSY).
+
+    Classification task. n_classes = 2.
+    susy X train dataset (4500000, 28)
+    susy y train dataset (4500000, 1)
+    susy X test dataset  (500000,  28)
+    susy y test dataset  (500000,  1)
+    """
+    dataset_name = 'susy'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00279/SUSY.csv.gz'
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    nrows_train, nrows_test, dtype = 4500000, 500000, np.float32
+    data: Any = pd.read_csv(local_url, delimiter=",", header=None,
+                            compression="gzip", dtype=dtype,
+                            nrows=nrows_train + nrows_test)
+
+    X = data[data.columns[1:]]
+    y = data[data.columns[0:1]]
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
+
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
