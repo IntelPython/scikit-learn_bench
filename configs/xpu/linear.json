@@ -1,0 +1,48 @@
+{
+    "common": {
+        "lib": "sklearn",
+        "algorithm": "linear",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float32",
+        "device": "gpu"
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs1m",
+                    "training":
+                    {
+                        "x": "data/higgs1m_x_train.npy",
+                        "y": "data/higgs1m_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs1m_x_test.npy",
+                        "y": "data/higgs1m_y_test.npy"
+                    }
+                }
+            ]
+        }
+    ]
+}
