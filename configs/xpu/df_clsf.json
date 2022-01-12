@@ -3,7 +3,7 @@
         "lib": "sklearn",
         "algorithm": "df_clsf",
         "data-format": "pandas",
-        "data-order": "C",
+        "data-order": "F",
         "dtype": ["float32", "float64"],
         "max-features": "sqrt",
         "device": ["host", "cpu", "gpu", "none"]
