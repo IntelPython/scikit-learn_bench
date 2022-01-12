@@ -58,7 +58,7 @@ if __name__ == '__main__':
                         help='Available floating point data types'
                         'This parameter only marks dtype as available, '
                         'make sure to add the dtype parameter to the config file ')
-    parser.add_argument('--size', type=str, default="small medium large", nargs='+',
+    parser.add_argument('--workload-size', type=str, default="small medium large", nargs='+',
                         choices=("small", "medium", "large"),
                         help='Available dataset sizes')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
@@ -108,10 +108,10 @@ if __name__ == '__main__':
             params = common_params.copy()
             params.update(params_set.copy())
 
-            if 'size' in params:
-                if params['size'] not in args.size:
+            if 'workload-size' in params:
+                if params['workload-size'] not in args.workload_size:
                     continue
-                del params['size']
+                del params['workload-size']
 
             device = []
             if 'device' not in params:
