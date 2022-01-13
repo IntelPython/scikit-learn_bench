@@ -64,8 +64,10 @@ def _parse_size(string, dim=2):
 
     return tup
 
+
 def is_float(string):
-    return bool(re.match(r"^[-+]?(?:\b[0-9]+(?:\.[0-9]*)?|\.[0-9]+\b)(?:[eE][-+]?[0-9]+\b)?$", string))
+    return bool(re.match(r"^[-+]?(?:\b[0-9]+(?:\.[0-9]*)?|\.[0-9]+\b)(?:[eE][-+]?[0-9]+\b)?$",
+                string))
 
 
 def float_or_int(string):
