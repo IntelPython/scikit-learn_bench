@@ -19,6 +19,7 @@ import json
 import logging
 import sys
 import timeit
+import re
 
 import numpy as np
 import sklearn
@@ -64,8 +65,17 @@ def _parse_size(string, dim=2):
     return tup
 
 
+def is_float(string):
+    return bool(re.match(r"^[-+]?(?:\b[0-9]+(?:\.[0-9]*)?|\.[0-9]+\b)(?:[eE][-+]?[0-9]+\b)?$",
+                string))
+
+
 def float_or_int(string):
-    return float(string) if '.' in string else int(string)
+    return int(string) if string.isdigit() else float(string)
+
+
+def float_or_int_or_str(string):
+    return int(string) if string.isdigit() else float(string) if is_float(string) else string
 
 
 def get_optimal_cache_size(n_rows, dtype=np.double, max_cache=64):
