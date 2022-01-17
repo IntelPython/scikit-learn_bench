@@ -4,12 +4,12 @@
         "algorithm": "dbscan",
         "data-format": "pandas",
         "data-order": "F",
-        "dtype": ["float32", "float64"],
+        "dtype": ["float64"],
         "device": ["host", "cpu", "gpu", "none"]
     },
     "cases": [
         {
-            "datasect": [
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "hepmass_10K_cluster",

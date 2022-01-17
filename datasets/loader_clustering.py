@@ -33,7 +33,7 @@ def epsilon_50K_cluster(dataset_dir: Path) -> bool:
     Epsilon dataset
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
 
-    Classification task. n_classes = 2.
+    Clustering task. n_classes = 2.
     epsilon_50K x cluster dataset (50000, 2001)
     """
     dataset_name = 'epsilon_50K_cluster'
@@ -56,7 +56,7 @@ def epsilon_50K_cluster(dataset_dir: Path) -> bool:
     y_train[y_train <= 0] = 0
 
     filename = f'{dataset_name}.npy'
-    data = np.concatenate((x_train, y_train), axis=1)
+    data = np.concatenate((x_train, y_train[:, None]), axis=1)
     np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
@@ -66,7 +66,7 @@ def cifar_cluster(dataset_dir: Path) -> bool:
     """
     Cifar dataset from LIBSVM Datasets (
     https://www.cs.toronto.edu/~kriz/cifar.html#cifar)
-    TaskType: Classification
+    TaskType: Clustering
     cifar x cluster dataset (50000, 3073)
     """
     dataset_name = 'cifar_cluster'
@@ -86,7 +86,7 @@ def cifar_cluster(dataset_dir: Path) -> bool:
     y_train[y_train <= 0] = 0
 
     filename = f'{dataset_name}.npy'
-    data = np.concatenate((x_train, y_train), axis=1)
+    data = np.concatenate((x_train, y_train[:, None]), axis=1)
     np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
@@ -97,10 +97,8 @@ def higgs_one_m_clustering(dataset_dir: Path) -> bool:
     Higgs dataset from UCI machine learning repository
     https://archive.ics.uci.edu/ml/datasets/HIGGS
 
-    Only first 1.5M samples is taken
-
-    Classification task. n_classes = 2.
-    higgs1m X train dataset (1000000, 29)
+    Clustering task. n_classes = 2.
+    higgs1m X cluster dataset (1000000, 29)
     """
     dataset_name = 'higgs_one_m_clustering'
     os.makedirs(dataset_dir, exist_ok=True)
@@ -134,7 +132,7 @@ def hepmass_1M_cluster(dataset_dir: Path) -> bool:
     HEPMASS dataset from UCI machine learning repository (
     https://archive.ics.uci.edu/ml/datasets/HEPMASS).
     
-    Cludtering task. n_classes = 2.
+    Clustering task. n_classes = 2.
     hepmass_10K X cluster dataset (1000000, 29)
     """
     dataset_name = 'hepmass_1M_cluster'
@@ -169,7 +167,7 @@ def hepmass_10K_cluster(dataset_dir: Path) -> bool:
     HEPMASS dataset from UCI machine learning repository (
     https://archive.ics.uci.edu/ml/datasets/HEPMASS).
     
-    Cludtering task. n_classes = 2.
+    Clustering task. n_classes = 2.
     hepmass_10K X cluster dataset (10000, 29)
     """
     dataset_name = 'hepmass_10K_cluster'
@@ -194,6 +192,39 @@ def hepmass_10K_cluster(dataset_dir: Path) -> bool:
 
     filename = f'{dataset_name}.npy'
     data = np.concatenate((x_train, y_train[:, None]), axis=1)
+    np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def susy_cluster(dataset_dir: Path) -> bool:
+    """
+    SUSY dataset from UCI machine learning repository (
+    https://archive.ics.uci.edu/ml/datasets/SUSY).
+
+    Clustering task. n_classes = 2.
+    susy X cluster dataset (4500000, 29)
+    """
+    dataset_name = 'susy_cluster'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00279/SUSY.csv.gz'
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    nrows_train, dtype = 4500000, np.float32
+    data_raw: Any = pd.read_csv(local_url, delimiter=",", header=None,
+                            compression="gzip", dtype=dtype,
+                            nrows=nrows_train + nrows_test)
+
+    X = data_raw.iloc[:num_train, 1:].values
+    y = data_raw.iloc[:num_train, 0].values
+    data = np.concatenate((X, y[:, None]), axis=1)
+
+    filename = f'{dataset_name}.npy'
     np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True

@@ -31,7 +31,8 @@ from .loader_regression import (abalone, california_housing, fried,
                                 medical_charges_nominal, mortgage_first_q,
                                 twodplanes, year_prediction_msd, yolanda, airline_regression)
 from .loader_clustering import (cifar_cluster, epsilon_50K_cluster, higgs_one_m_clustering,
-                                hepmass_1M_cluster, hepmass_10K_cluster, mnist_10K_cluster, road_network_20K_cluster)
+                                hepmass_1M_cluster, hepmass_10K_cluster, mnist_10K_cluster,
+                                road_network_20K_cluster,susy_cluster)
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
@@ -73,6 +74,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "santander": santander,
     "sensit": sensit,
     "skin_segmentation": skin_segmentation,
+    "susy_cluster" susy_cluster,
     "twodplanes": twodplanes,
     "year_prediction_msd": year_prediction_msd,
     "yolanda": yolanda,
