@@ -39,7 +39,7 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "cifar_cluster",
+                    "name": "cifar",
                     "training":
                     {
                         "x": "data/cifar_x_train.npy",

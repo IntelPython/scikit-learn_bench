@@ -220,8 +220,8 @@ def susy_cluster(dataset_dir: Path) -> bool:
                             compression="gzip", dtype=dtype,
                             nrows=nrows_train + nrows_test)
 
-    X = data_raw.iloc[:num_train, 1:].values
-    y = data_raw.iloc[:num_train, 0].values
+    X = data_raw.iloc[:nrows_train, 1:].values
+    y = data_raw.iloc[:nrows_train, 0].values
     data = np.concatenate((X, y[:, None]), axis=1)
 
     filename = f'{dataset_name}.npy'
