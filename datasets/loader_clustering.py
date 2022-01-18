@@ -218,7 +218,7 @@ def susy_cluster(dataset_dir: Path) -> bool:
     nrows_train, dtype = 4500000, np.float32
     data_raw: Any = pd.read_csv(local_url, delimiter=",", header=None,
                             compression="gzip", dtype=dtype,
-                            nrows=nrows_train + nrows_test)
+                            nrows=nrows_train)
 
     X = data_raw.iloc[:nrows_train, 1:].values
     y = data_raw.iloc[:nrows_train, 0].values
