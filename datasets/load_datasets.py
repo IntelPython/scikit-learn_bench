@@ -74,7 +74,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "santander": santander,
     "sensit": sensit,
     "skin_segmentation": skin_segmentation,
-    "susy_cluster" susy_cluster,
+    "susy_cluster": susy_cluster,
     "twodplanes": twodplanes,
     "year_prediction_msd": year_prediction_msd,
     "yolanda": yolanda,
