@@ -444,7 +444,7 @@ def epsilon_100K(dataset_dir: Path) -> bool:
     y_train = y_train[:num_train]
     y_train[y_train <= 0] = 0
 
-    for data, name in zip((X_train, y_train, y_test),
+    for data, name in zip((X_train, y_train),
                           ('x_train', 'y_train')):
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
@@ -479,7 +479,7 @@ def epsilon_80K(dataset_dir: Path) -> bool:
     y_train = y_train[:num_train]
     y_train[y_train <= 0] = 0
 
-    for data, name in zip((X_train, y_train, y_test),
+    for data, name in zip((X_train, y_train),
                           ('x_train', 'y_train')):
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
