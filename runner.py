@@ -60,7 +60,9 @@ if __name__ == '__main__':
                         'make sure to add the dtype parameter to the config file ')
     parser.add_argument('--workload-size', type=str, default="small medium large", nargs='+',
                         choices=("small", "medium", "large"),
-                        help='Available dataset sizes')
+                        help='Available workload sizes,'
+                        'make sure to add the workload-size parameter to the config file '
+                        'unmarked workloads will be launched anyway')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
