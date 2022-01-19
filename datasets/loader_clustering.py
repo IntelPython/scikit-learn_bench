@@ -271,7 +271,7 @@ def road_network_20K_cluster(dataset_dir: Path) -> bool:
     dataset_name = 'road_network_20K_cluster'
     os.makedirs(dataset_dir, exist_ok=True)
 
-    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00347/all_train.csv.gz'
+    url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00246/3D_spatial_network.txt'
 
     local_url = os.path.join(dataset_dir, os.path.basename(url))
 
@@ -280,7 +280,7 @@ def road_network_20K_cluster(dataset_dir: Path) -> bool:
         retrieve(url, local_url)
     logging.info(f'{dataset_name} is loaded, started parsing...')
 
-    nrows_train, dtype = 10000, np.float32
+    nrows_train, dtype = 20000, np.float32
     data_train: Any = pd.read_csv(local_url, dtype=dtype,
                             nrows=nrows_train)
 
