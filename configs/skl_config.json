@@ -19,7 +19,6 @@
                     }
                 }
             ],
-            "workload-size": "small",
             "time-method": "box_filter",
             "time-limit": 50,
             "n-clusters": 1000,
@@ -39,7 +38,6 @@
                     }
                 }
             ],
-            "workload-size": "small",
             "time-method": "box_filter",
             "time-limit": 50,
             "n-clusters": 5,
@@ -49,7 +47,6 @@
         },
         {
             "algorithm": "kmeans",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -69,7 +66,6 @@
         },
         {
             "algorithm": "pca",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -117,7 +113,6 @@
         {
             "algorithm": "df_clsf",
             "dtype": "float32",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -155,7 +150,6 @@
         },
         {
             "algorithm": "df_regr",
-            "workload-size": "small",
             "dtype": "float32",
             "dataset": [
                 {
@@ -190,7 +184,6 @@
         },
         {
             "algorithm": "ridge",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -213,7 +206,6 @@
         },
         {
             "algorithm": "linear",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -235,7 +227,6 @@
         },
         {
             "algorithm": "log_reg",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -279,7 +270,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -301,7 +291,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -323,7 +312,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -345,7 +333,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -367,7 +354,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -389,7 +375,6 @@
         },
         {
             "algorithm": "svm",
-            "workload-size": "large",
             "dataset": [
                 {
                     "source": "npy",
@@ -411,7 +396,6 @@
         },
         {
             "algorithm": "nusvc",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -433,7 +417,6 @@
         },
         {
             "algorithm": "nusvc",
-            "workload-size": "large",
             "dataset": [
                 {
                     "source": "npy",
@@ -455,7 +438,6 @@
         },
         {
             "algorithm": "nusvc",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -477,7 +459,6 @@
         },
         {
             "algorithm": "nusvc",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -499,7 +480,6 @@
         },
         {
             "algorithm": "svr",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -521,7 +501,6 @@
         },
         {
             "algorithm": "svr",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -543,7 +522,6 @@
         },
         {
             "algorithm": "nusvr",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -566,7 +544,6 @@
         },
         {
             "algorithm": "nusvr",
-            "workload-size": "medium",
             "dataset": [
                 {
                     "source": "npy",
@@ -590,7 +567,6 @@
         },
         {
             "algorithm": "nusvr",
-            "workload-size": "large",
             "dataset": [
                 {
                     "source": "npy",
@@ -613,7 +589,6 @@
         },
         {
             "algorithm": "dbscan",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -632,13 +607,7 @@
                     "training": {
                         "n_samples": 500000
                     }
-                }
-            ]
-        },
-        {
-            "algorithm": "dbscan",
-            "workload-size": "medium",
-            "dataset": [
+                },
                 {
                     "source": "synthetic",
                     "type": "blobs",
@@ -652,7 +621,6 @@
         },
         {
             "algorithm": "knn_clsf",
-            "workload-size": "small",
             "dtype": "float32",
             "dataset": [
                 {
@@ -690,53 +658,24 @@
                     "testing": {
                         "n_samples": 20000
                     }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 10,
+                    "n_features": 16,
+                    "training": {
+                        "n_samples": 250000
+                    },
+                    "testing": {
+                        "n_samples": 250000
+                    }
                 }
             ],
             "method": ["brute", "kd_tree"]
         },
         {
-            "algorithm": "knn_clsf",
-            "workload-size": "small",
-            "dtype": "float32",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 10,
-                    "n_features": 16,
-                    "training": {
-                        "n_samples": 250000
-                    },
-                    "testing": {
-                        "n_samples": 250000
-                    }
-                }
-            ],
-            "method": "kd_tree"
-        },
-        {
-            "algorithm": "knn_clsf",
-            "workload-size": "medium",
-            "dtype": "float32",
-            "dataset": [
-                {
-                    "source": "synthetic",
-                    "type": "classification",
-                    "n_classes": 10,
-                    "n_features": 16,
-                    "training": {
-                        "n_samples": 250000
-                    },
-                    "testing": {
-                        "n_samples": 250000
-                    }
-                }
-            ],
-            "method": "brute"
-        },
-        {
             "algorithm": "train_test_split",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "synthetic",
@@ -772,7 +711,6 @@
         },
         {
             "algorithm": "train_test_split",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -792,7 +730,6 @@
         },
         {
             "algorithm": "lasso",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source":   "npy",
@@ -809,7 +746,6 @@
         },
         {
             "algorithm": "elasticnet",
-            "workload-size": "small",
             "dataset": [
                 {
                     "source": "npy",
@@ -832,7 +768,6 @@
         },
         {
             "algorithm": "tsne",
-            "workload-size": "large",
             "dataset": [
                 {
                     "source": "npy",
