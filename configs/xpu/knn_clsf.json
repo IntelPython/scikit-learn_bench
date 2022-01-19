@@ -20,8 +20,8 @@
                     },
                     "testing":
                     {
-                        "x": "data/epsilon_100K_x_test.npy",
-                        "y": "data/epsilon_100K_y_test.npy"
+                        "x": "data/epsilon_100K_x_train.npy",
+                        "y": "data/epsilon_100K_y_train.npy"
                     }
                 }
             ],
@@ -110,8 +110,8 @@
                     },
                     "testing":
                     {
-                        "x": "data/epsilon_100K_x_test.npy",
-                        "y": "data/epsilon_100K_y_test.npy"
+                        "x": "data/epsilon_100K_x_train.npy",
+                        "y": "data/epsilon_100K_y_train.npy"
                     }
                 }
             ],
