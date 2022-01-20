@@ -82,7 +82,7 @@ def cifar_cluster(dataset_dir: Path) -> bool:
                                           dtype=np.float32)
 
     x_train = x_train.toarray()
-    y_train[y_train <= 0] = 0
+    y_train = (y_train > 0).astype(int)
 
     filename = f'{dataset_name}.npy'
     data = np.concatenate((x_train, y_train[:, None]), axis=1)

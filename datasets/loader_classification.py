@@ -722,17 +722,17 @@ def skin_segmentation(dataset_dir: Path) -> bool:
     return True
 
 
-def cifar(dataset_dir: Path) -> bool:
+def cifar_binary(dataset_dir: Path) -> bool:
     """
     Cifar dataset from LIBSVM Datasets (
     https://www.cs.toronto.edu/~kriz/cifar.html#cifar)
     TaskType: Classification
-    cifar x train dataset (50000, 3072)
-    cifar y train dataset (50000, 1)
-    cifar x test dataset (10000, 3072)
-    cifar y test dataset (10000, 1)
+    cifar_binary x train dataset (50000, 3072)
+    cifar_binary y train dataset (50000, 1)
+    cifar_binary x test dataset (10000, 3072)
+    cifar_binary y test dataset (10000, 1)
     """
-    dataset_name = 'cifar'
+    dataset_name = 'cifar_binary'
     os.makedirs(dataset_dir, exist_ok=True)
 
     url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.bz2'
@@ -755,15 +755,15 @@ def cifar(dataset_dir: Path) -> bool:
                                         dtype=np.float32)
 
     x_train = x_train.toarray()
-    y_train[y_train <= 0] = 0
+    y_train = (y_train > 0).astype(int)
 
     x_test = x_test.toarray()
-    y_test[y_test <= 0] = 0
+    y_test = (y_test > 0).astype(int)
+
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
     return True
 
 
