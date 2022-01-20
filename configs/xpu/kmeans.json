@@ -3,7 +3,7 @@
         "lib": "sklearn",
         "algorithm": "kmeans",
         "data-format": "pandas",
-        "data-order": "F",
+        "data-order": "C",
         "dtype": ["float64"],
         "device": ["host", "cpu", "gpu", "none"]
     },
