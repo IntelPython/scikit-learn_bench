@@ -33,7 +33,7 @@ from .loader_regression import (abalone, california_housing, fried, higgs_10500K
                                 twodplanes, year_prediction_msd, yolanda, airline_regression)
 from .loader_clustering import (cifar_cluster, epsilon_50K_cluster, higgs_one_m_clustering,
                                 hepmass_1M_cluster, hepmass_10K_cluster, mnist_10K_cluster,
-                                road_network_20K_cluster,susy_cluster)
+                                road_network_20K_cluster, susy_cluster)
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
@@ -45,7 +45,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "california_housing": california_housing,
     "census": census,
     "cifar": cifar,
-    "cifar_cluster" : cifar_cluster,
+    "cifar_cluster": cifar_cluster,
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covertype": covertype,
@@ -53,7 +53,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "creditcard": creditcard,
     "epsilon": epsilon,
     "epsilon_30K": epsilon_30K,
-    "epsilon_50K_cluster" : epsilon_50K_cluster,
+    "epsilon_50K_cluster": epsilon_50K_cluster,
     "fraud": fraud,
     "fried": fried,
     "gisette": gisette,

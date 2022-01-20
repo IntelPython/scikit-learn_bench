@@ -745,7 +745,7 @@ def cifar(dataset_dir: Path) -> bool:
         retrieve(url_train, local_url_train)
     logging.info(f'{dataset_name} is loaded, started parsing...')
     x_train, y_train = load_svmlight_file(local_url_train,
-                                        dtype=np.float32)
+                                          dtype=np.float32)
 
     if not os.path.isfile(local_url_test):
         logging.info(f'Started loading {dataset_name}, test')
