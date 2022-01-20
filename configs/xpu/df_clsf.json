@@ -1,0 +1,113 @@
+{
+    "common": {
+        "lib": "sklearn",
+        "algorithm": "df_clsf",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": ["float32", "float64"],
+        "max-features": "sqrt",
+        "device": ["host", "cpu", "gpu", "none"]
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "susy",
+                    "training":
+                    {
+                        "x": "data/susy_x_train.npy",
+                        "y": "data/susy_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/susy_x_test.npy",
+                        "y": "data/susy_y_test.npy"
+                    }
+                }
+            ],
+            "num-trees": 10,
+            "max-depth": 5
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "susy",
+                    "training":
+                    {
+                        "x": "data/susy_x_train.npy",
+                        "y": "data/susy_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/susy_x_test.npy",
+                        "y": "data/susy_y_test.npy"
+                    }
+                }
+            ],
+            "num-trees": 100,
+            "max-depth": 8
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "susy",
+                    "training":
+                    {
+                        "x": "data/susy_x_train.npy",
+                        "y": "data/susy_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/susy_x_test.npy",
+                        "y": "data/susy_y_test.npy"
+                    }
+                }
+            ],
+            "num-trees": 20,
+            "max-depth": 16
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
+                    }
+                }
+            ],
+            "num-trees": 100,
+            "max-depth": 10
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "hepmass_150K",
+                    "training":
+                    {
+                        "x": "data/hepmass_150K_x_train.npy",
+                        "y": "data/hepmass_150K_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/hepmass_150K_x_test.npy",
+                        "y": "data/hepmass_150K_y_test.npy"
+                    }
+                }
+            ],
+            "num-trees": 50,
+            "max-depth": 15
+        }
+    ]
+}

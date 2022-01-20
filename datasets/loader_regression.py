@@ -295,3 +295,43 @@ def airline_regression(dataset_dir: Path) -> bool:
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
     return True
+
+
+def higgs_10500K(dataset_dir: Path) -> bool:
+    """
+    Higgs dataset from UCI machine learning repository
+    https://archive.ics.uci.edu/ml/datasets/HIGGS
+
+    Classification task. n_classes = 2.
+    higgs_10500K X train dataset (10500000, 28)
+    higgs_10500K y train dataset (10500000, 1)
+    higgs_10500K X test dataset  (500000,  28)
+    higgs_10500K y test dataset  (500000,  1)
+    """
+    dataset_name = 'higgs_10500K'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz'
+    local_url = os.path.join(dataset_dir, os.path.basename(url))
+    if not os.path.isfile(local_url):
+        logging.info(f'Started loading {dataset_name}')
+        retrieve(url, local_url)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    nrows_train, nrows_test, dtype = 10500000, 500000, np.float32
+    data: Any = pd.read_csv(local_url, delimiter=",", header=None,
+                            compression="gzip", dtype=dtype,
+                            nrows=nrows_train + nrows_test)
+
+    X = data[data.columns[1:]]
+    y = data[data.columns[0:1]]
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
+
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
