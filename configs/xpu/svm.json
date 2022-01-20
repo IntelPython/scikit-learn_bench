@@ -3,7 +3,7 @@
         "lib": "sklearn",
         "algorithm": "svm",
         "data-format": "pandas",
-        "data-order": "С",
+        "data-order": "C",
         "dtype": "float32",
         "device": ["host", "cpu", "gpu", "none"]
     },
