@@ -22,11 +22,11 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
-                                    census,  cifar, codrnanorm, covtype_binary, creditcard,
+                                    census,  cifar_binary, codrnanorm, covtype_binary, creditcard,
                                     epsilon_16K, epsilon_80K, epsilon, epsilon_100K,
                                     fraud, gisette, hepmass_150K,
-                                    higgs, higgs_one_m, higgs_150K, ijcnn, imb_drama,
-                                    klaverjas, santander, skin_segmentation, susy)
+                                    higgs, higgs_one_m, higgs_150K, ijcnn, klaverjas,
+                                    santander, skin_segmentation, susy)
 from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
 from .loader_regression import (abalone, california_housing, fried,
@@ -42,7 +42,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "bosch": bosch,
     "california_housing": california_housing,
     "census": census,
-    "cifar": cifar,
+    "cifar_binary": cifar_binary,
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covtype_binary": covtype_binary,
@@ -60,7 +60,6 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "higgs1m": higgs_one_m,
     "higgs_150K": higgs_150K,
     "ijcnn": ijcnn,
-    "imb_drama": imb_drama,
     "klaverjas": klaverjas,
     "letters": letters,
     "mlsr": mlsr,

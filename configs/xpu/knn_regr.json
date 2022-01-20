@@ -50,16 +50,16 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "cifar",
+                    "name": "cifar_binary",
                     "training":
                     {
-                        "x": "data/cifar_x_train.npy",
-                        "y": "data/cifar_y_train.npy"
+                        "x": "data/cifar_binary_x_train.npy",
+                        "y": "data/cifar_binary_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/cifar_x_test.npy",
-                        "y": "data/cifar_y_test.npy"
+                        "x": "data/cifar_binary_x_test.npy",
+                        "y": "data/cifar_binary_y_test.npy"
                     }
                 }
             ],
