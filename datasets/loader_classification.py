@@ -722,7 +722,6 @@ def skin_segmentation(dataset_dir: Path) -> bool:
     return True
 
 
-<<<<<<< HEAD
 def cifar(dataset_dir: Path) -> bool:
     """
     Cifar dataset from LIBSVM Datasets (
