@@ -755,11 +755,14 @@ def higgs_150K(dataset_dir: Path) -> bool:
                             compression="gzip", dtype=dtype,
                             nrows=nrows_train + nrows_test)
 
-    X = data[data.columns[1:]]
-    y =  data[data.columns[0:1]]
-
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
+    x_train = np.ascontiguousarray(data.values[:nrows_train, 1:], dtype=dtype)
+    y_train = np.ascontiguousarray(data.values[:nrows_train, 0], dtype=dtype)
+    x_test = np.ascontiguousarray(
+        data.values[nrows_train: nrows_train + nrows_test, 1:],
+        dtype=dtype)
+    y_test = np.ascontiguousarray(
+        data.values[nrows_train: nrows_train + nrows_test, 0],
+        dtype=dtype)
 
     for data, name in zip((x_train, x_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
