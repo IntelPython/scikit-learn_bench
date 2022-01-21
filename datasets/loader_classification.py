@@ -22,7 +22,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.datasets import fetch_openml, load_svmlight_file, fetch_covtype
+from sklearn.datasets import fetch_openml, load_svmlight_file
 from sklearn.model_selection import train_test_split
 
 from .loader_utils import retrieve
@@ -261,41 +261,6 @@ def codrnanorm(dataset_dir: Path) -> bool:
     return True
 
 
-def covtype_binary(dataset_dir: Path) -> bool:
-    """
-    Cover type dataset from UCI machine learning repository
-    https://archive.ics.uci.edu/ml/datasets/covertype
-
-    y contains 7 unique class labels from 1 to 7 inclusive.
-    Classification task. n_classes = 7.
-    covtype X train dataset (464809, 54)
-    covtype y train dataset (464809, 1)
-    covtype X test dataset  (116203,  54)
-    covtype y test dataset  (116203,  1)
-    """
-    dataset_name = 'covtype_binary'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    nrows_train, nrows_test = 100000, 100000
-    logging.info(f'Started loading {dataset_name}')
-    X, y = fetch_covtype(return_X_y=True)  # pylint: disable=unexpected-keyword-arg
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-
-    y = (y > 3).astype(int)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=77,
-                                                        train_size=nrows_train,
-                                                        test_size=nrows_test,
-                                                        shuffle=False
-                                                        )
-    for data, name in zip((X_train, X_test, y_train, y_test),
-                          ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
-    return True
-
-
 def creditcard(dataset_dir: Path) -> bool:
     """
     Classification task. n_classes = 2.
@@ -394,124 +359,6 @@ def epsilon_30K(dataset_dir: Path) -> bool:
                                           dtype=dtype)
     X_train = X_train.toarray()[:num_train]
     y_train = y_train[:num_train]
-
-    for data, name in zip((X_train, y_train),
-                          ('x_train', 'y_train')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
-    return True
-    
-
-def epsilon_16K(dataset_dir: Path) -> bool:
-    """
-    Epsilon dataset
-    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
-
-    Classification task. n_classes = 2.
-    epsilon_16K x train dataset (16000, 2000)
-    epsilon_16K y train dataset (16000, 1)
-    epsilon_16K x test dataset (16000, 2000)
-    epsilon_16K y test dataset (16000, 1)
-    """
-    dataset_name = 'epsilon_16K'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
-                '/epsilon_normalized.bz2'
-    url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
-               '/epsilon_normalized.t.bz2'
-    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
-    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
-
-    num_train, num_test, dtype = 16000, 16000, np.float32
-    if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}, train')
-        retrieve(url_train, local_url_train)
-    if not os.path.isfile(local_url_test):
-        logging.info(f'Started loading {dataset_name}, test')
-        retrieve(url_test, local_url_test)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    X_train, y_train = load_svmlight_file(local_url_train,
-                                          dtype=dtype)
-    X_test, y_test = load_svmlight_file(local_url_test,
-                                        dtype=dtype)
-    X_train = X_train.toarray()[:num_train]
-    X_test = X_test.toarray()[:num_test]
-    y_train = y_train[:num_train]
-    y_train[y_train <= 0] = 0
-    y_test = y_test[:num_test]
-    y_test[y_test <= 0] = 0
-
-    for data, name in zip((X_train, X_test, y_train, y_test),
-                          ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
-    return True
-
-
-def epsilon_100K(dataset_dir: Path) -> bool:
-    """
-    Epsilon dataset
-    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
-
-    Classification task. n_classes = 2.
-    epsilon_100K x train dataset (50000, 2000)
-    epsilon_100K y train dataset (50000, 1)
-    """
-    dataset_name = 'epsilon_100K'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
-                '/epsilon_normalized.bz2'
-    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
-
-    num_train, dtype = 50000, np.float32
-    if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}, train')
-        retrieve(url_train, local_url_train)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    X_train, y_train = load_svmlight_file(local_url_train,
-                                          dtype=dtype)
-    X_train = X_train.toarray()[:num_train]
-    y_train = y_train[:num_train]
-    y_train[y_train <= 0] = 0
-
-    for data, name in zip((X_train, y_train),
-                          ('x_train', 'y_train')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
-    return True
-
-
-def epsilon_80K(dataset_dir: Path) -> bool:
-    """
-    Epsilon dataset
-    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
-
-    Classification task. n_classes = 2.
-    epsilon_80K x train dataset (80000, 2000)
-    epsilon_80K y train dataset (80000, 1)
-    """
-    dataset_name = 'epsilon_80K'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
-                '/epsilon_normalized.bz2'
-    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
-
-    num_train, dtype = 80000, np.float32
-    if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}, train')
-        retrieve(url_train, local_url_train)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    X_train, y_train = load_svmlight_file(local_url_train,
-                                          dtype=dtype)
-    X_train = X_train.toarray()[:num_train]
-    y_train = y_train[:num_train]
-    y_train[y_train <= 0] = 0
 
     for data, name in zip((X_train, y_train),
                           ('x_train', 'y_train')):
@@ -763,49 +610,6 @@ def higgs_one_m(dataset_dir: Path) -> bool:
     return True
 
 
-def higgs_150K(dataset_dir: Path) -> bool:
-    """
-    Higgs dataset from UCI machine learning repository
-    https://archive.ics.uci.edu/ml/datasets/HIGGS
-
-    Classification task. n_classes = 2.
-    higgs_150K X train dataset (100000, 28)
-    higgs_150K y train dataset (50000, 1)
-    higgs_150K X test dataset  (100000,  28)
-    higgs_150K y test dataset  (50000,  1)
-    """
-    dataset_name = 'higgs_150K'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz'
-    local_url = os.path.join(dataset_dir, os.path.basename(url))
-    if not os.path.isfile(local_url):
-        logging.info(f'Started loading {dataset_name}')
-        retrieve(url, local_url)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-
-    nrows_train, nrows_test, dtype = 100000, 50000, np.float32
-    data: Any = pd.read_csv(local_url, delimiter=",", header=None,
-                            compression="gzip", dtype=dtype,
-                            nrows=nrows_train + nrows_test)
-
-    x_train = np.ascontiguousarray(data.values[:nrows_train, 1:], dtype=dtype)
-    y_train = np.ascontiguousarray(data.values[:nrows_train, 0], dtype=dtype)
-    x_test = np.ascontiguousarray(
-        data.values[nrows_train: nrows_train + nrows_test, 1:],
-        dtype=dtype)
-    y_test = np.ascontiguousarray(
-        data.values[nrows_train: nrows_train + nrows_test, 0],
-        dtype=dtype)
-
-    for data, name in zip((x_train, x_test, y_train, y_test),
-                          ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
-    logging.info(f'dataset {dataset_name} is ready.')
-    return True
-
-
 def ijcnn(dataset_dir: Path) -> bool:
     """
     Author: Danil Prokhorov.
@@ -1000,49 +804,4 @@ def susy(dataset_dir: Path) -> bool:
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
-    return True
-
-
-def cifar_binary(dataset_dir: Path) -> bool:
-    """
-    Cifar dataset from LIBSVM Datasets (
-    https://www.cs.toronto.edu/~kriz/cifar.html#cifar)
-    TaskType: Classification
-    cifar_binary x train dataset (50000, 3072)
-    cifar_binary y train dataset (50000, 1)
-    cifar_binary x test dataset (10000, 3072)
-    cifar_binary y test dataset (10000, 1)
-    """
-    dataset_name = 'cifar_binary'
-    os.makedirs(dataset_dir, exist_ok=True)
-
-    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.bz2'
-    url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.t.bz2'
-    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
-    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
-
-    if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}, train')
-        retrieve(url_train, local_url_train)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    x_train, y_train = load_svmlight_file(local_url_train,
-                                        dtype=np.float32)
-
-    if not os.path.isfile(local_url_test):
-        logging.info(f'Started loading {dataset_name}, test')
-        retrieve(url_test, local_url_test)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    x_test, y_test = load_svmlight_file(local_url_test,
-                                        dtype=np.float32)
-
-    x_train = x_train.toarray()
-    y_train = (y_train > 0).astype(int)
-
-    x_test = x_test.toarray()
-    y_test = (y_test > 0).astype(int)
-
-    for data, name in zip((x_train, x_test, y_train, y_test),
-                          ('x_train', 'x_test', 'y_train', 'y_test')):
-        filename = f'{dataset_name}_{name}.npy'
-        np.save(os.path.join(dataset_dir, filename), data)
     return True
