@@ -66,9 +66,10 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', default='INFO', type=str,
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
-    parser.add_argument('--report', default=False, action='store_true',
-                        help='Create an Excel report based on benchmarks results. '
-                             'Need "openpyxl" library')
+    parser.add_argument('--report-config', default=None, metavar='ConfigPath', type=str,
+                        help='config file for the reporter, if None the reporter will not be started'
+                        'Create an Excel report based on benchmarks results. '
+                        'Need "openpyxl" library')
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -263,12 +264,13 @@ if __name__ == '__main__':
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name
     args.output_file.close()
+    basename_result_file = os.path.splitext(name_result_file)[0]
 
     if args.report:
         command = 'python report_generator/report_generator.py ' \
             + f'--result-files {name_result_file} '              \
-            + f'--report-file {name_result_file}.xlsx '          \
-            + '--generation-config report_generator/default_report_gen_config.json'
+            + f'--report-file {basename_result_file}.xlsx '      \
+            + '--generation-config ' + args.report
         logging.info(command)
         stdout, stderr = utils.read_output_from_command(command)
         if stderr != '':
