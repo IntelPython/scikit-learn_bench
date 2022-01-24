@@ -67,7 +67,7 @@ if __name__ == '__main__':
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
     parser.add_argument('--report-config', default=None, metavar='ConfigPath', type=str,
-                        help='config file for the reporter, if None the reporter will not be started'
+                        help='config file for the reporter, if None the reporter will not be started '
                         'Create an Excel report based on benchmarks results. '
                         'Need "openpyxl" library')
     args = parser.parse_args()
