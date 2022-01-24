@@ -715,7 +715,7 @@ def susy(dataset_dir: Path) -> bool:
                             nrows=nrows_train + nrows_test)
 
     X = data[data.columns[1:]]
-    y = data[data.columns[0:1]]
+    y = data[data.columns[0:1]].values.ravel()
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
