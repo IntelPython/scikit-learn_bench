@@ -9,7 +9,7 @@
     },
     "cases": [
         {
-             "dataset": [
+            "dataset": [
                 {
                     "source": "npy",
                     "name": "higgs_one_m_clustering",
