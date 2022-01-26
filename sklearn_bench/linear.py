@@ -27,7 +27,7 @@ def main():
 
     # Create our regression object
     regr = LinearRegression(fit_intercept=params.fit_intercept,
-                            n_jobs=params.n_jobs, copy_X=False)
+                            n_jobs=params.n_jobs, copy_X=True)
 
     # Time fit
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)

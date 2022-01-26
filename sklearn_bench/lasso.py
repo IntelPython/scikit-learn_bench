@@ -27,7 +27,7 @@ def main():
 
     # Create our regression object
     regr = Lasso(fit_intercept=params.fit_intercept, alpha=params.alpha,
-                 tol=params.tol, max_iter=params.maxiter, copy_X=False)
+                 tol=params.tol, max_iter=params.maxiter)
 
     # Time fit
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
