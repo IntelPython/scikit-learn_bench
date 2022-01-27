@@ -49,6 +49,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "cifar_cluster": cifar_cluster,
     "codrnanorm": codrnanorm,
     "connect": connect,
+    "covertype": covertype,
     "covtype_binary": covtype_binary,
     "covtype": covtype,
     "creditcard": creditcard,
