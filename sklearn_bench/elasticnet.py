@@ -28,7 +28,7 @@ def main():
     # Create our regression object
     regr = ElasticNet(fit_intercept=params.fit_intercept, l1_ratio=params.l1_ratio,
                       alpha=params.alpha, tol=params.tol,
-                      max_iter=params.maxiter, copy_X=True)
+                      max_iter=params.maxiter)
     # Time fit
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
