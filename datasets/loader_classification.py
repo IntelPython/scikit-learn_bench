@@ -334,6 +334,40 @@ def epsilon(dataset_dir: Path) -> bool:
     return True
 
 
+def epsilon_30K(dataset_dir: Path) -> bool:
+    """
+    Epsilon dataset
+    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
+    Classification task. n_classes = 2.
+    epsilon_30K x train dataset (30000, 2000)
+    epsilon_30K y train dataset (30000, 2000)
+    """
+    dataset_name = 'epsilon_30K'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
+                '/epsilon_normalized.bz2'
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+
+    num_train, dtype = 30000, np.float32
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    X_train, y_train = load_svmlight_file(local_url_train,
+                                          dtype=dtype)
+    X_train = X_train.toarray()[:num_train]
+    y_train = y_train[:num_train]
+
+    for data, name in zip((X_train, y_train),
+                          ('x_train', 'y_train')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
 def fraud(dataset_dir: Path) -> bool:
     """
     Credit Card Fraud Detection contest
@@ -685,6 +719,51 @@ def skin_segmentation(dataset_dir: Path) -> bool:
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def cifar_binary(dataset_dir: Path) -> bool:
+    """
+    Cifar dataset from LIBSVM Datasets (
+    https://www.cs.toronto.edu/~kriz/cifar.html#cifar)
+    TaskType: Classification
+    cifar_binary x train dataset (50000, 3072)
+    cifar_binary y train dataset (50000, 1)
+    cifar_binary x test dataset (10000, 3072)
+    cifar_binary y test dataset (10000, 1)
+    """
+    dataset_name = 'cifar_binary'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.bz2'
+    url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.t.bz2'
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
+
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    x_train, y_train = load_svmlight_file(local_url_train,
+                                          dtype=np.float32)
+
+    if not os.path.isfile(local_url_test):
+        logging.info(f'Started loading {dataset_name}, test')
+        retrieve(url_test, local_url_test)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    x_test, y_test = load_svmlight_file(local_url_test,
+                                        dtype=np.float32)
+
+    x_train = x_train.toarray()
+    y_train = (y_train > 0).astype(int)
+
+    x_test = x_test.toarray()
+    y_test = (y_test > 0).astype(int)
+
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
     return True
 
 
