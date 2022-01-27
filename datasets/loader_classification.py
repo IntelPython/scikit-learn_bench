@@ -369,34 +369,22 @@ def epsilon(dataset_dir: Path) -> bool:
     return True
 
 
-<<<<<<< HEAD
 def epsilon_16K(dataset_dir: Path) -> bool:
-=======
-def epsilon_30K(dataset_dir: Path) -> bool:
->>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
     """
     Epsilon dataset
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
 
     Classification task. n_classes = 2.
-<<<<<<< HEAD
     epsilon_16K x train dataset (16000, 2000)
     epsilon_16K y train dataset (16000, 1)
     epsilon_16K x test dataset (16000, 2000)
     epsilon_16K y test dataset (16000, 1)
     """
     dataset_name = 'epsilon_16K'
-=======
-    epsilon_30K x train dataset (30000, 2000)
-    epsilon_30K y train dataset (30000, 2000)
-    """
-    dataset_name = 'epsilon_30K'
->>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
     os.makedirs(dataset_dir, exist_ok=True)
 
     url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
                 '/epsilon_normalized.bz2'
-<<<<<<< HEAD
     url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
                '/epsilon_normalized.t.bz2'
     local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
@@ -423,6 +411,40 @@ def epsilon_30K(dataset_dir: Path) -> bool:
 
     for data, name in zip((X_train, X_test, y_train, y_test),
                           ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
+def epsilon_30K(dataset_dir: Path) -> bool:
+    """
+    Epsilon dataset
+    https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
+    Classification task. n_classes = 2.
+    epsilon_30K x train dataset (30000, 2000)
+    epsilon_30K y train dataset (30000, 2000)
+    """
+    dataset_name = 'epsilon_30K'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
+                '/epsilon_normalized.bz2'
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+
+    num_train, dtype = 30000, np.float32
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    X_train, y_train = load_svmlight_file(local_url_train,
+                                          dtype=dtype)
+    X_train = X_train.toarray()[:num_train]
+    y_train = y_train[:num_train]
+
+    for data, name in zip((X_train, y_train),
+                          ('x_train', 'y_train')):
         filename = f'{dataset_name}_{name}.npy'
         np.save(os.path.join(dataset_dir, filename), data)
     logging.info(f'dataset {dataset_name} is ready.')
@@ -490,19 +512,6 @@ def epsilon_80K(dataset_dir: Path) -> bool:
     X_train = X_train.toarray()[:num_train]
     y_train = y_train[:num_train]
     y_train[y_train <= 0] = 0
-=======
-    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
-
-    num_train, dtype = 30000, np.float32
-    if not os.path.isfile(local_url_train):
-        logging.info(f'Started loading {dataset_name}, train')
-        retrieve(url_train, local_url_train)
-    logging.info(f'{dataset_name} is loaded, started parsing...')
-    X_train, y_train = load_svmlight_file(local_url_train,
-                                          dtype=dtype)
-    X_train = X_train.toarray()[:num_train]
-    y_train = y_train[:num_train]
->>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
 
     for data, name in zip((X_train, y_train),
                           ('x_train', 'y_train')):

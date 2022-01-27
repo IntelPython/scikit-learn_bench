@@ -66,12 +66,9 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "hepmass_10K_cluster": hepmass_10K_cluster,
     "higgs": higgs,
     "higgs1m": higgs_one_m,
-<<<<<<< HEAD
     "higgs_150K": higgs_150K,
-=======
     "higgs_10500K": higgs_10500K,
     "higgs_one_m_clustering": higgs_one_m_clustering,
->>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
     "ijcnn": ijcnn,
     "klaverjas": klaverjas,
     "letters": letters,
