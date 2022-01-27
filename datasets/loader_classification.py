@@ -369,22 +369,34 @@ def epsilon(dataset_dir: Path) -> bool:
     return True
 
 
+<<<<<<< HEAD
 def epsilon_16K(dataset_dir: Path) -> bool:
+=======
+def epsilon_30K(dataset_dir: Path) -> bool:
+>>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
     """
     Epsilon dataset
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
 
     Classification task. n_classes = 2.
+<<<<<<< HEAD
     epsilon_16K x train dataset (16000, 2000)
     epsilon_16K y train dataset (16000, 1)
     epsilon_16K x test dataset (16000, 2000)
     epsilon_16K y test dataset (16000, 1)
     """
     dataset_name = 'epsilon_16K'
+=======
+    epsilon_30K x train dataset (30000, 2000)
+    epsilon_30K y train dataset (30000, 2000)
+    """
+    dataset_name = 'epsilon_30K'
+>>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
     os.makedirs(dataset_dir, exist_ok=True)
 
     url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
                 '/epsilon_normalized.bz2'
+<<<<<<< HEAD
     url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary' \
                '/epsilon_normalized.t.bz2'
     local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
@@ -478,6 +490,19 @@ def epsilon_80K(dataset_dir: Path) -> bool:
     X_train = X_train.toarray()[:num_train]
     y_train = y_train[:num_train]
     y_train[y_train <= 0] = 0
+=======
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+
+    num_train, dtype = 30000, np.float32
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    X_train, y_train = load_svmlight_file(local_url_train,
+                                          dtype=dtype)
+    X_train = X_train.toarray()[:num_train]
+    y_train = y_train[:num_train]
+>>>>>>> aa4705e4eec0183f831a5912b6cbd0e22c419fa2
 
     for data, name in zip((X_train, y_train),
                           ('x_train', 'y_train')):
@@ -884,6 +909,51 @@ def skin_segmentation(dataset_dir: Path) -> bool:
     return True
 
 
+def cifar_binary(dataset_dir: Path) -> bool:
+    """
+    Cifar dataset from LIBSVM Datasets (
+    https://www.cs.toronto.edu/~kriz/cifar.html#cifar)
+    TaskType: Classification
+    cifar_binary x train dataset (50000, 3072)
+    cifar_binary y train dataset (50000, 1)
+    cifar_binary x test dataset (10000, 3072)
+    cifar_binary y test dataset (10000, 1)
+    """
+    dataset_name = 'cifar_binary'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    url_train = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.bz2'
+    url_test = 'https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass/cifar10.t.bz2'
+    local_url_train = os.path.join(dataset_dir, os.path.basename(url_train))
+    local_url_test = os.path.join(dataset_dir, os.path.basename(url_test))
+
+    if not os.path.isfile(local_url_train):
+        logging.info(f'Started loading {dataset_name}, train')
+        retrieve(url_train, local_url_train)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    x_train, y_train = load_svmlight_file(local_url_train,
+                                          dtype=np.float32)
+
+    if not os.path.isfile(local_url_test):
+        logging.info(f'Started loading {dataset_name}, test')
+        retrieve(url_test, local_url_test)
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+    x_test, y_test = load_svmlight_file(local_url_test,
+                                        dtype=np.float32)
+
+    x_train = x_train.toarray()
+    y_train = (y_train > 0).astype(int)
+
+    x_test = x_test.toarray()
+    y_test = (y_test > 0).astype(int)
+
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    return True
+
+
 def susy(dataset_dir: Path) -> bool:
     """
     SUSY dataset from UCI machine learning repository (
@@ -911,7 +981,7 @@ def susy(dataset_dir: Path) -> bool:
                             nrows=nrows_train + nrows_test)
 
     X = data[data.columns[1:]]
-    y = data[data.columns[0:1]]
+    y = data[data.columns[0:1]].values.ravel()
 
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, train_size=nrows_train, test_size=nrows_test, shuffle=False)
