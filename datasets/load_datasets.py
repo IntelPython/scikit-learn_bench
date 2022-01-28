@@ -22,10 +22,11 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
-                                    census, codrnanorm, cifar_binary, creditcard, epsilon,
-                                    epsilon_30K, fraud, gisette, hepmass_150K, higgs,
-                                    higgs_one_m, ijcnn, klaverjas, santander, skin_segmentation,
-                                    susy)
+                                    census,  cifar_binary, codrnanorm, covtype_binary, creditcard,
+                                    epsilon, epsilon_16K, epsilon_30K, epsilon_80K, epsilon_100K,
+                                    fraud, gisette, hepmass_150K,
+                                    higgs, higgs_one_m, higgs_150K, ijcnn, klaverjas,
+                                    santander, skin_segmentation, susy)
 from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
 from .loader_regression import (abalone, california_housing, fried, higgs_10500K,
@@ -49,10 +50,14 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covertype": covertype,
+    "covtype_binary": covtype_binary,
     "covtype": covtype,
     "creditcard": creditcard,
     "epsilon": epsilon,
+    "epsilon_16K": epsilon_16K,
     "epsilon_30K": epsilon_30K,
+    "epsilon_80K": epsilon_80K,
+    "epsilon_100K": epsilon_100K,
     "epsilon_50K_cluster": epsilon_50K_cluster,
     "fraud": fraud,
     "fried": fried,
@@ -62,6 +67,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "hepmass_10K_cluster": hepmass_10K_cluster,
     "higgs": higgs,
     "higgs1m": higgs_one_m,
+    "higgs_150K": higgs_150K,
     "higgs_10500K": higgs_10500K,
     "higgs_one_m_clustering": higgs_one_m_clustering,
     "ijcnn": ijcnn,
