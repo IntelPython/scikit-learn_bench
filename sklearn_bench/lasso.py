@@ -27,7 +27,7 @@ def main():
 
     # Create our regression object
     regr = Lasso(fit_intercept=params.fit_intercept, alpha=params.alpha,
-                 tol=params.tol, max_iter=params.maxiter, copy_X=False)
+                 tol=params.tol, max_iter=params.maxiter)
 
     # Time fit
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
@@ -63,7 +63,7 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn lasso regression '
                                      'benchmark')
-    parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=False,
+    parser.add_argument('--no-fit-intercept', dest='fit_intercept', default=True,
                         action='store_false',
                         help="Don't fit intercept (assume data already centered)")
     parser.add_argument('--alpha', dest='alpha', type=float, default=1.0,
