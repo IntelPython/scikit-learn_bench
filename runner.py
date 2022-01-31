@@ -76,9 +76,9 @@ if __name__ == '__main__':
     hostname = socket.gethostname()
 
     env = os.environ.copy()
-    if 'SKBENCH_DATASETSROOT' in env:
-        datasets_path = env['SKBENCH_DATASETSROOT']
-        logging.info(f'dataset folder at {datasets_path}')
+    if 'DATASETSROOT' in env:
+        datasets_path = env['DATASETSROOT']
+        logging.info(f'datasets folder at {datasets_path}')
     else:
         datasets_path = ''
     
