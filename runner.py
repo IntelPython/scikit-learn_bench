@@ -266,12 +266,11 @@ if __name__ == '__main__':
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name
     args.output_file.close()
-    basename_result_file = os.path.splitext(name_result_file)[0]
 
     if args.report:
         command = 'python report_generator/report_generator.py ' \
             + f'--result-files {name_result_file} '              \
-            + f'--report-file {basename_result_file}.xlsx '      \
+            + f'--report-file {name_result_file}.xlsx '          \
             + '--generation-config ' + args.report
         logging.info(command)
         stdout, stderr = utils.read_output_from_command(command)
