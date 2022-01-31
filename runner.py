@@ -75,8 +75,15 @@ if __name__ == '__main__':
         stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
     hostname = socket.gethostname()
 
+    env = os.environ.copy()
+    if 'SKBENCH_DATASETSROOT' in env:
+        datasets_path = env['SKBENCH_DATASETSROOT']
+        logging.info(f'dataset folder at {datasets_path}')
+    else:
+        datasets_path = ''
+    
     # make directory for data if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    os.makedirs(os.path.join(datasets_path, 'data'), exist_ok=True)
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
@@ -141,20 +148,20 @@ if __name__ == '__main__':
                     if 'training' not in dataset or \
                         'x' not in dataset['training'] or \
                         not utils.find_the_dataset(dataset_name,
-                                                   dataset['training']['x']):
+                                                   os.path.join(datasets_path, dataset['training']['x'])):
                         logging.warning(
                             f'Dataset {dataset_name} could not be loaded. \n'
                             'Check the correct name or expand the download in '
                             'the folder dataset.')
                         continue
-                    paths = '--file-X-train ' + dataset['training']["x"]
+                    paths = '--file-X-train ' + os.path.join(datasets_path, dataset['training']["x"])
                     if 'y' in dataset['training']:
-                        paths += ' --file-y-train ' + dataset['training']["y"]
+                        paths += ' --file-y-train ' + os.path.join(datasets_path, dataset['training']["y"])
                     if 'testing' in dataset:
-                        paths += ' --file-X-test ' + dataset["testing"]["x"]
+                        paths += ' --file-X-test ' + os.path.join(datasets_path, dataset["testing"]["x"])
                         if 'y' in dataset['testing']:
                             paths += ' --file-y-test ' + \
-                                dataset["testing"]["y"]
+                                os.path.join(datasets_path, dataset["testing"]["y"])
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
                         classes: int
@@ -190,7 +197,7 @@ if __name__ == '__main__':
                     else:
                         cls_num_for_file = ''
 
-                    file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
+                    file_prefix = os.path.join(datasets_path, f'data/synthetic-{gen_args.type}{cls_num_for_file}-')
                     file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
                     gen_args.filex = f'{file_prefix}X-train{file_postfix}'
