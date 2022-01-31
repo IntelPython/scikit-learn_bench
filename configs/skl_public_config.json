@@ -26,6 +26,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": [5, 100]
         },
         {
@@ -47,6 +48,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": [5, 100]
         },
         {
@@ -68,6 +70,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": 7
         },
         {
@@ -89,6 +92,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": 5
         },
         {
@@ -154,6 +158,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": 5
         },
         {
@@ -175,6 +180,7 @@
                     }
                 }
             ],
+            "method": ["brute", "kd_tree"],
             "n-neighbors": 7
         },
         {
