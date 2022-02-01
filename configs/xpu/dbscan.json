@@ -1,0 +1,54 @@
+{
+    "common": {
+        "lib": "sklearn",
+        "algorithm": "dbscan",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": ["float64"],
+        "device": ["host", "cpu", "gpu", "none"]
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "hepmass_10K_cluster",
+                    "training":
+                    {
+                        "x": "data/hepmass_10K_cluster.npy"
+                    }
+                }
+            ],
+            "eps": 5,
+            "min-samples": 3
+        },
+        {
+            "dataset": [
+                 {
+                    "source": "npy",
+                    "name": "mnist_10K_cluster",
+                    "training":
+                    {
+                        "x": "data/mnist_10K_cluster.npy"
+                    }
+                }
+            ],
+            "eps": 1.7e3,
+            "min-samples": 3
+        },       
+        {
+            "dataset": [
+                 {
+                    "source": "npy",
+                    "name": "road_network_20K_cluster",
+                    "training":
+                    {
+                        "x": "data/road_network_20K_cluster.npy"
+                    }
+                }
+            ],
+            "eps": 1.0e3,
+            "min-samples": 220
+        }
+    ]
+}
