@@ -1,0 +1,52 @@
+{
+    "common": {
+        "lib": "sklearn",
+        "algorithm": "pca",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": ["float64"],
+        "device": ["host", "cpu", "none"]
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs1m",
+                    "training":
+                    {
+                        "x": "data/higgs1m_x_train.npy",
+                        "y": "data/higgs1m_y_train.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "device": ["host", "cpu", "gpu", "none"],
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "epsilon_30K",
+                    "training":
+                    {
+                        "x": "data/epsilon_30K_x_train.npy",
+                        "y": "data/epsilon_30K_y_train.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "cifar_binary",
+                    "training":
+                    {
+                        "x": "data/cifar_binary_x_train.npy",
+                        "y": "data/cifar_binary_y_train.npy"
+                    }
+                }
+            ]
+        }
+    ]
+}
