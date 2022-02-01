@@ -26,6 +26,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "num-trees": 10,
             "max-depth": 5
         },
@@ -46,6 +47,7 @@
                     }
                 }
             ],
+            "workload-size": "large",
             "num-trees": 100,
             "max-depth": 8
         },
@@ -66,6 +68,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "num-trees": 20,
             "max-depth": 16
         },
@@ -86,6 +89,7 @@
                     }
                 }
             ],
+            "workload-size": "large",
             "num-trees": 100,
             "max-depth": 10
         },
@@ -106,6 +110,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "num-trees": 50,
             "max-depth": 15
         }
