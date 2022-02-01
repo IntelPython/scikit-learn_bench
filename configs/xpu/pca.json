@@ -19,7 +19,8 @@
                         "y": "data/higgs1m_y_train.npy"
                     }
                 }
-            ]
+            ],
+            "workload-size": "small"
         },
         {
             "device": ["host", "cpu", "gpu", "none"],
@@ -33,7 +34,8 @@
                         "y": "data/epsilon_30K_y_train.npy"
                     }
                 }
-            ]
+            ],
+            "workload-size": "small"
         },
         {
             "dataset": [
@@ -46,7 +48,8 @@
                         "y": "data/cifar_binary_y_train.npy"
                     }
                 }
-            ]
+            ],
+            "workload-size": "medium"
         }
     ]
 }

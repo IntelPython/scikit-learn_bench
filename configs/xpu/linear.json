@@ -24,7 +24,8 @@
                         "y": "data/year_prediction_msd_y_test.npy"
                     }
                 }
-            ]
+            ],
+            "workload-size": "small"
         },
         {
             "dataset": [
@@ -42,7 +43,8 @@
                         "y": "data/higgs1m_y_test.npy"
                     }
                 }
-            ]
+            ],
+            "workload-size": "small"
         }
     ]
 }

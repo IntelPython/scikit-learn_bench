@@ -25,6 +25,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": 2
         },
         {
@@ -44,6 +45,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": 5
         },
         {
@@ -63,6 +65,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": 7
         }
     ]
