@@ -68,9 +68,10 @@ if __name__ == '__main__':
                         help='Print additional information during benchmarks running')
     parser.add_argument('--report', nargs='?', default=None, metavar='ConfigPath', type=str,
                         const='report_generator/default_report_gen_config.json',
-                        help='config file for the reporter, '
-                        'if None the reporter will not be started '
-                        'Create an Excel report based on benchmarks results. '
+                        help='Create an Excel report based on benchmarks results. '
+                        'If the parameter is not set, the reporter will not be launched. '
+                        'If the parameter is set and the config is not specified, '
+                        'the default config will be used. '
                         'Need "openpyxl" library')
     args = parser.parse_args()
 
