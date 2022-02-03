@@ -71,9 +71,13 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', default='INFO', type=str,
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
-    parser.add_argument('--report', default=False, action='store_true',
+    parser.add_argument('--report', nargs='?', default=None, metavar='ConfigPath', type=str,
+                        const='report_generator/default_report_gen_config.json',
                         help='Create an Excel report based on benchmarks results. '
-                             'Need "openpyxl" library')
+                        'If the parameter is not set, the reporter will not be launched. '
+                        'If the parameter is set and the config is not specified, '
+                        'the default config will be used. '
+                        'Need "openpyxl" library')
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -278,7 +282,7 @@ if __name__ == '__main__':
         command = 'python report_generator/report_generator.py ' \
             + f'--result-files {name_result_file} '              \
             + f'--report-file {name_result_file}.xlsx '          \
-            + '--generation-config report_generator/default_report_gen_config.json'
+            + '--generation-config ' + args.report
         logging.info(command)
         stdout, stderr = utils.read_output_from_command(command)
         if stderr != '':
