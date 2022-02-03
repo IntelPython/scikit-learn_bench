@@ -12,16 +12,16 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "hepmass_150K",
+                    "name": "higgs_150K",
                     "training":
                     {
-                        "x": "data/hepmass_150K_x_train.npy",
-                        "y": "data/hepmass_150K_y_train.npy"
+                        "x": "data/higgs_150K_x_train.npy",
+                        "y": "data/higgs_150K_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/hepmass_150K_x_test.npy",
-                        "y": "data/hepmass_150K_y_test.npy"
+                        "x": "data/higgs_150K_x_test.npy",
+                        "y": "data/higgs_150K_y_test.npy"
                     }
                 }
             ],
@@ -74,25 +74,25 @@
         },
         {
             "algorithm": "knn_regr",
-            "dtype": ["float32", "float64"],
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "cifar_binary",
+                    "name": "higgs_150K",
                     "training":
                     {
-                        "x": "data/cifar_binary_x_train.npy",
-                        "y": "data/cifar_binary_y_train.npy"
+                        "x": "data/higgs_150K_x_train.npy",
+                        "y": "data/higgs_150K_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/cifar_binary_x_test.npy",
-                        "y": "data/cifar_binary_y_test.npy"
+                        "x": "data/higgs_150K_x_test.npy",
+                        "y": "data/higgs_150K_y_test.npy"
                     }
                 }
             ],
-            "task": "search",
-            "n-neighbors": 7
+            "method": ["brute", "kd_tree"],
+            "n-neighbors": 5
         },
         {
             "algorithm": "knn_regr",
@@ -115,6 +115,50 @@
             ],
             "method": ["brute", "kd_tree"],
             "n-neighbors": 7
+        },
+        {
+            "algorithm": "knn_regr",
+            "dtype": ["float32", "float64"],
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "cifar_binary",
+                    "training":
+                    {
+                        "x": "data/cifar_binary_x_train.npy",
+                        "y": "data/cifar_binary_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/cifar_binary_x_test.npy",
+                        "y": "data/cifar_binary_y_test.npy"
+                    }
+                }
+            ],
+            "task": "search",
+            "n-neighbors": 7
+        },
+        {
+            "algorithm": "knn_regr",
+            "dtype": "float32",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs_150K",
+                    "training":
+                    {
+                        "x": "data/higgs_150K_x_train.npy",
+                        "y": "data/higgs_150K_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs_150K_x_test.npy",
+                        "y": "data/higgs_150K_y_test.npy"
+                    }
+                }
+            ],
+            "task": "search",
+            "n-neighbors": 5
         },
         {
             "algorithm": "pca",
@@ -508,7 +552,7 @@
         },
         {
             "algorithm": "svm",
-            "dtype": "float64",
+            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
@@ -548,28 +592,6 @@
                 }
             ],
             "C": 9.0e2,
-            "kernel": "rbf"
-        },
-        {
-            "algorithm": "svm",
-            "dtype": "float32",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "skin_segmentation",
-                    "training":
-                    {
-                        "x": "data/skin_segmentation_x_train.npy",
-                        "y": "data/skin_segmentation_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/skin_segmentation_x_test.npy",
-                        "y": "data/skin_segmentation_y_test.npy"
-                    }
-                }
-            ],
-            "C": 1.0,
             "kernel": "rbf"
         },
         {
