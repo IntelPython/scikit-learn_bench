@@ -26,7 +26,8 @@
                     }
                 }
             ],
-            "num-trees": [10, 100],
+            "workload-size": "medium",
+            "num-trees": 10,
             "max-depth": 5
         },
         {
@@ -46,7 +47,29 @@
                     }
                 }
             ],
-            "num-trees": [100, 20],
+            "workload-size": "large",
+            "num-trees": 10,
+            "max-depth": 5
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "num-trees": 20,
             "max-depth": 8
         },
         {
@@ -66,6 +89,28 @@
                     }
                 }
             ],
+            "workload-size": "large",
+            "num-trees": 100,
+            "max-depth": 8
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training":
+                    {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ],
+            "workload-size": "large",
             "num-trees": 20,
             "max-depth": 16
         },
@@ -86,26 +131,28 @@
                     }
                 }
             ],
-            "num-trees": [15, 20, 100],
+            "workload-size": "medium",
+            "num-trees": [15, 20],
             "max-depth": 8
         },
         {
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "higgs_10500K",
+                    "name": "higgs1m",
                     "training":
                     {
-                        "x": "data/higgs_10500K_x_train.npy",
-                        "y": "data/higgs_10500K_y_train.npy"
+                        "x": "data/higgs1m_x_train.npy",
+                        "y": "data/higgs1m_y_train.npy"
                     },
                     "testing":
                     {
-                        "x": "data/higgs_10500K_x_test.npy",
-                        "y": "data/higgs_10500K_y_test.npy"
+                        "x": "data/higgs1m_x_test.npy",
+                        "y": "data/higgs1m_y_test.npy"
                     }
                 }
             ],
+            "workload-size": "large",
             "num-trees": 100,
             "max-depth": 8
         },
@@ -126,6 +173,28 @@
                     }
                 }
             ],
+            "workload-size": "large",
+            "num-trees": 100,
+            "max-depth": 8
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs_10500K",
+                    "training":
+                    {
+                        "x": "data/higgs_10500K_x_train.npy",
+                        "y": "data/higgs_10500K_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs_10500K_x_test.npy",
+                        "y": "data/higgs_10500K_y_test.npy"
+                    }
+                }
+            ],
+            "workload-size": "large",
             "num-trees": 20,
             "max-depth": 16
         }
