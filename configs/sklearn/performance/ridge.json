@@ -1,0 +1,34 @@
+{
+    "common": {
+        "lib": "sklearn",
+        "algorithm": "linear",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": ["float32", "float64"],
+        "device": ["host", "cpu", "none"]
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "workload-size": "small",
+            "alpha": 5
+        }
+    ]
+}

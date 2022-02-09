@@ -11,6 +11,65 @@
         {
             "dataset": [
                 {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 1000,
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 1000000
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 1000,
+            "maxiter": 50,
+            "tol": 0.0
+        },
+        {
+            "device": ["host", "cpu", "none"],
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 5,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 5,
+            "maxiter": 50,
+            "init": "k-means++",
+            "tol": 0.0
+        },
+        {
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 20,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 3000000
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "time-method": "box_filter",
+            "time-limit": 50,
+            "n-clusters": 20,
+            "maxiter": 50,
+            "tol": 0.0
+        },
+        {
+            "dataset": [
+                {
                     "source": "npy",
                     "name": "higgs_one_m_clustering",
                     "training":

@@ -9,6 +9,28 @@
     },
     "cases": [
         {
+            "algorithm": "linear",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "training": {
+                        "n_samples": 10000000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "training": {
+                        "n_samples": 2000000
+                    }
+                }
+            ],
+            "workload-size": "medium"
+        },
+        {
             "dataset": [
                 {
                     "source": "npy",
