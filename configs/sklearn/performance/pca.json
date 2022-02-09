@@ -5,7 +5,7 @@
         "data-format": "pandas",
         "data-order": "F",
         "dtype": ["float64"],
-        "device": ["host", "cpu", "none"]
+        "device": ["host", "cpu", "gpu", "none"]
     },
     "cases": [
         {
@@ -76,7 +76,6 @@
             "workload-size": "small"
         },
         {
-            "device": ["host", "cpu", "gpu", "none"],
             "dataset": [
                 {
                     "source": "npy",

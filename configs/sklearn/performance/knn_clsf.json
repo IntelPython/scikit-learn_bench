@@ -36,7 +36,7 @@
                 }
             ],
             "workload-size": "medium",
-            "method": ["brute", "kd_tree"]
+            "method": "brute"
         },
         {
             "dataset": [
@@ -54,7 +54,7 @@
                 }
             ],
             "workload-size": "small",
-            "method": ["brute", "kd_tree"]
+            "method": "brute"
         },
         {
             "dataset": [
@@ -72,7 +72,76 @@
                 }
             ],
             "workload-size": "large",
-            "method": ["brute", "kd_tree"]
+            "method": "brute"
+        },
+        {
+            "device": "none",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 100000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 100000
+                    },
+                    "testing": {
+                        "n_samples": 100000
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "method": "kd_tree"
+        },
+        {
+            "device": "none",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 2,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 20000
+                    },
+                    "testing": {
+                        "n_samples": 20000
+                    }
+                }
+            ],
+            "workload-size": "small",
+            "method": "kd_tree"
+        },
+        {
+            "device": "none",
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "classification",
+                    "n_classes": 10,
+                    "n_features": 16,
+                    "training": {
+                        "n_samples": 250000
+                    },
+                    "testing": {
+                        "n_samples": 250000
+                    }
+                }
+            ],
+            "workload-size": "large",
+            "method": "kd_tree"
         },
         {
             "dataset": [
