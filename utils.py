@@ -20,6 +20,7 @@ import pathlib
 import platform
 import subprocess
 import sys
+import logging
 from typing import Any, Dict, List, Tuple, Union, cast
 
 from datasets.load_datasets import try_load_dataset
@@ -51,9 +52,21 @@ def filter_stdout(text: str) -> Tuple[str, str]:
     return filtered, extra
 
 
-def find_the_dataset(name: str, fullpath: str) -> bool:
-    return os.path.isfile(fullpath) or try_load_dataset(
-        dataset_name=name, output_directory=pathlib.Path(fullpath).parent)
+def find_the_dataset(name: str, folder: str, file: str) -> str:
+    if os.path.isfile(file):
+        return ""
+    fullpath = os.path.join(folder, file)
+    if os.path.isfile(os.path.join(folder, file)) or \
+       try_load_dataset(dataset_name=name, output_directory=folder):
+        return folder
+    logging.warning(
+        f'failed downloading {name} to {folder}, '
+        'downloading to local folder"'
+        )
+    if try_load_dataset(dataset_name=name,
+                        output_directory="data"):
+        return ""
+    return None
 
 
 def read_output_from_command(command: str,

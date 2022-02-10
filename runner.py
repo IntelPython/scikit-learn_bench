@@ -77,13 +77,10 @@ if __name__ == '__main__':
 
     env = os.environ.copy()
     if 'DATASETSROOT' in env:
-        datasets_path = env['DATASETSROOT']
-        logging.info(f'datasets folder at {datasets_path}')
+        datasets_root = env['DATASETSROOT']
+        logging.info(f'datasets folder at {datasets_root}')
     else:
-        datasets_path = ''
-
-    # make directory for data if it doesn't exist
-    os.makedirs(os.path.join(datasets_path, 'data'), exist_ok=True)
+        datasets_root = ''
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
@@ -145,27 +142,32 @@ if __name__ == '__main__':
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
                     dataset_name = dataset['name'] if 'name' in dataset else 'unknown'
-                    if 'training' not in dataset or \
-                        'x' not in dataset['training'] or \
-                        not utils.find_the_dataset(dataset_name,
-                                                   os.path.join(datasets_path,
-                                                                dataset['training']['x'])):
+                    if 'training' not in dataset or 'x' not in dataset['training']:
+                        logging.warning(
+                            f'Dataset {dataset_name} could not be loaded. \n'
+                            'Training data for algorithm is not specified'
+                            )
+                        continue
+                    dataset_path = utils.find_the_dataset(dataset_name, datasets_root,
+                                                          dataset['training']['x'])
+                    if (dataset_path is None):
                         logging.warning(
                             f'Dataset {dataset_name} could not be loaded. \n'
                             'Check the correct name or expand the download in '
-                            'the folder dataset.')
+                            'the folder dataset.'
+                            )
                         continue
-                    paths = '--file-X-train ' + os.path.join(datasets_path,
+                    paths = '--file-X-train ' + os.path.join(dataset_path,
                                                              dataset['training']["x"])
                     if 'y' in dataset['training']:
-                        paths += ' --file-y-train ' + os.path.join(datasets_path,
+                        paths += ' --file-y-train ' + os.path.join(dataset_path,
                                                                    dataset['training']["y"])
                     if 'testing' in dataset:
-                        paths += ' --file-X-test ' + os.path.join(datasets_path,
+                        paths += ' --file-X-test ' + os.path.join(dataset_path,
                                                                   dataset["testing"]["x"])
                         if 'y' in dataset['testing']:
                             paths += ' --file-y-test ' + \
-                                os.path.join(datasets_path, dataset["testing"]["y"])
+                                os.path.join(dataset_path, dataset["testing"]["y"])
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
                         classes: int
@@ -201,7 +203,7 @@ if __name__ == '__main__':
                     else:
                         cls_num_for_file = ''
 
-                    file_prefix = os.path.join(datasets_path,
+                    file_prefix = os.path.join(dataset_path,
                                                f'data/synthetic-{gen_args.type}{cls_num_for_file}-')
                     file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
