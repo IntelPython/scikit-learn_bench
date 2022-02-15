@@ -4,7 +4,7 @@
         "algorithm": "pca",
         "data-format": "pandas",
         "data-order": "F",
-        "dtype": ["float64"],
+        "dtype": ["float32", "float64"],
         "device": ["host", "cpu", "none"]
     },
     "cases": [
