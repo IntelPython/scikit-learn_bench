@@ -540,9 +540,9 @@ def print_output(library, algorithm, stages, params, functions,
                                     data[i], alg_instance, alg_params)
             result.update({'time[s]': times[i]})
             if isinstance(metric_type, str):
-                    result.update({f'{metric_type}': np.float64(metrics[i])
-                                  if isinstance(metrics[i], np.float32)
-                                  else metrics[i]})
+                result.update({f'{metric_type}': np.float64(metrics[i])
+                              if isinstance(metrics[i], np.float32)
+                              else metrics[i]})
             elif isinstance(metric_type, list):
                 for ind, val in enumerate(metric_type):
                     if metrics[ind][i] is not None:
