@@ -1,7 +1,7 @@
 {
     "common": {
         "lib": "sklearn",
-        "algorithm": "linear",
+        "algorithm": "ridge",
         "data-format": "pandas",
         "data-order": "F",
         "dtype": ["float32", "float64"],
