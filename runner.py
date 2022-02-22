@@ -150,13 +150,17 @@ if __name__ == '__main__':
                         continue
                     dataset_path = utils.find_the_dataset(dataset_name, datasets_root,
                                                           dataset['training']['x'])
-                    if (dataset_path is None):
+                    if dataset_path is None:
                         logging.warning(
                             f'Dataset {dataset_name} could not be loaded. \n'
                             'Check the correct name or expand the download in '
                             'the folder dataset.'
                             )
                         continue
+                    elif not dataset_path and datasets_root:
+                        logging.info(
+                            f'{dataset_name} is taken from  local folder'
+                            )
                     paths = '--file-X-train ' + os.path.join(dataset_path,
                                                              dataset['training']["x"])
                     if 'y' in dataset['training']:
