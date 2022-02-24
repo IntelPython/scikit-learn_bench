@@ -299,6 +299,75 @@
             "workload-size": "medium",
             "task": "search",
             "n-neighbors": 7
+        },
+        {
+            "algorithm": "knn_clsf",
+            "device": "none",
+            "dtype": "float32",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs_150K",
+                    "training":
+                    {
+                        "x": "data/higgs_150K_x_train.npy",
+                        "y": "data/higgs_150K_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs_150K_x_test.npy",
+                        "y": "data/higgs_150K_y_test.npy"
+                    }
+                }
+            ],
+            "method": "kd_tree",
+            "n-neighbors": [5, 100]
+        },
+        {
+            "algorithm": "knn_clsf",
+            "device": "none",
+            "dtype": ["float32", "float64"],
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "cifar_binary",
+                    "training":
+                    {
+                        "x": "data/cifar_binary_x_train.npy",
+                        "y": "data/cifar_binary_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/cifar_binary_x_test.npy",
+                        "y": "data/cifar_binary_y_test.npy"
+                    }
+                }
+            ],
+            "method": "kd_tree",
+            "n-neighbors": 7
+        },
+        {
+            "algorithm": "knn_clsf",
+            "device": "none",
+            "dtype": "float32",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mnist",
+                    "training":
+                    {
+                        "x": "data/mnist_x_train.npy",
+                        "y": "data/mnist_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/mnist_x_test.npy",
+                        "y": "data/mnist_y_test.npy"
+                    }
+                }
+            ],
+            "method": "kd_tree",
+            "n-neighbors": 5
         }
     ]
 }

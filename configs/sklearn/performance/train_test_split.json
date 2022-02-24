@@ -46,17 +46,20 @@
             "dataset": [
                 {
                     "source": "npy",
-                    "name": "census",
+                    "name": "higgs_10500K",
                     "training":
                     {
-                        "x": "data/census_x_train.npy",
-                        "y": "data/census_y_train.npy"
+                        "x": "data/higgs_10500K_x_train.npy",
+                        "y": "data/higgs_10500K_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/higgs_10500K_x_test.npy",
+                        "y": "data/higgs_10500K_y_test.npy"
                     }
                 }
             ],
-            "workload-size": "small",
-            "data-format": "numpy",
-            "data-order": "C",
+            "workload-size": "large",
             "include-y": "",
             "train-size": 0.9,
             "test-size": 0.1
