@@ -38,6 +38,7 @@
                     }
                 }
             ],
+            "workload-size": "small",
             "include-y": "",
             "train-size": 0.75,
             "test-size": 0.25
@@ -51,15 +52,12 @@
                     {
                         "x": "data/higgs_10500K_x_train.npy",
                         "y": "data/higgs_10500K_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/higgs_10500K_x_test.npy",
-                        "y": "data/higgs_10500K_y_test.npy"
                     }
                 }
             ],
-            "workload-size": "large",
+            "workload-size": "medium",
+            "data-format": "numpy",
+            "data-order": "C",
             "include-y": "",
             "train-size": 0.9,
             "test-size": 0.1
