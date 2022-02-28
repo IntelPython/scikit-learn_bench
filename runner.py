@@ -207,26 +207,31 @@ if __name__ == '__main__':
                     file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
                     file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
+                    isfiles = True
                     gen_args.filex = f'{file_prefix}X-train{file_postfix}'
                     paths += f' --file-X-train {gen_args.filex}'
+                    isfiles = isfiles and os.path.isfile(gen_args.filex)
                     if gen_args.type not in ['blobs']:
                         gen_args.filey = f'{file_prefix}y-train{file_postfix}'
                         paths += f' --file-y-train {gen_args.filey}'
+                        isfiles = isfiles and os.path.isfile(gen_args.filey)
 
                     if 'testing' in dataset:
                         gen_args.test_samples = dataset['testing']['n_samples']
                         gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
                         paths += f' --file-X-test {gen_args.filextest}'
+                        isfiles = isfiles and os.path.isfile(gen_args.filextest)
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
                             paths += f' --file-y-test {gen_args.fileytest}'
+                            isfiles = isfiles and os.path.isfile(gen_args.fileytest)
                     else:
                         gen_args.test_samples = 0
                         gen_args.filextest = gen_args.filex
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = gen_args.filey
 
-                    if not args.dummy_run and not os.path.isfile(gen_args.filex):
+                    if not args.dummy_run and not isfiles:
                         if gen_args.type == 'regression':
                             make_datasets.gen_regression(gen_args)
                         elif gen_args.type == 'classification':
