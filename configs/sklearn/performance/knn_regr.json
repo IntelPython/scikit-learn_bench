@@ -69,7 +69,6 @@
             "n-neighbors": 7
         },
         {
-            "algorithm": "knn_regr",
             "device": "none",
             "dtype": "float32",
             "dataset": [
@@ -88,11 +87,10 @@
                     }
                 }
             ],
-            "method": ["brute", "kd_tree"],
+            "method": "kd_tree",
             "n-neighbors": 5
         },
         {
-            "algorithm": "knn_regr",
             "device": "none",
             "dtype": ["float32", "float64"],
             "dataset": [
