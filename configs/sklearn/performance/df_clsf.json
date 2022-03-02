@@ -47,6 +47,30 @@
             "max-features": 0.2
         },
         {
+            "device": "none",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "airline-ohe",
+                    "training":
+                    {
+                        "x": "data/airline-ohe_x_train.npy",
+                        "y": "data/airline-ohe_y_train.npy"
+                    },
+                    "testing":
+                    {
+                        "x": "data/airline-ohe_x_test.npy",
+                        "y": "data/airline-ohe_y_test.npy"
+                    }
+                }
+            ],
+            "workload-size": "medium",
+            "num-trees": 50,
+            "max-depth": 16,
+            "max-leaf-nodes": 131072,
+            "max-features": 0.2
+        },
+        {
             "dataset": [
                 {
                     "source": "npy",
