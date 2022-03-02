@@ -36,7 +36,7 @@ def main():
 
     # Measure time and accuracy on fitting
     train_time, _ = bench.measure_function_time(
-        knn_clsf.fit, X_train, y_train, params=params)
+        knn_clsf.fit, X_train, y_train, params=params, stage='fit')
     if params.task == 'classification':
         y_pred = knn_clsf.predict(X_train)
         y_proba = knn_clsf.predict_proba(X_train)
@@ -47,14 +47,14 @@ def main():
     # Measure time and accuracy on prediction
     if params.task == 'classification':
         predict_time, yp = bench.measure_function_time(knn_clsf.predict, X_test,
-                                                       params=params)
+                                                       params=params, stage='infer')
         y_proba = knn_clsf.predict_proba(X_test)
         test_acc = bench.accuracy_score(y_test, yp)
         test_log_loss = bench.log_loss(y_test, y_proba)
         test_roc_auc = bench.roc_auc_score(y_test, y_proba)
     else:
         predict_time, _ = bench.measure_function_time(knn_clsf.kneighbors, X_test,
-                                                      params=params)
+                                                      params=params, stage='infer')
 
     if params.task == 'classification':
         bench.print_output(

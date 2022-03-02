@@ -20,10 +20,18 @@ import logging
 import sys
 import timeit
 import re
+import platform
+import hashlib
+import os
+import subprocess
 
 import numpy as np
 import sklearn
-
+try:
+    import itt
+    itt_module_installed = True
+except:
+    itt_module_installed = False
 
 def get_dtype(data):
     '''
@@ -159,6 +167,8 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--time-method', type=str, default='box_filter',
                         choices=('box_filter'),
                         help='Method used for time mesurements')
+    parser.add_argument('--box-filter-measurements-analysis', type=int, default=100,
+                        help='Maximum number of measurements in box filter (for analyzed stage)')
     parser.add_argument('--box-filter-measurements', type=int, default=100,
                         help='Maximum number of measurements in box filter')
     parser.add_argument('--inner-loops', default=100, type=int,
@@ -167,6 +177,8 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--outer-loops', default=100, type=int,
                         help='Maximum outer loop iterations '
                              '(we take the min over outer iterations)')
+    parser.add_argument('--time-limit-analysis', default=10., type=float,
+                        help='Target time to spend to benchmark (for analyzed stage)')
     parser.add_argument('--time-limit', default=10., type=float,
                         help='Target time to spend to benchmark')
     parser.add_argument('--goal-outer-loops', default=10,
@@ -186,6 +198,25 @@ def parse_args(parser, size=None, loop_types=(),
     parser.add_argument('--device', default='none', type=str,
                         choices=('host', 'cpu', 'gpu', 'none'),
                         help='Execution context device')
+    parser.add_argument('--emon', default=False,
+                        action='store_true',
+                        help='Should emon profiling be started')
+    parser.add_argument('--vtune', default=False,
+                        action='store_true',
+                        help='Should vtune profiling be started')
+    parser.add_argument('--psrecord', default=False,
+                        action='store_true',
+                        help='Should psrecord profiling be started')
+    parser.add_argument('--ittpy', default=False,
+                        action='store_true',
+                        help='Should ittpy domains be integrated')
+    parser.add_argument('--sgx-gramine', default=False,
+                        action='store_true',
+                        help='Should benchmark run with Gramine & Intel(R) SGX')
+    parser.add_argument('--flush-caches', default=False,
+                        action='store_true',
+                        help='Should benchmark flush CPU caches after each run during measuring')
+    parser.add_argument('--target-stage', type=str, default='default', help='Select target stage for analysis.')
 
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
@@ -200,6 +231,9 @@ def parse_args(parser, size=None, loop_types=(),
                             help='Problem size, delimited by "x" or ","')
 
     params = parser.parse_args()
+
+    if params.ittpy and itt_module_installed:
+        itt.pause()
 
     if not params.no_intel_optimized:
         try:
@@ -272,18 +306,68 @@ def prepare_daal_threads(num_threads=-1):
     return num_threads
 
 
-def measure_function_time(func, *args, params, **kwargs):
-    return time_box_filter(func, *args,
-                           n_meas=params.box_filter_measurements,
-                           time_limit=params.time_limit, **kwargs)
+def measure_function_time(func, *args, params, stage, **kwargs):
+    results = time_box_filter(func, *args, params=params, stage=stage, **kwargs)
+    return results
 
 
-def time_box_filter(func, *args, n_meas, time_limit, **kwargs):
+def detect_LLC_size():
+    with open('/sys/devices/system/cpu/cpu0/cache/index3/size', 'r') as f:
+        llc_size_str = f.readline().strip()
+    llc_size = int(llc_size_str[:-1]) * 1024
+    return llc_size
+
+
+def flush_caches():
+    flush_datafile = 'data/flush_data.npy'
+    if os.path.exists(flush_datafile):
+        with open(flush_datafile, 'rb') as f:
+            data = np.load(f).astype(np.double)
+    else:
+        data_size = detect_LLC_size() // 8 * 8 # size in doubles x8
+        columns_number = 100
+        rows_number = data_size // columns_number
+        data = np.random.rand(rows_number, columns_number).astype(np.double)
+        with open(flush_datafile, 'wb') as f:
+            np.save(f, data)
+
+    iterations_to_flush = 3
+    try:
+        from sklearnex.cluster import KMeans
+    except:
+        from sklearn.cluster import KMeans
+    for number_flush_iteration in range(iterations_to_flush):
+        model = KMeans(max_iter=3, tol=1e-7).fit(data)
+
+
+def time_box_filter(func, *args, params, stage, **kwargs):
+    flush_caches_flag = params.flush_caches
+    if params.target_stage != 'default':
+        if params.target_stage == stage:
+            time_limit = params.time_limit_analysis
+            n_meas = params.box_filter_measurements_analysis
+            is_the_target_stage = True
+        else:
+            time_limit = 0
+            n_meas = 1
+            is_the_target_stage = False
+    else:
+        time_limit = params.time_limit
+        n_meas = params.box_filter_measurements
+        is_the_target_stage = True
+
     times = []
     while len(times) < n_meas:
+        if flush_caches_flag:
+            flush_caches()
+
+        if params.ittpy and is_the_target_stage and itt_module_installed:
+            itt.resume()
         t0 = timeit.default_timer()
         val = func(*args, **kwargs)
         t1 = timeit.default_timer()
+        if params.ittpy and is_the_target_stage and itt_module_installed:
+            itt.pause()
         times.append(t1 - t0)
         if sum(times) > time_limit:
             break
@@ -564,7 +648,9 @@ def print_output(library, algorithm, stages, params, functions,
                         result['algorithm_parameters']['init'] = 'random'
                 result['algorithm_parameters'].pop('handle', None)
             output.append(result)
+        print('# Intel(R) Extension for Scikit-learn case result:')
         print(json.dumps(output, indent=4))
+        print('# Intel(R) Extension for Scikit-learn case finished.')
 
 
 def run_with_context(params, function):

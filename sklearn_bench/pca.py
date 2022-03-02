@@ -34,11 +34,11 @@ def main():
               n_components=params.n_components)
 
     # Time fit
-    fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params)
+    fit_time, _ = bench.measure_function_time(pca.fit, X_train, params=params, stage='fit')
 
     # Time transform
     transform_time, _ = bench.measure_function_time(
-        pca.transform, X_train, params=params)
+        pca.transform, X_train, params=params, stage='infer')
 
     bench.print_output(
         library='sklearn',

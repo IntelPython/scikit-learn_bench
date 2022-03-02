@@ -55,14 +55,14 @@ def main():
 
     # Time fit
     fit_time, kmeans = bench.measure_function_time(fit_kmeans, X_train,
-                                                   X_init, params=params)
+                                                   X_init, params=params, , stage='fit')
 
     train_predict = kmeans.predict(X_train)
     acc_train = davies_bouldin_score(X_train, train_predict)
 
     # Time predict
     predict_time, test_predict = bench.measure_function_time(
-        kmeans.predict, X_test, params=params)
+        kmeans.predict, X_test, params=params, stage='infer')
 
     acc_test = davies_bouldin_score(X_test, test_predict)
 

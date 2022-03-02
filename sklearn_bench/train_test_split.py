@@ -43,7 +43,7 @@ def main():
         tts_params['rng'] = params.rng
 
     time, _ = bench.measure_function_time(
-        train_test_split, *data_args, params=params, **tts_params)
+        train_test_split, *data_args, params=params, stage='fit', **tts_params)
 
     bench.print_output(library='sklearn', algorithm='train_test_split',
                        stages=['training'], params=params,

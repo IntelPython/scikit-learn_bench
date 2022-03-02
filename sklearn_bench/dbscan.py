@@ -35,7 +35,7 @@ def main():
     #  'kdtree' when running unpatched scikit-learn.
 
     # Time fit
-    time, _ = bench.measure_function_time(dbscan.fit, X, params=params)
+    time, _ = bench.measure_function_time(dbscan.fit, X, params=params, stage='fit')
     labels = dbscan.labels_
 
     params.n_clusters = len(set(labels)) - (1 if -1 in labels else 0)

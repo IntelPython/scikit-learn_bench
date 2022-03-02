@@ -31,10 +31,10 @@ def main():
                  solver=params.solver)
 
     # Time fit
-    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, box_filter_measurements=params.box_filter_measurements_fit, time_limit=params.time_limit_fit, params=params, stage='fit')
 
     # Time predict
-    predict_time, yp = bench.measure_function_time(regr.predict, X_test, params=params)
+    predict_time, yp = bench.measure_function_time(regr.predict, X_test, box_filter_measurements=params.box_filter_measurements_infer, time_limit=params.time_limit_infer, params=params, stage='infer')
 
     test_rmse = bench.rmse_score(y_test, yp)
     test_r2 = bench.r2_score(y_test, yp)

@@ -38,14 +38,14 @@ def main():
                                  random_state=params.seed,
                                  n_jobs=params.n_jobs)
 
-    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params, stage='fit')
 
     y_pred = regr.predict(X_train)
     train_rmse = bench.rmse_score(y_train, y_pred)
     train_r2 = bench.r2_score(y_train, y_pred)
 
     predict_time, y_pred = bench.measure_function_time(
-        regr.predict, X_test, params=params)
+        regr.predict, X_test, params=params, stage='infer')
     test_rmse = bench.rmse_score(y_test, y_pred)
     test_r2 = bench.r2_score(y_test, y_pred)
 

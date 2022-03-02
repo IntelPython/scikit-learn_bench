@@ -32,7 +32,6 @@ def convert_xgb_predictions(y_pred, objective):
         y_pred = y_pred.astype(np.int32)
     return y_pred
 
-
 parser = argparse.ArgumentParser(description='xgboost gradient boosted trees benchmark')
 
 
@@ -162,7 +161,7 @@ else:
 
 
 fit_time, booster = bench.measure_function_time(
-    fit, None if params.count_dmatrix else dtrain, params=params)
+    fit, None if params.count_dmatrix else dtrain, params=params, stage='fit')
 train_metric = metric_func(
     convert_xgb_predictions(
         booster.predict(dtrain),
@@ -170,7 +169,7 @@ train_metric = metric_func(
     y_train)
 
 predict_time, y_pred = bench.measure_function_time(
-    predict, None if params.inplace_predict or params.count_dmatrix else dtest, params=params)
+    predict, None if params.inplace_predict or params.count_dmatrix else dtest, stage='infer', params=params)
 test_metric = metric_func(convert_xgb_predictions(y_pred, params.objective), y_test)
 
 bench.print_output(library='xgboost', algorithm=f'gradient_boosted_trees_{task}',

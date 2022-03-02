@@ -26,7 +26,7 @@ def main():
     X, _, _, _ = bench.load_data(params, generated_data=['X_train'], add_dtype=True)
 
     time, _ = bench.measure_function_time(pairwise_distances, X, metric=params.metric,
-                                          n_jobs=params.n_jobs, params=params)
+                                          n_jobs=params.n_jobs, params=params, stage='fit')
 
     bench.print_output(library='sklearn', algorithm='distances', stages=['computation'],
                        params=params, functions=[params.metric.capitalize()],

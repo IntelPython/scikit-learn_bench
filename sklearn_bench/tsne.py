@@ -31,7 +31,7 @@ def main():
                 learning_rate=params.learning_rate, angle=params.angle,
                 min_grad_norm=params.min_grad_norm, random_state=params.random_state)
 
-    fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params)
+    fit_time, _ = bench.measure_function_time(tsne.fit, X, params=params, stage='fit')
     divergence = tsne.kl_divergence_
 
     bench.print_output(
