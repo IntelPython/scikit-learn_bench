@@ -149,6 +149,9 @@ if __name__ == '__main__':
             logging.info(f'{algorithm} algorithm: {len(libs) * len(cases)} case(s),'
                          f' {len(params_set["dataset"])} dataset(s)\n')
 
+            if (len(libs) * len(cases) == 0):
+                continue
+
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
                     dataset_name = dataset['name'] if 'name' in dataset else 'unknown'
