@@ -24,20 +24,6 @@
                         "x": "data/higgs1m_x_test.npy",
                         "y": "data/higgs1m_y_test.npy"
                     }
-                },
-                {
-                    "source": "npy",
-                    "name": "airline-ohe",
-                    "training":
-                    {
-                        "x": "data/airline-ohe_x_train.npy",
-                        "y": "data/airline-ohe_y_train.npy"
-                    },
-                    "testing":
-                    {
-                        "x": "data/airline-ohe_x_test.npy",
-                        "y": "data/airline-ohe_y_test.npy"
-                    }
                 }
             ],
             "workload-size": "medium",
