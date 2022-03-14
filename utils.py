@@ -21,6 +21,7 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Tuple, Union, cast
 
+from datasets.make_datasets import try_gen_dataset
 from datasets.load_datasets import try_load_dataset
 
 
@@ -49,6 +50,16 @@ def filter_stdout(text: str) -> Tuple[str, str]:
             filtered += line + '\n'
     return filtered, extra
 
+def find_or_gen_dataset(args, folder) :
+    if os.path.isfile(args.filex):
+        return ""
+    if folder:
+        if os.path.isfile(os.path.join(folder, args.filex)) or \
+        try_gen_dataset(args, folder):
+            return folder
+    if try_gen_dataset(args, ""):
+        return ""
+    return None
 
 def find_the_dataset(name: str, folder: str, file: str) -> str:
     if os.path.isfile(file):

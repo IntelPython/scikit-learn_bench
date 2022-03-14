@@ -186,7 +186,6 @@ if __name__ == '__main__':
                         test_samples: int
                         type: str
                     gen_args = GenerationArgs()
-                    paths = ''
 
                     if 'seed' in params_set:
                         gen_args.seed = params_set['seed']
@@ -207,37 +206,41 @@ if __name__ == '__main__':
                     else:
                         cls_num_for_file = ''
 
-                    file_prefix = os.path.join(dataset_path,
-                                               f'data/synthetic-{gen_args.type}{cls_num_for_file}-')
+                    file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
                     file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
                     gen_args.filex = f'{file_prefix}X-train{file_postfix}'
-                    paths += f' --file-X-train {gen_args.filex}'
                     if gen_args.type not in ['blobs']:
                         gen_args.filey = f'{file_prefix}y-train{file_postfix}'
-                        paths += f' --file-y-train {gen_args.filey}'
 
                     if 'testing' in dataset:
                         gen_args.test_samples = dataset['testing']['n_samples']
                         gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
-                        paths += f' --file-X-test {gen_args.filextest}'
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
-                            paths += f' --file-y-test {gen_args.fileytest}'
                     else:
                         gen_args.test_samples = 0
                         gen_args.filextest = gen_args.filex
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = gen_args.filey
 
-                    if not args.dummy_run and not os.path.isfile(gen_args.filex):
-                        if gen_args.type == 'regression':
-                            make_datasets.gen_regression(gen_args)
-                        elif gen_args.type == 'classification':
-                            make_datasets.gen_classification(gen_args)
-                        elif gen_args.type == 'blobs':
-                            make_datasets.gen_blobs(gen_args)
                     dataset_name = f'synthetic_{gen_args.type}'
+
+                    if not args.dummy_run:
+                        dataset_path = utils.find_or_gen_dataset(gen_args, datasets_root)
+                        if dataset_path is None:
+                            logging.warning(
+                            f'Dataset {dataset_name} could not be generated. \n'
+                            )
+                            continue
+
+                    paths = f' --file-X-train {os.path.join(dataset_path, gen_args.filex)}'
+                    if gen_args.type not in ['blobs']:
+                        paths += f' --file-y-train {os.path.join(dataset_path, gen_args.filey)}'
+                    if 'testing' in dataset:
+                        paths += f' --file-X-test {os.path.join(dataset_path, gen_args.filextest)}'
+                        if gen_args.type not in ['blobs']:
+                            paths += f' --file-y-test {os.path.join(dataset_path, gen_args.fileytest)}'
                 else:
                     logging.warning('Unknown dataset source. Only synthetics datasets '
                                     'and csv/npy files are supported now')

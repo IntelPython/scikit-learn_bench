@@ -15,26 +15,43 @@
 # ===============================================================================
 
 import argparse
+import logging
+import os
 import numpy as np
 from sklearn.datasets import make_classification, make_regression, make_blobs
 from sklearn.utils import check_random_state
 import sys
 
+def try_gen_dataset(args, folder):
+    try:
+        if args.type == 'regression':
+            gen_regression(args, folder)
+        elif args.type == 'classification':
+            gen_classification(args, folder)
+        elif args.type == 'blobs':
+            gen_blobs(args, folder)
+        return True
+    except BaseException as ex:
+        logging.warning(f"Internal error generating dataset:\n{ex}")
+        return False
 
-def gen_blobs(args):
+
+def gen_blobs(args, folder):
+    os.makedirs(os.path.join(folder, "data"), exist_ok=True)
     X, y = make_blobs(n_samples=args.samples + args.test_samples,
                       n_features=args.features,
                       centers=args.clusters,
                       center_box=(-32, 32),
                       shuffle=True,
                       random_state=args.seed)
-    np.save(args.filex, X[:args.samples])
+    np.save(os.path.join(folder, args.filex), X[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[args.samples:])
+        np.save(os.path.join(folder, args.filextest), X[args.samples:])
     return 0
 
 
-def gen_regression(args):
+def gen_regression(args, folder):
+    os.makedirs(os.path.join(folder, "data"), exist_ok=True)
     rs = check_random_state(args.seed)
     X, y = make_regression(n_targets=1,
                            n_samples=args.samples + args.test_samples,
@@ -42,15 +59,16 @@ def gen_regression(args):
                            n_informative=args.features,
                            bias=rs.normal(0, 3),
                            random_state=rs)
-    np.save(args.filex, X[:args.samples])
-    np.save(args.filey, y[:args.samples])
+    np.save(os.path.join(folder, args.filex), X[:args.samples])
+    np.save(os.path.join(folder, args.filey), y[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[args.samples:])
-        np.save(args.fileytest, y[args.samples:])
+        np.save(os.path.join(folder, args.filextest), X[args.samples:])
+        np.save(os.path.join(folder, args.fileytest), y[args.samples:])
     return 0
 
 
-def gen_classification(args):
+def gen_classification(args, folder):
+    os.makedirs(os.path.join(folder, "data"), exist_ok=True)
     X, y = make_classification(n_samples=args.samples + args.test_samples,
                                n_features=args.features,
                                n_informative=args.features,
@@ -58,11 +76,11 @@ def gen_classification(args):
                                n_redundant=0,
                                n_classes=args.classes,
                                random_state=args.seed)
-    np.save(args.filex, X[:args.samples])
+    np.save(os.path.join(folder, args.filex), X[:args.samples])
     np.save(args.filey, y[:args.samples])
     if args.test_samples != 0:
-        np.save(args.filextest, X[args.samples:])
-        np.save(args.fileytest, y[args.samples:])
+        np.save(os.path.join(folder, args.filextest), X[args.samples:])
+        np.save(os.path.join(folder, args.fileytest), y[args.samples:])
     return 0
 
 
