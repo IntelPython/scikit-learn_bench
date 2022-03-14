@@ -58,6 +58,11 @@ if __name__ == '__main__':
                         help='Available floating point data types'
                         'This parameter only marks dtype as available, '
                         'make sure to add the dtype parameter to the config file ')
+    parser.add_argument('--workload-size', type=str, default="small medium large", nargs='+',
+                        choices=("small", "medium", "large"),
+                        help='Available workload sizes,'
+                        'make sure to add the workload-size parameter to the config file '
+                        'unmarked workloads will be launched anyway')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use Scikit-learn without Intel optimizations')
     parser.add_argument('--output-file', default='results.json',
@@ -66,9 +71,13 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', default='INFO', type=str,
                         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
                         help='Print additional information during benchmarks running')
-    parser.add_argument('--report', default=False, action='store_true',
+    parser.add_argument('--report', nargs='?', default=None, metavar='ConfigPath', type=str,
+                        const='report_generator/default_report_gen_config.json',
                         help='Create an Excel report based on benchmarks results. '
-                             'Need "openpyxl" library')
+                        'If the parameter is not set, the reporter will not be launched. '
+                        'If the parameter is set and the config is not specified, '
+                        'the default config will be used. '
+                        'Need "openpyxl" library')
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -108,6 +117,11 @@ if __name__ == '__main__':
         for params_set in config['cases']:
             params = common_params.copy()
             params.update(params_set.copy())
+
+            if 'workload-size' in params:
+                if params['workload-size'] not in args.workload_size:
+                    continue
+                del params['workload-size']
 
             device = []
             if 'device' not in params:
@@ -289,7 +303,7 @@ if __name__ == '__main__':
         command = 'python report_generator/report_generator.py ' \
             + f'--result-files {name_result_file} '              \
             + f'--report-file {name_result_file}.xlsx '          \
-            + '--generation-config report_generator/default_report_gen_config.json'
+            + '--generation-config ' + args.report
         logging.info(command)
         stdout, stderr = utils.read_output_from_command(command)
         if stderr != '':

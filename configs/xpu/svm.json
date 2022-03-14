@@ -25,6 +25,7 @@
                     }
                 }
             ],
+            "workload-size": "small",
             "C": 1.5e-3,
             "kernel": "linear"
         },
@@ -45,6 +46,7 @@
                     }
                 }
             ],
+            "workload-size": "large",
             "C": 1.0,
             "kernel": "linear"
         },
@@ -65,6 +67,7 @@
                     }
                 }
             ],
+            "workload-size": "large",
             "C": 1.0,
             "kernel": "linear"
         },
@@ -85,6 +88,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "C": 1.0e-7,
             "kernel": "linear"
         },
@@ -105,6 +109,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "C": 9.0e2,
             "kernel": "rbf"
         },
@@ -125,6 +130,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "C": 1000.0,
             "kernel": "rbf"
         },
@@ -145,6 +151,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "C": 1000.0,
             "kernel": "rbf"
         }

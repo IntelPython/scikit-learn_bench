@@ -25,6 +25,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": [2, 100]
         },
         {
@@ -58,6 +59,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": [5, 100]
         },
         {
@@ -77,6 +79,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": 7
         },
         {
@@ -96,6 +99,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "n-neighbors": 5
         },
         {
@@ -115,6 +119,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "task": "search",
             "n-neighbors": 2
         },
@@ -135,6 +140,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "task": "search",
             "n-neighbors": 5
         },
@@ -155,6 +161,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "task": "search",
             "n-neighbors": 7
         }

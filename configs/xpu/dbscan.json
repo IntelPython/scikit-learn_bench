@@ -19,6 +19,7 @@
                     }
                 }
             ],
+            "workload-size": "small",
             "eps": 5,
             "min-samples": 3
         },
@@ -33,6 +34,7 @@
                     }
                 }
             ],
+            "workload-size": "medium",
             "eps": 1.7e3,
             "min-samples": 3
         },       
@@ -47,6 +49,7 @@
                     }
                 }
             ],
+            "workload-size": "small",
             "eps": 1.0e3,
             "min-samples": 220
         }
