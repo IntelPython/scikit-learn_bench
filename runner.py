@@ -88,7 +88,7 @@ if __name__ == '__main__':
     if 'DATASETSROOT' in env:
         datasets_root = env['DATASETSROOT']
         logging.info(f'datasets folder at {datasets_root}')
-    else if 'DAAL_DATASETS':
+    elif 'DAAL_DATASETS':
         datasets_root = env['DAAL_DATASETS']
         logging.info(f'datasets folder at {datasets_root}')
     else:
