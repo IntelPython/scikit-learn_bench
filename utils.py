@@ -56,8 +56,9 @@ def find_or_gen_dataset(args: Any, folder: str, file: str):
     if os.path.isfile(file):
         return ""
     if folder:
-        if os.path.isfile(os.path.join(folder, file)) or \
-           try_gen_dataset(args, folder):
+        if os.path.isfile(os.path.join(folder, file)):
+            return folder
+        elif try_gen_dataset(args, folder):
             return folder
     if try_gen_dataset(args, ""):
         return ""
@@ -68,8 +69,9 @@ def find_the_dataset(name: str, folder: str, file: str):
     if os.path.isfile(file):
         return ""
     if folder:
-        if os.path.isfile(os.path.join(folder, file)) or \
-           try_load_dataset(dataset_name=name, output_directory=Path(folder)):
+        if os.path.isfile(os.path.join(folder, file)):
+            return folder
+        elif try_load_dataset(dataset_name=name, output_directory=Path(folder)):
             return folder
     if try_load_dataset(dataset_name=name, output_directory=Path("data")):
         return ""
