@@ -22,6 +22,7 @@ from sklearn.datasets import make_classification, make_regression, make_blobs
 from sklearn.utils import check_random_state
 import sys
 
+
 def try_gen_dataset(args, folder):
     try:
         if args.type == 'regression':

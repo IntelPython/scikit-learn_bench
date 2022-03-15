@@ -19,6 +19,7 @@ import os
 import platform
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union, cast
 
 from datasets.make_datasets import try_gen_dataset
@@ -50,23 +51,25 @@ def filter_stdout(text: str) -> Tuple[str, str]:
             filtered += line + '\n'
     return filtered, extra
 
-def find_or_gen_dataset(args, folder) :
+
+def find_or_gen_dataset(args: dict, folder: Path):
     if os.path.isfile(args.filex):
         return ""
     if folder:
         if os.path.isfile(os.path.join(folder, args.filex)) or \
-        try_gen_dataset(args, folder):
+           try_gen_dataset(args, folder):
             return folder
     if try_gen_dataset(args, ""):
         return ""
     return None
 
-def find_the_dataset(name: str, folder: str, file: str) -> str:
+
+def find_the_dataset(name: str, folder: Path, file: Path) -> str:
     if os.path.isfile(file):
         return ""
     if folder:
         if os.path.isfile(os.path.join(folder, file)) or \
-        try_load_dataset(dataset_name=name, output_directory=folder):
+           try_load_dataset(dataset_name=name, output_directory=folder):
             return folder
     if try_load_dataset(dataset_name=name, output_directory="data"):
         return ""

@@ -22,7 +22,6 @@ import socket
 import sys
 from typing import Any, Dict, List, Union
 
-import datasets.make_datasets as make_datasets
 import utils
 from pathlib import Path
 
@@ -247,7 +246,7 @@ if __name__ == '__main__':
                         dataset_path = utils.find_or_gen_dataset(gen_args, datasets_root)
                         if dataset_path is None:
                             logging.warning(
-                            f'Dataset {dataset_name} could not be generated. \n'
+                                f'Dataset {dataset_name} could not be generated. \n'
                             )
                             continue
 
@@ -257,7 +256,8 @@ if __name__ == '__main__':
                     if 'testing' in dataset:
                         paths += f' --file-X-test {os.path.join(dataset_path, gen_args.filextest)}'
                         if gen_args.type not in ['blobs']:
-                            paths += f' --file-y-test {os.path.join(dataset_path, gen_args.fileytest)}'
+                            paths += f' --file-y-test \
+                                     {os.path.join(dataset_path, gen_args.fileytest)}'
                 else:
                     logging.warning('Unknown dataset source. Only synthetics datasets '
                                     'and csv/npy files are supported now')
