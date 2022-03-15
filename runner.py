@@ -243,7 +243,7 @@ if __name__ == '__main__':
                     dataset_name = f'synthetic_{gen_args.type}'
 
                     if not args.dummy_run:
-                        dataset_path = utils.find_or_gen_dataset(gen_args, datasets_root)
+                        dataset_path = utils.find_or_gen_dataset(gen_args, datasets_root, gen_args.filex)
                         if dataset_path is None:
                             logging.warning(
                                 f'Dataset {dataset_name} could not be generated. \n'

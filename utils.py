@@ -52,11 +52,11 @@ def filter_stdout(text: str) -> Tuple[str, str]:
     return filtered, extra
 
 
-def find_or_gen_dataset(args: dict, folder: Path):
-    if os.path.isfile(args.filex):
+def find_or_gen_dataset(args: Any, folder: str, file: str):
+    if os.path.isfile(file):
         return ""
     if folder:
-        if os.path.isfile(os.path.join(folder, args.filex)) or \
+        if os.path.isfile(os.path.join(folder, file)) or \
            try_gen_dataset(args, folder):
             return folder
     if try_gen_dataset(args, ""):
@@ -64,14 +64,14 @@ def find_or_gen_dataset(args: dict, folder: Path):
     return None
 
 
-def find_the_dataset(name: str, folder: Path, file: Path) -> str:
+def find_the_dataset(name: str, folder: str, file: str):
     if os.path.isfile(file):
         return ""
     if folder:
         if os.path.isfile(os.path.join(folder, file)) or \
-           try_load_dataset(dataset_name=name, output_directory=folder):
+           try_load_dataset(dataset_name=name, output_directory=Path(folder)):
             return folder
-    if try_load_dataset(dataset_name=name, output_directory="data"):
+    if try_load_dataset(dataset_name=name, output_directory=Path("data")):
         return ""
     return None
 
