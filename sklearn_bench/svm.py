@@ -44,12 +44,18 @@ def main():
     if params.probability:
         state_predict = 'predict_proba'
         clf_predict = clf.predict_proba
-        y_proba_train = clf_predict(X_train)
-        y_proba_test = clf_predict(X_test)
-        train_log_loss = bench.log_loss(y_train, y_proba_train)
-        test_log_loss = bench.log_loss(y_test, y_proba_test)
-        train_roc_auc = bench.roc_auc_score(y_train, y_proba_train)
-        test_roc_auc = bench.roc_auc_score(y_test, y_proba_test)
+        train_acc = None
+        test_acc = None
+
+        predict_train_time, y_pred = bench.measure_function_time(
+            clf_predict, X_train, params=params)
+        train_log_loss = bench.log_loss(y_train, y_pred)
+        train_roc_auc = bench.roc_auc_score(y_train, y_pred)
+
+        _, y_pred = bench.measure_function_time(
+            clf_predict, X_test, params=params)
+        test_log_loss = bench.log_loss(y_test, y_pred)
+        test_roc_auc = bench.roc_auc_score(y_test, y_pred)
     else:
         state_predict = 'prediction'
         clf_predict = clf.predict
@@ -58,13 +64,13 @@ def main():
         train_roc_auc = None
         test_roc_auc = None
 
-    predict_train_time, y_pred = bench.measure_function_time(
-        clf_predict, X_train, params=params)
-    train_acc = bench.accuracy_score(y_train, y_pred)
+        predict_train_time, y_pred = bench.measure_function_time(
+            clf_predict, X_train, params=params)
+        train_acc = bench.accuracy_score(y_train, y_pred)
 
-    _, y_pred = bench.measure_function_time(
-        clf_predict, X_test, params=params)
-    test_acc = bench.accuracy_score(y_test, y_pred)
+        _, y_pred = bench.measure_function_time(
+            clf_predict, X_test, params=params)
+        test_acc = bench.accuracy_score(y_test, y_pred)
 
     bench.print_output(
         library='sklearn',
