@@ -71,7 +71,8 @@ def find_the_dataset(name: str, folder: str, file: str):
     if folder:
         if os.path.isfile(os.path.join(folder, file)):
             return folder
-        elif try_load_dataset(dataset_name=name, output_directory=Path(folder)):
+        elif try_load_dataset(dataset_name=name,
+                              output_directory=Path(os.path.join(folder, "data"))):
             return folder
     if try_load_dataset(dataset_name=name, output_directory=Path("data")):
         return ""
