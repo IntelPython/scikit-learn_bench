@@ -91,7 +91,6 @@
         },
         {
             "device": "none",
-            "dtype": ["float32", "float64"],
             "dataset": [
                 {
                     "source": "npy",
