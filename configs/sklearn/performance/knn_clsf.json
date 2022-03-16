@@ -324,7 +324,6 @@
         {
             "algorithm": "knn_clsf",
             "device": "none",
-            "dtype": "float32",
             "dataset": [
                 {
                     "source": "npy",
