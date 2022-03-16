@@ -33,6 +33,8 @@ def get_property(entry: Dict[str, Any], prop: str):
         if key not in value:
             return None
         value = value[key]
+    if (not value):
+        return "null"
     return value
 
 
