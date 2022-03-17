@@ -6,6 +6,8 @@
         "input_data:data_order",
         "input_data:data_type",
         "input_data:dataset_name",
+        "input_data:rows",
+        "input_data:columns",
         "input_data:classes",
         "algorithm_parameters:tol",
         "algorithm_parameters:max_iter",

@@ -4,10 +4,42 @@
         "algorithm": "dbscan",
         "data-format": "pandas",
         "data-order": "F",
-        "dtype": ["float64"],
+        "dtype": ["float32", "float64"],
         "device": ["host", "cpu", "gpu", "none"]
     },
     "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 3,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 50,
+                    "n_features": 10,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                },
+                {
+                    "source": "synthetic",
+                    "type": "blobs",
+                    "n_clusters": 100,
+                    "n_features": 50,
+                    "training": {
+                        "n_samples": 500000
+                    }
+                }
+            ],
+            "workload-size": "medium"
+        },
         {
             "dataset": [
                 {

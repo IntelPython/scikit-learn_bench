@@ -51,12 +51,18 @@ def filter_stdout(text: str) -> Tuple[str, str]:
             filtered += line + '\n'
     return filtered, extra
 
+def files_in_folder(folder: str, files: List[str]) -> bool:
+    for file in files:
+        if not os.path.isfile(os.path.join(folder, file)):
+            return False
+    return True
 
-def find_or_gen_dataset(args: Any, folder: str, file: str):
-    if os.path.isfile(file):
+
+def find_or_gen_dataset(args: Any, folder: str, files: List[str]):
+    if files_in_folder("", files):
         return ""
     if folder:
-        if os.path.isfile(os.path.join(folder, file)):
+        if files_in_folder(folder, files):
             return folder
         elif try_gen_dataset(args, folder):
             return folder
@@ -65,11 +71,11 @@ def find_or_gen_dataset(args: Any, folder: str, file: str):
     return None
 
 
-def find_the_dataset(name: str, folder: str, file: str):
-    if os.path.isfile(file):
+def find_the_dataset(name: str, folder: str, files: List[str]):
+    if files_in_folder("", files):
         return ""
     if folder:
-        if os.path.isfile(os.path.join(folder, file)):
+        if files_in_folder(folder, files):
             return folder
         elif try_load_dataset(dataset_name=name,
                               output_directory=Path(os.path.join(folder, "data"))):
