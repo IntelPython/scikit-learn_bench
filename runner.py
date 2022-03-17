@@ -244,7 +244,6 @@ if __name__ == '__main__':
                         gen_args.test_samples = dataset['testing']['n_samples']
                         gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
                         files['file-X-test'] = gen_args.filextest
-                        files.append(gen_args.filextest)
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
                             files['file-y-test'] = gen_args.fileytest
@@ -266,7 +265,7 @@ if __name__ == '__main__':
                                 f'Dataset {dataset_name} could not be generated. \n'
                             )
                             continue
-                    
+
                     paths = ''
                     for data_path, data_file in files.items():
                         paths += f'--{data_path} {os.path.join(dataset_path, data_file)} '
