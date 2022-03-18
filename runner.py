@@ -92,7 +92,7 @@ if __name__ == '__main__':
         logging.info(f'Datasets folder at {datasets_root}')
     else:
         datasets_root = ''
-        logging.info(f'Datasets folder is not set, using local folder')
+        logging.info('Datasets folder is not set, using local folder')
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
