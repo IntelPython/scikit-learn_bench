@@ -86,12 +86,13 @@ if __name__ == '__main__':
     env = os.environ.copy()
     if 'DATASETSROOT' in env:
         datasets_root = env['DATASETSROOT']
-        logging.info(f'datasets folder at {datasets_root}')
+        logging.info(f'Datasets folder at {datasets_root}')
     elif 'DAAL_DATASETS' in env:
         datasets_root = env['DAAL_DATASETS']
-        logging.info(f'datasets folder at {datasets_root}')
+        logging.info(f'Datasets folder at {datasets_root}')
     else:
         datasets_root = ''
+        logging.info(f'Datasets folder is not set, using local folder')
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
@@ -189,7 +190,7 @@ if __name__ == '__main__':
                         continue
                     elif not dataset_path and datasets_root:
                         logging.info(
-                            f'{dataset_name} is taken from  local folder'
+                            f'{dataset_name} is taken from local folder'
                             )
 
                     paths = ''
