@@ -31,6 +31,8 @@ def try_gen_dataset(args, folder):
             gen_classification(args, folder)
         elif args.type == 'blobs':
             gen_blobs(args, folder)
+        else:
+            raise ValueError(f'{args.type} is unknown dataset type')
         return True
     except BaseException as ex:
         logging.warning(f"Internal error generating dataset:\n{ex}")
