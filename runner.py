@@ -22,7 +22,6 @@ import socket
 import sys
 from typing import Any, Dict, List, Union
 
-import datasets.make_datasets as make_datasets
 import utils
 from pathlib import Path
 
@@ -84,8 +83,16 @@ if __name__ == '__main__':
         stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
     hostname = socket.gethostname()
 
-    # make directory for data if it doesn't exist
-    os.makedirs('data', exist_ok=True)
+    env = os.environ.copy()
+    if 'DATASETSROOT' in env:
+        datasets_root = env['DATASETSROOT']
+        logging.info(f'Datasets folder at {datasets_root}')
+    elif 'DAAL_DATASETS' in env:
+        datasets_root = env['DAAL_DATASETS']
+        logging.info(f'Datasets folder at {datasets_root}')
+    else:
+        datasets_root = ''
+        logging.info('Datasets folder is not set, using local folder')
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
         'hardware': utils.get_hw_parameters(),
@@ -155,23 +162,41 @@ if __name__ == '__main__':
             for dataset in params_set['dataset']:
                 if dataset['source'] in ['csv', 'npy']:
                     dataset_name = dataset['name'] if 'name' in dataset else 'unknown'
-                    if 'training' not in dataset or \
-                        'x' not in dataset['training'] or \
-                        not utils.find_the_dataset(dataset_name,
-                                                   dataset['training']['x']):
+                    if 'training' not in dataset or 'x' not in dataset['training']:
+                        logging.warning(
+                            f'Dataset {dataset_name} could not be loaded. \n'
+                            'Training data for algorithm is not specified'
+                            )
+                        continue
+
+                    files = {}
+
+                    files['file-X-train'] = dataset['training']["x"]
+                    if 'y' in dataset['training']:
+                        files['file-y-train'] = dataset['training']["y"]
+                    if 'testing' in dataset:
+                        files['file-X-test'] = dataset["testing"]["x"]
+                        if 'y' in dataset['testing']:
+                            files['file-y-test'] = dataset["testing"]["y"]
+
+                    dataset_path = utils.find_the_dataset(dataset_name, datasets_root,
+                                                          files.values())
+                    if dataset_path is None:
                         logging.warning(
                             f'Dataset {dataset_name} could not be loaded. \n'
                             'Check the correct name or expand the download in '
-                            'the folder dataset.')
+                            'the folder dataset.'
+                            )
                         continue
-                    paths = '--file-X-train ' + dataset['training']["x"]
-                    if 'y' in dataset['training']:
-                        paths += ' --file-y-train ' + dataset['training']["y"]
-                    if 'testing' in dataset:
-                        paths += ' --file-X-test ' + dataset["testing"]["x"]
-                        if 'y' in dataset['testing']:
-                            paths += ' --file-y-test ' + \
-                                dataset["testing"]["y"]
+                    elif not dataset_path and datasets_root:
+                        logging.info(
+                            f'{dataset_name} is taken from local folder'
+                            )
+
+                    paths = ''
+                    for data_path, data_file in files.items():
+                        paths += f'--{data_path} {os.path.join(dataset_path, data_file)} '
+
                 elif dataset['source'] == 'synthetic':
                     class GenerationArgs:
                         classes: int
@@ -186,7 +211,6 @@ if __name__ == '__main__':
                         test_samples: int
                         type: str
                     gen_args = GenerationArgs()
-                    paths = ''
 
                     if 'seed' in params_set:
                         gen_args.seed = params_set['seed']
@@ -210,38 +234,42 @@ if __name__ == '__main__':
                     file_prefix = f'data/synthetic-{gen_args.type}{cls_num_for_file}-'
                     file_postfix = f'-{gen_args.samples}x{gen_args.features}.npy'
 
-                    isfiles = True
+                    files = {}
                     gen_args.filex = f'{file_prefix}X-train{file_postfix}'
-                    paths += f' --file-X-train {gen_args.filex}'
-                    isfiles = isfiles and os.path.isfile(gen_args.filex)
+                    files['file-X-train'] = gen_args.filex
                     if gen_args.type not in ['blobs']:
                         gen_args.filey = f'{file_prefix}y-train{file_postfix}'
-                        paths += f' --file-y-train {gen_args.filey}'
-                        isfiles = isfiles and os.path.isfile(gen_args.filey)
+                        files['file-y-train'] = gen_args.filey
 
                     if 'testing' in dataset:
                         gen_args.test_samples = dataset['testing']['n_samples']
                         gen_args.filextest = f'{file_prefix}X-test{file_postfix}'
-                        paths += f' --file-X-test {gen_args.filextest}'
-                        isfiles = isfiles and os.path.isfile(gen_args.filextest)
+                        files['file-X-test'] = gen_args.filextest
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = f'{file_prefix}y-test{file_postfix}'
-                            paths += f' --file-y-test {gen_args.fileytest}'
-                            isfiles = isfiles and os.path.isfile(gen_args.fileytest)
+                            files['file-y-test'] = gen_args.fileytest
                     else:
                         gen_args.test_samples = 0
                         gen_args.filextest = gen_args.filex
+                        files['file-X-test'] = gen_args.filextest
                         if gen_args.type not in ['blobs']:
                             gen_args.fileytest = gen_args.filey
+                            files['file-y-test'] = gen_args.filey
 
-                    if not args.dummy_run and not isfiles:
-                        if gen_args.type == 'regression':
-                            make_datasets.gen_regression(gen_args)
-                        elif gen_args.type == 'classification':
-                            make_datasets.gen_classification(gen_args)
-                        elif gen_args.type == 'blobs':
-                            make_datasets.gen_blobs(gen_args)
                     dataset_name = f'synthetic_{gen_args.type}'
+
+                    if not args.dummy_run:
+                        dataset_path = utils.find_or_gen_dataset(gen_args,
+                                                                 datasets_root, files.values())
+                        if dataset_path is None:
+                            logging.warning(
+                                f'Dataset {dataset_name} could not be generated. \n'
+                            )
+                            continue
+
+                    paths = ''
+                    for data_path, data_file in files.items():
+                        paths += f'--{data_path} {os.path.join(dataset_path, data_file)} '
                 else:
                     logging.warning('Unknown dataset source. Only synthetics datasets '
                                     'and csv/npy files are supported now')
