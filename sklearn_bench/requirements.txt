@@ -1,4 +1,4 @@
-scikit-learn
+scikit-learn < 1.1 # TODO: remove after scikit-learn-intelex release with fix
 pandas
 scikit-learn-intelex
 openpyxl

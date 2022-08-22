@@ -1,6 +1,6 @@
 variables:
   - name: python.version
-    value: "3.8"
+    value: "3.9"
 
 jobs:
   - job: Linux_Sklearn
@@ -45,7 +45,7 @@ jobs:
     steps:
       - script: |
           conda update -y -q conda
-          conda create -n bench -q -y -c conda-forge python=3.7 pandas xgboost scikit-learn daal4py tqdm requests
+          conda create -n bench -q -y -c conda-forge python=3.9 pandas xgboost scikit-learn daal4py tqdm requests
         displayName: Create Anaconda environment
       - script: |
           . /usr/share/miniconda/etc/profile.d/conda.sh
