@@ -159,7 +159,7 @@ def airline_ohe(dataset_dir: Path) -> bool:
     for local_url in [local_url_train, local_url_test]:
         df = pd.read_csv(local_url, nrows=1000000
                          if local_url.endswith('train-10m.csv') else None)
-        X = df.drop('dep_delayed_15min', 1)
+        X = df.drop(labels=['dep_delayed_15min'], axis=1)
         y: Any = df["dep_delayed_15min"]
 
         y_num = np.where(y == "Y", 1, 0)
@@ -208,7 +208,7 @@ def bosch(dataset_dir: Path) -> bool:
     logging.info(f'{dataset_name} is loaded, started parsing...')
     X = pd.read_csv(local_url, index_col=0, compression='zip', dtype=np.float32)
     y = X.iloc[:, -1].to_numpy(dtype=np.float32)
-    X.drop(X.columns[-1], axis=1, inplace=True)
+    X.drop(labels=[X.columns[-1]], axis=1, inplace=True)
     X_np = X.to_numpy(dtype=np.float32)
     X_train, X_test, y_train, y_test = train_test_split(X_np, y, random_state=77,
                                                         test_size=0.2,

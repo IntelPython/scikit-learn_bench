@@ -1,9 +1,9 @@
 #owners and reviewers
-cuml_bench/*          @Pahandrovich @Alexsandruss @masdevas
-daal4py_bench/*       @Pahandrovich @Alexsandruss @agorshk
-datasets/*            @Alexsandruss @itearsl @masdevas
-modelbuilders_bench/* @Pahandrovich @agorshk
-report_generator/*    @Pahandrovich @Alexsandruss
-sklearn_bench/*       @Pahandrovich @Alexsandruss @agorshk
-xgboost_bench/*       @Pahandrovich @agorshk
-*.md                  @outoftardis
+cuml_bench/*          @Alexsandruss
+daal4py_bench/*       @Alexsandruss @samir-nasibli
+datasets/*            @Alexsandruss
+modelbuilders_bench/* @Alexsandruss
+report_generator/*    @Alexsandruss
+sklearn_bench/*       @Alexsandruss @samir-nasibli
+xgboost_bench/*       @Alexsandruss
+*.md                  @Alexsandruss @maria-Petrova

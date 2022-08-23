@@ -172,7 +172,7 @@ def get_sw_parameters() -> Dict[str, Dict[str, Any]]:
         if gpu_processes != '':
             print(f'There are running processes on GPU:\n{gpu_processes}',
                   file=sys.stderr)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError, TypeError):
         pass
 
     # get python packages info from conda
@@ -186,7 +186,7 @@ def get_sw_parameters() -> Dict[str, Dict[str, Any]]:
                 if col in pkg:
                     pkg_info[col] = pkg[col]
             sw_params[pkg['name']] = pkg_info
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError, TypeError):
         pass
 
     return sw_params
