@@ -23,7 +23,16 @@
                         "x": "data/mnist_x_test.npy",
                         "y": "data/mnist_y_test.npy"
                     }
-                }
+                },
+		{
+		    "source": "npy",
+		    "name": "cifar_10",
+		    "training":
+		    {
+			"x": "data/cifar_10_x_train.npy",
+			"y": "data/cifar_10_y_train.npy"
+		    }
+		}
             ],
             "workload-size": "medium"
         }
