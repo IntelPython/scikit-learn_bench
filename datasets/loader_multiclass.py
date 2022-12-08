@@ -28,6 +28,42 @@ from sklearn.model_selection import train_test_split
 from .loader_utils import count_lines, read_libsvm_msrank, retrieve
 
 
+def cifar_10(dataset_dir: Path) -> bool:
+    """
+    Source:
+    University of Toronto
+    Collected by Alex Krizhevsky, Vinod Nair, and Geoffrey Hinton
+    https://www.cs.toronto.edu/~kriz/cifar.html
+
+    Classification task. n_classes = 10
+    cifar_10 x train dataset  (54000, 3072)
+    cifar_10 y train dataset  (54000, 1)
+    cifar_10 x test  dataset  (6000, 3072)
+    cifar_10 y test  dataset  (6000, 1)
+
+    """
+    dataset_name = 'cifar_10'
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    X, y = fetch_openml(data_id=40927, return_X_y=True,
+                        as_frame=False, data_home=dataset_dir)
+
+    X = pd.DataFrame(X)
+    y = pd.DataFrame(y)
+    y = y.astype(int)
+
+    logging.info(f'{dataset_name} is loaded, started parsing...')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=42)
+    for data, name in zip((x_train, x_test, y_train, y_test),
+                          ('x_train', 'x_test', 'y_train', 'y_test')):
+        filename = f'{dataset_name}_{name}.npy'
+        np.save(os.path.join(dataset_dir, filename), data)
+    logging.info(f'dataset {dataset_name} is ready.')
+    return True
+
+
 def connect(dataset_dir: Path) -> bool:
     """
     Source:

@@ -27,7 +27,7 @@ from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
                                     fraud, gisette, hepmass_150K,
                                     higgs, higgs_one_m, higgs_150K, ijcnn, klaverjas,
                                     santander, skin_segmentation, susy)
-from .loader_multiclass import (connect, covertype, covtype, letters, mlsr,
+from .loader_multiclass import (cifar_10, connect, covertype, covtype, letters, mlsr,
                                 mnist, msrank, plasticc, sensit)
 from .loader_regression import (abalone, california_housing, fried, higgs_10500K,
                                 medical_charges_nominal, mortgage_first_q,
@@ -47,6 +47,7 @@ dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "census": census,
     "cifar_binary": cifar_binary,
     "cifar_cluster": cifar_cluster,
+    "cifar_10": cifar_10,
     "codrnanorm": codrnanorm,
     "connect": connect,
     "covertype": covertype,
