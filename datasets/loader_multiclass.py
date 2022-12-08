@@ -64,7 +64,6 @@ def cifar_10(dataset_dir: Path) -> bool:
     return True
 
 
-
 def connect(dataset_dir: Path) -> bool:
     """
     Source:
