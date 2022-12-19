@@ -24,6 +24,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 - [PCA](#pca)
 - [Ridge Regression](#ridge)
 - [SVC](#svc)
+- [TSNE](#tsne)
 - [train_test_split](#train_test_split)
 
 ### General
@@ -151,6 +152,17 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | max-cache-size | int | 64 | Maximum cache size for SVM. |
 | tol | float | 1e-16 | Tolerance passed to sklearn.svm.SVC |
 | probability | action | True | Use probability for SVC |
+
+### TSNE
+
+| parameter Name  | Type | default value | description |
+| ----- | ---- |---- |---- |
+| n-components | int | 2 | Dimension of the embedded space |
+| early-exaggeration | float | 12.0 | This factor increases the attractive forces between points <br/>and allows points to move around more freely finding their nearest neighbors more easily |
+| learning-rate | float | 200.0 | The learning rate for t-SNE is usually in the range [10.0, 1000.0] |
+| angle | float | 0.5 | Angular size. This is the trade-off between speed and accuracy |
+| min-grad-norm | float | 1e-7 | If the gradient norm is below this threshold, the optimization is stopped |
+| random-state | int | 1234 | Determines the random number generator |
 
 ### train_test_split
 

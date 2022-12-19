@@ -113,6 +113,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)**|pca|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
 |**[Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)**|ridge|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
 |**[SVM](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)**|svm|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[TSNE](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)**|tsne|:white_check_mark:|:x:|:x:|:white_check_mark:|:x:|
 |**[train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)**|train_test_split|:white_check_mark:|:x:|:x:|:white_check_mark:|:x:|
 |**[GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 |**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
