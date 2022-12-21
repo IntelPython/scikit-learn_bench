@@ -33,7 +33,7 @@
                         "y": "data/cifar_10_y_train.npy"
                     }
                 },
-		{
+		            {
                     "source": "npy",
                     "name": "epsilon_30K",
                     "training":
@@ -42,7 +42,6 @@
                         "y": "data/epsilon_30K_y_train.npy"
                     }
                 }
-
             ],
             "workload-size": "medium"
         }
