@@ -24,15 +24,24 @@
                         "y": "data/mnist_y_test.npy"
                     }
                 },
-		{
-		    "source": "npy",
-		    "name": "cifar_10",
-		    "training":
-		    {
-			"x": "data/cifar_10_x_train.npy",
-			"y": "data/cifar_10_y_train.npy"
-		    }
-		}
+                {
+                    "source": "npy",
+                    "name": "cifar_10",
+                    "training":
+                    {
+                        "x": "data/cifar_10_x_train.npy",
+                        "y": "data/cifar_10_y_train.npy"
+                    }
+                },
+		            {
+                    "source": "npy",
+                    "name": "epsilon_30K",
+                    "training":
+                    {
+                        "x": "data/epsilon_30K_x_train.npy",
+                        "y": "data/epsilon_30K_y_train.npy"
+                    }
+                }
             ],
             "workload-size": "medium"
         }
