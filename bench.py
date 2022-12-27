@@ -250,25 +250,16 @@ def size_str(shape):
     return 'x'.join(str(d) for d in shape)
 
 
-def set_daal_num_threads(num_threads):
-    try:
-        import daal4py
-        if num_threads:
-            daal4py.daalinit(nthreads=num_threads)
-    except ImportError:
-        logging.info('@ Package "daal4py" was not found. Number of threads '
-                     'is being ignored')
-
-
 def prepare_daal_threads(num_threads=-1):
     try:
-        if num_threads > 0:
-            set_daal_num_threads(num_threads)
         import daal4py
+        if num_threads > 0:
+            daal4py.daalinit(nthreads=num_threads)
         num_threads = daal4py.num_threads()
     except ImportError:
+        logging.warning('@ Package "daal4py" was not found. Number of threads '
+                        'is being ignored')
         num_threads = 1
-
     return num_threads
 
 
