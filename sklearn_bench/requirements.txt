@@ -1,6 +1,2 @@
-scikit-learn < 1.1 # TODO: remove after scikit-learn-intelex release with fix
-pandas
-scikit-learn-intelex
-openpyxl
-tqdm
-requests
+scikit-learn-intelex==2023.0.0
+dpcpp-cpp-rt==2023.0.0

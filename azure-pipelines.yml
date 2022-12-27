@@ -12,6 +12,7 @@ jobs:
         inputs:
           versionSpec: "$(python.version)"
       - script: |
+          pip install -r requirements-common.txt
           pip install -r sklearn_bench/requirements.txt
           python runner.py --configs configs/testing/sklearn.json
         displayName: Run bench
@@ -24,6 +25,7 @@ jobs:
         inputs:
           versionSpec: "$(python.version)"
       - script: |
+          pip install -r requirements-common.txt
           pip install -r xgboost_bench/requirements.txt
           python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
         displayName: Run bench
@@ -36,6 +38,7 @@ jobs:
         inputs:
           versionSpec: "$(python.version)"
       - script: |
+          pip install -r requirements-common.txt
           pip install -r daal4py_bench/requirements.txt
           python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
         displayName: Run bench

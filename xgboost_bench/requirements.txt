@@ -1,6 +1,1 @@
-scikit-learn
-pandas
-xgboost
-openpyxl
-tqdm
-requests
+xgboost==1.7.2
