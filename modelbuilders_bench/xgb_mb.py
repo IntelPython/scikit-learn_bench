@@ -30,7 +30,7 @@ def convert_xgb_predictions(y_pred, objective):
     if objective == 'multi:softprob':
         y_pred = convert_probs_to_classes(y_pred)
     elif objective == 'binary:logistic':
-        y_pred = y_pred.astype(np.int32)
+        y_pred = (y_pred >= 0.5).astype(np.int32)
     return y_pred
 
 
