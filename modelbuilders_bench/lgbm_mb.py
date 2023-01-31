@@ -99,7 +99,7 @@ else:
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
-        params.n_classes = len(np.unique(y_train))
+        params.n_classes = int(max(y_train)) + 1
     if params.n_classes > 2:
         lgbm_params['num_class'] = params.n_classes
 
