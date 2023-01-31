@@ -20,7 +20,6 @@ import os
 import bench
 import daal4py
 import lightgbm as lgbm
-import numpy as np
 
 import modelbuilders_bench.mb_utils as utils
 
