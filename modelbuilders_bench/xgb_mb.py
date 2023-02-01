@@ -15,6 +15,8 @@
 # ===============================================================================
 
 import argparse
+import logging
+import sys
 
 import bench
 import daal4py
@@ -114,6 +116,10 @@ xgb_params = {
     'enable_experimental_json_serialization':
         params.enable_experimental_json_serialization
 }
+
+if np.isnan(X_test.values).any():
+    logging.warning('Nan values aren not supported in model builder yet')
+    sys.exit(1)
 
 if params.threads != -1:
     xgb_params.update({'nthread': params.threads})
