@@ -101,7 +101,7 @@ else:
     else:
         unique_y_train = np.unique(y_train)
         params.n_classes = len(unique_y_train)
-        if max(unique_y_train) != len(unique_y_train) -1:
+        if max(unique_y_train) != len(unique_y_train) - 1:
             params.n_classes = int(max(unique_y_train)) + 1
 
     if params.n_classes > 2:
