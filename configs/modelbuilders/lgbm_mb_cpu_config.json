@@ -52,7 +52,7 @@
             "min-child-weight": 0,
             "max-depth": 8,
             "max-leaves": 256,
-            "n-estimators": [1000],
+            "n-estimators": 1000,
             "objective": "binary"
         },
         {
