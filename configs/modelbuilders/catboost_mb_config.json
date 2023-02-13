@@ -289,6 +289,28 @@
             "learning-rate": 0.1,
             "reg-lambda": 1,
             "max-leaves": 256
+        },
+        {
+            "objective": "multi:softprob",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "covtype",
+                    "training": {
+                        "x": "data/covtype_x_train.npy",
+                        "y": "data/covtype_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/covtype_x_test.npy",
+                        "y": "data/covtype_y_test.npy"
+                    }
+                }
+            ],
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "n-estimators": 100
         }
     ]
 }

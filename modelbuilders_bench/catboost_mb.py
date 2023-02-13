@@ -23,14 +23,15 @@ import daal4py
 import typing as tp
 
 
-def convert_probs_to_classes(y_prob):
-    return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
+def convert_probs_to_classes(y_prob, class_labels):
+    return np.array([class_labels[np.argmax(y_prob[i])]
+                    for i in range(y_prob.shape[0])])
 
 
-def convert_cb_predictions(y_pred, objective, metric_name):
+def convert_cb_predictions(y_pred, objective, metric_name, class_labels):
     if objective != 'RMSE':
         if metric_name == 'accuracy':
-            y_pred = convert_probs_to_classes(y_pred)
+            y_pred = convert_probs_to_classes(y_pred, class_labels)
     return y_pred
 
 
@@ -102,36 +103,41 @@ if params.threads != -1:
 metric_name: tp.List[str]
 metric_func: tp.List[tp.Callable]
 
+class_labels = None
+
 if params.objective == "RMSE":
     task = 'regression'
     metric_name = ['rmse', 'r2']
     metric_func = [bench.rmse_score, bench.r2_score]
 else:
     task = 'classification'
-    metric_name = ['accuracy', 'log_loss']
-    metric_func = [bench.accuracy_score, bench.log_loss]
+    class_labels = sorted(np.unique(y_train))
+    if params.objective.startswith('multi'):
+        metric_name = ['accuracy']
+        metric_func = [bench.accuracy_score]
+    else:
+        metric_name = ['accuracy', 'log_loss']
+        metric_func = [bench.accuracy_score, bench.log_loss]
+
     if 'cudf' in str(type(y_train)):
         params.n_classes = y_train[y_train.columns[0]].nunique()
     else:
         params.n_classes = len(np.unique(y_train))
-
-    # Covtype has one class more than there is in train
-    if params.dataset_name == 'covtype':
-        params.n_classes += 1
+        unique_y_train = np.unique(y_train)
+        params.n_classes = len(unique_y_train)
 
     if params.n_classes > 2:
         cb_params['bootstrap_type'] = 'Bernoulli'
-        cb_params['classes_count'] = params.n_classes
         cb_params['objective'] = 'MultiClass'
     else:
         cb_params['scale_pos_weight'] = params.scale_pos_weight
         cb_params['objective'] = 'Logloss'
 
-t_creat_train, dtrain = bench.measure_function_time(cb.Pool, X_train, params=params,
-                                                    label=y_train)
+t_create_train, dtrain = bench.measure_function_time(
+    cb.Pool, X_train, params=params, label=y_train)
 
-t_creat_test, dtest = bench.measure_function_time(
-    cb.Pool, X_test,  params=params, label=y_test)
+t_create_test, dtest = bench.measure_function_time(
+    cb.Pool, X_test, params=params, label=y_test)
 
 
 def fit(pool):
@@ -166,8 +172,13 @@ metrics = [[None] * 6 for i in range(len(metric_name))]
 
 # Metrics for training
 for i, func in enumerate(metric_func):
-    metrics[i][1] = func(y_train,
-                         convert_cb_predictions(predict(dtrain), params.objective, metric_name[i]))
+    metrics[i][1] = func(
+        y_train,
+        convert_cb_predictions(
+            predict(dtrain),
+            params.objective,
+            metric_name[i],
+            class_labels))
 
 predict_time, y_pred = bench.measure_function_time(
     predict, None if params.count_pool else dtest, params=params)
@@ -175,14 +186,16 @@ predict_time, y_pred = bench.measure_function_time(
 # Metrics for _prediction
 for i, func in enumerate(metric_func):
     metrics[i][3] = func(y_test, convert_cb_predictions(
-        y_pred, params.objective, metric_name[i]))
+        y_pred, params.objective, metric_name[i], class_labels))
 
 transform_time, model_daal = bench.measure_function_time(
     daal4py.get_gbt_model_from_catboost, booster, params=params)
 
 if hasattr(params, 'n_classes'):
     predict_algo = daal4py.gbt_classification_prediction(
-        nClasses=params.n_classes, resultsToEvaluate='computeClassProbabilities', fptype='float')
+        nClasses=params.n_classes,
+        resultsToEvaluate='computeClassProbabilities',
+        fptype='float')
     predict_time_daal, daal_pred = bench.measure_function_time(
         predict_algo.compute, X_test, model_daal, params=params)
     daal_pred_value = daal_pred.probabilities
@@ -195,17 +208,39 @@ else:
 # Metrics for alternative_prediction
 for i, func in enumerate(metric_func):
     metrics[i][5] = func(y_test, convert_cb_predictions(
-        daal_pred_value, params.objective, metric_name[i]))
+        daal_pred_value, params.objective, metric_name[i], class_labels))
 
 bench.print_output(
-    library='modelbuilders', algorithm=f'catboost_{task}_and_modelbuilder',
-    stages=['training_preparation', 'training', 'prediction_preparation', 'prediction',
-            'transformation', 'alternative_prediction'],
+    library='modelbuilders',
+    algorithm=f'catboost_{task}_and_modelbuilder',
+    stages=[
+        'training_preparation',
+        'training',
+        'prediction_preparation',
+        'prediction',
+        'transformation',
+        'alternative_prediction'],
     params=params,
-    functions=['cb.Pool.train', 'cb.fit', 'cb.Pool.test', 'cb.predict',
-               'daal4py.get_gbt_model_from_catboost', 'daal4py.compute'],
-    times=[t_creat_train, fit_time, t_creat_test, predict_time, transform_time,
-           predict_time_daal],
+    functions=[
+        'cb.Pool.train',
+        'cb.fit',
+        'cb.Pool.test',
+        'cb.predict',
+        'daal4py.get_gbt_model_from_catboost',
+        'daal4py.compute'],
+    times=[
+        t_create_train,
+        fit_time,
+        t_create_test,
+        predict_time,
+        transform_time,
+        predict_time_daal],
     metric_type=metric_name,
     metrics=metrics,
-    data=[X_train, X_train, X_test, X_test, X_test, X_test])
+    data=[
+        X_train,
+        X_train,
+        X_test,
+        X_test,
+        X_test,
+        X_test])
