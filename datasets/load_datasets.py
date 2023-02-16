@@ -214,7 +214,7 @@ if __name__ == "__main__":
     else:
         if args.configs:
             print(f"Dataset name(s) to download will be gathered from : {args.configs}")
-            ds_names = set()
+            ds_names: set[str] = set()
             for config_file in args.configs:
                 ds_names = ds_names.union(extract_dataset_names(config_file))
         else:
