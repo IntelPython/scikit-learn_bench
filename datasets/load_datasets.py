@@ -157,8 +157,8 @@ def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Use '-d' or '--datasets' option to enumerate "
-        "dataset(s) that should be downloaded"
+        description="Utility to download selected datasets included in the benchmark. "
+        "Use '-d' or '--datasets' option to enumerate dataset(s) that should be downloaded."
     )
     parser.add_argument(
         "-l",
@@ -186,16 +186,15 @@ if __name__ == "__main__":
     if args.datasets is not None:
         ds_names = set(args.datasets)
         print(
-            "%d dataset%s have been requested for download: %s"
-            % (len(ds_names), "s" if len(ds_names) > 1 else "", ds_names)
+            f"{len(ds_names)} dataset{'s' if len(ds_names) > 1 else ''} requested for download: {ds_names}"
         )
-        print("Download location: %s" % root_dir)
+        print(f"Download location: {root_dir}")
 
         for i, name in enumerate(ds_names):
-            print('%d. Dataset "%s"' % (i + 1, name))
+            print(f'{i+1}. Dataset "{name}"')
             downloaded = try_load_dataset(name, root_dir)
             if downloaded:
-                print('Dataset "%s" successfully downloaded.' % name)
+                print(f'Dataset "{name}" successfully downloaded.')
 
     else:
         logging.warning("Warning: Enumerate dataset(s) that should be downloaded")
