@@ -184,37 +184,18 @@ if __name__ == "__main__":
     root_dir = Path(os.environ["DATASETSROOT"])
 
     if args.datasets is not None:
-        matched_datasets = set(
-            filter(lambda name: name in dataset_loaders, args.datasets)
-        )
-        unmatched_datasets = set(args.datasets).difference(matched_datasets)
-
+        ds_names = set(args.datasets)
         print(
-            '%d dataset%s will be downloaded in "%s": '
-            % (
-                len(matched_datasets),
-                "s" if len(matched_datasets) > 1 else "",
-                root_dir,
-            )
+            "%d dataset%s have been requested for download: %s"
+            % (len(ds_names), "s" if len(ds_names) > 1 else "", ds_names)
         )
-        for i, name in enumerate(matched_datasets):
-            try:
-                print('%d. downloading dataset "%s"' % (i + 1, name))
-                dataset_loaders[name](root_dir)
-            except Exception as e:
-                logging.warning(
-                    'An error occurr while downloading dataset "%s". Please check.'
-                    % name
-                )
-                logging.warning(str(e))
-            else:
-                logging.info('Dataset "%s" successfully downloaded.' % name)
+        print("Download location: %s" % root_dir)
 
-        if len(unmatched_datasets):
-            logging.warning(
-                "Warning: The following dataset names have not been recognized: "
-                % unmatched_datasets
-            )
+        for i, name in enumerate(ds_names):
+            print('%d. Dataset "%s"' % (i + 1, name))
+            downloaded = try_load_dataset(name, root_dir)
+            if downloaded:
+                print('Dataset "%s" successfully downloaded.' % name)
 
     else:
         logging.warning("Warning: Enumerate dataset(s) that should be downloaded")
