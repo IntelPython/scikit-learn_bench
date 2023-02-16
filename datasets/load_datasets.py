@@ -18,8 +18,10 @@ import argparse
 import logging
 import os
 import sys
+import json
 from pathlib import Path
 from typing import Callable, Dict
+from typing import MutableSet as Set
 
 from .loader_classification import (
     a_nine_a,
@@ -155,10 +157,27 @@ def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
         return False
 
 
+def extract_dataset_names(config_file: str) -> Set[str]:
+    with open(config_file) as json_config_file:
+        experiment = json.load(json_config_file)
+
+        if not "cases" in experiment:
+            return set()
+
+        datasets = list()
+        for case in experiment["cases"]:
+            if "dataset" not in case:
+                continue
+            for ds in case["dataset"]:
+                if ds["source"] == "synthethic" or "name" not in ds:
+                    continue
+                datasets.append(ds["name"])
+    return set(datasets)  # remove duplicates
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Utility to download selected datasets included in the benchmark. "
-        "Use '-d' or '--datasets' option to enumerate dataset(s) that should be downloaded."
+        description="Utility to download selected publicly available datasets included in the benchmark."
     )
     parser.add_argument(
         "-l",
@@ -174,6 +193,13 @@ if __name__ == "__main__":
         nargs="*",
         help="The datasets that should be downloaded.",
     )
+    parser.add_argument(
+        "-c",
+        "--configs",
+        type=str,
+        nargs="*",
+        help="The benchmark configuration file(s) to gather dataset name(s) to download.",
+    )
     args = parser.parse_args()
 
     if args.list:
@@ -183,10 +209,18 @@ if __name__ == "__main__":
 
     root_dir = Path(os.environ["DATASETSROOT"])
 
-    if args.datasets is not None:
-        ds_names = set(args.datasets)
+    if args.datasets is None and args.configs is None:
+        logging.warning("Warning: Enumerate dataset(s) that should be downloaded")
+    else:
+        if args.configs:
+            print(f"Dataset name(s) to download will be gathered from : {args.configs}")
+            ds_names = set()
+            for config_file in args.configs:
+                ds_names = ds_names.union(extract_dataset_names(config_file))
+        else:
+            ds_names = set(args.datasets)
         print(
-            f"{len(ds_names)} dataset{'s' if len(ds_names) > 1 else ''} requested for download: {ds_names}"
+            f"{len(ds_names)} dataset{'s' if len(ds_names) > 1 else ''} requested for download"
         )
         print(f"Download location: {root_dir}")
 
@@ -195,6 +229,3 @@ if __name__ == "__main__":
             downloaded = try_load_dataset(name, root_dir)
             if downloaded:
                 print(f'Dataset "{name}" successfully downloaded.')
-
-    else:
-        logging.warning("Warning: Enumerate dataset(s) that should be downloaded")

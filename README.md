@@ -138,17 +138,15 @@ To download public datasets included in the benchmark please run:
 DATASETSROOT=/path/to/local/data/folder python -m datasets.load_datasets -d <DS_NAME_1> <DS_NAME_2>
 ```
 
-### Gather dataset information from benchmark files
-
-To extract the list of public dataset names used in benchmark configurations, please run:
+Alternatively, it is also possible to automatically download all datasets included
+in benchmark configuration files:
 
 ```shell
 
-python ./datasets/collect_dataset_names.py -f config_1.json config_2.json ...
+DATASETSROOT=/path/to/local/data/folder python -m datasets.load_datasets -c config_1.json config_2.json ...
 ```
 
-Please refer to [documentation](./datasets/README.md) for further instructions.
-
+Please refer to the [documentation](./datasets/README.md) for further instructions.
 
 ## Algorithm parameters
 

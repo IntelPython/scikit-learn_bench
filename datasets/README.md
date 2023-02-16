@@ -1,36 +1,26 @@
-# Public dataset include in for scikit-learn_bench
-
-## Download datasets
+# Download Datasets for scikit-learn_bench
 
 The download selected public datasets included in the benchmark, please run the following command:
 
 ```bash
-DATASETSROOT=/path/to/local/data/directory python -m datasets.load_datasets -d <DS_NAME_1> <DS_NAME_2>
+DATASETSROOT=/path/to/local/download/directory python -m datasets.load_datasets -d <DS_NAME_1> <DS_NAME_2>
 ```
 
-### Important Notes
-
-1. [Download location](#download-location)
-2. [Execution mode](#execution-mode)
-
-#### Download location
-
-The scipt relies on a `DATASETSROOT` environment variable to indicate the local path where 
+The scipt relies on a `DATASETSROOT` environment variable, to indicate the local path where
 datasets will be automatically downloaded.
 
-You can set this variable directly via command line when launching the script (see example above). 
-
-Alternatively, you can set this variable in your environment **before** running the script:
+You can alternatively export this variable in your SHELL environment **before** running the script:
 
 ```shell
-export DATASETSROOT=/path/to/local/data/directory
+export DATASETSROOT=/path/to/download/directory
 ```
+## Important Note
 
-#### Execution Mode
+Please **do not** run the `load_datasets` script from within the `datasets` folder. This will not work
+due to issues with relative imports. 
 
-Please run the `load_datasets` script from the **main** root directory of the `scikit-learn_bench` benchmark.
+Please execute the `load_datasets` script directly from the _main_ folder, using the [`-m`](https://docs.python.org/3/using/cmdline.html#cmdoption-m) option with the Python interpreter.
 
-Executing the script directly from the `datasets` folder will not work due to issues with relative imports.
 
 ## List of available datasets
 
@@ -40,26 +30,14 @@ To access the list of all the datasets included in the benchmark, please use the
 python -m datasets.load_datasets --list
 ```
 
-## Collect dataset names used in experiments
+## Download datasets included in configurations files
 
-It is possible to gather the list of public datasets used in benchmark
-experiments.
-This list can be later used as input to the `load_datasets` script to download
-all the data required to run selected benchmarks.
-
-To collect the names of the dataset included in benchmark configuration file(s), please run:
+It is also possible to gather the list of dataset(s) to download directly from
+benchmark configuration files by using the `--configs` (`-c`) option:
 
 ```shell
-python collect_dataset_names.py -f config_1.json config_2.json ...
+DATASETSROOT=/path/to/download/dir python -m datasets.load_datasets -c config_1.json config_2.json ...
 ```
 
-The list of dataset name(s) found will be printed on standard output.
-
-Alternatively, please use the `--output` (`-o`) option to specify the path of the output file
-where this list will be printed instead:
-
-```shell
-python collect_dataset_names.py -f config_1.json config_2.json ... -o dataset_names.txt
-```
-
-
+This method will override the `-d` option, and it is highly recommended when
+running multiple benchmark experiments.
