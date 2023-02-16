@@ -21,20 +21,67 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict
 
-from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
-                                    census,  cifar_binary, codrnanorm, covtype_binary, creditcard,
-                                    epsilon, epsilon_16K, epsilon_30K, epsilon_80K, epsilon_100K,
-                                    fraud, gisette, hepmass_150K,
-                                    higgs, higgs_one_m, higgs_150K, ijcnn, klaverjas,
-                                    santander, skin_segmentation, susy)
-from .loader_multiclass import (cifar_10, connect, covertype, covtype, letters, mlsr,
-                                mnist, msrank, plasticc, sensit)
-from .loader_regression import (abalone, california_housing, fried, higgs_10500K,
-                                medical_charges_nominal, mortgage_first_q,
-                                twodplanes, year_prediction_msd, yolanda, airline_regression)
-from .loader_clustering import (cifar_cluster, epsilon_50K_cluster, higgs_one_m_clustering,
-                                hepmass_1M_cluster, hepmass_10K_cluster, mnist_10K_cluster,
-                                road_network_20K_cluster, susy_cluster)
+from .loader_classification import (
+    a_nine_a,
+    airline,
+    airline_ohe,
+    bosch,
+    census,
+    cifar_binary,
+    codrnanorm,
+    covtype_binary,
+    creditcard,
+    epsilon,
+    epsilon_16K,
+    epsilon_30K,
+    epsilon_80K,
+    epsilon_100K,
+    fraud,
+    gisette,
+    hepmass_150K,
+    higgs,
+    higgs_one_m,
+    higgs_150K,
+    ijcnn,
+    klaverjas,
+    santander,
+    skin_segmentation,
+    susy,
+)
+from .loader_multiclass import (
+    cifar_10,
+    connect,
+    covertype,
+    covtype,
+    letters,
+    mlsr,
+    mnist,
+    msrank,
+    plasticc,
+    sensit,
+)
+from .loader_regression import (
+    abalone,
+    california_housing,
+    fried,
+    higgs_10500K,
+    medical_charges_nominal,
+    mortgage_first_q,
+    twodplanes,
+    year_prediction_msd,
+    yolanda,
+    airline_regression,
+)
+from .loader_clustering import (
+    cifar_cluster,
+    epsilon_50K_cluster,
+    higgs_one_m_clustering,
+    hepmass_1M_cluster,
+    hepmass_10K_cluster,
+    mnist_10K_cluster,
+    road_network_20K_cluster,
+    susy_cluster,
+)
 
 dataset_loaders: Dict[str, Callable[[Path], bool]] = {
     "a9a": a_nine_a,
@@ -101,19 +148,32 @@ def try_load_dataset(dataset_name: str, output_directory: Path) -> bool:
             logging.warning(f"Internal error loading dataset:\n{ex}")
             return False
     else:
-        logging.warning(f"There is no script to download the dataset: {dataset_name}. "
-                        "You need to add a dataset or script to load it.")
+        logging.warning(
+            f"There is no script to download the dataset: {dataset_name}. "
+            "You need to add a dataset or script to load it."
+        )
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Use \'-d\' or \'--datasets\' option to enumerate '
-                    'dataset(s) that should be downloaded')
-    parser.add_argument('-l', '--list', action='store_const',
-                        const=True, help='The list of available datasets')
-    parser.add_argument('-d', '--datasets', type=str, nargs='*',
-                        help='The datasets that should be downloaded.')
+        description="Use '-d' or '--datasets' option to enumerate "
+        "dataset(s) that should be downloaded"
+    )
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_const",
+        const=True,
+        help="The list of available datasets",
+    )
+    parser.add_argument(
+        "-d",
+        "--datasets",
+        type=str,
+        nargs="*",
+        help="The datasets that should be downloaded.",
+    )
     args = parser.parse_args()
 
     if args.list:
@@ -121,11 +181,40 @@ if __name__ == '__main__':
             print(key)
         sys.exit(0)
 
-    root_dir = Path(os.environ['DATASETSROOT'])
+    root_dir = Path(os.environ["DATASETSROOT"])
 
     if args.datasets is not None:
-        for val in dataset_loaders.values():
-            val(root_dir)
+        matched_datasets = set(
+            filter(lambda name: name in dataset_loaders, args.datasets)
+        )
+        unmatched_datasets = set(args.datasets).difference(matched_datasets)
+
+        print(
+            '%d dataset%s will be downloaded in "%s": '
+            % (
+                len(matched_datasets),
+                "s" if len(matched_datasets) > 1 else "",
+                root_dir,
+            )
+        )
+        for i, name in enumerate(matched_datasets):
+            try:
+                print('%d. downloading dataset "%s"' % (i + 1, name))
+                dataset_loaders[name](root_dir)
+            except Exception as e:
+                logging.warning(
+                    'An error occurr while downloading dataset "%s". Please check.'
+                    % name
+                )
+                logging.warning(str(e))
+            else:
+                logging.info('Dataset "%s" successfully downloaded.' % name)
+
+        if len(unmatched_datasets):
+            logging.warning(
+                "Warning: The following dataset names have not been recognized: "
+                % unmatched_datasets
+            )
+
     else:
-        logging.warning(
-            'Warning: Enumerate dataset(s) that should be downloaded')
+        logging.warning("Warning: Enumerate dataset(s) that should be downloaded")
