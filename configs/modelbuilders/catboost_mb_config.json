@@ -75,7 +75,7 @@
             "reg-lambda": 1,
             "max-depth": 8,
             "max-leaves": 256,
-            "n-estimators": 1000,
+            "n-estimators": [100, 300, 1000, 3000],
             "objective": "Logloss"
         },
         {
@@ -96,6 +96,26 @@
             "learning-rate": 0.03,
             "max-depth": 6,
             "n-estimators": 1000,
+            "objective": "multi:softprob"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mlsr",
+                    "training": {
+                        "x": "data/mlsr_x_train.npy",
+                        "y": "data/mlsr_y_train.npy"
+                    }
+                }
+            ],
+            "max-bin": 256,
+            "learning-rate": 0.3,
+            "subsample": 1,
+            "reg-lambda": 2,
+            "max-depth": 8,
+            "max-leaves": 256,
+            "n-estimators": 200,
             "objective": "multi:softprob"
         },
         {
@@ -204,6 +224,28 @@
             "max-leaves": 256
         },
         {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "covtype",
+                    "training": {
+                        "x": "data/covtype_x_train.npy",
+                        "y": "data/covtype_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/covtype_x_test.npy",
+                        "y": "data/covtype_y_test.npy"
+                    }
+                }
+            ],
+            "objective": "multi:softprob",
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "n-estimators": 100
+        },
+        {
             "objective": "Logloss",
             "scale-pos-weight": 2.0017715678375363,
             "dataset": [
@@ -289,28 +331,6 @@
             "learning-rate": 0.1,
             "reg-lambda": 1,
             "max-leaves": 256
-        },
-        {
-            "objective": "multi:softprob",
-            "dataset": [
-                {
-                    "source": "npy",
-                    "name": "covtype",
-                    "training": {
-                        "x": "data/covtype_x_train.npy",
-                        "y": "data/covtype_y_train.npy"
-                    },
-                    "testing": {
-                        "x": "data/covtype_x_test.npy",
-                        "y": "data/covtype_y_test.npy"
-                    }
-                }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256,
-            "n-estimators": 100
         }
     ]
 }
