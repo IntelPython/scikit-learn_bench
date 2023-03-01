@@ -23,7 +23,7 @@ def get_accuracy(true_labels, prediction):
     errors = 0
     for i, true_label in enumerate(true_labels):
         pred_label = 0
-        if isinstance(prediction[i], (float, np.single)):
+        if isinstance(prediction[i], (np.float32, np.float64)):
             pred_label = prediction[i] > 0.5
         elif prediction[i].shape[0] == 1:
             pred_label = prediction[i][0]
