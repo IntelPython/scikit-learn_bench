@@ -2,10 +2,15 @@
     "common": {
         "lib": "modelbuilders",
         "data-format": "pandas",
+        "data-order": "F",
         "grow-policy": "Depthwise",
         "dtype": "float32",
         "algorithm": "catboost_mb",
-        "count-pool": ""
+        "count-pool": "",
+        "max-depth": 8,
+        "learning-rate": 0.1,
+        "reg-lambda": 1,
+        "max-leaves": 256
     },
     "cases": [
         {
@@ -45,11 +50,7 @@
             ],
             "max-bin": 256,
             "scale-pos-weight": 2,
-            "learning-rate": 0.1,
             "subsample": 1,
-            "reg-lambda": 1,
-            "max-depth": 8,
-            "max-leaves": 256,
             "n-estimators": 1000,
             "objective": "Logloss"
         },
@@ -70,11 +71,7 @@
             ],
             "max-bin": 256,
             "scale-pos-weight": 2,
-            "learning-rate": 0.1,
             "subsample": 1,
-            "reg-lambda": 1,
-            "max-depth": 8,
-            "max-leaves": 256,
             "n-estimators": [100, 300, 1000, 3000],
             "objective": "Logloss"
         },
@@ -95,6 +92,7 @@
             ],
             "learning-rate": 0.03,
             "max-depth": 6,
+            "max-leaves": 0,
             "n-estimators": 1000,
             "objective": "multi:softprob"
         },
@@ -113,8 +111,6 @@
             "learning-rate": 0.3,
             "subsample": 1,
             "reg-lambda": 2,
-            "max-depth": 8,
-            "max-leaves": 256,
             "n-estimators": 200,
             "objective": "multi:softprob"
         },
@@ -131,12 +127,8 @@
             ],
             "n-estimators": 100,
             "objective": "RMSE",
-            "max-depth": 8,
             "scale-pos-weight": 2,
-            "learning-rate": 0.1,
-            "subsample": 1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            "subsample": 1
         },
         {
             "dataset": [
@@ -153,9 +145,11 @@
                     }
                 }
             ],
+            "learning-rate": 0.3,
             "n-estimators": 60,
             "objective": "multi:softprob",
             "max-depth": 7,
+            "max-leaves": 0,
             "subsample": 0.7
         },
         {
@@ -173,9 +167,11 @@
                     }
                 }
             ],
+            "learning-rate": 0.3,
             "n-estimators": 10000,
             "objective": "Logloss",
             "max-depth": 1,
+            "max-leaves": 0,
             "subsample": 0.5,
             "eta": 0.1
         },
@@ -195,11 +191,7 @@
                         "y": "data/airline_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         },
         {
             "objective": "Logloss",
@@ -217,11 +209,7 @@
                         "y": "data/bosch_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         },
         {
             "dataset": [
@@ -239,10 +227,6 @@
                 }
             ],
             "objective": "multi:softprob",
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256,
             "n-estimators": 100
         },
         {
@@ -261,11 +245,7 @@
                         "y": "data/epsilon_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         },
         {
             "objective": "Logloss",
@@ -283,11 +263,7 @@
                         "y": "data/fraud_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         },
         {
             "objective": "Logloss",
@@ -305,11 +281,7 @@
                         "y": "data/higgs_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         },
         {
             "objective": "RMSE",
@@ -326,11 +298,7 @@
                         "y": "data/year_prediction_msd_y_test.npy"
                     }
                 }
-            ],
-            "max-depth": 8,
-            "learning-rate": 0.1,
-            "reg-lambda": 1,
-            "max-leaves": 256
+            ]
         }
     ]
 }
