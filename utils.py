@@ -92,7 +92,7 @@ def read_output_from_command(command: str,
         env["PYTHONPATH"] = os.path.dirname(os.path.abspath(__file__))
     res = subprocess.run(command.split(' '), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, encoding='utf-8', env=env)
-    return res.stdout[:-1], res.stderr[:-1]
+    return res.stdout[:-1], res.stderr[:-1], res.returncode
 
 
 def parse_lscpu_lscl_info(command_output: str) -> Dict[str, str]:
@@ -109,7 +109,7 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
 
     hw_params: Dict[str, Union[Dict[str, str], float]] = {'CPU': {}}
     # get CPU information
-    lscpu_info, _ = read_output_from_command('lscpu')
+    lscpu_info, _, _ = read_output_from_command('lscpu')
     lscpu_info = ' '.join(lscpu_info.split())
     for line in lscpu_info.split('\n'):
         k, v = line.split(": ")[:2]
@@ -118,14 +118,14 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
         cast(Dict[str, str], hw_params['CPU'])[k] = v
 
     # get RAM size
-    mem_info, _ = read_output_from_command('free -b')
+    mem_info, _, _ = read_output_from_command('free -b')
     mem_info = mem_info.split('\n')[1]
     mem_info = ' '.join(mem_info.split())
     hw_params['RAM size[GB]'] = int(mem_info.split(' ')[1]) / 2 ** 30
 
     # get Intel GPU information
     try:
-        lsgpu_info, _ = read_output_from_command(
+        lsgpu_info, _, _ = read_output_from_command(
             'lscl --device-type=gpu --platform-vendor=Intel')
         device_num = 0
         start_idx = lsgpu_info.find('Device ')
@@ -141,7 +141,7 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
 
     # get Nvidia GPU information
     try:
-        gpu_info, _ = read_output_from_command(
+        gpu_info, _, _ = read_output_from_command(
             'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
             '--format=csv,noheader')
         gpu_info_arr = gpu_info.split(', ')
@@ -160,13 +160,13 @@ def get_hw_parameters() -> Dict[str, Union[Dict[str, Any], float]]:
 def get_sw_parameters() -> Dict[str, Dict[str, Any]]:
     sw_params = {}
     try:
-        gpu_info, _ = read_output_from_command(
+        gpu_info, _, _ = read_output_from_command(
             'nvidia-smi --query-gpu=name,memory.total,driver_version,pstate '
             '--format=csv,noheader')
         info_arr = gpu_info.split(', ')
         sw_params['GPU_driver'] = {'version': info_arr[2]}
         # alert if GPU is already running any processes
-        gpu_processes, _ = read_output_from_command(
+        gpu_processes, _, _ = read_output_from_command(
             'nvidia-smi --query-compute-apps=name,pid,used_memory '
             '--format=csv,noheader')
         if gpu_processes != '':
@@ -177,7 +177,7 @@ def get_sw_parameters() -> Dict[str, Dict[str, Any]]:
 
     # get python packages info from conda
     try:
-        conda_list, _ = read_output_from_command('conda list --json')
+        conda_list, _, _ = read_output_from_command('conda list --json')
         needed_columns = ['version', 'build_string', 'channel']
         conda_list_json: List[Dict[str, str]] = json.loads(conda_list)
         for pkg in conda_list_json:

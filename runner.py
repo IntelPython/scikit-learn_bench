@@ -285,7 +285,7 @@ if __name__ == '__main__':
                         logging.info(command)
                         if not args.dummy_run:
                             case = f'{lib},{algorithm} ' + case
-                            stdout, stderr = utils.read_output_from_command(
+                            stdout, stderr, ret_code = utils.read_output_from_command(
                                 command, env=os.environ.copy())
                             stdout, extra_stdout = utils.filter_stdout(stdout)
                             stderr = utils.filter_stderr(stderr)
@@ -303,11 +303,13 @@ if __name__ == '__main__':
                                 stderr += f'CASE {case} JSON DECODING ERROR:\n' \
                                     + f'{decoding_exception}\n{stdout}\n'
 
-                            if stderr != '':
-                                if 'daal4py' not in stderr:
-                                    is_successful = False
-                                    logging.warning(
-                                        'Error in benchmark: \n' + stderr)
+                            if ret_code == 1:
+                                is_successful = False
+                                logging.warning('Error in benchmark: \n' +
+                                                stderr)
+                            else:
+                                # print info/warnings in benchmark
+                                print(stderr, end='\n')
 
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name
@@ -319,8 +321,8 @@ if __name__ == '__main__':
             + f'--report-file {name_result_file}.xlsx '          \
             + '--generation-config ' + args.report
         logging.info(command)
-        stdout, stderr = utils.read_output_from_command(command)
-        if stderr != '':
+        stdout, stderr, ret_code = utils.read_output_from_command(command)
+        if ret_code == 1:
             logging.warning('Error in report generator: \n' + stderr)
             is_successful = False
 

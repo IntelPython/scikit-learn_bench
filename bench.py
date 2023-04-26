@@ -187,6 +187,8 @@ def parse_args(parser, size=None, loop_types=(),
                         choices=('host', 'cpu', 'gpu', 'none'),
                         help='Execution context device')
 
+    logging.basicConfig(stream=sys.stderr, format='%(levelname)s: %(message)s', level=logging.INFO)
+
     for data in ['X', 'y']:
         for stage in ['train', 'test']:
             parser.add_argument(f'--file-{data}-{stage}',
@@ -207,15 +209,14 @@ def parse_args(parser, size=None, loop_types=(),
             patch_sklearn()
         except ImportError:
             logging.info('Failed to import sklearnex.patch_sklearn.'
-                         'Use stock version scikit-learn', file=sys.stderr)
+                         'Use stock version scikit-learn')
             params.device = 'none'
     else:
         if params.device != 'none':
             logging.info(
                 'Device context is not supported for stock scikit-learn.'
                 'Please use --no-intel-optimized=False with'
-                f'--device={params.device} parameter. Fallback to --device=none.',
-                file=sys.stderr)
+                f'--device={params.device} parameter. Fallback to --device=none.')
             params.device = 'none'
 
     # disable finiteness check (default)
