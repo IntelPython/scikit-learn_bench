@@ -288,7 +288,7 @@ if __name__ == '__main__':
                             stdout, stderr, ret_code = utils.read_output_from_command(
                                 command, env=os.environ.copy())
                             stdout, extra_stdout = utils.filter_stdout(stdout)
-                            stderr = utils.filter_stderr(stderr)
+                            stderr = utils.filter_stderr(stderr) + '\n'
 
                             print(stdout, end='\n')
 

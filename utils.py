@@ -85,7 +85,7 @@ def find_the_dataset(name: str, folder: str, files: Iterable[str]):
 
 
 def read_output_from_command(command: str,
-                             env: Dict[str, str] = os.environ.copy()) -> Tuple[str, str]:
+                             env: Dict[str, str] = os.environ.copy()) -> Tuple[str, str, int]:
     if "PYTHONPATH" in env:
         env["PYTHONPATH"] += ":" + os.path.dirname(os.path.abspath(__file__))
     else:
