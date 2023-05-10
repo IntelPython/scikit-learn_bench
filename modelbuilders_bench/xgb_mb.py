@@ -15,8 +15,6 @@
 # ===============================================================================
 
 import argparse
-import logging
-import sys
 
 import bench
 import daal4py
