@@ -25,7 +25,8 @@ from sklearn import preprocessing
 import daal4py as d4p
 
 
-parser = argparse.ArgumentParser(description='daal4py gradient boosted trees benchmark')
+parser = argparse.ArgumentParser(
+    description='daal4py gradient boosted trees benchmark')
 
 parser.add_argument('--max_bins', type=int, default=256,
                     help='Maximum number of discrete bins to '
@@ -41,7 +42,8 @@ parser.add_argument('--n_estimators', type=int, default=100,
                     help='The number of gradient boosted trees')
 parser.add_argument('--reg_lambda', type=float, default=1,
                     help='L2 regularization term on weights')
-parser.add_argument('--split_method', type=str, required=False, default='inexact',
+parser.add_argument('--split_method', type=str, required=False,
+                    default='inexact',
                     help='The split algorithm used in daal4py')
 parser.add_argument('--shrinkage', type=float, default=0.3,
                     help='Shrinkage rate')
@@ -96,20 +98,20 @@ if d4p_params["objective"].startswith('reg'):
     task = "regression"
     metric_name, metric_func = 'rmse', bench.rmse_score
     train_algo = d4p.gbt_regression_training(
-            fptype=d4p_params["fptype"],
-            splitMethod=d4p_params["split_method"],
-            maxIterations=d4p_params["n_estimators"],
-            maxTreeDepth=d4p_params["max_tree_depth"],
-            shrinkage=d4p_params["shrinkage"],
-            minSplitLoss=d4p_params["min_split_loss"],
-            lambda_=d4p_params["reg_lambda"],
-            observationsPerTreeFraction=d4p_params["observations_per_tree_fraction"],
-            featuresPerNode=d4p_params["features_per_node"],
-            minObservationsInLeafNode=d4p_params["min_observations_in_leaf_node"],
-            memorySavingMode=d4p_params["memory_saving_mode"],
-            maxBins=d4p_params["max_bins"],
-            minBinSize=d4p_params["min_bin_size"],
-            engine=d4p.engines_mcg59(seed=seed_))
+      fptype=d4p_params["fptype"],
+      splitMethod=d4p_params["split_method"],
+      maxIterations=d4p_params["n_estimators"],
+      maxTreeDepth=d4p_params["max_tree_depth"],
+      shrinkage=d4p_params["shrinkage"],
+      minSplitLoss=d4p_params["min_split_loss"],
+      lambda_=d4p_params["reg_lambda"],
+      observationsPerTreeFraction=d4p_params["observations_per_tree_fraction"],
+      featuresPerNode=d4p_params["features_per_node"],
+      minObservationsInLeafNode=d4p_params["min_observations_in_leaf_node"],
+      memorySavingMode=d4p_params["memory_saving_mode"],
+      maxBins=d4p_params["max_bins"],
+      minBinSize=d4p_params["min_bin_size"],
+      engine=d4p.engines_mcg59(seed=seed_))
 else:
     task = "classification"
     metric_name = 'accuracy'
@@ -121,52 +123,56 @@ else:
     # Covtype has one class more than there is in train
     if params.dataset_name == 'covtype':
         n_classes += 1
-    # n_iterations = int(d4p_params["n_estimators"] / (n_classes if n_classes > 2 else 1))
     n_iterations = d4p_params["n_estimators"]
     train_algo = d4p.gbt_classification_training(
-            fptype=d4p_params["fptype"],
-            nClasses=n_classes,
-            splitMethod=d4p_params["split_method"],
-            maxIterations=n_iterations,
-            maxTreeDepth=d4p_params["max_tree_depth"],
-            shrinkage=d4p_params["shrinkage"],
-            minSplitLoss=d4p_params["min_split_loss"],
-            lambda_=d4p_params["reg_lambda"],
-            observationsPerTreeFraction=d4p_params["observations_per_tree_fraction"],
-            featuresPerNode=d4p_params["features_per_node"],
-            minObservationsInLeafNode=d4p_params["min_observations_in_leaf_node"],
-            memorySavingMode=d4p_params["memory_saving_mode"],
-            maxBins=d4p_params["max_bins"],
-            minBinSize=d4p_params["min_bin_size"],
-            engine=d4p.engines_mcg59(seed=seed_))    
+      fptype=d4p_params["fptype"],
+      nClasses=n_classes,
+      splitMethod=d4p_params["split_method"],
+      maxIterations=n_iterations,
+      maxTreeDepth=d4p_params["max_tree_depth"],
+      shrinkage=d4p_params["shrinkage"],
+      minSplitLoss=d4p_params["min_split_loss"],
+      lambda_=d4p_params["reg_lambda"],
+      observationsPerTreeFraction=d4p_params["observations_per_tree_fraction"],
+      featuresPerNode=d4p_params["features_per_node"],
+      minObservationsInLeafNode=d4p_params["min_observations_in_leaf_node"],
+      memorySavingMode=d4p_params["memory_saving_mode"],
+      maxBins=d4p_params["max_bins"],
+      minBinSize=d4p_params["min_bin_size"],
+      engine=d4p.engines_mcg59(seed=seed_))
 
 
 def fit(X_train, y_train):
     return train_algo.compute(X_train, y_train).model
 
+
 def predict(X_test):  # type: ignore
     if task == "regression":
-        predict_algo = d4p.gbt_regression_prediction(fptype=d4p_params["fptype"])
+        predict_algo = d4p.gbt_regression_prediction(
+            fptype=d4p_params["fptype"])
     else:
-        predict_algo = d4p.gbt_classification_prediction(fptype=d4p_params["fptype"],
-                                                         nClasses=n_classes,
-                                                         resultsToEvaluate="computeClassLabels")
+        predict_algo = d4p.gbt_classification_prediction(
+            fptype=d4p_params["fptype"],
+            nClasses=n_classes,
+            resultsToEvaluate="computeClassLabels")
     return predict_algo.compute(X_test, booster).prediction.ravel()
-    
 
-for i in range(5):
-    fit_time, booster = bench.measure_function_time(
-        fit, X_train, y_train, params=params)
-    train_metric = metric_func(
-            predict(X_train), y_train)
 
-    predict_time, y_pred = bench.measure_function_time(
-        predict, X_test, params=params)
-    test_metric = metric_func(y_pred, y_test)
+fit_time, booster = bench.measure_function_time(
+    fit, X_train, y_train, params=params)
+train_metric = metric_func(
+        predict(X_train), y_train)
 
-    bench.print_output(library='daal4py', algorithm=f'gradient_boosted_trees_{task}',
-                    stages=['training', 'prediction'],
-                    params=params, functions=['gbt.fit', 'gbt.predict'],
-                    times=[fit_time, predict_time], metric_type=metric_name,
-                    metrics=[train_metric, test_metric], data=[X_train, X_test],
-                    alg_params=d4p_params)
+predict_time, y_pred = bench.measure_function_time(
+    predict, X_test, params=params)
+test_metric = metric_func(y_pred, y_test)
+
+bench.print_output(
+                library='daal4py',
+                algorithm=f'gradient_boosted_trees_{task}',
+                stages=['training', 'prediction'],
+                params=params, functions=['gbt.fit', 'gbt.predict'],
+                times=[fit_time, predict_time], metric_type=metric_name,
+                metrics=[train_metric, test_metric],
+                data=[X_train, X_test],
+                alg_params=d4p_params)
