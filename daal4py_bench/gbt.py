@@ -75,7 +75,7 @@ if np.isnan(X_test.values).any():
 
 # Get random seed
 rs_ = check_random_state(params.random_state)
-seed_ = rs_.randint(0, np.iinfo('i').max)
+seed_ = rs_.randint(0, 2**31)
 
 d4p_params = {
     'split_method': params.split_method,
