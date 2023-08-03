@@ -16,8 +16,6 @@
 
 import argparse
 import os
-import logging
-import sys
 
 import bench
 import daal4py
@@ -85,10 +83,6 @@ lgbm_params = {
     'objective': params.objective,
     'seed': params.seed
 }
-
-if np.isnan(X_test.values).any():
-    logging.warning('Nan values aren not supported in model builder yet')
-    sys.exit(1)
 
 if params.threads != -1:
     lgbm_params.update({'nthread': params.threads})
