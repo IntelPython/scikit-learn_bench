@@ -16,6 +16,8 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 - [DBSCAN](#dbscan)
 - [RandomForestClassifier](#randomforestclassifier)
 - [RandomForestRegressor](#randomforestregressor)
+- [ExtraTreesClassifier](#extratreesclassifier)
+- [ExtraTreesRegressor](#extratreesregressor)
 - [pairwise_distances](#pairwise_distances)
 - [KMeans](#kmeans)
 - [KNeighborsClassifier](#kneighborsclassifier)
@@ -84,6 +86,33 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 | min-impurity-decrease | float | 0 | Needed impurity decrease for node splitting |
 | no-bootstrap | action | True | Don't control bootstraping |
 | use-sklearn-class | action |  | Force use of sklearn.ensemble.RandomForestClassifier |
+
+### ExtraTreesClassifier
+
+| parameter Name  | Type | default value | description |
+| ----- | ---- |---- |---- |
+| criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
+| num-trees | int | 100 | The number of trees in the forest |
+| max-features | float_or_int | None | Upper bound on features used at each split |
+| max-depth | int | None | Upper bound on depth of constructed trees |
+| min-samples-split | float_or_int | 2 | Minimum samples number for node splitting |
+| max-leaf-nodes | int | None | Maximum leaf nodes per tree |
+| min-impurity-decrease | float | 0 | Needed impurity decrease for node splitting |
+| no-bootstrap | store_false | False | Don't control bootstraping |
+
+### ExtraTreesRegressor
+
+| parameter Name  | Type | default value | description |
+| ----- | ---- |---- |---- |
+| criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
+| num-trees | int | 100 | The number of trees in the forest |
+| max-features | float_or_int | None | Upper bound on features used at each split |
+| max-depth | int | None | Upper bound on depth of constructed trees |
+| min-samples-split | float_or_int | 2 | Minimum samples number for node splitting |
+| max-leaf-nodes | int | None | Maximum leaf nodes per tree |
+| min-impurity-decrease | float | 0 | Needed impurity decrease for node splitting |
+| no-bootstrap | action | False | Don't control bootstraping |
+| use-sklearn-class | action |  | Force use of sklearn.ensemble.ExtraTreesClassifier |
 
 ### pairwise_distances
 
