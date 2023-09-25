@@ -77,7 +77,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-| criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
+| criterion | str | mse | *mse* or *mae*. The function to measure the quality of a split |
 | num-trees | int | 100 | The number of trees in the forest |
 | max-features | float_or_int | None | Upper bound on features used at each split |
 | max-depth | int | None | Upper bound on depth of constructed trees |
@@ -104,7 +104,7 @@ You can launch benchmarks for each algorithm separately. The tables below list a
 
 | parameter Name  | Type | default value | description |
 | ----- | ---- |---- |---- |
-| criterion | str | gini | *gini* or *entropy*. The function to measure the quality of a split |
+| criterion | str | mse | *mse* or *mae*. The function to measure the quality of a split |
 | num-trees | int | 100 | The number of trees in the forest |
 | max-features | float_or_int | None | Upper bound on features used at each split |
 | max-depth | int | None | Upper bound on depth of constructed trees |
