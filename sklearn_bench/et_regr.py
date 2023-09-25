@@ -67,8 +67,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn extra trees '
                                      'regression benchmark')
 
-    parser.add_argument('--criterion', type=str, default='mse',
-                        choices=('mse', 'mae'),
+    parser.add_argument('--criterion', type=str, default='squared_error',
+                        choices=('squared_error', 'absolute_error'),
                         help='The function to measure the quality of a split')
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
