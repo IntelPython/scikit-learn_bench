@@ -16,6 +16,7 @@
 
 import argparse
 import bench
+from sklearnex import patch_sklearn, unpatch_sklearn
 
 
 def main():
@@ -27,6 +28,7 @@ def main():
     y_test = y_test.values.ravel()
 
     # Create our random forest regressor
+    unpatch_sklearn()
     regr = RandomForestRegressor(criterion=params.criterion,
                                  n_estimators=params.num_trees,
                                  max_depth=params.max_depth,
@@ -37,7 +39,7 @@ def main():
                                  bootstrap=params.bootstrap,
                                  random_state=params.seed,
                                  n_jobs=params.n_jobs)
-
+    patch_sklearn()
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     y_pred = regr.predict(X_train)
