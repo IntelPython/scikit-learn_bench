@@ -16,8 +16,6 @@
 
 import argparse
 import bench
-from sklearnex import patch_sklearn, unpatch_sklearn
-
 
 def main():
     from sklearn.ensemble import RandomForestRegressor
