@@ -28,7 +28,6 @@ def main():
     y_test = y_test.values.ravel()
 
     # Create our random forest regressor
-    unpatch_sklearn()
     regr = RandomForestRegressor(criterion=params.criterion,
                                  n_estimators=params.num_trees,
                                  max_depth=params.max_depth,
@@ -39,7 +38,6 @@ def main():
                                  bootstrap=params.bootstrap,
                                  random_state=params.seed,
                                  n_jobs=params.n_jobs)
-    patch_sklearn()
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     y_pred = regr.predict(X_train)
@@ -69,8 +67,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn random forest '
                                      'regression benchmark')
 
-    parser.add_argument('--criterion', type=str, default='mse',
-                        choices=('mse', 'mae'),
+    parser.add_argument('--criterion', type=str, default='squared_error',
+                        choices=('squared_error', 'absolute_error'),
                         help='The function to measure the quality of a split')
     parser.add_argument('--num-trees', type=int, default=100,
                         help='Number of trees in the forest')
