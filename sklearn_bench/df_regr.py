@@ -37,6 +37,7 @@ def main():
                                  bootstrap=params.bootstrap,
                                  random_state=params.seed,
                                  n_jobs=params.n_jobs)
+
     fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
 
     y_pred = regr.predict(X_train)
