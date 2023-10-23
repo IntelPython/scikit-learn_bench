@@ -118,8 +118,7 @@ t_creat_test, lgbm_test = bench.measure_function_time(lgbm.Dataset, X_test, y_te
 t_train, model_lgbm = bench.measure_function_time(lgbm.train, lgbm_params, lgbm_train,
                                                   params=params,
                                                   num_boost_round=params.n_estimators,
-                                                  valid_sets=lgbm_train,
-                                                  verbose_eval=False)
+                                                  valid_sets=lgbm_train)
 train_metric = None
 if not X_train.equals(X_test):
     y_train_pred = model_lgbm.predict(X_train)
