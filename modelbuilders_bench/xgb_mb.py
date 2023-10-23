@@ -34,11 +34,9 @@ def convert_xgb_predictions(y_pred, objective):
     return y_pred
 
 
-def shap_accuracy(new, ref, threshold=1e-5):
-    new_sh = new.reshape(-1, )
-    ref_sh = ref.reshape(-1, )
-    diff = np.abs(new_sh - ref_sh)
-    return (diff < threshold).sum() / float(len(ref_sh))
+def shap_accuracy(new, ref):
+    # broadcast all values into single column and calculate RMSE
+    return bench.rmse_score(new.reshape(-1, ), ref.reshape(-1, ))
 
 
 parser = argparse.ArgumentParser(
@@ -317,7 +315,7 @@ bench.print_output(
         shap_interaction_time,
         shap_interaction_time_daal,
     ],
-    metric_type=[metric_name, "accuracy"],
+    metric_type=[metric_name, "RMSE"],
     metrics=[
         [
             None,
