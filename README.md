@@ -118,11 +118,35 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 |**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 
-### Scikit-learn benchmakrs
+### Scikit-learn benchmarks
 
 When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
 For the algorithms with both CPU and GPU support, you may use the same [configuration file](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json) to run the scikit-learn benchmarks on CPU and GPU.
+
+
+## Downloading Data
+
+It is possible to download all the required datasets to use in a benchmark, separately.
+
+This would considerably speed-up the overall execution, whilst also avoiding any networking
+issue that might occur during the experiments.
+
+To download public datasets included in the benchmark please run:
+
+```bash
+DATASETSROOT=/path/to/local/data/folder python -m datasets.load_datasets -d <DS_NAME_1> <DS_NAME_2>
+```
+
+Alternatively, it is also possible to automatically download all datasets included
+in benchmark configuration files:
+
+```shell
+
+DATASETSROOT=/path/to/local/data/folder python -m datasets.load_datasets -c config_1.json config_2.json ...
+```
+
+Please refer to the [documentation](./datasets/README.md) for further instructions.
 
 ## Algorithm parameters
 
