@@ -37,6 +37,7 @@ from argparse import ArgumentParser
 import json
 from pathlib import Path
 
+
 def fix_file(fname: Path):
     with open(fname) as fp:
         data = json.load(fp)
@@ -62,7 +63,9 @@ def fix_file(fname: Path):
                 comb["device"] = "none"
 
             if "time[s]" not in comb:
-                comb["time[s]"] = result.get("training_time") or result["prediction_time"]
+                comb["time[s]"] = (
+                    result.get("training_time") or result["prediction_time"]
+                )
 
             if "algorithm_parameters" not in comb:
                 comb["algorithm_paramters"] = {}
