@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from .loader_classification import (a_nine_a, airline, airline_ohe, bosch,
-                                    census,  cifar_binary, codrnanorm, covtype_binary, creditcard,
+                                    census, cifar_binary, codrnanorm, covtype_binary, creditcard,
                                     epsilon, epsilon_16K, epsilon_30K, epsilon_80K, epsilon_100K,
                                     fraud, gisette, hepmass_150K,
                                     higgs, higgs_one_m, higgs_150K, ijcnn, klaverjas,
