@@ -41,7 +41,7 @@ def main():
                              tol=params.tol, max_iter=params.maxiter,
                              solver=params.solver, multi_class=params.multiclass)
     # Time fit and predict
-    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params, stage='fit')
 
     y_pred = clf.predict(X_train)
     y_proba = clf.predict_proba(X_train)
@@ -50,7 +50,7 @@ def main():
     train_roc_auc = bench.roc_auc_score(y_train, y_proba)
 
     predict_time, y_pred = bench.measure_function_time(
-        clf.predict, X_test, params=params)
+        clf.predict, X_test, params=params, stage='infer')
     y_proba = clf.predict_proba(X_test)
     test_acc = bench.accuracy_score(y_test, y_pred)
     test_log_loss = bench.log_loss(y_test, y_proba)

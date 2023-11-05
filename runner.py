@@ -20,10 +20,14 @@ import logging
 import os
 import socket
 import sys
+import datetime
+import shutil
+import subprocess
 from typing import Any, Dict, List, Union
 
 import utils
 from pathlib import Path
+import hashlib
 
 
 def get_configs(path: Path) -> List[str]:
@@ -36,6 +40,125 @@ def get_configs(path: Path) -> List[str]:
             result += get_configs(new_path)
     return result
 
+allowed_analysis_types = ['vtune', 'emon', 'psrecord', 'ittpy']
+
+def check_additional_orders(args, common_params):
+    result = {}
+    if args.sgx_gramine:
+        result['sgx_gramine'] = args.sgx_gramine
+
+    analysis_config = {}
+    if 'analysis' in common_params.keys():
+        for analyse_type in allowed_analysis_types:
+            if analyse_type in common_params['analysis'].keys():
+                analysis_config[analyse_type] = common_params['analysis'][analyse_type]
+
+    result.update(analysis_config)
+    return result
+
+def get_program_name(analysis_config):
+    program_name = 'python'
+    if 'sgx_gramine' in analysis_config.keys() and analysis_config['sgx_gramine'] == True:
+        program_name = 'gramine-sgx ./sklearnex'
+    return program_name
+
+def dict_to_cmd_args(dictionary):
+    results = []
+    for key, item in dictionary.items():
+        if isinstance(item, list):
+            for subitem in item:
+                results.append(f'{key} {subitem}')
+        else:
+            results.append(f'{key} {item}')
+    return " ".join(results)
+
+def get_analyse_prefix(analysis_config):
+    for key in allowed_analysis_types:
+        if key in analysis_config.keys():
+            args = dict_to_cmd_args(analysis_config[key])
+            return args
+    else:
+        return None
+
+def get_benchmark_extra_args(analysis_config):
+    result = []
+    for key in analysis_config.keys():
+        result.append(f'--{key}'.replace('_', '-'))
+    return ' '.join(result)
+
+emon_dat_file_name, emon_xlsx_file_name = None, None
+
+def vtune_postproc(analysis_config, analysis_folder):
+    vtune_foldername = os.path.join(analysis_folder, 'vtune_'+analysis_folder.split('/')[-1])
+    if '-r' in analysis_config['vtune'].keys():
+        shutil.move(analysis_config['vtune']['-r'], vtune_foldername)
+    else:
+        for file in os.listdir('.'):
+            if 'r00' in file:
+                shutil.move(file, vtune_foldername)
+
+def fetch_expected_emon_filename(edp_config_path):
+    with open(edp_config_path, 'r') as edp_config:
+        for line in edp_config:
+            if line.strip().startswith('EMON_DATA='):
+                emon_dat_file_name = line.strip()[10:]
+            if line.strip().startswith('OUTPUT='):
+                emon_xlsx_file_name = line.strip()[7:]
+        else:
+            return 'emon.dat', 'summary.xlsx'
+        return emon_dat_filename, emon_xlsx_file_name
+
+def emon_postproc(analysis_config, analysis_folder):
+    global emon_dat_file_name, emon_xlsx_file_name
+    if emon_dat_file_name == None:
+        emon_dat_file_name, emon_xlsx_file_name = fetch_expected_emon_filename('utils/emon/edp_config.txt')
+    if '-f' in analysis_config['emon'].keys():
+        shutil.move(analysis_config['emon']['-f'], emon_dat_file_name)
+    else:
+        shutil.move('emon.dat', emon_dat_file_name)
+    emon_processing_command = 'emon -process-edp ./utils/emon/edp_config.txt'
+    res = subprocess.run(emon_processing_command.split(' '), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, encoding='utf-8')
+    if res.stderr[:-1] != '':
+        logging.error(f'EMON error message: {res.stderr[:-1]}')
+    shutil.move(emon_dat_file_name, analysis_folder)
+    shutil.move(emon_xlsx_file_name, analysis_folder)
+
+def psrecord_postproc(analysis_config, analysis_folder):
+    if '--log' in analysis_config.keys():
+        shutil.move(analysis_config['--log'], analysis_folder)
+    if '--plot' in analysis_config.keys():
+        shutil.move(analysis_config['--plot'], analysis_folder)
+
+def postproc_analysis_result(analysis_config, analysis_folder):
+    if 'vtune' in analysis_config.keys():
+        vtune_postproc(analysis_config, analysis_folder)
+    elif 'emon' in analysis_config.keys():
+        emon_postproc(analysis_config, analysis_folder)
+    elif 'psrecord' in analysis_config.keys():
+        psrecord_postproc(analysis_config, analysis_folder)
+
+def emon_preproc(analysis_config, command_line):
+    emon_sh = 'emon_runner.sh'
+    subcommand = f'#!/bin/bash\n' \
+        f'{command_line}\n'
+    with open(emon_sh, 'w') as f:
+        f.write(subcommand)
+    os.chmod(emon_sh, 0o755)
+    return emon_sh, subcommand
+
+def preproc_analysis(analysis_config, analysis_prefix, bench_command_line):
+    subcommand = ''
+    if 'emon' in analysis_config.keys():
+        emon_sh, subcommand = emon_preproc(analysis_config, bench_command_line)
+        command = f'emon {analysis_prefix} ./{emon_sh}'
+    elif 'psrecord' in analysis_config.keys():
+        command = f'psrecord {analysis_prefix} "{bench_command_line}"'
+    elif 'vtune' in analysis_config.keys():
+        command = f'vtune {analysis_prefix} -- {bench_command_line}'
+    else:
+        command = bench_command_line
+    return command, subcommand
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -64,6 +187,34 @@ if __name__ == '__main__':
                         'unmarked workloads will be launched anyway')
     parser.add_argument('--no-intel-optimized', default=False, action='store_true',
                         help='Use Scikit-learn without Intel optimizations')
+    parser.add_argument('--sgx-gramine', default=False, action='store_true',
+                        help='Run benchmarks with Gramine & Intel(R) SGX.')
+    parser.add_argument('--vtune', default=False, action='store_true',
+                        help='Profile benchmarks with VTune.')
+    parser.add_argument('--emon', default=False, action='store_true',
+                        help='Profile benchmarks with EMON.')
+    parser.add_argument('--psrecord', default=False, action='store_true',
+                        help='Analyze memory consumption with psrecord')
+    parser.add_argument('--box-filter-measurements-analysis', default=500, type=int,
+                        help='Maximum number of measurements in box filter (analysed stage). '
+                        'When benchmark uses this parameter to understand number of '
+                        'runs for target stage, other stage will be run '
+                        'only for getting trained model.'
+                        'Parameter won\'t be used if analysis options aren\'t enabled.')
+    parser.add_argument('--time-limit-analysis', default=100., type=float,
+                        help='Time to spend to currently analysed stage. '
+                        'When benchmark uses this parameter to calculate '
+                        'time for target stage, other stage will be run '
+                        'only for getting trained model.'
+                        'Parameter won\'t be used if analysis options aren\'t enabled.')
+    parser.add_argument('--box-filter-measurements', type=int, default=100,
+                        help='Maximum number of measurements in box filter.')
+    parser.add_argument('--time-limit', default=10., type=float,
+                        help='Target time to spend to benchmark.')
+    parser.add_argument('--flush-caches', default=False,
+                        action='store_true',
+                        help='Should benchmark flush CPU caches after each run during measuring.'
+                        'Recommended for default runs and vtune profiling (in case you would like to flush caches).')
     parser.add_argument('--output-file', default='results.json',
                         type=argparse.FileType('w'),
                         help='Output file of benchmarks to use with their runner')
@@ -78,6 +229,7 @@ if __name__ == '__main__':
                         'the default config will be used. '
                         'Need "openpyxl" library')
     args = parser.parse_args()
+    timestamp = str(datetime.date.today()).replace(' ', '--').replace(':', '-').replace('.', '-')
 
     logging.basicConfig(
         stream=sys.stdout, format='%(levelname)s: %(message)s', level=args.verbose)
@@ -95,10 +247,18 @@ if __name__ == '__main__':
         logging.info('Datasets folder is not set, using local folder')
 
     json_result: Dict[str, Union[Dict[str, Any], List[Any]]] = {
+        'common': {},
         'hardware': utils.get_hw_parameters(),
         'software': utils.get_sw_parameters(),
         'results': []
     }
+    json_result['common']['timestamp'] = timestamp
+
+    path_to_analysis_dir = 'analysis_'+timestamp
+    if os.path.exists(path_to_analysis_dir):
+        shutil.rmtree(path_to_analysis_dir)
+    os.makedirs(path_to_analysis_dir)
+
     is_successful = True
     # getting jsons from folders
     paths_to_configs: List[str] = list()
@@ -119,6 +279,15 @@ if __name__ == '__main__':
         common_params = config['common']
         for params_set in config['cases']:
             params = common_params.copy()
+            # print('PRE PARAMS:', params)
+            analysis_config = check_additional_orders(args, common_params)
+            # print('ANALYSIS CONFIG:', analysis_config)
+            if 'analysis' in params.keys():
+                del params['analysis']
+            # print('POST PARAMS:', params)
+            program_name = get_program_name(analysis_config)
+            analysis_prefix = get_analyse_prefix(analysis_config)
+            bench_extra_args = get_benchmark_extra_args(analysis_config)
             params.update(params_set.copy())
 
             if 'workload-size' in params:
@@ -277,37 +446,67 @@ if __name__ == '__main__':
                     '--no-intel-optimized ' if args.no_intel_optimized else ''
                 for lib in libs:
                     for i, case in enumerate(cases):
-                        command = f'python {lib}_bench/{algorithm}.py ' \
-                            + no_intel_optimize \
-                            + f'--arch {hostname} {case} {paths} ' \
-                            + f'--dataset-name {dataset_name}'
-                        command = ' '.join(command.split())
-                        logging.info(command)
-                        if not args.dummy_run:
-                            case = f'{lib},{algorithm} ' + case
-                            stdout, stderr = utils.read_output_from_command(
-                                command, env=os.environ.copy())
-                            stdout, extra_stdout = utils.filter_stdout(stdout)
-                            stderr = utils.filter_stderr(stderr)
+                        analysis_stage_collection = ['default']
+                        if analysis_prefix != None:
+                            analysis_stage_collection.extend(['fit', 'infer'])
+                        for analysis_stage in analysis_stage_collection:
+                            bench_command_line = f'{program_name} {lib}_bench/{algorithm}.py ' \
+                                + no_intel_optimize \
+                                + f'--arch {hostname} {case} {paths} ' \
+                                + f'--dataset-name {dataset_name} ' \
+                                + f'--box-filter-measurements-analysis {args.box_filter_measurements_analysis} ' \
+                                + f'--box-filter-measurements {args.box_filter_measurements} ' \
+                                + f'--time-limit-analysis {args.time_limit_analysis} ' \
+                                + f'--time-limit {args.time_limit} ' \
+                                + f'--target-stage {analysis_stage} '
+                            if args.flush_caches:
+                                bench_command_line += ' --flush-caches '
+                            hash_of_case = hashlib.sha256(bench_command_line.encode('utf-8')).hexdigest()
+                            if analysis_stage == 'default':
+                                command = bench_command_line
+                                subcommand = None
+                            else:
+                                bench_command_line += f' {bench_extra_args} '
+                                command, subcommand = preproc_analysis(analysis_config, analysis_prefix, bench_command_line)
 
-                            print(stdout, end='\n')
+                            command = ' '.join(command.split())
 
-                            if extra_stdout != '':
-                                stderr += f'CASE {case} EXTRA OUTPUT:\n' \
-                                    + f'{extra_stdout}\n'
-                            try:
-                                if isinstance(json_result['results'], list):
-                                    json_result['results'].extend(
-                                        json.loads(stdout))
-                            except json.JSONDecodeError as decoding_exception:
-                                stderr += f'CASE {case} JSON DECODING ERROR:\n' \
-                                    + f'{decoding_exception}\n{stdout}\n'
+                            logging.info(command)
+                            if 'emon' in analysis_config.keys() and subcommand != None:
+                                logging.info(f'Subcommand: {subcommand}')
+                            if not args.dummy_run:
+                                case_result = f'{lib},{algorithm} ' + case
+                                stdout, stderr = utils.read_output_from_command(command, env=os.environ.copy())
+                                stdout, extra_stdout = utils.filter_stdout(stdout)
+                                stderr = utils.filter_stderr(stderr)
+                                try:
+                                    output_json = json.loads(stdout)
+                                    json_decoding_ok = True
+                                except json.JSONDecodeError as decoding_exception:
+                                    stderr += f'CASE {case_result} JSON DECODING ERROR:\n' \
+                                        + f'{decoding_exception}\n{stdout}\n'
+                                    json_decoding_ok = False
+                                if analysis_stage != 'default':
+                                    actual_config = None
+                                    for cfg in output_json:
+                                        if cfg['stage'] == 'training' and analysis_stage == 'fit':
+                                            actual_config = cfg
+                                        elif cfg['stage'] != 'training' and analysis_stage != 'fit':
+                                            actual_config = cfg
+                                    current_rows_number = actual_config['input_data']['rows']
+                                    current_columns_number = actual_config['input_data']['columns']
+                                    case_folder = f"{lib}_{algorithm}_{analysis_stage}_{dataset_name}_{current_rows_number}x{current_columns_number}_{hash_of_case[:6]}"
+                                    analysis_folder = os.path.join(path_to_analysis_dir, case_folder)
+                                    os.makedirs(analysis_folder)
+                                    postproc_analysis_result(analysis_config, analysis_folder)
 
-                            if stderr != '':
-                                if 'daal4py' not in stderr:
-                                    is_successful = False
-                                    logging.warning(
-                                        'Error in benchmark: \n' + stderr)
+                                if analysis_prefix != None:
+                                    for item in output_json:
+                                        item['hash_prefix'] = hash_of_case[:6]
+                                        item['analysis'] = analysis_config
+
+                                if json_decoding_ok and analysis_stage == 'default':
+                                    json_result['results'].extend(output_json)
 
     json.dump(json_result, args.output_file, indent=4)
     name_result_file = args.output_file.name

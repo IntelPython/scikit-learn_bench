@@ -1,0 +1,74 @@
+##################################################################################
+#                                                                                #
+#   EDP RUBY SCRIPT CONFIGURATION FILE TEMPLATE                                  #
+#   Use this file as a template for creating your configuration file             #
+#   emon -process-edp <edp_config_file>                                          #
+#                                                                                #
+#                                                                                #
+##################################################################################
+
+#ruby interpreter, change it according to the path where ruby is installed in your system
+#RUBY_PATH="c:\Ruby192\bin\ruby.exe"
+RUBY_PATH="ruby"
+
+#JVM options for JRuby.
+#--server means using server JVM, which means better GC efficiency
+#5g is the heap size, a larger heap size is always helpful.
+#RUBY_OPTIONS=--server -J-Xmx5g -J-Xms5g --1.8
+
+#Number of threads to process data in parallel. Typically it should equal to the number of logical CPUs in your processing system.
+PARALLELISM=24
+
+#input file names, you may need to change them
+EMON_DATA=emon.dat
+
+#output file name, you may want to change it
+OUTPUT=summary.xlsx
+
+#The metrics definition file - HW platform specific file 
+#You don't need to specify this, EMON will use the correct file by default
+#Uncomment this line only if you want to use customer metric file
+#METRICS=skylake_server-2s.xml
+#Use the following settings for processing data from Hybrid platforms
+#EMON will use the correct files by default and use the settings only to override
+#with custom metric files
+#The separate metric files for big core and small core type platforms can be specified
+#will be used instead of the METRICS setting above
+#SC_METRICS=
+#BC_METRICS=
+
+#Excel chart format file - HW platform specific file
+#You don't need to specify this, EMON will use the correct file by default
+#Uncomment this line only if you want to use customer metric file
+#CHART_FORMAT=chart_format_clx_2s.txt
+#Use the following settings for processing data from Hybrid platforms
+#EMON will use the correct files by default and use the settings only to override
+#with custom metric files
+#The separate metric files for big core and small core type platforms can be specified
+#will be used instead of the METRICS setting above
+#SC_CHART_FORMAT=
+#BC_CHART_FORMAT=
+
+#the average value will be calculated from the %BEGIN% sample to %END% sample.
+#setting %END% to a negative value means the last availabe sample.
+#BEGIN=1
+#END=100000
+#The BEGIN/END could also be a wall clock time in the format of mm/dd/yyyy hh:mm:ss.mmm
+#EMON data must be collected with timestamps (-c parameter) in this case. 
+#BEGIN="08/24/2012 17:53:20.885"
+#END="08/24/2012 17:53:35.885"
+
+#by default only system view will be outputted
+#there are 3 optional views to be selected
+#you can select one or more of them
+VIEW=--socket-view --core-view --thread-view
+
+#set the throughput (Transaction per Second)
+#TPS=--tps 10
+
+#if timestamps are presented in EMON data, the charts can be plotted with time as the x-axis.
+#by default the sample number is used as the x-axis. Don't enable this if timestamp data is not present in EMON data
+TIMESTAMP_IN_CHART="--timestamp-in-chart"
+
+# QPI frequency
+#QPI=

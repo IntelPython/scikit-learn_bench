@@ -40,7 +40,7 @@ def main():
 
     params.n_classes = len(np.unique(y_train))
 
-    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params, stage='fit')
     y_pred = clf.predict(X_train)
     y_proba = clf.predict_proba(X_train)
     train_acc = bench.accuracy_score(y_train, y_pred)
@@ -48,7 +48,7 @@ def main():
     train_roc_auc = bench.roc_auc_score(y_train, y_proba)
 
     predict_time, y_pred = bench.measure_function_time(
-        clf.predict, X_test, params=params)
+        clf.predict, X_test, params=params, stage='infer')
     y_proba = clf.predict_proba(X_test)
     test_acc = bench.accuracy_score(y_test, y_pred)
     test_log_loss = bench.log_loss(y_test, y_proba)

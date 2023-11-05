@@ -38,7 +38,7 @@ def main():
                  cache_size=params.cache_size_mb, tol=params.tol, gamma=params.gamma,
                  degree=params.degree)
 
-    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params, stage='fit')
     params.sv_len = regr.support_.shape[0]
 
     predict_train_time, y_pred = bench.measure_function_time(
@@ -47,7 +47,7 @@ def main():
     train_r2 = bench.r2_score(y_train, y_pred)
 
     _, y_pred = bench.measure_function_time(
-        regr.predict, X_test, params=params)
+        regr.predict, X_test, params=params, stage='infer')
     test_rmse = bench.rmse_score(y_test, y_pred)
     test_r2 = bench.r2_score(y_test, y_pred)
 

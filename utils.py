@@ -35,21 +35,22 @@ def filter_stderr(text: str) -> str:
 
 
 def filter_stdout(text: str) -> Tuple[str, str]:
-    verbosity_letters = 'EWIDT'
-    filtered, extra = '', ''
+    filtered, extra = [], []
+    inside_result_section = False
     for line in text.split('\n'):
-        if line == '':
+        stripped_line = line.strip()
+        if stripped_line == '# Intel(R) Extension for Scikit-learn case result:':
+            inside_result_section = True
             continue
-        to_remove = False
-        for letter in verbosity_letters:
-            if line.startswith(f'[{letter}]'):
-                to_remove = True
-                break
-        if to_remove:
-            extra += line + '\n'
+        if stripped_line == '# Intel(R) Extension for Scikit-learn case finished.':
+            inside_result_section = False
+            continue
+        if inside_result_section:
+            filtered.append(line)
         else:
-            filtered += line + '\n'
-    return filtered, extra
+            extra.append(line)
+
+    return '\n'.join(filtered), '\n'.join(extra)
 
 
 def files_in_folder(folder: str, files: Iterable[str]) -> bool:

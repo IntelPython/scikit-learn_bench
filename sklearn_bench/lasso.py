@@ -30,11 +30,11 @@ def main():
                  tol=params.tol, max_iter=params.maxiter)
 
     # Time fit
-    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(regr.fit, X_train, y_train, params=params, stage='fit')
 
     # Time predict
     predict_time, yp = bench.measure_function_time(
-        regr.predict, X_train, params=params)
+        regr.predict, X_train, params=params, stage='infer')
 
     train_rmse = bench.rmse_score(y_train, yp)
     train_r2 = bench.r2_score(y_train, yp)

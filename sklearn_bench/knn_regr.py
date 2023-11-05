@@ -36,7 +36,7 @@ def main():
 
     # Measure time and accuracy on fitting
     train_time, _ = bench.measure_function_time(
-        knn_regr.fit, X_train, y_train, params=params)
+        knn_regr.fit, X_train, y_train, params=params, stage='fit')
     if params.task == 'regression':
         y_pred = knn_regr.predict(X_train)
         train_rmse = bench.rmse_score(y_train, y_pred)
@@ -45,12 +45,12 @@ def main():
     # Measure time and accuracy on prediction
     if params.task == 'regression':
         predict_time, yp = bench.measure_function_time(knn_regr.predict, X_test,
-                                                       params=params)
+                                                       params=params, stage='infer')
         test_rmse = bench.rmse_score(y_test, yp)
         test_r2 = bench.r2_score(y_test, yp)
     else:
         predict_time, _ = bench.measure_function_time(knn_regr.kneighbors, X_test,
-                                                      params=params)
+                                                      params=params, stage='infer')
 
     if params.task == 'regression':
         bench.print_output(

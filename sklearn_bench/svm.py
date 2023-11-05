@@ -38,7 +38,7 @@ def main():
               tol=params.tol, gamma=params.gamma, probability=params.probability,
               random_state=43, degree=params.degree)
 
-    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params)
+    fit_time, _ = bench.measure_function_time(clf.fit, X_train, y_train, params=params, stage='fit')
     params.sv_len = clf.support_.shape[0]
 
     if params.probability:
@@ -53,7 +53,7 @@ def main():
         train_roc_auc = bench.roc_auc_score(y_train, y_pred)
 
         _, y_pred = bench.measure_function_time(
-            clf_predict, X_test, params=params)
+            clf_predict, X_test, params=params, stage='infer')
         test_log_loss = bench.log_loss(y_test, y_pred)
         test_roc_auc = bench.roc_auc_score(y_test, y_pred)
     else:
@@ -69,7 +69,7 @@ def main():
         train_acc = bench.accuracy_score(y_train, y_pred)
 
         _, y_pred = bench.measure_function_time(
-            clf_predict, X_test, params=params)
+            clf_predict, X_test, params=params, stage='infer')
         test_acc = bench.accuracy_score(y_test, y_pred)
 
     bench.print_output(
