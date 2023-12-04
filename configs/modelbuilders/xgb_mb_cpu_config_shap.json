@@ -1,0 +1,309 @@
+{
+    "common": {
+        "lib": "modelbuilders",
+        "data-format": "pandas",
+        "data-order": "F",
+        "dtype": "float32",
+        "algorithm": "xgb_mb",
+        "tree-method": "hist",
+        "count-dmatrix": "",
+        "num-threads": -1,
+        "n-estimators": 50
+    },
+    "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "abalone",
+                    "training": {
+                        "x": "data/abalone_x_train.npy",
+                        "y": "data/abalone_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/abalone_x_test.npy",
+                        "y": "data/abalone_y_test.npy"
+                    }
+                }
+            ],
+            "learning-rate": 0.03,
+            "max-depth": 6,
+            "n-estimators": 1000,
+            "objective": "reg:squarederror"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mortgage1Q",
+                    "training": {
+                        "x": "data/mortgage1Q_x_train.npy",
+                        "y": "data/mortgage1Q_y_train.npy"
+                    }
+                }
+            ],
+            "n-estimators": 100,
+            "objective": "reg:squarederror",
+            "max-depth": 8,
+            "scale-pos-weight": 2,
+            "learning-rate": 0.1,
+            "subsample": 1,
+            "reg-alpha": 0.9,
+            "reg-lambda": 1,
+            "min-child-weight": 0,
+            "max-leaves": 256
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training": {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 6,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 1024,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 10,
+                    "n_informative": 10,
+                    "training": {
+                        "n_samples": 2000
+                    },
+                    "testing": {
+                        "n_samples": 8000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 10,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 4096,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 10,
+                    "n_informative": 10,
+                    "training": {
+                        "n_samples": 3000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "n_informative": 20,
+                    "training": {
+                        "n_samples": 2000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 10,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 1024,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "n_informative": 20,
+                    "training": {
+                        "n_samples": 4000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 14,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 4096,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 20,
+                    "n_informative": 20,
+                    "training": {
+                        "n_samples": 10000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "n_informative": 50,
+                    "training": {
+                        "n_samples": 2000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 10,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 1024,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "n_informative": 50,
+                    "training": {
+                        "n_samples": 2000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 14,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 4096,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 50,
+                    "n_informative": 50,
+                    "training": {
+                        "n_samples": 4000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 8,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 256,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "n_informative": 100,
+                    "training": {
+                        "n_samples": 1000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 10,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 1024,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "n_informative": 100,
+                    "training": {
+                        "n_samples": 2000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "max-depth": 14,
+            "learning-rate": 0.1,
+            "reg-lambda": 1,
+            "max-leaves": 4096,
+            "dataset": [
+                {
+                    "source": "synthetic",
+                    "type": "regression",
+                    "n_features": 100,
+                    "n_informative": 100,
+                    "training": {
+                        "n_samples": 3000
+                    },
+                    "testing": {
+                        "n_samples": 80000
+                    }
+                }
+            ]
+        }
+    ]
+}

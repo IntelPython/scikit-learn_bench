@@ -21,7 +21,6 @@ import daal4py
 import numpy as np
 import xgboost as xgb
 
-
 def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
 
@@ -152,6 +151,7 @@ parser.add_argument(
 
 params = bench.parse_args(parser)
 
+
 X_train, X_test, y_train, y_test = bench.load_data(params)
 
 xgb_params = {
@@ -180,8 +180,13 @@ xgb_params = {
     "enable_experimental_json_serialization": params.enable_experimental_json_serialization,
 }
 
-if params.threads != -1:
+if params.threads == -1:
+    # SHAP value calculation is faster with using logical cores as number of threads
+    import psutil
+    daal4py.daalinit(psutil.cpu_count())
+else:
     xgb_params.update({"nthread": params.threads})
+    daal4py.daalinit(params.threads)
 
 if params.objective.startswith("reg"):
     task = "regression"
@@ -208,6 +213,12 @@ t_creat_train, dtrain = bench.measure_function_time(
 t_creat_test, dtest = bench.measure_function_time(
     xgb.DMatrix, X_test, params=params, label=y_test
 )
+
+# SHAP interactions are very expensive - cap the number of rows
+interaction_n_rows = max(2_000, 200_000 // (X_test.shape[0] * X_test.shape[1]))
+
+# not benchmarked, but required for SHAP interactions
+dtest_interactions = xgb.DMatrix(X_test[:interaction_n_rows])
 
 
 def fit(dmatrix):
@@ -250,7 +261,7 @@ shap_contrib_time, shap_contribs = bench.measure_function_time(
 )
 
 shap_interaction_time, shap_interactions = bench.measure_function_time(
-    predict, dtest, pred_interactions=True, params=params
+    predict, dtest_interactions, pred_interactions=True, params=params
 )
 
 transform_time, model_daal = bench.measure_function_time(
@@ -262,22 +273,28 @@ predict_time_daal, daal_pred = bench.measure_function_time(
 )
 test_metric_daal = metric_func(y_test, daal_pred)
 
-shap_contrib_time_daal, daal_contribs = bench.measure_function_time(
-    model_daal.predict, X_test, pred_contribs=True, params=params
-)
+if model_daal._is_regression:
+    shap_contrib_time_daal, daal_contribs = bench.measure_function_time(
+        model_daal.predict, X_test, pred_contribs=True, params=params
+    )
 
-shap_interaction_time_daal, daal_interactions = bench.measure_function_time(
-    model_daal.predict, X_test, pred_interactions=True, params=params
-)
+    shap_interaction_time_daal, daal_interactions = bench.measure_function_time(
+        model_daal.predict, X_test[:interaction_n_rows], pred_interactions=True, params=params
+    )
 
-contrib_accuracy = shap_accuracy(shap_contribs, daal_contribs)
+    contrib_accuracy = shap_accuracy(shap_contribs, daal_contribs)
 
-interaction_accuracy = shap_accuracy(shap_interactions, daal_interactions)
+    interaction_accuracy = shap_accuracy(shap_interactions, daal_interactions)
 
+else:
+    # classification currently does not support SHAP values
+    shap_contrib_time_daal, shap_interaction_time_daal, contrib_accuracy, interaction_accuracy = [0]*4
 
 bench.print_output(
     library="modelbuilders",
     algorithm=f"xgboost_{task}_and_modelbuilder",
+    alg_instance=booster,
+    alg_params={"max-depth": getattr(params, "max_depth", None), "objective": getattr(params, "objective", None)},
     stages=[
         "training_preparation",
         "training",
@@ -290,6 +307,7 @@ bench.print_output(
         "shap_interaction_prediction",
         "alternative_shap_interaction_prediction",
     ],
+    data=[X_train]*2 + [X_test]*2 + [X_train] + [X_test]*5,
     params=params,
     functions=[
         "xgb.dmatrix.train",
@@ -315,7 +333,7 @@ bench.print_output(
         shap_interaction_time,
         shap_interaction_time_daal,
     ],
-    metric_type=[metric_name, "RMSE"],
+    metric_type=[metric_name, "rmse"],
     metrics=[
         [
             None,
@@ -342,5 +360,4 @@ bench.print_output(
             interaction_accuracy,
         ],
     ],
-    data=[X_train] * 2 + [X_test] * 8,
 )
