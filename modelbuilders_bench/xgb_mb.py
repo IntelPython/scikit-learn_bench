@@ -21,6 +21,7 @@ import daal4py
 import numpy as np
 import xgboost as xgb
 
+
 def convert_probs_to_classes(y_prob):
     return np.array([np.argmax(y_prob[i]) for i in range(y_prob.shape[0])])
 
@@ -35,7 +36,14 @@ def convert_xgb_predictions(y_pred, objective):
 
 def shap_accuracy(new, ref):
     # broadcast all values into single column and calculate RMSE
-    return bench.rmse_score(new.reshape(-1, ), ref.reshape(-1, ))
+    return bench.rmse_score(
+        new.reshape(
+            -1,
+        ),
+        ref.reshape(
+            -1,
+        ),
+    )
 
 
 parser = argparse.ArgumentParser(
@@ -183,6 +191,7 @@ xgb_params = {
 if params.threads == -1:
     # SHAP value calculation is faster with using logical cores as number of threads
     import psutil
+
     daal4py.daalinit(psutil.cpu_count())
 else:
     xgb_params.update({"nthread": params.threads})
@@ -279,7 +288,10 @@ if model_daal._is_regression:
     )
 
     shap_interaction_time_daal, daal_interactions = bench.measure_function_time(
-        model_daal.predict, X_test[:interaction_n_rows], pred_interactions=True, params=params
+        model_daal.predict,
+        X_test[:interaction_n_rows],
+        pred_interactions=True,
+        params=params,
     )
 
     contrib_accuracy = shap_accuracy(shap_contribs, daal_contribs)
@@ -288,13 +300,21 @@ if model_daal._is_regression:
 
 else:
     # classification currently does not support SHAP values
-    shap_contrib_time_daal, shap_interaction_time_daal, contrib_accuracy, interaction_accuracy = [0]*4
+    (
+        shap_contrib_time_daal,
+        shap_interaction_time_daal,
+        contrib_accuracy,
+        interaction_accuracy,
+    ) = [0] * 4
 
 bench.print_output(
     library="modelbuilders",
     algorithm=f"xgboost_{task}_and_modelbuilder",
     alg_instance=booster,
-    alg_params={"max-depth": getattr(params, "max_depth", None), "objective": getattr(params, "objective", None)},
+    alg_params={
+        "max-depth": getattr(params, "max_depth", None),
+        "objective": getattr(params, "objective", None),
+    },
     stages=[
         "training_preparation",
         "training",
@@ -307,7 +327,7 @@ bench.print_output(
         "shap_interaction_prediction",
         "alternative_shap_interaction_prediction",
     ],
-    data=[X_train]*2 + [X_test]*2 + [X_train] + [X_test]*5,
+    data=[X_train] * 2 + [X_test] * 2 + [X_train] + [X_test] * 5,
     params=params,
     functions=[
         "xgb.dmatrix.train",
