@@ -1,0 +1,22 @@
+{
+    "header": [
+        "algorithm",
+        "stage",
+        "device",
+        "input_data:data_order",
+        "input_data:data_type",
+        "input_data:dataset_name",
+        "input_data:rows",
+        "input_data:columns",
+        "input_data:classes",
+        "input_data:n_clusters",
+        "algorithm_parameters:max-depth",
+        "algorithm_parameters:objective"
+    ],
+    "comparison_method": {
+        "default": "2 / 1"
+    },
+    "aggregation_metrics": [
+        "geomean"
+    ]
+}
