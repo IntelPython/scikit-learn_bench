@@ -34,6 +34,9 @@ def try_gen_dataset(args, folder):
         else:
             raise ValueError(f'{args.type} is unknown dataset type')
         return True
+    except PermissionError as ex:
+        logging.warning(f"Write access to {folder} denied. Writing to local path instead.")
+        return False
     except BaseException as ex:
         logging.warning(f"Internal error generating dataset:\n{ex}")
         return False
