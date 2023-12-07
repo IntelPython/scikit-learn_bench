@@ -1,0 +1,69 @@
+{
+    "PARAMETERS_SETS": {
+        "implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "pca parameters": {
+            "algorithm": {
+                "estimator": "PCA",
+                "estimator_params": {
+                    "n_components": 0.5,
+                    "copy": true,
+                    "whiten": false,
+                    "svd_solver": "full",
+                    "tol": 0.0,
+                    "random_state": 42
+                }
+            }
+        },
+        "datasets": [
+            {
+                "data": {
+                    "dataset": ["cifar", "mnist", "yolanda", "codrnanorm"],
+                    "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "n_samples": 20000,
+                        "n_features": 2000,
+                        "centers": 2
+                    },
+                    "split_kwargs": {
+                        "train_size": 0.1,
+                        "test_size": 0.9
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "epsilon",
+                    "split_kwargs": {
+                        "train_size": 50000,
+                        "test_size": null
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "higgs",
+                    "split_kwargs": {
+                        "train_size": 1000000,
+                        "test_size": null
+                    }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "pca": {
+            "INCLUDE": ["implementations", "pca parameters", "datasets"]
+        }
+    }
+}

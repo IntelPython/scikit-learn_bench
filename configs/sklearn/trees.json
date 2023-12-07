@@ -1,0 +1,104 @@
+{
+    "PARAMETERS_SETS": {
+        "random forest implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "extra trees implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "common ensemble params": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_estimators": 200,
+                    "max_depth": null,
+                    "min_samples_split": 5,
+                    "max_features": "sqrt",
+                    "random_state": 42,
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "random forest classifier params": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier",
+                "estimator_params": { "criterion": "gini" }
+            }
+        },
+        "random forest regressor params": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor",
+                "estimator_params": { "criterion": "squared_error" }
+            }
+        },
+        "extra trees classifier params": {
+            "algorithm": {
+                "estimator": "ExtraTreesClassifier",
+                "estimator_params": { "criterion": "gini" }
+            }
+        },
+        "extra trees regressor params": {
+            "algorithm": {
+                "estimator": "ExtraTreesRegressor",
+                "estimator_params": { "criterion": "squared_error" }
+            }
+        },
+        "classification data": {
+            "data": [
+                { "dataset": "skin_segmentation", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "mnist", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                { "dataset": "gisette", "split_kwargs": { "train_size": 5000, "test_size": 2000 } },
+                { "dataset": "cifar", "split_kwargs": { "train_size": 10000, "test_size": null } }
+            ]
+        },
+        "regression data": {
+            "data": [
+                {
+                    "dataset": "road_network",
+                    "split_kwargs": {
+                        "train_size": 200000, "test_size": null,
+                        "shuffle": true, "random_state": 42
+                    }
+                },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "gisette", "split_kwargs": { "train_size": 5000, "test_size": 2000 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "random forest classification": {
+            "INCLUDE": [
+                "random forest implementations", "common ensemble params",
+                "random forest classifier params", "classification data"
+            ]
+        },
+        "random forest regression": {
+            "INCLUDE": [
+                "random forest implementations", "common ensemble params",
+                "random forest regressor params", "regression data"
+            ]
+        },
+        "extra trees classification": {
+            "INCLUDE": [
+                "extra trees implementations", "common ensemble params",
+                "extra trees classifier params", "classification data"
+            ]
+        },
+        "extra trees regression": {
+            "INCLUDE": [
+                "extra trees implementations", "common ensemble params",
+                "extra trees regressor params", "regression data"
+            ]
+        }
+    }
+}

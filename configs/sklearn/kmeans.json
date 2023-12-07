@@ -1,0 +1,77 @@
+{
+	"PARAMETERS_SETS": {
+		"implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+				{ "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+		"kmeans parameters": {
+			"algorithm": {
+				"estimator": "KMeans",
+				"estimator_params": {
+					"n_clusters": "[SPECIAL_VALUE]auto",
+					"init": "k-means++",
+					"n_init": 10,
+					"max_iter": 30,
+					"tol": 1e-3,
+					"random_state": 42,
+					"copy_x": true,
+					"algorithm": "lloyd"
+				},
+				"estimator_methods": { "inference": "predict" }
+			},
+			"data": {
+				"dtype": ["float32", "float64"],
+				"preprocessing_kwargs": { "normalize": true }
+			}
+		},
+		"small datasets": {
+			"data": [
+				{
+					"dataset": ["covtype", "sensit"],
+					"split_kwargs": { "ignore": true }
+				},
+				{
+					"dataset": ["mnist", "gisette"],
+					"split_kwargs": { "ignore": true },
+					"preprocessing_kwargs": { "normalize": false }
+				}
+			]
+		},
+		"higgs": {
+			"data": {
+				"dataset": "higgs",
+				"split_kwargs": {
+					"train_size": 100000,
+					"test_size": 2000000,
+					"shuffle": true,
+					"random_state": 42
+				}
+			},
+			"algorithm": [
+				{
+					"estimator_params": {
+						"n_clusters": 100,
+						"max_iter": 10
+					}
+				},
+				{
+					"estimator_params": {
+						"n_clusters": 10,
+						"max_iter": 100
+					}
+				}
+			]
+		}
+	},
+	"TEMPLATES": {
+		"kmeans higgs": {
+			"INCLUDE": ["implementations", "kmeans parameters", "higgs"]
+		},
+		"kmeans small datasets": {
+			"INCLUDE": ["implementations", "kmeans parameters", "small datasets"]
+		}
+	}
+}

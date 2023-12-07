@@ -1,0 +1,85 @@
+{
+    "PARAMETERS_SETS": {
+        "implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "common knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_neighbors": [10, 100],
+                    "weights": "uniform",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": true }
+            }
+        },
+        "classification data": [
+            {
+                "algorithm": { "estimator_params": { "algorithm": "brute", "metric": ["l1", "l2"] } },
+                "data": [
+                    { "dataset": "susy", "split_kwargs": { "train_size": 100000, "test_size": 10000 } },
+                    { "dataset": "connect" },
+                    { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } }
+                ]
+            },
+            {
+                "algorithm": {
+                    "device": "cpu",
+                    "estimator_params": { "algorithm": "kd_tree", "metric": "l2" }
+                },
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 5,
+                        "n_samples": [50000, 250000],
+                        "n_features": [8, 16],
+                        "n_informative": "[SPECIAL_VALUE]0.5"
+                    },
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                }
+            }
+        ],
+        "regression data": [
+            {
+                "algorithm": { "estimator_params": { "algorithm": "brute", "metric": ["l1", "l2"] } },
+                "data": [
+                    { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 40000, "test_size": 10000 } },
+                    { "dataset": ["fried", "twodplanes"] }
+                ]
+            },
+            {
+                "algorithm": {
+                    "device": "cpu",
+                    "estimator_params": { "algorithm": "kd_tree", "metric": "l2" }
+                },
+                "data": [
+                    { "dataset": "fried" },
+                    {
+                        "source": "make_regression",
+                        "generation_kwargs": {
+                            "n_samples": [50000, 250000],
+                            "n_features": [8, 16],
+                            "noise": 0.75
+                        },
+                        "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                    }
+                ]
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "knn clsf": {
+            "INCLUDE": ["implementations", "common knn parameters", "classification data"],
+            "algorithm": { "estimator": "KNeighborsClassifier" }
+        },
+        "knn regr": {
+            "INCLUDE": ["implementations", "common knn parameters", "regression data"],
+            "algorithm": { "estimator": "KNeighborsRegressor" }
+        }
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "PARAMETERS_SETS": {
+        "implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "daal4py", "device": "cpu" }
+            ]
+        },
+        "train_test_split parameters": {
+            "algorithm": {
+                "function": "train_test_split",
+                "args_order": "x_train|y_train",
+                "kwargs": {
+                    "test_size": 0.25,
+                    "random_state": 42,
+                    "shuffle": true
+                }
+            }
+        },
+        "datasets": [
+            {
+                "data": {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": [100000, 200000, 500000, 1000000] }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "a9a",
+                    "split_kwargs": { "train_size": [10000, 40000], "test_size": null }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "mnist",
+                    "split_kwargs": { "train_size": [20000, 50000] }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+		"train_test_split": {
+			"INCLUDE": ["implementations", "train_test_split parameters", "datasets"]
+		}
+	}
+}

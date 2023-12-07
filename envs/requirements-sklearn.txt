@@ -1,0 +1,14 @@
+scikit-learn
+pandas
+tabulate
+fastparquet
+openpyxl
+tqdm
+psutil
+requests
+py-cpuinfo
+# additional frameworks
+xgboost
+catboost
+lightgbm
+scikit-learn-intelex
