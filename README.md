@@ -1,6 +1,6 @@
 # Machine Learning Benchmarks
 
-[Developer Guide](docs/dev/README.md)
+[Developer Guide](docs/README.md)
 
 [![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=main)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=main)
 
