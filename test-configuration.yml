@@ -1,0 +1,33 @@
+#===============================================================================
+# Copyright 2023 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
+steps:
+  - task: UsePythonVersion@0
+    displayName: "Use Python $(python.version)"
+    inputs:
+      versionSpec: "$(python.version)"
+  - script: |
+      pip install -r envs/requirements-sklearn.txt
+      pip list
+    displayName: Install requirements
+  - script: |
+      python -m sklbench --runner-log-level DEBUG --parameters algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
+    displayName: CLI arguments run
+  - script: |
+      python -m sklbench --runner-log-level INFO --config configs/sklearn_example.json --generate-report
+    displayName: Sklearn example run
+  - script: |
+      python -m sklbench --runner-log-level INFO --config configs/xgboost_example.json
+    displayName: XGBoost example run

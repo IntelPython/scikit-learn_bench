@@ -1,0 +1,126 @@
+{
+    "PARAMETERS_SETS": {
+        "implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" }
+            ]
+        },
+        "linear implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "synth datasets common": {
+            "data": {
+                "source": "make_regression",
+                "split_kwargs": {
+                    "train_size": 0.2,
+                    "test_size": 0.8
+                },
+                "generation_kwargs": {
+                    "n_informative": "[SPECIAL_VALUE]0.5",
+                    "noise": 1.25
+                }
+            }
+        },
+        "synth datasets shapes": {
+            "data": {
+                "generation_kwargs": [
+                    {
+                        "n_samples": 5000000,
+                        "n_features": 20
+                    },
+                    {
+                        "n_samples": 500000,
+                        "n_features": 200
+                    },
+                    {
+                        "n_samples": 50000,
+                        "n_features": 2000
+                    }
+                ]
+            }
+        },
+        "real datasets": [
+            {
+                "data": {
+                    "dataset": "year_prediction_msd",
+                    "preprocessing_kwargs": { "normalize": true },
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["hepmass", "susy"],
+                    "split_kwargs": { "train_size": 1000000, "test_size": null }
+                }
+            }
+        ],
+        "linear parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": {
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "ridge parameters": {
+            "algorithm": {
+                "estimator": "Ridge",
+                "estimator_params": {
+                    "alpha": 2.0,
+                    "solver": "auto",
+                    "tol": 1e-4
+                }
+            }
+        },
+        "lasso parameters": {
+            "algorithm": {
+                "estimator": "Lasso",
+                "estimator_params": {
+                    "alpha": 1e-3,
+                    "tol": 1e-4
+                }
+            }
+        },
+        "elasticnet parameters": {
+            "algorithm": {
+                "estimator": "ElasticNet",
+                "estimator_params": {
+                    "alpha": 1e-3,
+                    "l1_ratio": 0.9,
+                    "tol": 1e-4
+                }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "linear synth data": {
+            "INCLUDE": ["linear implementations", "linear parameters", "synth datasets common", "synth datasets shapes"]
+        },
+        "ridge synth data": {
+            "INCLUDE": ["implementations", "ridge parameters", "synth datasets common", "synth datasets shapes"]
+        },
+        "lasso synth data": {
+            "INCLUDE": ["implementations", "lasso parameters", "synth datasets common", "synth datasets shapes"]
+        },
+        "elasticnet synth data": {
+            "INCLUDE": ["implementations", "elasticnet parameters", "synth datasets common", "synth datasets shapes"]
+        },
+        "linear real data": {
+            "INCLUDE": ["linear implementations", "linear parameters", "real datasets"]
+        },
+        "ridge real data": {
+            "INCLUDE": ["implementations", "ridge parameters", "real datasets"]
+        },
+        "lasso real data": {
+            "INCLUDE": ["implementations", "lasso parameters", "real datasets"]
+        },
+        "elasticnet real data": {
+            "INCLUDE": ["implementations", "elasticnet parameters", "real datasets"]
+        }
+    }
+}
