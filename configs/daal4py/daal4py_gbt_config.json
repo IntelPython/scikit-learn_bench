@@ -1,0 +1,280 @@
+{
+  "common": {
+      "lib": "daal4py",
+      "data-format": "pandas",
+      "data-order": "F",
+      "fptype": "float",
+      "algorithm": "gbt"
+  },
+  "cases": [
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "abalone",
+                    "training": {
+                        "x": "data/abalone_x_train.npy",
+                        "y": "data/abalone_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/abalone_x_test.npy",
+                        "y": "data/abalone_y_test.npy"
+                    }
+                }
+            ],
+            "max_tree_depth": 6,
+            "n_estimators": 1000,
+            "objective": "reg:squarederror"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "airline-ohe",
+                    "training": {
+                        "x": "data/airline-ohe_x_train.npy",
+                        "y": "data/airline-ohe_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/airline-ohe_x_test.npy",
+                        "y": "data/airline-ohe_y_test.npy"
+                    }
+                }
+            ],
+            "reg_lambda": 1,
+            "max_tree_depth": 8,
+            "n_estimators": 1000,
+            "objective": "binary:logistic"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs1m",
+                    "training": {
+                        "x": "data/higgs1m_x_train.npy",
+                        "y": "data/higgs1m_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/higgs1m_x_test.npy",
+                        "y": "data/higgs1m_y_test.npy"
+                    }
+                }
+            ],
+            "max_bins": 256,
+            "reg_lambda": 1,
+            "max_tree_depth": 8,
+            "n_estimators": [100, 300, 1000, 3000, 10000, 30000],
+            "objective": "binary:logistic"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "letters",
+                    "training": {
+                        "x": "data/letters_x_train.npy",
+                        "y": "data/letters_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/letters_x_test.npy",
+                        "y": "data/letters_y_test.npy"
+                    }
+                }
+            ],
+            "max_tree_depth": 6,
+            "n_estimators": 1000,
+            "objective": "multi:softprob"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mlsr",
+                    "training": {
+                        "x": "data/mlsr_x_train.npy",
+                        "y": "data/mlsr_y_train.npy"
+                    }
+                }
+            ],
+            "max_bins": 256,
+            "reg_lambda": 2,
+            "max_tree_depth": 8,
+            "n_estimators": 200,
+            "objective": "multi:softprob"
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "mortgage1Q",
+                    "training": {
+                        "x": "data/mortgage1Q_x_train.npy",
+                        "y": "data/mortgage1Q_y_train.npy"
+                    }
+                }
+            ],
+            "n_estimators": 100,
+            "objective": "reg:squarederror",
+            "max_tree_depth": 8,
+            "reg_lambda": 1
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "plasticc",
+                    "training": {
+                        "x": "data/plasticc_x_train.npy",
+                        "y": "data/plasticc_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/plasticc_x_test.npy",
+                        "y": "data/plasticc_y_test.npy"
+                    }
+                }
+            ],
+            "n_estimators": 60,
+            "objective": "multi:softprob",
+            "max_tree_depth": 7
+        },
+        {
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "santander",
+                    "training": {
+                        "x": "data/santander_x_train.npy",
+                        "y": "data/santander_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/santander_x_test.npy",
+                        "y": "data/santander_y_test.npy"
+                    }
+                }
+            ],
+            "n_estimators": 10000,
+            "objective": "binary:logistic",
+            "max_tree_depth": 1
+        },
+        {
+            "objective": "binary:logistic",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "airline",
+                    "training": {
+                        "x": "data/airline_x_train.npy",
+                        "y": "data/airline_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/airline_x_test.npy",
+                        "y": "data/airline_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "binary:logistic",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "bosch",
+                    "training": {
+                        "x": "data/bosch_x_train.npy",
+                        "y": "data/bosch_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/bosch_x_test.npy",
+                        "y": "data/bosch_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "multi:softmax",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "covtype",
+                    "training": {
+                        "x": "data/covtype_x_train.npy",
+                        "y": "data/covtype_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/covtype_x_test.npy",
+                        "y": "data/covtype_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "binary:logistic",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "epsilon",
+                    "training": {
+                        "x": "data/epsilon_x_train.npy",
+                        "y": "data/epsilon_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/epsilon_x_test.npy",
+                        "y": "data/epsilon_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "binary:logistic",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "fraud",
+                    "training": {
+                        "x": "data/fraud_x_train.npy",
+                        "y": "data/fraud_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/fraud_x_test.npy",
+                        "y": "data/fraud_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "binary:logistic",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "higgs",
+                    "training": {
+                        "x": "data/higgs_x_train.npy",
+                        "y": "data/higgs_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/higgs_x_test.npy",
+                        "y": "data/higgs_y_test.npy"
+                    }
+                }
+            ]
+        },
+        {
+            "objective": "reg:squarederror",
+            "dataset": [
+                {
+                    "source": "npy",
+                    "name": "year_prediction_msd",
+                    "training": {
+                        "x": "data/year_prediction_msd_x_train.npy",
+                        "y": "data/year_prediction_msd_y_train.npy"
+                    },
+                    "testing": {
+                        "x": "data/year_prediction_msd_x_test.npy",
+                        "y": "data/year_prediction_msd_y_test.npy"
+                    }
+                }
+            ]
+        }
+    ]
+}
