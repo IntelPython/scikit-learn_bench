@@ -15,7 +15,9 @@
 # ===============================================================================
 
 import io
+import json
 import logging
+import os
 from importlib.metadata import PackageNotFoundError, version
 from typing import Dict, List, Union
 
@@ -84,28 +86,16 @@ def get_estimator_methods(bench_case: BenchCase) -> Dict[str, List[str]]:
 
 
 def estimator_to_task(estimator_name: str) -> str:
-    estimator_groups = {
-        "clustering": ["DBSCAN", "KMeans"],
-        "decomposition": ["PCA"],
-        "classification": ["LogisticRegression", "SVC", "NuSVC"],
-        "regression": [
-            "LinearRegression",
-            "Ridge",
-            "Lasso",
-            "ElasticNet",
-            "SVR",
-            "NuSVR",
-        ],
-        "manifold": ["TSNE"],
-    }
-    if estimator_name.endswith("Classifier"):
-        return "classification"
-    elif estimator_name.endswith("Regressor"):
-        return "regression"
-    else:
-        for group_name, estimators_in_group in estimator_groups.items():
-            if estimator_name in estimators_in_group:
-                return group_name
+    """Maps estimator name to machine learning task based on listed estimator postfixes"""
+    with open(
+        os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "estimator_task_map.json"
+        )
+    ) as map_file:
+        estimator_to_task_map = json.load(map_file)
+    for task, postfixes_list in estimator_to_task_map.items():
+        if any(map(lambda postfix: estimator_name.endswith(postfix), postfixes_list)):
+            return task
     return "unknown"
 
 

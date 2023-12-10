@@ -361,7 +361,7 @@ def load_epsilon(
     x_test, y_test = load_svmlight_file(local_url_test, dtype=np.float32)
 
     x = sparse.vstack([x_train, x_test])
-    y = np.hstack([y_train, y_test])
+    y = np.vstack([y_train, y_test])
     y[y <= 0] = 0
 
     data_desc = {
@@ -423,7 +423,7 @@ def load_gisette(
     y_test = convert_y(data["y_test"], test_size)
 
     x = np.vstack([x_train, x_test])
-    y = np.hstack([y_train, y_test])
+    y = np.vstack([y_train, y_test])
 
     data_desc = {
         "n_classes": 2,
@@ -584,6 +584,7 @@ def load_connect(
     Classification task. n_classes = 3.
     """
     x, y = load_openml(1591, raw_data_cache)
+    y = (y + 1).astype("int")
     data_desc = {"n_classes": 3, "default_split": {"test_size": 0.1, "random_state": 42}}
     return {"x": x, "y": y}, data_desc
 

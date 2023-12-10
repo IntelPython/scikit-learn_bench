@@ -9,8 +9,7 @@
         "linear implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" },
-                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+                { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
         "synth datasets common": {

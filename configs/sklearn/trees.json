@@ -1,16 +1,9 @@
 {
     "PARAMETERS_SETS": {
-        "random forest implementations": {
+        "implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" },
-                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
-            ]
-        },
-        "extra trees implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+                { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
         "common ensemble params": {
@@ -19,7 +12,6 @@
                     "n_estimators": 200,
                     "max_depth": null,
                     "min_samples_split": 5,
-                    "max_features": "sqrt",
                     "random_state": 42,
                     "n_jobs": "[SPECIAL_VALUE]physical_cpus"
                 }
@@ -28,25 +20,25 @@
         "random forest classifier params": {
             "algorithm": {
                 "estimator": "RandomForestClassifier",
-                "estimator_params": { "criterion": "gini" }
+                "estimator_params": { "criterion": "gini", "max_features": "sqrt" }
             }
         },
         "random forest regressor params": {
             "algorithm": {
                 "estimator": "RandomForestRegressor",
-                "estimator_params": { "criterion": "squared_error" }
+                "estimator_params": { "criterion": "squared_error", "max_features": 1.0 }
             }
         },
         "extra trees classifier params": {
             "algorithm": {
                 "estimator": "ExtraTreesClassifier",
-                "estimator_params": { "criterion": "gini" }
+                "estimator_params": { "criterion": "gini", "max_features": "sqrt" }
             }
         },
         "extra trees regressor params": {
             "algorithm": {
                 "estimator": "ExtraTreesRegressor",
-                "estimator_params": { "criterion": "squared_error" }
+                "estimator_params": { "criterion": "squared_error", "max_features": 1.0 }
             }
         },
         "classification data": {
@@ -78,25 +70,25 @@
     "TEMPLATES": {
         "random forest classification": {
             "INCLUDE": [
-                "random forest implementations", "common ensemble params",
+                "implementations", "common ensemble params",
                 "random forest classifier params", "classification data"
             ]
         },
         "random forest regression": {
             "INCLUDE": [
-                "random forest implementations", "common ensemble params",
+                "implementations", "common ensemble params",
                 "random forest regressor params", "regression data"
             ]
         },
         "extra trees classification": {
             "INCLUDE": [
-                "extra trees implementations", "common ensemble params",
+                "implementations", "common ensemble params",
                 "extra trees classifier params", "classification data"
             ]
         },
         "extra trees regression": {
             "INCLUDE": [
-                "extra trees implementations", "common ensemble params",
+                "implementations", "common ensemble params",
                 "extra trees regressor params", "regression data"
             ]
         }
