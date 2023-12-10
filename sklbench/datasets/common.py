@@ -17,12 +17,13 @@
 import json
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 from ..utils.custom_types import Array
 from ..utils.logger import logger
@@ -144,13 +145,29 @@ def cache(function):
     return cache_wrapper
 
 
+def preprocess_data(
+    data_dict: [Dict[str, Array]],
+    subsample: Union[float, int, None] = None,
+    **kwargs,
+) -> [Dict[str, Array]]:
+    """Preprocessing function applied for all data arguments."""
+    if subsample is not None:
+        for data_name, data in data_dict.items():
+            data_dict[data_name] = train_test_split(
+                data, train_size=subsample, random_state=42, shuffle=True
+            )[0]
+    return data_dict
+
+
 def preprocess_x(
     x: Array,
     replace_nan="auto",
     category_encoding="ordinal",
     normalize=False,
     forse_for_sparse=True,
-):
+    **kwargs,
+) -> Array:
+    """Preprocessing function applied only for `x` data argument."""
     return_type = type(x)
     if forse_for_sparse and isinstance(x, csr_matrix):
         x = x.toarray()
@@ -179,7 +196,7 @@ def preprocess_x(
             logger.warning(f'Unknown "{replace_nan}" replace nan type.')
         x[nan_columns] = nan_df
     # Categorical features transformation
-    categ_columns = x.columns[x.dtypes == "category"]
+    categ_columns = x.columns[(x.dtypes == "category") + (x.dtypes == "object")]
     if len(categ_columns) > 0:
         if category_encoding == "onehot":
             prev_n_columns = x.shape[1]
@@ -211,6 +228,7 @@ def preprocess(function):
     def preprocess_wrapper(**kwargs):
         preproc_kwargs = kwargs.pop("preproc_kwargs", dict())
         data, data_desc = function(**kwargs)
+        data = preprocess_data(data, **preproc_kwargs)
         data["x"] = preprocess_x(data["x"], **preproc_kwargs)
         return data, data_desc
 

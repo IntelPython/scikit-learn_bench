@@ -58,25 +58,26 @@ def get_software_info() -> Dict:
 
 
 def get_oneapi_devices() -> pd.DataFrame:
-    try:
-        import dpctl
-
-        devices = dpctl.get_devices()
-        devices = {
-            device.filter_string: {
-                "name": device.name,
-                "vendor": device.vendor,
-                "type": str(device.device_type).split(".")[1],
-                "driver version": device.driver_version,
-                "memory size[GB]": device.global_mem_size / 2**30,
-            }
-            for device in devices
-        }
-        return pd.DataFrame(devices).T
-    except (ImportError, ModuleNotFoundError):
-        logger.warning("dpctl can not be imported")
-        # 'type' is left for device type selection only
-        return pd.DataFrame({"type": list()})
+    # # Removed until dpctl bug is fixed
+    # # (lost devices in subprocesses)
+    # try:
+    #     import dpctl
+    #     devices = dpctl.get_devices()
+    #     devices = {
+    #         device.filter_string: {
+    #             "name": device.name,
+    #             "vendor": device.vendor,
+    #             "type": str(device.device_type).split(".")[1],
+    #             "driver version": device.driver_version,
+    #             "memory size[GB]": device.global_mem_size / 2**30,
+    #         }
+    #         for device in devices
+    #     }
+    #     return pd.DataFrame(devices).T
+    # except (ImportError, ModuleNotFoundError):
+    #     logger.warning("dpctl can not be imported")
+    #     # 'type' is left for device type selection only
+    return pd.DataFrame({"type": list()})
 
 
 def get_higher_isa(cpu_flags: str) -> str:

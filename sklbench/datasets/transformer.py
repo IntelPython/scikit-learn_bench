@@ -25,6 +25,8 @@ from ..utils.bench_case import get_bench_case_value
 def convert_data(data, dformat: str, order: str, dtype: str):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
         data = data.toarray()
+    if dtype == "preserve":
+        dtype = None
     if order == "F":
         data = np.asfortranarray(data, dtype=dtype)
     elif order == "C":

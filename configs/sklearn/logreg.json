@@ -3,7 +3,8 @@
 		"implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" }
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
             ]
         },
 		"logreg parameters": {

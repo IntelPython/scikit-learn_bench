@@ -1,5 +1,19 @@
 # Benchmarks
 
+```mermaid
+flowchart LR
+    A["Benchmarking case parameters\n[JSON-formatted string]"] --> C[Individual benchmark]
+    B["Benchmarking case filters\n[JSON-formatted string]"] --> C
+    C --> D["Raw results with parameters and metrics\n[JSON-formatted string]"]
+
+    classDef inputOutputStyle fill:#44b,color:white,stroke-width:2px,stroke:white;
+    classDef benchStyle font-size:x-large
+    class A inputOutputStyle
+    class B inputOutputStyle
+    class D inputOutputStyle
+    class C benchStyle
+```
+
 ## `Sklearn estimator` benchmark
 
 Benchmark workflow:
