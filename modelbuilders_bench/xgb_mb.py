@@ -188,14 +188,8 @@ xgb_params = {
     "enable_experimental_json_serialization": params.enable_experimental_json_serialization,
 }
 
-if params.threads == -1:
-    # SHAP value calculation is faster with using logical cores as number of threads
-    import psutil
-
-    daal4py.daalinit(psutil.cpu_count(logical=True))
-else:
-    xgb_params.update({"nthread": params.threads})
-    daal4py.daalinit(params.threads)
+xgb_params.update({"nthread": params.threads})
+daal4py.daalinit(params.threads)
 
 if params.objective.startswith("reg"):
     task = "regression"
