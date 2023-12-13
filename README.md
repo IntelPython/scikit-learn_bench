@@ -1,7 +1,7 @@
 
 # Machine Learning Benchmarks <!-- omit in toc -->
 
-[![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=master)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=master)
+[![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=main)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=main)
 
 **Machine Learning Benchmarks** contains implementations of machine learning algorithms
 across data analytics frameworks.  Scikit-learn_bench can be extended to add new frameworks
@@ -75,7 +75,7 @@ Run `python runner.py --configs configs/config_example.json [--output-file resul
 Options:
 
 - ``--configs``: specify the path to a configuration file or a folder that contains configuration files.
-- ``--no-intel-optimized``: use Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench/tree/master/sklearn_bench). By default, the runner uses Intel(R) Extension for Scikit-learn.
+- ``--no-intel-optimized``: use Scikit-learn without [Intel(R) Extension for Scikit-learn*](#intelr-extension-for-scikit-learn-support). Now available for [scikit-learn benchmarks](https://github.com/IntelPython/scikit-learn_bench/tree/main/sklearn_bench). By default, the runner uses Intel(R) Extension for Scikit-learn.
 - ``--output-file``: specify the name of the output file for the benchmark result. The default name is `result.json`
 - ``--report``: create an Excel report based on benchmark results. The `openpyxl` library is required.
 - ``--dummy-run``: run configuration parser and dataset generation without benchmarks running.
@@ -96,7 +96,7 @@ Benchmarks currently support the following frameworks:
 
 The configuration of benchmarks allows you to select the frameworks to run, select datasets for measurements and configure the parameters of the algorithms.
 
- You can configure benchmarks by editing a config file. Check  [config.json schema](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/README.md) for more details.
+ You can configure benchmarks by editing a config file. Check  [config.json schema](https://github.com/IntelPython/scikit-learn_bench/blob/main/configs/README.md) for more details.
 
 ## Benchmark supported algorithms
 
@@ -122,7 +122,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 
 When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
-For the algorithms with both CPU and GPU support, you may use the same [configuration file](https://github.com/IntelPython/scikit-learn_bench/blob/master/configs/skl_xpu_config.json) to run the scikit-learn benchmarks on CPU and GPU.
+For the algorithms with both CPU and GPU support, you may use the same [configuration file](https://github.com/IntelPython/scikit-learn_bench/blob/main/configs/skl_xpu_config.json) to run the scikit-learn benchmarks on CPU and GPU.
 
 ## Algorithm parameters
 
