@@ -33,7 +33,7 @@ We publish blogs on Medium, so [follow us](https://medium.com/intel-analytics-so
 - [How to create conda environment for benchmarking](#how-to-create-conda-environment-for-benchmarking)
 - [Running Python benchmarks with runner script](#running-python-benchmarks-with-runner-script)
 - [Benchmark supported algorithms](#benchmark-supported-algorithms)
-  - [Scikit-learn benchmakrs](#scikit-learn-benchmakrs)
+- [Scikit-learn benchmarks](#scikit-learn-benchmarks)
 - [Algorithm parameters](#algorithm-parameters)
 
 ## How to create conda environment for benchmarking
@@ -105,6 +105,8 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html)**|dbscan|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
 |**[RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)**|df_clfs|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
 |**[RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)**|df_regr|:white_check_mark:|:x:|:white_check_mark:|:white_check_mark:|:x:|
+|**[ExtraTreesClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html)**|et_clfs|:white_check_mark:|:x:|:x:|:x:|:x:|
+|**[ExtraTreesRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html)**|et_regr|:white_check_mark:|:x:|:x:|:x:|:x:|
 |**[pairwise_distances](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html)**|distances|:white_check_mark:|:x:|:white_check_mark:|:x:|:x:|
 |**[KMeans](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)**|kmeans|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:x:|
 |**[KNeighborsClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html)**|knn_clsf|:white_check_mark:|:x:|:x:|:white_check_mark:|:x:|
@@ -118,7 +120,7 @@ The configuration of benchmarks allows you to select the frameworks to run, sele
 |**[GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 |**[GradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**|gbt|:x:|:x:|:x:|:x:|:white_check_mark:|
 
-### Scikit-learn benchmakrs
+### Scikit-learn benchmarks
 
 When you run scikit-learn benchmarks on CPU, [Intel(R) Extension for Scikit-learn](https://github.com/intel/scikit-learn-intelex) is used by default. Use the ``--no-intel-optimized`` option to run the benchmarks without the extension.
 
