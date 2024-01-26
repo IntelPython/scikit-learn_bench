@@ -72,6 +72,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     )
     parser.add_argument(
         "--log-level",
+        "-l",
         default=None,
         type=str,
         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
@@ -82,6 +83,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     parser.add_argument(
         "--config",
         "--configs",
+        "-c",
         type=str,
         nargs="+",
         default=None,

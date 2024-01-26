@@ -24,7 +24,7 @@ from typing import Dict, List, Union
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from sklearn.metrics import (  # accuracy metrics; regression metrics; clustering metrics
+from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
     completeness_score,
