@@ -28,11 +28,13 @@ Formatting example:
 
 | Parameter keys | Default value | Choices | Description |
 |:---------------|:--------------|:--------|:------------|
+|**Benchmark workflow parameters**||||
 | `bench`:`taskset` | None |  | Value for `-c` argument of `taskset` utility used over benchmark subcommand. |
-| `bench`:`vtune_profiling` | None |  | Type of Intel(R) VTune(TM) profiling. Supported only for Linux systems. |
+| `bench`:`vtune_profiling` | None |  | Analysis type for `collect` argument of Intel(R) VTune(TM) profiling tool. Supported only for Linux systems. |
 | `bench`:`vtune_results_directory` | `vtune_results` |  | Directory path to store Intel(R) VTune(TM) results. |
 | `bench`:`n_runs` | `10` |  | Number of runs for measured entity. |
 | `bench`:`time_limit` | `3600` |  | Time limit in seconds before benchmark early stopping. |
+|**Data parameters**||||
 | `data`:`cache_directory` | `data_cache` |  | Directory path to store cached datasets for fast loading. |
 | `data`:`raw_cache_directory` | `data`:`cache_directory` + "raw" |  | Directory path to store downloaded raw datasets. |
 | `data`:`dataset` | None |  | Name of dataset to use from implemented dataset loaders. |
@@ -46,12 +48,13 @@ Formatting example:
 | `data`:`format` | `pandas` | `pandas`, `numpy` | Data format to use in benchmark. |
 | `data`:`order` | `F` | `C`, `F` | Data order to use in benchmark: contiguous(C) or Fortran. |
 | `data`:`dtype` | `float64` |  | Data type to use in benchmark. |
+|**Algorithm parameters**||||
 | `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
 | `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Selected device for computation. |
 
 ## Benchmark-specific parameters
 
-### `sklearn_estimator`
+### `Scikit-learn estimator` benchmark
 
 | Parameter keys | Default value | Choices | Description |
 |:---------------|:--------------|:--------|:------------|
@@ -62,7 +65,7 @@ Formatting example:
 | `algorithm`:`sklearnex_context` | None |  | Parameters for sklearnex's config_context used over estimator. Updated by `sklearn_context` if set. |
 | `bench`:`ensure_sklearnex_patching` | True |  | If True, warns about sklearnex patching failures. |
 
-### `custom_function`
+### `Function` benchmark
 
 | Parameter keys | Default value | Choices | Description |
 |:---------------|:--------------|:--------|:------------|

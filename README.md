@@ -82,15 +82,16 @@ flowchart TB
 
 **Scikit-learn_bench** supports next types of benchmarks:
 
- - `sklearn_estimator` which measures performance and quality metrics of [sklearn-like estimator](https://scikit-learn.org/stable/glossary.html#term-estimator).
- - `custom_function` which measures performance metrics of specified function.
+ - `Scikit-learn estimator` benchmark which measures performance and quality metrics of [sklearn-like estimator](https://scikit-learn.org/stable/glossary.html#term-estimator).
+ - `Function` benchmark which measures performance metrics of specified function.
 
 ## 📑 Documentation tree
 [Scikit-learn_bench](README.md):
+- [Configs](configs/README.md)
+  - [Benchmarking config specification](configs/BENCH-CONFIG-SPEC.md)
 - [Benchmarks runner](sklbench/runner/README.md)
 - [Report generator](sklbench/report/README.md)
 - [Benchmarks](sklbench/benchmarks/README.md)
 - [Data processing](sklbench/datasets/README.md)
 - [Developer Guide](docs/README.md)
-    - [Benchmarking config specification](docs/BENCH-CONFIG-SPEC.md)
-    - [Features roadmap](docs/FEATURES-ROADMAP.md)
+  - [Features roadmap](docs/FEATURES-ROADMAP.md)

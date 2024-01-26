@@ -14,7 +14,7 @@ flowchart LR
     class C benchStyle
 ```
 
-## `Sklearn estimator` benchmark
+## `Scikit-learn estimator` benchmark
 
 Benchmark workflow:
  - Load estimator from specified library by recursive module search
@@ -26,7 +26,7 @@ Benchmark workflow:
 
 See benchmark-specific config parameters in corresponding [`sklearn_estimator` section ](../../docs/BENCH-CONFIG-SPEC.md#sklearn_estimator) of benchmarking config specification.
 
-## `Custom function` benchmark
+## `Function` benchmark
 
 Benchmark workflow:
  - Load function from specified library by recursive module search
