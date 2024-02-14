@@ -90,6 +90,15 @@ def run_benchmark_from_case(
     logger.debug(f"Benchmark wrapper call command: {command}")
     return_code, stdout, stderr = read_output_from_command(command)
 
+    # filter stdout warnings
+    stdout = "\n".join(
+        [
+            line
+            for line in stdout.split("\n")
+            if not (line.startswith("[W]") or line.startswith("[I]"))
+        ]
+    )
+
     if stdout != "":
         logger.debug(f'{custom_format("Benchmark stdout:", bcolor="OKBLUE")}\n{stdout}')
     if return_code == 0:

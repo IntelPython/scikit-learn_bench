@@ -1,11 +1,17 @@
 {
     "PARAMETERS_SETS": {
-        "implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "daal4py", "device": "cpu" }
-            ]
-        },
+        "implementations": [
+            {
+                "algorithm": [
+                    { "library": "sklearn", "device": "cpu" },
+                    { "library": "sklearnex", "device": "cpu" }
+                ]
+            },
+            {
+                "algorithm": { "library": "cuml" },
+                "data": { "format": "cudf" }
+            }
+        ],
         "train_test_split parameters": {
             "algorithm": {
                 "function": "train_test_split",

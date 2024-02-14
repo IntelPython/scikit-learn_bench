@@ -1,5 +1,7 @@
 # Benchmarks
 
+# TODO: ind bench is python script
+
 ```mermaid
 flowchart LR
     A["Benchmarking case parameters\n[JSON-formatted string]"] --> C[Individual benchmark]
@@ -24,7 +26,7 @@ Benchmark workflow:
  - Measure required estimator methods
  - Combine metrics and parameters into output
 
-See benchmark-specific config parameters in corresponding [`sklearn_estimator` section ](../../docs/BENCH-CONFIG-SPEC.md#sklearn_estimator) of benchmarking config specification.
+See benchmark-specific config parameters in corresponding [`sklearn_estimator` section ](../../configs/BENCH-CONFIG-SPEC.md#benchmark-specific-parameters) of benchmarking config specification.
 
 ## `Function` benchmark
 
@@ -35,4 +37,7 @@ Benchmark workflow:
  - Assign special values which requires estimator/data to be loaded
  - Measure function performance metrics
 
-See benchmark-specific config parameters in corresponding [`custom_function` section ](../../docs/BENCH-CONFIG-SPEC.md#custom_function) of benchmarking config specification.
+See benchmark-specific config parameters in corresponding [`custom_function` section ](../../configs/BENCH-CONFIG-SPEC.md#custom_function) of benchmarking config specification.
+
+---
+[Documentation tree](../../README.md#-documentation-tree)

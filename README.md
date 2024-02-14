@@ -6,6 +6,12 @@
 
 **Scikit-learn_bench** is a benchmarking tool for libraries and frameworks implementing Scikit-learn-like APIs and other workloads.
 
+Features:
+- Full control of benchmarks suite through CLI
+- Flexible and powerful benchmarking config structure
+- Ability to run with advanced profiling tools (*Intel(R) VTune(TM)* and others)
+- Automated generation of benchmarks report
+
 ## 📜 Table of content
 
 - [Machine Learning Benchmarks](#machine-learning-benchmarks)
@@ -41,7 +47,7 @@ conda env create -n rapids --solver=libmamba -f envs/conda-env-rapids.yml
 
 ### Benchmarks runner
 
-Call required benchmarking cases from specified config with `runner` command:
+Call required benchmarking cases from specified config using `sklbench` module as runner:
 
 ```bash
 python -m sklbench --config configs/sklearn_example.json
@@ -53,6 +59,12 @@ Default output of runner is a file with JSON-formatted results of benchmarking c
 python -m sklbench --config configs/sklearn_example.json --generate-report
 ```
 
+By default output and report file paths are `result.json` and `report.xlsx`. Add next argument to specify custom file paths:
+
+```bash
+python -m sklbench --config configs/sklearn_example.json --generate-report --result-file result_example.json --report-file report_example.xlsx
+```
+
 For description of all benchmarks runner arguments, see [it's corresponding docs section](sklbench/runner/README.md#arguments).
 
 ### Report generator
@@ -60,7 +72,7 @@ For description of all benchmarks runner arguments, see [it's corresponding docs
 Raw result files gathered from different environments can be combined by calling report generator:
 
 ```bash
-python -m sklbench.report --result-files result_1.json result_2.json --report-file report.xlsx
+python -m sklbench.report --result-files result_1.json result_2.json --report-file report_example.xlsx
 ```
 
 For description of all report generator arguments, see [it's corresponding docs section](sklbench/report/README.md#arguments).
@@ -70,7 +82,7 @@ For description of all report generator arguments, see [it's corresponding docs 
 ```mermaid
 flowchart TB
     A[User] -- High-level arguments --> B[Benchmarks runner]
-    B -- Generated benchmarking cases --> C[Separate benchmarks]
+    B -- Generated benchmarking cases --> C["Benchmarks collection"]
     C -- Raw JSON-formatted results --> D[Report generator]
     D -- Human-readable report --> A
 
@@ -94,4 +106,3 @@ flowchart TB
 - [Benchmarks](sklbench/benchmarks/README.md)
 - [Data processing](sklbench/datasets/README.md)
 - [Developer Guide](docs/README.md)
-  - [Features roadmap](docs/FEATURES-ROADMAP.md)

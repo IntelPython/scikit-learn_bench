@@ -2,8 +2,9 @@
 
 This document covers few topics useful for contributors into Scikit-learn_bench:
 
- - [High-level workflow of Scikit-learn_bench](#high-level-workflow-of-scikit-learn_bench)
- - [Configs parser workflow](#configs-parser-workflow)
+- [Developer Guide](#developer-guide)
+  - [High-level workflow of Scikit-learn\_bench](#high-level-workflow-of-scikit-learn_bench)
+  - [Configs parser workflow](#configs-parser-workflow)
 
 ## High-level workflow of Scikit-learn_bench
 
@@ -63,3 +64,6 @@ Benchmark parameters have next overwriting priority:
 1. CLI parameters
 2. Config template parameters
 3. Parameters set
+
+---
+[Documentation tree](../README.md#-documentation-tree)

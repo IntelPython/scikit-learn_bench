@@ -20,6 +20,7 @@ from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 
 from ..utils.bench_case import get_bench_case_value
+from ..utils.logger import logger
 
 
 def convert_data(data, dformat: str, order: str, dtype: str):
@@ -39,6 +40,18 @@ def convert_data(data, dformat: str, order: str, dtype: str):
         if data.ndim == 1:
             return pd.Series(data)
         return pd.DataFrame(data)
+    elif dformat == "cudf":
+        import cudf
+
+        if data.ndim == 1:
+            return cudf.Series(data)
+        if order == "C":
+            logger.warning("cudf.DataFrame is not compatible with C data order")
+        return cudf.DataFrame(data)
+    elif dformat == "cupy":
+        import cupy
+
+        return cupy.array(data)
     else:
         raise ValueError(f"Unknown data format {dformat}")
 

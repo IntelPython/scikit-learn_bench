@@ -31,3 +31,6 @@ Existing data sources:
  - Synthetic data from sklearn
  - OpenML datasets
  - Custom loaders for named datasets
+
+---
+[Documentation tree](../../README.md#-documentation-tree)

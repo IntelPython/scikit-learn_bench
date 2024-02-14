@@ -27,6 +27,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 
 from ..utils.common import custom_format, flatten_dict, flatten_list
 from ..utils.logger import logger
+from .compatibility import transform_results_to_compatible
 
 METRICS = {
     "lower is better": [
@@ -91,7 +92,7 @@ COLUMNS_ORDER = [
     "n_clusters",
 ]
 
-DIFFBY_COLUMNS = ["environment_hash", "library", "device"]
+DIFFBY_COLUMNS = ["environment_hash", "library", "format", "device"]
 
 
 def geomean_wrapper(a):
@@ -228,6 +229,8 @@ def get_result_tables_as_df(
     bench_cases = pd.DataFrame(
         [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
     )
+
+    bench_cases = transform_results_to_compatible(bench_cases)
 
     for column in diffby_columns.copy():
         if bench_cases[column].nunique() == 1:

@@ -24,6 +24,8 @@ from pprint import pformat
 from shutil import get_terminal_size
 from typing import Any, Dict, List, Tuple, Union
 
+import numpy as np
+
 from .custom_types import JsonTypesUnion, ModuleContentMap, Numeric
 
 HASH_LIMIT = 5
@@ -188,3 +190,16 @@ def convert_to_numeric_if_possible(value: str) -> Union[Numeric, str]:
         return float(value)
     else:
         return value
+
+
+def convert_to_ndarray(a):
+    if isinstance(a, np.ndarray):
+        return a
+    elif hasattr(a, "to_numpy"):
+        return a.to_numpy()
+    elif hasattr(a, "asnumpy"):
+        return a.asnumpy()
+    elif "cupy.ndarray" in str(type(a)):
+        return a.get()
+    else:
+        raise ValueError("Unable to convert data to numpy.ndarray")

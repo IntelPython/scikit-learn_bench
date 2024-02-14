@@ -39,9 +39,9 @@ def parse_action(action: argparse.Action) -> Dict:
         # 'Name': action.dest,
         "Name": "</br>".join(map(lambda x: f"`{x}`", action.option_strings)),
         "Type": action.type.__name__ if action.type is not None else None,
-        "Default value": action.default
-        if action.default is not argparse.SUPPRESS
-        else None,
+        "Default value": (
+            action.default if action.default is not argparse.SUPPRESS else None
+        ),
         "Choices": action.choices,
         "Description": action.help,
     }

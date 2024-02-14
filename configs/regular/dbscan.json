@@ -1,26 +1,32 @@
 {
 	"PARAMETERS_SETS": {
-		"implementations": {
+        "sklearn implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
-		"dbscan parameters": {
+		"common dbscan parameters": {
 			"algorithm": {
 				"estimator": "DBSCAN",
 				"estimator_params": {
                     "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
                     "min_samples": 5,
-					"metric": "euclidean",
-                    "algorithm": "brute",
-                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+					"metric": "euclidean"
 				}
 			},
 			"data": {
 				"dtype": ["float32", "float64"]
 			}
 		},
+        "sklearn dbscan parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
 		"datasets": [
             {
                 "data": { "dataset": ["cifar", "mnist"], "split_kwargs": { "train_size": 10000 } }
@@ -50,8 +56,16 @@
         ]
 	},
 	"TEMPLATES": {
-		"dbscan": {
-			"INCLUDE": ["implementations", "dbscan parameters", "datasets"]
-		}
+		"sklearn dbscan": {
+			"INCLUDE": ["sklearn implementations", "common dbscan parameters", "sklearn dbscan parameters", "datasets"]
+		},
+        "cuml dbscan": {
+            "INCLUDE": ["common dbscan parameters", "datasets"],
+            "algorithm": {
+                "library": "cuml",
+                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
+            },
+            "data": { "format": "cudf" }
+        }
 	}
 }

@@ -7,7 +7,9 @@ Benchmarking config files are written in JSON format and have few reserved keys:
  - `TEMPLATES` map where each named instance combines parameters sets and template-specific parameters
  - `INCLUDE` list which specifies parameters sets to include in template
 
-Formatting example:
+Configs heavily utilize lists of scalar values and dictionaries to avoid duplication of cases.
+
+Formatting specification:
 ```json
 {
     "PARAMETERS_SETS": {
@@ -24,17 +26,52 @@ Formatting example:
 }
 ```
 
+Short config example:
+```json
+{
+    "PARAMETERS_SETS": {
+        "estimator parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": {
+                    "fit_intercept": false
+                }
+            }
+        },
+        "regression data": {
+            "data": [
+                { "source": "fetch_openml", "id": 1430 },
+                { "dataset": "california_housing" }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "linear regression": {
+            "INCLUDE": ["estimator parameters", "regression data"],
+            "algorithm": {
+                "library": ["sklearn", "sklearnex", "cuml"]
+            }
+        }
+    }
+}
+```
+
 ## Common parameters
+
+Config has three highest parameter keys:
+ - `bench` specifies workflow of benchmark (parameters of measurement, profiling, etc.)
+ - `algorithm` specifies measured entity parameters
+ - `data` specifies data parameters to use
 
 | Parameter keys | Default value | Choices | Description |
 |:---------------|:--------------|:--------|:------------|
-|**Benchmark workflow parameters**||||
+|<h3>Benchmark workflow parameters</h3>||||
 | `bench`:`taskset` | None |  | Value for `-c` argument of `taskset` utility used over benchmark subcommand. |
 | `bench`:`vtune_profiling` | None |  | Analysis type for `collect` argument of Intel(R) VTune(TM) profiling tool. Supported only for Linux systems. |
 | `bench`:`vtune_results_directory` | `vtune_results` |  | Directory path to store Intel(R) VTune(TM) results. |
 | `bench`:`n_runs` | `10` |  | Number of runs for measured entity. |
 | `bench`:`time_limit` | `3600` |  | Time limit in seconds before benchmark early stopping. |
-|**Data parameters**||||
+|<h3>Data parameters</h3>||||
 | `data`:`cache_directory` | `data_cache` |  | Directory path to store cached datasets for fast loading. |
 | `data`:`raw_cache_directory` | `data`:`cache_directory` + "raw" |  | Directory path to store downloaded raw datasets. |
 | `data`:`dataset` | None |  | Name of dataset to use from implemented dataset loaders. |
@@ -45,10 +82,10 @@ Formatting example:
 | `data`:`preprocessing_kwargs`:`normalize` | False |  | Enables normalization of preprocessed data. |
 | `data`:`preprocessing_kwargs`:`forse_for_sparse` | True |  | Forces preprocessing for sparse data formats. |
 | `data`:`split_kwargs` | Empty `dict` or default split from dataset description |  | Data split parameters for `train_test_split` function. |
-| `data`:`format` | `pandas` | `pandas`, `numpy` | Data format to use in benchmark. |
+| `data`:`format` | `pandas` | `pandas`, `numpy`, `cudf` | Data format to use in benchmark. |
 | `data`:`order` | `F` | `C`, `F` | Data order to use in benchmark: contiguous(C) or Fortran. |
 | `data`:`dtype` | `float64` |  | Data type to use in benchmark. |
-|**Algorithm parameters**||||
+|<h3>Algorithm parameters</h3>||||
 | `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
 | `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Selected device for computation. |
 
@@ -71,7 +108,7 @@ Formatting example:
 |:---------------|:--------------|:--------|:------------|
 | `algorithm`:`function` | None |  | Name of measured function. |
 | `algorithm`:`args_order` | `x_train\|y_train` | Any in format `{subset_0}\|..\|{subset_n}` | Arguments order for measured function. |
-| `algorithm`:`kwargs` | Empty `dict` |  | Positional arguments for measured function. |
+| `algorithm`:`kwargs` | Empty `dict` |  | Named arguments for measured function. |
 
 ## Special values
 
@@ -105,3 +142,6 @@ Supported ranges:
  - `add:start{int}:end{int}:step{int}` - Arithmetic progression (Sequence: start + step * i <= end)
  - `mul:current{int}:end{int}:step{int}` - Geometric progression (Sequence: current * step <= end)
  - `pow:base{int}:start{int}:end{int}[:step{int}=1]` - Powers of base number
+
+---
+[Documentation tree](../README.md#-documentation-tree)

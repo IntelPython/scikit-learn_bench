@@ -23,3 +23,6 @@ Raw results are converted into pandas.DataFrame and final report is made by proc
 | `--diffs-selection`                | str   | upper_triangle                            | ['upper_triangle', 'lower_triangle', 'matrix'] | Selects which part of one-vs-one difference to show (all matrix or one of triangles). |
 | `--time-color-scale`               | float | [0.8, 1.0, 10.0]                          |                                                | Time improvement color scale in report.                                               |
 | `--metric-color-scale`             | float | [0.99, 0.995, 1.01]                       |                                                | Metric improvement color scale in report.                                             |
+
+---
+[Documentation tree](../../README.md#-documentation-tree)

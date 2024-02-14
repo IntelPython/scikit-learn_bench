@@ -1,28 +1,27 @@
 {
     "PARAMETERS_SETS": {
-        "implementations": {
+        "sklearn implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
-        "tsne parameters": {
+        "common tsne parameters": {
             "algorithm": {
                 "estimator": "TSNE",
                 "estimator_params": {
                     "n_components": 2,
                     "perplexity": 30.0,
                     "early_exaggeration": 12.0,
-                    "learning_rate": "auto",
+                    "learning_rate": 200.0,
                     "n_iter": 1000,
                     "n_iter_without_progress": 300,
                     "min_grad_norm": 1e-7,
                     "metric": "euclidean",
-                    "init": "pca",
+                    "init": "random",
                     "random_state": 42,
                     "method": "barnes_hut",
-                    "angle": 0.5,
-                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    "angle": 0.5
                 }
             }
         },
@@ -48,8 +47,19 @@
         ]
     },
     "TEMPLATES": {
-		"tsne": {
-			"INCLUDE": ["implementations", "tsne parameters", "datasets"]
+		"sklearn tsne": {
+			"INCLUDE": ["sklearn implementations", "common tsne parameters", "datasets"],
+            "algorithm": {
+                "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+            }
+		},
+        "cuml tsne": {
+			"INCLUDE": ["common tsne parameters", "datasets"],
+            "algorithm": {
+                "library": "cuml",
+                "estimator_params": { "learning_rate_method": "none", "n_neighbors": 91 }
+            },
+            "data": { "format": "cudf" }
 		}
 	}
 }

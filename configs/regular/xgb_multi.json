@@ -12,7 +12,8 @@
                 "algorithm": { "device": "cpu", "estimator_params": { "tree_method": "hist" } }
             },
             {
-                "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } }
+                "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } },
+                "data": { "format": "cudf" }
             }
         ],
         "multiclassification data": [
