@@ -1,24 +1,21 @@
 {
 	"PARAMETERS_SETS": {
-		"implementations": {
+		"sklearn implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
                 { "library": "sklearnex", "device": "cpu" },
 				{ "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
             ]
         },
-		"kmeans parameters": {
+		"common kmeans parameters": {
 			"algorithm": {
 				"estimator": "KMeans",
 				"estimator_params": {
 					"n_clusters": "[SPECIAL_VALUE]auto",
-					"init": "k-means++",
 					"n_init": 10,
 					"max_iter": 30,
 					"tol": 1e-3,
-					"random_state": 42,
-					"copy_x": true,
-					"algorithm": "lloyd"
+					"random_state": 42
 				},
 				"estimator_methods": { "inference": "predict" }
 			},
@@ -26,6 +23,16 @@
 				"dtype": ["float32", "float64"],
 				"preprocessing_kwargs": { "normalize": true }
 			}
+		},
+		"sklearn kmeans parameters": {
+			"algorithm": { "estimator_params": { "init": "k-means++", "algorithm": "lloyd" } }
+		},
+		"cuml kmeans parameters": {
+			"algorithm": {
+				"library": "cuml",
+				"estimator_params": { "init": "scalable-k-means++" }
+			},
+			"data": { "format": "cudf" }
 		},
 		"small datasets": {
 			"data": [
@@ -40,7 +47,7 @@
 				}
 			]
 		},
-		"higgs": {
+		"higgs dataset": {
 			"data": {
 				"dataset": "higgs",
 				"split_kwargs": {
@@ -67,11 +74,17 @@
 		}
 	},
 	"TEMPLATES": {
-		"kmeans higgs": {
-			"INCLUDE": ["implementations", "kmeans parameters", "higgs"]
+		"sklearn kmeans - higgs": {
+			"INCLUDE": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "higgs dataset"]
 		},
-		"kmeans small datasets": {
-			"INCLUDE": ["implementations", "kmeans parameters", "small datasets"]
+		"sklearn kmeans - small datasets": {
+			"INCLUDE": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "small datasets"]
+		},
+		"cuml kmeans - higgs": {
+			"INCLUDE": ["common kmeans parameters", "cuml kmeans parameters", "higgs dataset"]
+		},
+		"cuml kmeans - small datasets": {
+			"INCLUDE": ["common kmeans parameters", "cuml kmeans parameters", "small datasets"]
 		}
 	}
 }

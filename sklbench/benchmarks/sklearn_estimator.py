@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import inspect
 import io
 import json
 import logging
@@ -39,7 +40,7 @@ from sklearn.metrics import (
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
 from ..utils.bench_case import get_bench_case_value, get_data_name
-from ..utils.common import custom_format, get_module_members
+from ..utils.common import convert_to_ndarray, custom_format, get_module_members
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase, Numeric, NumpyNumeric
 from ..utils.logger import logger
@@ -111,9 +112,10 @@ def get_number_of_classes(estimator_instance, y):
 
 
 def get_subset_metrics_of_estimator(
-    task, stage, estimator_instance, x, y
+    task, stage, estimator_instance, data
 ) -> Dict[str, float]:
     metrics = dict()
+    x, y = list(map(convert_to_ndarray, data))
     if stage == "training":
         if hasattr(estimator_instance, "n_iter_"):
             iterations = estimator_instance.n_iter_
@@ -126,23 +128,28 @@ def get_subset_metrics_of_estimator(
             ):
                 metrics.update({"iterations": int(iterations[0])})
     if task == "classification":
-        y_pred = estimator_instance.predict(x)
+        y_pred = convert_to_ndarray(estimator_instance.predict(x))
         metrics.update(
             {
                 "accuracy": float(accuracy_score(y, y_pred)),
                 "balanced accuracy": float(balanced_accuracy_score(y, y_pred)),
             }
         )
-        if hasattr(estimator_instance, "predict_proba"):
-            y_pred_proba = estimator_instance.predict_proba(x)
+        if hasattr(estimator_instance, "predict_proba") and not (
+            hasattr(estimator_instance, "probability")
+            and getattr(estimator_instance, "probability") == False
+        ):
+            y_pred_proba = convert_to_ndarray(estimator_instance.predict_proba(x))
             metrics.update(
                 {
                     "ROC AUC": float(
                         roc_auc_score(
                             y,
-                            y_pred_proba
-                            if y_pred_proba.shape[1] > 2
-                            else y_pred_proba[:, 1],
+                            (
+                                y_pred_proba
+                                if y_pred_proba.shape[1] > 2
+                                else y_pred_proba[:, 1]
+                            ),
                             multi_class="ovr",
                         )
                     ),
@@ -150,7 +157,7 @@ def get_subset_metrics_of_estimator(
                 }
             )
     elif task == "regression":
-        y_pred = estimator_instance.predict(x)
+        y_pred = convert_to_ndarray(estimator_instance.predict(x))
         metrics.update(
             {
                 "RMSE": float(mean_squared_error(y, y_pred) ** 0.5),
@@ -158,9 +165,14 @@ def get_subset_metrics_of_estimator(
             }
         )
     elif task == "decomposition":
-        if "PCA" in str(estimator_instance) and hasattr(estimator_instance, "score"):
-            metrics.update({"average log-likelihood": float(estimator_instance.score(x))})
-            if stage == "training":
+        if "PCA" in str(estimator_instance):
+            if hasattr(estimator_instance, "score"):
+                metrics.update(
+                    {"average log-likelihood": float(estimator_instance.score(x))}
+                )
+            if stage == "training" and hasattr(
+                estimator_instance, "explained_variance_ratio_"
+            ):
                 metrics.update(
                     {
                         "1st component variance ratio": float(
@@ -175,12 +187,17 @@ def get_subset_metrics_of_estimator(
             metrics.update(
                 {
                     "inertia": float(
-                        np.power(estimator_instance.transform(x).min(axis=1), 2).sum()
+                        np.power(
+                            convert_to_ndarray(estimator_instance.transform(x)).min(
+                                axis=1
+                            ),
+                            2,
+                        ).sum()
                     )
                 }
             )
         if hasattr(estimator_instance, "predict"):
-            y_pred = estimator_instance.predict(x)
+            y_pred = convert_to_ndarray(estimator_instance.predict(x))
             metrics.update(
                 {
                     "Davies-Bouldin score": float(davies_bouldin_score(x, y_pred)),
@@ -189,31 +206,22 @@ def get_subset_metrics_of_estimator(
                 }
             )
         if "DBSCAN" in str(estimator_instance) and stage == "training":
-            clusters = len(
-                np.unique(estimator_instance.labels_[estimator_instance.labels_ != -1])
-            )
+            labels = convert_to_ndarray(estimator_instance.labels_)
+            clusters = len(np.unique(labels[labels != -1]))
             metrics.update({"clusters": clusters})
             if clusters > 1:
                 metrics.update(
-                    {
-                        "Davies-Bouldin score": float(
-                            davies_bouldin_score(x, estimator_instance.labels_)
-                        )
-                    }
+                    {"Davies-Bouldin score": float(davies_bouldin_score(x, labels))}
                 )
             if len(np.unique(y)) < 128:
                 metrics.update(
                     {
-                        "homogeneity": float(
-                            homogeneity_score(y, estimator_instance.labels_)
-                        )
-                        if clusters > 1
-                        else 0,
-                        "completeness": float(
-                            completeness_score(y, estimator_instance.labels_)
-                        )
-                        if clusters > 1
-                        else 0,
+                        "homogeneity": (
+                            float(homogeneity_score(y, labels)) if clusters > 1 else 0
+                        ),
+                        "completeness": (
+                            float(completeness_score(y, labels)) if clusters > 1 else 0
+                        ),
                     }
                 )
     elif task == "manifold":
@@ -221,7 +229,10 @@ def get_subset_metrics_of_estimator(
             metrics.update(
                 {"Kullback-Leibler divergence": float(estimator_instance.kl_divergence_)}
             )
-    if hasattr(estimator_instance, "support_vectors_"):
+    if (
+        hasattr(estimator_instance, "support_vectors_")
+        and estimator_instance.support_vectors_ is not None
+    ):
         metrics.update({"support vectors": len(estimator_instance.support_vectors_)})
     return metrics
 
@@ -315,8 +326,6 @@ def measure_sklearn_estimator(
     y_test,
     online_inference_mode,
 ):
-    data_args = {"training": (x_train, y_train), "inference": (x_test,)}
-
     ensure_sklearnex_patching = get_bench_case_value(
         bench_case, "bench:ensure_sklearnex_patching", True
     )
@@ -336,6 +345,16 @@ def measure_sklearn_estimator(
         for method in estimator_methods[stage]:
             if hasattr(estimator_instance, method):
                 method_instance = getattr(estimator_instance, method)
+                if "y" in list(inspect.signature(method_instance).parameters):
+                    if stage == "training":
+                        data_args = (x_train, y_train)
+                    else:
+                        data_args = (x_test, y_test)
+                else:
+                    if stage == "training":
+                        data_args = (x_train,)
+                    else:
+                        data_args = (x_test,)
                 if online_inference_mode and stage == "inference":
                     method_instance = create_online_function(method_instance, x_test)
                 metrics[method] = dict()
@@ -343,7 +362,7 @@ def measure_sklearn_estimator(
                     metrics[method]["time[ms]"],
                     metrics[method]["time std[ms]"],
                     _,
-                ) = measure_case(bench_case, method_instance, *data_args[stage])
+                ) = measure_case(bench_case, method_instance, *data_args)
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"
                     sklex_patching_stream.seek(0)
@@ -357,10 +376,10 @@ def measure_sklearn_estimator(
 
     quality_metrics = {
         "training": get_subset_metrics_of_estimator(
-            task, "training", estimator_instance, x_train, y_train
+            task, "training", estimator_instance, (x_train, y_train)
         ),
         "inference": get_subset_metrics_of_estimator(
-            task, "inference", estimator_instance, x_test, y_test
+            task, "inference", estimator_instance, (x_test, y_test)
         ),
     }
     for method in metrics.keys():
@@ -387,7 +406,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
 
     # assign special values
     assign_case_special_values_on_run(
-        bench_case, x_train, y_train, x_test, y_test, data_description
+        bench_case, (x_train, y_train, x_test, y_test), data_description
     )
 
     # get estimator parameters
@@ -432,6 +451,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     if "assume_finite" in context_params:
         result_template["assume_finite"] = context_params["assume_finite"]
     estimator_params = estimator_instance.get_params()
+    # note: "handle" is not JSON-serializable
+    if "handle" in estimator_params:
+        del estimator_params["handle"]
     logger.debug(f"Estimator parameters:\n{custom_format(estimator_params)}")
     result_template.update(estimator_params)
 

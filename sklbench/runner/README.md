@@ -52,3 +52,6 @@ flowchart LR
 | `--generate-report`</br>`--gen-report`         | Flag | False         |                                       | Enables generation of report.                                                                          |
 
 Also, benchmarks runner includes and takes into the account [arguments of report generator](../report/README.md#arguments) if `--generate-report` flag is passed.
+
+---
+[Documentation tree](../../README.md#-documentation-tree)

@@ -25,7 +25,7 @@ from sklearn.metrics import euclidean_distances
 
 from ..datasets import dataset_loading_functions
 from .bench_case import get_bench_case_value, set_bench_case_value
-from .common import flatten_list
+from .common import convert_to_ndarray, flatten_list
 from .custom_types import BenchCase, BenchTemplate
 from .env import get_numa_cpus_conf
 from .logger import logger
@@ -145,8 +145,9 @@ def get_ratio_from_n_jobs(n_jobs: str) -> float:
 
 
 def assign_case_special_values_on_run(
-    bench_case: BenchCase, x_train, y_train, x_test, y_test, data_description: Dict
+    bench_case: BenchCase, data, data_description: Dict
 ):
+    # Note: data = (x_train, y_train, x_test, y_train)
     library = get_bench_case_value(bench_case, "algorithm:library", None)
     estimator = get_bench_case_value(bench_case, "algorithm:estimator", None)
     # device-related parameters assignment
@@ -208,6 +209,7 @@ def assign_case_special_values_on_run(
         and library == "xgboost"
         and estimator == "XGBClassifier"
     ):
+        y_train = convert_to_ndarray(data[1])
         value_counts = pd.value_counts(y_train).sort_index()
         if len(value_counts) != 2:
             logger.info(
@@ -259,6 +261,7 @@ def assign_case_special_values_on_run(
     if is_special_value(eps) and eps.replace(SP_VALUE_STR, "").startswith(
         "distances_quantile"
     ):
+        x_train = convert_to_ndarray(data[0])
         quantile = float(eps.replace(SP_VALUE_STR, "").split(":")[1])
         # subsample of x_train is used to avoid reaching of memory limit for large matrices
         subsample = list(getattr(x_train, "index", np.arange(x_train.shape[0])))

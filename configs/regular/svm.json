@@ -1,6 +1,54 @@
 {
     "PARAMETERS_SETS": {
-        "implementations": {
+        "binary svc implementations": [
+            {
+                "algorithm": [
+                    { "library": "sklearn", "device": "cpu" },
+                    { "library": "sklearnex", "device": ["cpu", "gpu"] }
+                ]
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "verbose": false, "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "multi svc implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu",
+                    "estimator_params": { "decision_function_shape": "ovr" }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "svr implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu"
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"}
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "nusvm implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },
                 { "library": "sklearnex", "device": "cpu" }
@@ -69,7 +117,7 @@
                     "split_kwargs": { "train_size": 20000, "test_size": null },
                     "preprocessing_kwargs": { "normalize": false }
                 },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }
         ],
         "svr data": [
@@ -153,24 +201,19 @@
     },
     "TEMPLATES": {
         "svc binary": {
-            "INCLUDE": ["implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc binary data"],
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": ["cpu", "gpu"] }
-            ]
+            "INCLUDE": ["binary svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc binary data"]
         },
         "svc multiclass": {
-            "INCLUDE": ["implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc multiclass data"],
-            "algorithm": { "estimator_params": { "decision_function_shape": ["ovr", "ovo"], "random_state": 42 } }
+            "INCLUDE": ["multi svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc multiclass data"]
         },
         "svr": {
-            "INCLUDE": ["implementations", "common svm parameters", "svr parameters", "svr data"]
+            "INCLUDE": ["svr implementations", "common svm parameters", "svr parameters", "svr data"]
         },
         "nusvc": {
-            "INCLUDE": ["implementations", "common svm parameters", "clsf parameters", "nusvc parameters", "nusvc data"]
+            "INCLUDE": ["nusvm implementations", "common svm parameters", "clsf parameters", "nusvc parameters", "nusvc data"]
         },
         "nusvr": {
-            "INCLUDE": ["implementations", "common svm parameters", "nusvr parameters", "nusvr data"]
+            "INCLUDE": ["nusvm implementations", "common svm parameters", "nusvr parameters", "nusvr data"]
         }
     }
 }

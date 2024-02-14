@@ -84,7 +84,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
 
     # assign special values
     assign_case_special_values_on_run(
-        bench_case, x_train, y_train, x_test, y_test, data_description
+        bench_case, (x_train, y_train, x_test, y_test), data_description
     )
 
     function_args = get_function_args(bench_case, x_train, y_train, x_test, y_test)
