@@ -102,52 +102,52 @@
     },
     "TEMPLATES": {
         "sklearn linear - synth data": {
-            "INCLUDE": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "synth datasets common", "synth datasets shapes"]
         },
         "sklearn ridge - synth data": {
-            "INCLUDE": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "synth datasets common", "synth datasets shapes"]
         },
         "sklearn lasso - synth data": {
-            "INCLUDE": ["sklearn implementations", "common lasso parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["sklearn implementations", "common lasso parameters", "synth datasets common", "synth datasets shapes"]
         },
         "sklearn elasticnet - synth data": {
-            "INCLUDE": ["sklearn implementations", "common elasticnet parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["sklearn implementations", "common elasticnet parameters", "synth datasets common", "synth datasets shapes"]
         },
         "sklearn linear - real data": {
-            "INCLUDE": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "real datasets"]
+            "SETS": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "real datasets"]
         },
         "sklearn ridge - real data": {
-            "INCLUDE": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "real datasets"]
+            "SETS": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "real datasets"]
         },
         "sklearn lasso - real data": {
-            "INCLUDE": ["sklearn implementations", "common lasso parameters", "real datasets"]
+            "SETS": ["sklearn implementations", "common lasso parameters", "real datasets"]
         },
         "sklearn elasticnet - real data": {
-            "INCLUDE": ["sklearn implementations", "common elasticnet parameters", "real datasets"]
+            "SETS": ["sklearn implementations", "common elasticnet parameters", "real datasets"]
         },
         "cuml linear - synth data": {
-            "INCLUDE": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
         },
         "cuml ridge - synth data": {
-            "INCLUDE": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
         },
         "cuml lasso - synth data": {
-            "INCLUDE": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
         },
         "cuml elasticnet - synth data": {
-            "INCLUDE": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
+            "SETS": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
         },
         "cuml linear - real data": {
-            "INCLUDE": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "real datasets"]
+            "SETS": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "real datasets"]
         },
         "cuml ridge - real data": {
-            "INCLUDE": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "real datasets"]
+            "SETS": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "real datasets"]
         },
         "cuml lasso - real data": {
-            "INCLUDE": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "real datasets"]
+            "SETS": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "real datasets"]
         },
         "cuml elasticnet - real data": {
-            "INCLUDE": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "real datasets"]
+            "SETS": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "real datasets"]
         }
     }
 }

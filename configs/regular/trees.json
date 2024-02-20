@@ -95,24 +95,24 @@
     },
     "TEMPLATES": {
         "sklearn ensemble classification": {
-            "INCLUDE": [
+            "SETS": [
                 "sklearn implementations", "common ensemble params",
                 "sklearn classifier params", "classification data"
             ]
         },
         "sklearn ensemble regression": {
-            "INCLUDE": [
+            "SETS": [
                 "sklearn implementations", "common ensemble params",
                 "sklearn regressor params", "regression data"
             ]
         },
         "cuml ensemble classification": {
-            "INCLUDE": ["common ensemble params", "cuml classifier params", "classification data"],
+            "SETS": ["common ensemble params", "cuml classifier params", "classification data"],
             "algorithm": { "library": "cuml" },
             "data": { "format": "cudf" }
         },
         "cuml ensemble regression": {
-            "INCLUDE": ["common ensemble params", "cuml regressor params", "regression data"],
+            "SETS": ["common ensemble params", "cuml regressor params", "regression data"],
             "algorithm": { "library": "cuml" },
             "data": { "format": "cudf" }
         }

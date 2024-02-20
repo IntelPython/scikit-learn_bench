@@ -75,16 +75,16 @@
 	},
 	"TEMPLATES": {
 		"sklearn kmeans - higgs": {
-			"INCLUDE": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "higgs dataset"]
+			"SETS": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "higgs dataset"]
 		},
 		"sklearn kmeans - small datasets": {
-			"INCLUDE": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "small datasets"]
+			"SETS": ["sklearn implementations", "common kmeans parameters", "sklearn kmeans parameters", "small datasets"]
 		},
 		"cuml kmeans - higgs": {
-			"INCLUDE": ["common kmeans parameters", "cuml kmeans parameters", "higgs dataset"]
+			"SETS": ["common kmeans parameters", "cuml kmeans parameters", "higgs dataset"]
 		},
 		"cuml kmeans - small datasets": {
-			"INCLUDE": ["common kmeans parameters", "cuml kmeans parameters", "small datasets"]
+			"SETS": ["common kmeans parameters", "cuml kmeans parameters", "small datasets"]
 		}
 	}
 }

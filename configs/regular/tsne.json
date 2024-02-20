@@ -48,13 +48,13 @@
     },
     "TEMPLATES": {
 		"sklearn tsne": {
-			"INCLUDE": ["sklearn implementations", "common tsne parameters", "datasets"],
+			"SETS": ["sklearn implementations", "common tsne parameters", "datasets"],
             "algorithm": {
                 "n_jobs": "[SPECIAL_VALUE]physical_cpus"
             }
 		},
         "cuml tsne": {
-			"INCLUDE": ["common tsne parameters", "datasets"],
+			"SETS": ["common tsne parameters", "datasets"],
             "algorithm": {
                 "library": "cuml",
                 "estimator_params": { "learning_rate_method": "none", "n_neighbors": 91 }

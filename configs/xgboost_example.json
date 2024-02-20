@@ -35,10 +35,10 @@
 	},
 	"TEMPLATES": {
 		"classification": {
-			"INCLUDE": ["common", "classification"]
+			"SETS": ["common", "classification"]
 		},
 		"regression": {
-			"INCLUDE": ["common", "regression"]
+			"SETS": ["common", "regression"]
 		}
 	}
 }

@@ -78,26 +78,26 @@
     },
     "TEMPLATES": {
         "sklearn brute knn clsf": {
-            "INCLUDE": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "brute algorithm - classification data"]
+            "SETS": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "brute algorithm - classification data"]
         },
         "sklearn kd_tree knn clsf": {
-            "INCLUDE": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "kd_tree algorithm - classification data"],
+            "SETS": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "kd_tree algorithm - classification data"],
             "algorithm": { "device": "cpu" }
         },
         "sklearn brute knn regr": {
-            "INCLUDE": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "brute algorithm - regression data"]
+            "SETS": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "brute algorithm - regression data"]
         },
         "sklearn kd_tree knn regr": {
-            "INCLUDE": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "kd_tree algorithm - regression data"],
+            "SETS": ["sklearn implementations", "common knn parameters", "sklearn knn parameters", "kd_tree algorithm - regression data"],
             "algorithm": { "device": "cpu" }
         },
         "cuml brute knn clsf": {
-            "INCLUDE": ["common knn parameters", "brute algorithm - classification data"],
+            "SETS": ["common knn parameters", "brute algorithm - classification data"],
             "algorithm": { "library": "cuml" },
             "data": { "format": "cudf" }
         },
         "cuml brute knn regr": {
-            "INCLUDE": ["common knn parameters", "brute algorithm - regression data"],
+            "SETS": ["common knn parameters", "brute algorithm - regression data"],
             "algorithm": { "library": "cuml" },
             "data": { "format": "cudf" }
         }

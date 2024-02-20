@@ -57,7 +57,7 @@
     },
     "TEMPLATES": {
         "pca": {
-            "INCLUDE": ["implementations", "pca parameters", "datasets"]
+            "SETS": ["implementations", "pca parameters", "datasets"]
         }
     }
 }

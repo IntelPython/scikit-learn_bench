@@ -81,17 +81,17 @@
 	},
 	"TEMPLATES": {
 		"multi clsf": {
-			"INCLUDE": ["common", "multi clsf data"],
+			"SETS": ["common", "multi clsf data"],
 			"algorithm": {
 				"estimator": "LogisticRegression",
 				"online_inference_mode": true
 			}
 		},
 		"supervised": {
-			"INCLUDE": ["common", "binary clsf data", "supervised algorithms"]
+			"SETS": ["common", "binary clsf data", "supervised algorithms"]
 		},
 		"unsupervised": {
-			"INCLUDE": ["common", "blobs data", "unsupervised algorithms"]
+			"SETS": ["common", "blobs data", "unsupervised algorithms"]
 		}
 	}
 }

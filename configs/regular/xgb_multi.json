@@ -1,4 +1,5 @@
 {
+    "INCLUDE": ["xgb_binary.json"],
 	"PARAMETERS_SETS": {
         "multiclassification": {
 			"algorithm": {
@@ -7,15 +8,6 @@
                 "estimator_params": { "objective": "multi:softprob" }
 			}
 		},
-        "implementations": [
-            {
-                "algorithm": { "device": "cpu", "estimator_params": { "tree_method": "hist" } }
-            },
-            {
-                "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } },
-                "data": { "format": "cudf" }
-            }
-        ],
         "multiclassification data": [
             {
                 "data": {
@@ -78,7 +70,7 @@
 	},
 	"TEMPLATES": {
         "binary classification": {
-			"INCLUDE": ["multiclassification", "implementations", "multiclassification data"]
+			"SETS": ["multiclassification", "implementations", "multiclassification data"]
 		}
 	}
 }
