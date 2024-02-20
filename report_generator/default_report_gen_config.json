@@ -9,7 +9,14 @@
         "input_data:rows",
         "input_data:columns",
         "input_data:classes",
-        "input_data:n_clusters"
+        "input_data:n_clusters",
+        "algorithm_parameters:max_features",
+        "algorithm_parameters:n_estimators",
+        "algorithm_parameters:max_depth",
+        "algorithm_parameters:method",
+        "algorithm_parameters:n_neighbors",
+        "algorithm_parameters:n-neighbors",
+        "algorithm_parameters:max_iter"
     ],
     "comparison_method": {
         "default": "2 / 1"
