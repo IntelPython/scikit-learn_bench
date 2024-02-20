@@ -6,6 +6,10 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
+        "cuml implementation": {
+            "algorithm": { "library": "cuml" },
+            "data": { "format": "cudf" }
+        },
 		"common dbscan parameters": {
 			"algorithm": {
 				"estimator": "DBSCAN",
@@ -25,6 +29,11 @@
                     "algorithm": "brute",
                     "n_jobs": "[SPECIAL_VALUE]physical_cpus"
                 }
+            }
+        },
+        "cuml dbscan parameters": {
+            "algorithm": {
+                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
             }
         },
 		"datasets": [
@@ -60,12 +69,7 @@
 			"SETS": ["sklearn implementations", "common dbscan parameters", "sklearn dbscan parameters", "datasets"]
 		},
         "cuml dbscan": {
-            "SETS": ["common dbscan parameters", "datasets"],
-            "algorithm": {
-                "library": "cuml",
-                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
-            },
-            "data": { "format": "cudf" }
+            "SETS": ["cuml implementation", "common dbscan parameters", "cuml dbscan parameters", "datasets"]
         }
 	}
 }

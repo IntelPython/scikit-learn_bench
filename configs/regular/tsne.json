@@ -6,6 +6,13 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
+        "cuml implementation": {
+            "algorithm": {
+                "library": "cuml",
+                "estimator_params": { "learning_rate_method": "none", "n_neighbors": 91 }
+            },
+            "data": { "format": "cudf" }
+        },
         "common tsne parameters": {
             "algorithm": {
                 "estimator": "TSNE",
@@ -54,12 +61,7 @@
             }
 		},
         "cuml tsne": {
-			"SETS": ["common tsne parameters", "datasets"],
-            "algorithm": {
-                "library": "cuml",
-                "estimator_params": { "learning_rate_method": "none", "n_neighbors": 91 }
-            },
-            "data": { "format": "cudf" }
+			"SETS": ["cuml implementation", "common tsne parameters", "datasets"]
 		}
 	}
 }

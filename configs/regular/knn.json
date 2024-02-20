@@ -6,6 +6,10 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
+        "cuml implementation": {
+            "algorithm": { "library": "cuml" },
+            "data": { "format": "cudf" }
+        },
         "common knn parameters": {
             "algorithm": {
                 "estimator_params": {
@@ -92,14 +96,10 @@
             "algorithm": { "device": "cpu" }
         },
         "cuml brute knn clsf": {
-            "SETS": ["common knn parameters", "brute algorithm - classification data"],
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
+            "SETS": ["cuml implementation", "common knn parameters", "brute algorithm - classification data"]
         },
         "cuml brute knn regr": {
-            "SETS": ["common knn parameters", "brute algorithm - regression data"],
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
+            "SETS": ["cuml implementation", "common knn parameters", "brute algorithm - regression data"]
         }
     }
 }
