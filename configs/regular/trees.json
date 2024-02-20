@@ -6,6 +6,10 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
+        "cuml implementation": {
+            "algorithm": { "library": "cuml" },
+            "data": { "format": "cudf" }
+        },
         "common ensemble params": {
             "algorithm": {
                 "estimator_params": {
@@ -107,14 +111,16 @@
             ]
         },
         "cuml ensemble classification": {
-            "SETS": ["common ensemble params", "cuml classifier params", "classification data"],
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
+            "SETS": [
+                "cuml implementation", "common ensemble params",
+                "cuml classifier params", "classification data"
+            ]
         },
         "cuml ensemble regression": {
-            "SETS": ["common ensemble params", "cuml regressor params", "regression data"],
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
+            "SETS": [
+                "cuml implementation", "common ensemble params",
+                "cuml regressor params", "regression data"
+            ]
         }
     }
 }

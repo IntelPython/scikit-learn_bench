@@ -69,7 +69,7 @@
         ]
 	},
 	"TEMPLATES": {
-        "binary classification": {
+        "multi classification": {
 			"SETS": ["multiclassification", "implementations", "multiclassification data"]
 		}
 	}
