@@ -1,2 +1,0 @@
-scikit-learn-intelex==2023.0.0
-dpcpp-cpp-rt==2023.0.0

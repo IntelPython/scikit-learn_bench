@@ -1,0 +1,17 @@
+channels:
+  - rapidsai
+  - conda-forge
+  - nvidia
+dependencies:
+  - python=3.10
+  - rapids
+  - cudatoolkit
+  # sklbench dependencies
+  - pandas
+  - tabulate
+  - fastparquet
+  - openpyxl
+  - tqdm
+  - psutil
+  - requests
+  - py-cpuinfo
