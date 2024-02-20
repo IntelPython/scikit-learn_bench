@@ -12,7 +12,9 @@
 		},
         "implementations": [
             {
-                "algorithm": { "device": "cpu", "estimator_params": { "tree_method": "hist" } }
+                "algorithm": {
+                    "device": "cpu",
+                    "estimator_params": { "tree_method": "hist" } }
             },
             {
                 "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } },
@@ -100,7 +102,7 @@
 	},
 	"TEMPLATES": {
         "binary classification": {
-			"INCLUDE": ["binary classification", "implementations", "binary classification data"]
+			"SETS": ["binary classification", "implementations", "binary classification data"]
 		}
 	}
 }

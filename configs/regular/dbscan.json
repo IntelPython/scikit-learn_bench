@@ -57,10 +57,10 @@
 	},
 	"TEMPLATES": {
 		"sklearn dbscan": {
-			"INCLUDE": ["sklearn implementations", "common dbscan parameters", "sklearn dbscan parameters", "datasets"]
+			"SETS": ["sklearn implementations", "common dbscan parameters", "sklearn dbscan parameters", "datasets"]
 		},
         "cuml dbscan": {
-            "INCLUDE": ["common dbscan parameters", "datasets"],
+            "SETS": ["common dbscan parameters", "datasets"],
             "algorithm": {
                 "library": "cuml",
                 "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }

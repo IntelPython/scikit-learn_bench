@@ -63,16 +63,16 @@
 	},
 	"TEMPLATES": {
 		"sklearn logreg - real datasets": {
-			"INCLUDE": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "real datasets"]
+			"SETS": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "real datasets"]
 		},
         "sklearn logreg - synth datasets": {
-			"INCLUDE": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "synth datasets common", "synth datasets shapes"]
+			"SETS": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "synth datasets common", "synth datasets shapes"]
 		},
         "cuml logreg - real datasets": {
-			"INCLUDE": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "real datasets"]
+			"SETS": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "real datasets"]
 		},
         "cuml logreg - synth datasets": {
-			"INCLUDE": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "synth datasets common", "synth datasets shapes"]
+			"SETS": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "synth datasets common", "synth datasets shapes"]
 		}
 	}
 }

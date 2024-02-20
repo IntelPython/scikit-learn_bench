@@ -201,19 +201,19 @@
     },
     "TEMPLATES": {
         "svc binary": {
-            "INCLUDE": ["binary svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc binary data"]
+            "SETS": ["binary svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc binary data"]
         },
         "svc multiclass": {
-            "INCLUDE": ["multi svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc multiclass data"]
+            "SETS": ["multi svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc multiclass data"]
         },
         "svr": {
-            "INCLUDE": ["svr implementations", "common svm parameters", "svr parameters", "svr data"]
+            "SETS": ["svr implementations", "common svm parameters", "svr parameters", "svr data"]
         },
         "nusvc": {
-            "INCLUDE": ["nusvm implementations", "common svm parameters", "clsf parameters", "nusvc parameters", "nusvc data"]
+            "SETS": ["nusvm implementations", "common svm parameters", "clsf parameters", "nusvc parameters", "nusvc data"]
         },
         "nusvr": {
-            "INCLUDE": ["nusvm implementations", "common svm parameters", "nusvr parameters", "nusvr data"]
+            "SETS": ["nusvm implementations", "common svm parameters", "nusvr parameters", "nusvr data"]
         }
     }
 }

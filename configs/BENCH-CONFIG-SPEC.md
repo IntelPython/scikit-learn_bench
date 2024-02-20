@@ -3,22 +3,27 @@
 ## Config structure
 
 Benchmarking config files are written in JSON format and have few reserved keys:
+ - `INCLUDE` with other config file *relative* paths to include parameter sets from them
  - `PARAMETERS_SETS` with benchmark parameters in each set
  - `TEMPLATES` map where each named instance combines parameters sets and template-specific parameters
- - `INCLUDE` list which specifies parameters sets to include in template
+ - `SETS` list which specifies parameters sets to include in template
 
 Configs heavily utilize lists of scalar values and dictionaries to avoid duplication of cases.
 
 Formatting specification:
 ```json
 {
+    "INCLUDE": [
+        "another_config_file_path_0"
+        ...
+    ]
     "PARAMETERS_SETS": {
         "parameters_set_name_0": Dict or List[Dict] of any JSON-serializable with any level of nesting,
         ...
     },
     "TEMPLATES": {
         "template_name_0": {
-            "INCLUDE": ["parameters_set_name_0", ...],
+            "SETS": ["parameters_set_name_0", ...],
             Dict of any JSON-serializable with any level of nesting overwriting parameter sets
         },
         ...
@@ -47,7 +52,7 @@ Short config example:
     },
     "TEMPLATES": {
         "linear regression": {
-            "INCLUDE": ["estimator parameters", "regression data"],
+            "SETS": ["estimator parameters", "regression data"],
             "algorithm": {
                 "library": ["sklearn", "sklearnex", "cuml"]
             }

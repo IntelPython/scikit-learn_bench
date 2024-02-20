@@ -46,7 +46,7 @@
     },
     "TEMPLATES": {
 		"train_test_split": {
-			"INCLUDE": ["implementations", "train_test_split parameters", "datasets"]
+			"SETS": ["implementations", "train_test_split parameters", "datasets"]
 		}
 	}
 }

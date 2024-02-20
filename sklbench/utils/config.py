@@ -92,11 +92,19 @@ def parse_config_file(config_path: str) -> List[Dict]:
     templates = list()
     if "TEMPLATES" not in config_content:
         raise ValueError(f"{config_path} doesn't contain templates")
+    if "INCLUDE" in config_content:
+        config_dir = os.path.dirname(config_path)
+        include_content = dict()
+        for include_config in config_content["INCLUDE"]:
+            with open(os.path.join(config_dir, include_config), "r") as include_file:
+                include_content.update(json.load(include_file)["PARAMETERS_SETS"])
+        include_content.update(config_content["PARAMETERS_SETS"])
+        config_content["PARAMETERS_SETS"] = include_content
     for template_name, template_content in config_content["TEMPLATES"].items():
         new_templates = [{}]
         # 1st step: pop list of included param sets and add them to template
-        if "INCLUDE" in template_content:
-            for param_set_name in template_content.pop("INCLUDE"):
+        if "SETS" in template_content:
+            for param_set_name in template_content.pop("SETS"):
                 param_set = config_content["PARAMETERS_SETS"][param_set_name]
                 if isinstance(param_set, dict):
                     new_templates = [
