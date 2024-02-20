@@ -14,7 +14,9 @@
             {
                 "algorithm": {
                     "device": "cpu",
-                    "estimator_params": { "tree_method": "hist" } }
+                    "estimator_params": { "tree_method": "hist" },
+                    "enable_modelbuilders": [true, false]
+                }
             },
             {
                 "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } },

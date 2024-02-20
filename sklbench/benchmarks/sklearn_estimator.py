@@ -326,6 +326,9 @@ def measure_sklearn_estimator(
     y_test,
     online_inference_mode,
 ):
+    enable_modelbuilders = get_bench_case_value(
+        bench_case, "algorithm:enable_modelbuilders", False
+    )
     ensure_sklearnex_patching = get_bench_case_value(
         bench_case, "bench:ensure_sklearnex_patching", True
     )
@@ -357,6 +360,15 @@ def measure_sklearn_estimator(
                         data_args = (x_test,)
                 if online_inference_mode and stage == "inference":
                     method_instance = create_online_function(method_instance, x_test)
+                # daal4py model builders enabling branch
+                if enable_modelbuilders and stage == "inference":
+                    import daal4py
+
+                    daal_model = daal4py.mb.convert_model(
+                        estimator_instance.get_booster()
+                    )
+                    method_instance = getattr(daal_model, method)
+
                 metrics[method] = dict()
                 (
                     metrics[method]["time[ms]"],
@@ -440,6 +452,14 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
             y_test,
             online_inference_mode,
         )
+
+    enable_modelbuilders = get_bench_case_value(
+        bench_case, "algorithm:enable_modelbuilders", False
+    )
+    if enable_modelbuilders:
+        # NOTE: while modelbuilders are stored in `daal4py.mb` namespace
+        # their results are saved as `sklearnex` for better report readability
+        library_name = "sklearnex"
 
     result_template = {
         "task": task,
