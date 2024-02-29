@@ -36,7 +36,6 @@ def get_argument_actions(parser):
 
 def parse_action(action: argparse.Action) -> Dict:
     return {
-        # 'Name': action.dest,
         "Name": "</br>".join(map(lambda x: f"`{x}`", action.option_strings)),
         "Type": action.type.__name__ if action.type is not None else None,
         "Default value": (
