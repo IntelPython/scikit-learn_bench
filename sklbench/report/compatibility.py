@@ -32,7 +32,7 @@ def transform_results_to_compatible(results: pd.DataFrame):
         if gpu_hist_index.any():
             results.loc[gpu_hist_index, "tree_method"] = "hist"
     # cuML compatibility
-    if (results["library"] == "cuml").any():
+    if ((results["library"] == "cuml") | (results["library"] == "raft")).any():
         logger.info(
             "Found cuML entries in provided results. They will be "
             "filtered and transformed to make all entries compatible "
@@ -65,6 +65,7 @@ def transform_results_to_compatible(results: pd.DataFrame):
                 "max_samples_per_batch",
                 # sklearn kNN
                 "leaf_size",
+                "radius",
                 # sklearn LinearRegression
                 "positive",
                 "precompute",

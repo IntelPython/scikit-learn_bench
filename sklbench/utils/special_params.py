@@ -178,6 +178,9 @@ def assign_case_special_values_on_run(
             set_bench_case_value(
                 bench_case, "algorithm:sklearnex_context:target_offload", device
             )
+        # faiss GPU algorithm selection
+        elif library == "sklbench.emulators.faiss" and estimator == "NearestNeighbors":
+            set_bench_case_value(bench_case, "algorithm:estimator_params:device", device)
         else:
             logger.warning(f'Device "{device}" is not used for this case')
     # assign "default" or changed device for output

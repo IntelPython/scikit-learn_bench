@@ -464,7 +464,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     result_template = {
         "task": task,
         "dataset": get_data_name(bench_case, shortened=True),
-        "library": library_name,
+        "library": library_name.replace("sklbench.emulators.", ""),
         "estimator": estimator_name,
         "device": get_bench_case_value(bench_case, "algorithm:device"),
     }
