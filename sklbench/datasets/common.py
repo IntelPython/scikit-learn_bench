@@ -90,6 +90,10 @@ def load_data_from_cache(data_cache: str, data_name: str) -> Dict:
 def save_data_to_cache(data: Dict, data_cache: str, data_name: str):
     for component_name, data_compoment in data.items():
         component_filepath = os.path.join(data_cache, f"{data_name}_{component_name}")
+        # convert 2d numpy array to pandas DataFrame for better caching
+        if isinstance(data_compoment, np.ndarray) and data_compoment.ndim == 2:
+            data_compoment = pd.DataFrame(data_compoment)
+        # branching by data type for saving to cache
         if isinstance(data_compoment, pd.DataFrame):
             component_filepath += ".parq"
             data_compoment.columns = [
@@ -146,10 +150,10 @@ def cache(function):
 
 
 def preprocess_data(
-    data_dict: [Dict[str, Array]],
+    data_dict: List[Dict[str, Array]],
     subsample: Union[float, int, None] = None,
     **kwargs,
-) -> [Dict[str, Array]]:
+) -> List[Dict[str, Array]]:
     """Preprocessing function applied for all data arguments."""
     if subsample is not None:
         for data_name, data in data_dict.items():

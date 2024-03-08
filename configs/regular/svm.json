@@ -67,7 +67,7 @@
             },
             "data": { "preprocessing_kwargs": { "normalize": true } }
         },
-        "clsf parameters": {
+        "svm clsf parameters": {
             "algorithm": { "estimator_params": { "random_state": 42 } }
         },
         "svc parameters": {
@@ -201,19 +201,47 @@
     },
     "TEMPLATES": {
         "svc binary": {
-            "SETS": ["binary svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc binary data"]
+            "SETS": [
+                "binary svc implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "svc parameters",
+                "svc binary data"
+            ]
         },
         "svc multiclass": {
-            "SETS": ["multi svc implementations", "common svm parameters", "clsf parameters", "svc parameters", "svc multiclass data"]
+            "SETS": [
+                "multi svc implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "svc parameters", 
+                "svc multiclass data"
+            ]
         },
         "svr": {
-            "SETS": ["svr implementations", "common svm parameters", "svr parameters", "svr data"]
+            "SETS": [
+                "svr implementations",
+                "common svm parameters",
+                "svr parameters",
+                "svr data"
+            ]
         },
         "nusvc": {
-            "SETS": ["nusvm implementations", "common svm parameters", "clsf parameters", "nusvc parameters", "nusvc data"]
+            "SETS": [
+                "nusvm implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "nusvc parameters",
+                "nusvc data"
+            ]
         },
         "nusvr": {
-            "SETS": ["nusvm implementations", "common svm parameters", "nusvr parameters", "nusvr data"]
+            "SETS": [
+                "nusvm implementations",
+                "common svm parameters", 
+                "nusvr parameters",
+                "nusvr data"
+            ]
         }
     }
 }

@@ -1,14 +1,6 @@
 {
-    "INCLUDE": ["xgb_binary.json"],
+    "INCLUDE": ["../common/xgboost.json"],
 	"PARAMETERS_SETS": {
-        "regression": {
-			"algorithm": {
-				"library": "xgboost",
-                "estimator": "XGBRegressor",
-                "estimator_methods": {"inference": "predict"},
-                "estimator_params": { "objective": "reg:squarederror" }
-			}
-		},
 		"regression data": [
             {
                 "data": {
@@ -84,7 +76,7 @@
 	},
 	"TEMPLATES": {
 		"regression": {
-			"SETS": ["regression", "implementations", "regression data"]
+			"SETS": ["xgboost regression", "xgboost implementations", "regression data"]
 		}
 	}
 }

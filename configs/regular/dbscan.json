@@ -1,15 +1,6 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
 	"PARAMETERS_SETS": {
-        "sklearn implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": ["cpu", "gpu"] }
-            ]
-        },
-        "cuml implementation": {
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
-        },
 		"common dbscan parameters": {
 			"algorithm": {
 				"estimator": "DBSCAN",
@@ -36,7 +27,7 @@
                 "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
             }
         },
-		"datasets": [
+		"dbscan datasets": [
             {
                 "data": { "dataset": ["cifar", "mnist"], "split_kwargs": { "train_size": 10000 } }
             },
@@ -66,10 +57,20 @@
 	},
 	"TEMPLATES": {
 		"sklearn dbscan": {
-			"SETS": ["sklearn implementations", "common dbscan parameters", "sklearn dbscan parameters", "datasets"]
+			"SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common dbscan parameters",
+                "sklearn dbscan parameters",
+                "dbscan datasets"
+            ]
 		},
         "cuml dbscan": {
-            "SETS": ["cuml implementation", "common dbscan parameters", "cuml dbscan parameters", "datasets"]
+            "SETS": [
+                "cuml implementation",
+                "common dbscan parameters",
+                "cuml dbscan parameters",
+                "dbscan datasets"
+            ]
         }
 	}
 }

@@ -23,14 +23,6 @@ from ..utils.logger import logger
 
 
 def transform_results_to_compatible(results: pd.DataFrame):
-    # rename XGB tree_method from gpu_hist to hist
-    # when device is set correctly to gpu
-    if (results["library"] == "xgboost").any():
-        gpu_hist_index = (results["tree_method"] == "gpu_hist") & (
-            results["device"] == "gpu"
-        )
-        if gpu_hist_index.any():
-            results.loc[gpu_hist_index, "tree_method"] = "hist"
     # cuML compatibility
     if ((results["library"] == "cuml") | (results["library"] == "raft")).any():
         logger.info(
