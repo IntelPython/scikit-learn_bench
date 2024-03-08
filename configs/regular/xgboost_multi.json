@@ -1,13 +1,6 @@
 {
-    "INCLUDE": ["xgb_binary.json"],
+    "INCLUDE": ["../common/xgboost.json"],
 	"PARAMETERS_SETS": {
-        "multiclassification": {
-			"algorithm": {
-				"library": "xgboost",
-                "estimator": "XGBClassifier",
-                "estimator_params": { "objective": "multi:softprob" }
-			}
-		},
         "multiclassification data": [
             {
                 "data": {
@@ -70,7 +63,7 @@
 	},
 	"TEMPLATES": {
         "multi classification": {
-			"SETS": ["multiclassification", "implementations", "multiclassification data"]
+			"SETS": ["xgboost multiclassification", "xgboost implementations", "multiclassification data"]
 		}
 	}
 }

@@ -1,18 +1,6 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
     "PARAMETERS_SETS": {
-        "implementations": [
-            {
-                "algorithm": [
-                    { "library": "sklearn", "device": "cpu" },
-                    { "library": "sklearnex", "device": "cpu" },
-                    { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
-                ]
-            },
-            {
-                "algorithm": { "library": "cuml" },
-                "data": { "format": "cudf" }
-            }
-        ],
         "pca parameters": {
             "algorithm": {
                 "estimator": "PCA",
@@ -27,10 +15,10 @@
                 }
             }
         },
-        "datasets": [
+        "pca datasets": [
             {
                 "data": {
-                    "dataset": ["cifar", "mnist", "yolanda", "codrnanorm"],
+                    "dataset": ["cifar", "mnist", "yolanda"],
                     "split_kwargs": { "ignore": true }
                 }
             },
@@ -56,8 +44,19 @@
         ]
     },
     "TEMPLATES": {
-        "pca": {
-            "SETS": ["implementations", "pca parameters", "datasets"]
+        "sklearn pca": {
+            "SETS": [
+                "sklearn-ex[preview] implementations",
+                "pca parameters",
+                "pca datasets"
+            ]
+        },
+        "cuml pca": {
+            "SETS": [
+                "cuml implementation",
+                "pca parameters",
+                "pca datasets"
+            ]
         }
     }
 }

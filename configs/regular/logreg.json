@@ -1,16 +1,6 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
 	"PARAMETERS_SETS": {
-		"sklearn implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" },
-                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
-            ]
-        },
-        "cuml implementation": {
-            "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
-        },
 		"common logreg parameters": {
 			"algorithm": {
 				"estimator": "LogisticRegression",
@@ -30,29 +20,23 @@
         "cuml logreg parameters": {
             "algorithm": { "estimator_params": { "solver": "qn" } }
         },
-        "synth datasets common": {
-            "data": {
-                "source": "make_classification",
-                "generation_kwargs": {
-                    "n_classes": [2, 5],
-                    "n_informative": "[SPECIAL_VALUE]0.5",
-                    "class_sep": 0.75
-                },
-                "split_kwargs": {
-                    "train_size": 0.5,
-                    "test_size": 0.5
+		"logreg datasets": [
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_samples": 200000,
+                        "n_features": [50, 500],
+                        "n_classes": [2, 5],
+                        "n_informative": "[SPECIAL_VALUE]0.5",
+                        "class_sep": 0.75
+                    },
+                    "split_kwargs": {
+                        "train_size": 0.5,
+                        "test_size": 0.5
+                    }
                 }
-            }
-        },
-        "synth datasets shapes": {
-            "data": {
-                "generation_kwargs": [
-                    { "n_samples": 1000000, "n_features": 50 },
-                    { "n_samples": 100000, "n_features": 500 }
-                ]
-            }
-        },
-		"real datasets": [
+            },
             { "data": { "dataset": "mnist", "split_kwargs": { "train_size": 20000, "test_size": 50000 } } },
             { "data": { "dataset": "susy", "split_kwargs": { "train_size": 0.2, "test_size": 0.8 } } },
             { "data": { "dataset": "cifar", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } } },
@@ -62,17 +46,21 @@
         ]
 	},
 	"TEMPLATES": {
-		"sklearn logreg - real datasets": {
-			"SETS": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "real datasets"]
+		"sklearn logreg": {
+			"SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common logreg parameters",
+                "sklearn logreg parameters",
+                "logreg datasets"
+            ]
 		},
-        "sklearn logreg - synth datasets": {
-			"SETS": ["sklearn implementations", "common logreg parameters", "sklearn logreg parameters", "synth datasets common", "synth datasets shapes"]
-		},
-        "cuml logreg - real datasets": {
-			"SETS": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "real datasets"]
-		},
-        "cuml logreg - synth datasets": {
-			"SETS": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "synth datasets common", "synth datasets shapes"]
+        "cuml logreg": {
+			"SETS": [
+                "cuml implementation",
+                "common logreg parameters",
+                "cuml logreg parameters",
+                "logreg datasets"
+            ]
 		}
 	}
 }

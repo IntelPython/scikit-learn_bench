@@ -108,7 +108,7 @@ class NearestNeighbors:
             )
         elif self.algorithm == "cagra":
             distances, indices = cagra.search(
-                cagra.SearchParams(itopk_size=k * 8),
+                cagra.SearchParams(itopk_size=int(1.5 * k)),
                 self._index,
                 X,
                 k,

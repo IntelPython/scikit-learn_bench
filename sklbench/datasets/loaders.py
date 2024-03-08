@@ -768,6 +768,38 @@ def load_road_network(
     return {"x": x, "y": y}, data_desc
 
 
+"""
+Index/neighbors search datasets
+"""
+
+def load_ann_dataset_template(url, raw_data_cache):
+    import h5py
+
+    local_path = os.path.join(raw_data_cache, os.path.basename(url))
+    retrieve(url, local_path)
+    with h5py.File(local_path, "r") as f:
+        x = np.asarray(f["train"])
+    # TODO: remove placeholding zeroed y
+    y = np.zeros((x.shape[0], ))
+    return {"x": x, "y": y}, {}
+
+
+@cache
+def load_sift(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    url = "http://ann-benchmarks.com/sift-128-euclidean.hdf5"
+    return load_ann_dataset_template(url, raw_data_cache)
+
+
+@cache
+def load_gist(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    url = "http://ann-benchmarks.com/gist-960-euclidean.hdf5"
+    return load_ann_dataset_template(url, raw_data_cache)
+
+
 dataset_loading_functions = {
     # classification
     "airline_depdelay": load_airline_depdelay,
@@ -803,6 +835,9 @@ dataset_loading_functions = {
     "year_prediction_msd": load_year_prediction_msd,
     "yolanda": load_yolanda,
     "road_network": load_road_network,
+    # index search
+    "sift": load_sift,
+    "gist": load_gist,
 }
 dataset_loading_functions = {
     key: preprocess(value) for key, value in dataset_loading_functions.items()

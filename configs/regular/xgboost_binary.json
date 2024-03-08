@@ -1,28 +1,6 @@
 {
+    "INCLUDE": ["../common/xgboost.json"],
 	"PARAMETERS_SETS": {
-        "binary classification": {
-			"algorithm": {
-				"library": "xgboost",
-                "estimator": "XGBClassifier",
-                "estimator_params": {
-                    "objective": "binary:logistic",
-                    "scale_pos_weight": "[SPECIAL_VALUE]auto"
-                }
-			}
-		},
-        "implementations": [
-            {
-                "algorithm": {
-                    "device": "cpu",
-                    "estimator_params": { "tree_method": "hist" },
-                    "enable_modelbuilders": [true, false]
-                }
-            },
-            {
-                "algorithm": { "device": "gpu", "estimator_params": { "tree_method": "gpu_hist" } },
-                "data": { "format": "cudf" }
-            }
-        ],
         "binary classification data": [
             {
                 "data": {
@@ -104,7 +82,7 @@
 	},
 	"TEMPLATES": {
         "binary classification": {
-			"SETS": ["binary classification", "implementations", "binary classification data"]
+			"SETS": ["xgboost binary classification", "xgboost implementations", "binary classification data"]
 		}
 	}
 }

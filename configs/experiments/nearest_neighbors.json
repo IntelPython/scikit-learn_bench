@@ -1,6 +1,6 @@
 {
     "PARAMETERS_SETS": {
-        "implementations": [
+        "nearest neighbors implementations": [
             {
                 "algorithm": {
                     "library": ["sklearn", "sklearnex"],
@@ -27,7 +27,7 @@
                 }
             }
         ],
-        "common parameters": {
+        "nearest neighbors common parameters": {
             "algorithm": {
                 "estimator": "NearestNeighbors",
                 "estimator_params": {
@@ -38,31 +38,42 @@
                     "training": "fit",
                     "inference": "kneighbors"
                 }
-            }
+            },
+            "data": { "dtype": "float32" }
         },
-        "synth data": {
-            "data": {
-                "dtype": "float32",
-                "source": "make_classification",
-                "generation_kwargs": {
-                    "n_samples": [25000, 50000, 100000],
-                    "n_features": [16, 64, 256, 1024, 4096],
-                    "n_classes": 5,
-                    "n_informative": "[SPECIAL_VALUE]0.75",
-                    "n_redundant": 0,
-                    "random_state": 42
-                },
-                "split_kwargs": {
-                    "train_size": 0.2,
-                    "test_size": 0.8,
-                    "random_state": 42
+        "nearest neighbors data": [
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_samples": [50000, 500000],
+                        "n_features": [16, 64, 256, 1024, 4096],
+                        "n_classes": 5,
+                        "n_informative": "[SPECIAL_VALUE]0.75",
+                        "n_redundant": 0,
+                        "random_state": 42
+                    },
+                    "split_kwargs": {
+                        "train_size": 0.2,
+                        "test_size": 0.8,
+                        "random_state": 42
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["mnist", "fashion_mnist", "sift", "gist"]
                 }
             }
-        }
+        ]
     },
     "TEMPLATES": {
         "nearest neighbors": {
-            "SETS": ["implementations", "common parameters", "synth data"]
+            "SETS": [
+                "nearest neighbors implementations",
+                "nearest neighbors common parameters",
+                "nearest neighbors data"
+            ]
         }
     }
 }

@@ -155,24 +155,13 @@ def assign_case_special_values_on_run(
     if device != "default":
         # xgboost tree method assignment branch
         if library == "xgboost" and estimator in ["XGBRegressor", "XGBClassifier"]:
-            orig_tree_method = get_bench_case_value(
-                bench_case, "algorithm:estimator_params:tree_method", None
-            )
-            if device == "cpu":
-                new_tree_method = "hist"
-            elif device == "gpu":
-                new_tree_method = "gpu_hist"
-            else:
-                raise ValueError(f"Unknown device {device} for xgboost {estimator}")
-            if orig_tree_method is not None and orig_tree_method != new_tree_method:
-                logger.warning(
-                    f'tree_method is set to "{orig_tree_method}" '
-                    f'while device is set to "{device}". '
-                    f'Changing tree_method to "{new_tree_method}"'
+            if device == "cpu" or any(map(device.startswith, ["gpu", "cuda"])):
+                logger.debug(f"Forwaring device '{device}' to XGBoost estimator parameters")
+                set_bench_case_value(
+                    bench_case, "algorithm:estimator_params:device", device
                 )
-            set_bench_case_value(
-                bench_case, "algorithm:estimator_params:tree_method", new_tree_method
-            )
+            else:
+                raise ValueError(f"Unknown device '{device}' for xgboost {estimator}")
         # set target offload for execution context
         elif library.startswith("sklearnex") or library.startswith("daal4py"):
             set_bench_case_value(

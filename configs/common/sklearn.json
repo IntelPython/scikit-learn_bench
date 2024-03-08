@@ -1,0 +1,27 @@
+{
+    "PARAMETERS_SETS": {
+        "sklearn-ex[cpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" }
+            ]
+        },
+        "sklearn-ex[cpu,gpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "sklearn-ex[preview] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "cuml implementation": {
+            "algorithm": { "library": "cuml" },
+            "data": { "format": "cudf" }
+        }
+    }
+}

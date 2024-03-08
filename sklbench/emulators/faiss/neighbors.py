@@ -58,15 +58,14 @@ class NearestNeighbors:
 
     def fit(self, X, y=None):
         d = X.shape[1]
+        self._base_index = faiss.IndexFlatL2(d)
         if self.algorithm == "brute":
-            self._index = faiss.IndexFlatL2(d)
+            self._index = self._base_index
         elif self.algorithm == "ivf_flat":
-            self._base_index = faiss.IndexFlatL2(d)
             self._index = faiss.IndexIVFFlat(
                 self._base_index, d, self.n_lists, faiss.METRIC_L2
             )
         elif self.algorithm == "ivf_pq":
-            self._base_index = faiss.IndexFlatL2(d)
             self._index = faiss.IndexIVFPQ(
                 self._base_index,
                 d,

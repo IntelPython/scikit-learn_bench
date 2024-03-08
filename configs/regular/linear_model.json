@@ -1,37 +1,19 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
     "PARAMETERS_SETS": {
-        "sklearn implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" }
-            ]
-        },
-        "cuml implementation": {
-            "algorithm": { "library": "cuml" }, "data": { "format": "cudf" }
-        },
-        "sklearn linear implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": ["cpu", "gpu"] }
-            ]
-        },
-        "synth datasets common": {
-            "data": {
-                "source": "make_regression",
-                "split_kwargs": { "train_size": 0.2, "test_size": 0.8 },
-                "generation_kwargs": { "n_informative": "[SPECIAL_VALUE]0.5", "noise": 1.25 }
-            }
-        },
-        "synth datasets shapes": {
-            "data": {
-                "generation_kwargs": [
-                    { "n_samples": 5000000, "n_features": 20 },
-                    { "n_samples": 500000, "n_features": 200 },
-                    { "n_samples": 50000, "n_features": 2000 }
-                ]
-            }
-        },
-        "real datasets": [
+        "regression datasets": [
+            {
+                "data": {
+                    "source": "make_regression",
+                    "split_kwargs": { "train_size": 0.2, "test_size": 0.8 },
+                    "generation_kwargs": {
+                        "n_samples": 500000,
+                        "n_features": [400, 2000],
+                        "n_informative": 5,
+                        "noise": 2.0
+                    }
+                }
+            },
             {
                 "data": {
                     "dataset": "year_prediction_msd",
@@ -101,53 +83,67 @@
         }
     },
     "TEMPLATES": {
-        "sklearn linear - synth data": {
-            "SETS": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "synth datasets common", "synth datasets shapes"]
+        "sklearn linear": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common linear parameters",
+                "sklearn linear parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn ridge - synth data": {
-            "SETS": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "synth datasets common", "synth datasets shapes"]
+        "sklearn ridge": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common ridge parameters",
+                "sklearn ridge parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn lasso - synth data": {
-            "SETS": ["sklearn implementations", "common lasso parameters", "synth datasets common", "synth datasets shapes"]
+        "sklearn lasso": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common lasso parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn elasticnet - synth data": {
-            "SETS": ["sklearn implementations", "common elasticnet parameters", "synth datasets common", "synth datasets shapes"]
+        "sklearn elasticnet": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common elasticnet parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn linear - real data": {
-            "SETS": ["sklearn linear implementations", "common linear parameters", "sklearn linear parameters", "real datasets"]
+        "cuml linear": {
+            "SETS": [
+                "cuml implementation",
+                "common linear parameters",
+                "cuml L2 parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn ridge - real data": {
-            "SETS": ["sklearn implementations", "common ridge parameters", "sklearn ridge parameters", "real datasets"]
+        "cuml ridge": {
+            "SETS": [
+                "cuml implementation",
+                "common ridge parameters",
+                "cuml L2 parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn lasso - real data": {
-            "SETS": ["sklearn implementations", "common lasso parameters", "real datasets"]
+        "cuml lasso": {
+            "SETS": [
+                "cuml implementation",
+                "common lasso parameters",
+                "cuml L1 parameters",
+                "regression datasets"
+            ]
         },
-        "sklearn elasticnet - real data": {
-            "SETS": ["sklearn implementations", "common elasticnet parameters", "real datasets"]
-        },
-        "cuml linear - synth data": {
-            "SETS": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
-        },
-        "cuml ridge - synth data": {
-            "SETS": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "synth datasets common", "synth datasets shapes"]
-        },
-        "cuml lasso - synth data": {
-            "SETS": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
-        },
-        "cuml elasticnet - synth data": {
-            "SETS": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "synth datasets common", "synth datasets shapes"]
-        },
-        "cuml linear - real data": {
-            "SETS": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "real datasets"]
-        },
-        "cuml ridge - real data": {
-            "SETS": ["cuml implementation", "common ridge parameters", "cuml L2 parameters", "real datasets"]
-        },
-        "cuml lasso - real data": {
-            "SETS": ["cuml implementation", "common lasso parameters", "cuml L1 parameters", "real datasets"]
-        },
-        "cuml elasticnet - real data": {
-            "SETS": ["cuml implementation", "common elasticnet parameters", "cuml L1 parameters", "real datasets"]
+        "cuml elasticnet": {
+            "SETS": [
+                "cuml implementation",
+                "common elasticnet parameters",
+                "cuml L1 parameters",
+                "regression datasets"
+            ]
         }
     }
 }

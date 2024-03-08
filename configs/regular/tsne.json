@@ -1,17 +1,15 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
     "PARAMETERS_SETS": {
-        "sklearn implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": ["cpu", "gpu"] }
-            ]
-        },
-        "cuml implementation": {
+        "sklearn parameters": {
             "algorithm": {
-                "library": "cuml",
+                "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+            }
+        },
+        "cuml parameters": {
+            "algorithm": {
                 "estimator_params": { "learning_rate_method": "none", "n_neighbors": 91 }
-            },
-            "data": { "format": "cudf" }
+            }
         },
         "common tsne parameters": {
             "algorithm": {
@@ -32,7 +30,7 @@
                 }
             }
         },
-        "datasets": [
+        "tsne datasets": [
             {
                 "data": {
                     "dataset": "hepmass",
@@ -55,13 +53,20 @@
     },
     "TEMPLATES": {
 		"sklearn tsne": {
-			"SETS": ["sklearn implementations", "common tsne parameters", "datasets"],
-            "algorithm": {
-                "n_jobs": "[SPECIAL_VALUE]physical_cpus"
-            }
+			"SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common tsne parameters",
+                "sklearn parameters",
+                "tsne datasets"
+            ]
 		},
         "cuml tsne": {
-			"SETS": ["cuml implementation", "common tsne parameters", "datasets"]
+			"SETS": [
+                "cuml implementation",
+                "common tsne parameters",
+                "cuml parameters",
+                "tsne datasets"
+            ]
 		}
 	}
 }
