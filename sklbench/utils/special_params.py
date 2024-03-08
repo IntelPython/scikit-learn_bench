@@ -156,7 +156,9 @@ def assign_case_special_values_on_run(
         # xgboost tree method assignment branch
         if library == "xgboost" and estimator in ["XGBRegressor", "XGBClassifier"]:
             if device == "cpu" or any(map(device.startswith, ["gpu", "cuda"])):
-                logger.debug(f"Forwaring device '{device}' to XGBoost estimator parameters")
+                logger.debug(
+                    f"Forwaring device '{device}' to XGBoost estimator parameters"
+                )
                 set_bench_case_value(
                     bench_case, "algorithm:estimator_params:device", device
                 )
