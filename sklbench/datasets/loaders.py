@@ -772,6 +772,7 @@ def load_road_network(
 Index/neighbors search datasets
 """
 
+
 def load_ann_dataset_template(url, raw_data_cache):
     import h5py
 
@@ -780,7 +781,7 @@ def load_ann_dataset_template(url, raw_data_cache):
     with h5py.File(local_path, "r") as f:
         x = np.asarray(f["train"])
     # TODO: remove placeholding zeroed y
-    y = np.zeros((x.shape[0], ))
+    y = np.zeros((x.shape[0],))
     return {"x": x, "y": y}, {}
 
 
