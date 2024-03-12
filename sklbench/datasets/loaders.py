@@ -779,10 +779,19 @@ def load_ann_dataset_template(url, raw_data_cache):
     local_path = os.path.join(raw_data_cache, os.path.basename(url))
     retrieve(url, local_path)
     with h5py.File(local_path, "r") as f:
-        x = np.asarray(f["train"])
+        x_train = np.asarray(f["train"])
+        x_test = np.asarray(f["test"])
+    x = np.concatenate([x_train, x_test], axis=0)
+    data_desc = {
+        "default_split": {
+            "train_size": x_train.shape[0],
+            "test_size": x_test.shape[0],
+        }
+    }
+    del x_train, x_test
     # TODO: remove placeholding zeroed y
     y = np.zeros((x.shape[0],))
-    return {"x": x, "y": y}, {}
+    return {"x": x, "y": y}, data_desc
 
 
 @cache
