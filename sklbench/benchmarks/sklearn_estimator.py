@@ -271,7 +271,7 @@ def sklearnex_logger_is_available() -> bool:
         return False
 
 
-def get_sklearnex_patching_stream() -> io.StringIO:
+def get_sklearnex_logging_stream() -> io.StringIO:
     sklex_logger = logging.getLogger("sklearnex")
     sklex_logger.setLevel(logging.INFO)
     for handler in sklex_logger.handlers.copy():
@@ -297,21 +297,41 @@ def verify_patching(stream: io.StringIO, function_name) -> bool:
     return acceleration_lines > 0 and fallback_lines == 0
 
 
-def create_online_function(method_instance, data_instance):
-    def ndarray_function(x):
-        for row in x:
-            method_instance(row.reshape(1, -1))
+def create_online_function(method_instance, data_args, batch_size):
+    n_batches = data_args[0].shape[0] // batch_size
 
-    def dataframe_function(x):
-        for _, row in x.iterrows():
-            method_instance(row.to_frame().T)
+    if "y" in list(inspect.signature(method_instance).parameters):
 
-    if isinstance(data_instance, np.ndarray):
+        def ndarray_function(x, y):
+            for i in range(n_batches):
+                method_instance(
+                    x[i * batch_size : (i + 1) * batch_size],
+                    y[i * batch_size : (i + 1) * batch_size],
+                )
+
+        def dataframe_function(x, y):
+            for i in range(n_batches):
+                method_instance(
+                    x.iloc[i * batch_size : (i + 1) * batch_size],
+                    y.iloc[i * batch_size : (i + 1) * batch_size],
+                )
+
+    else:
+
+        def ndarray_function(x):
+            for i in range(n_batches):
+                method_instance(x[i * batch_size : (i + 1) * batch_size])
+
+        def dataframe_function(x):
+            for i in range(n_batches):
+                method_instance(x.iloc[i * batch_size : (i + 1) * batch_size])
+
+    if "ndarray" in str(type(data_args[0])):
         return ndarray_function
-    elif isinstance(data_instance, pd.DataFrame):
+    elif "DataFrame" in str(type(data_args[0])):
         return dataframe_function
     else:
-        return f"Unknown {type(data_instance)} input type for online execution mode"
+        return f"Unknown {type(data_args[0])} input type for online execution mode"
 
 
 def measure_sklearn_estimator(
@@ -324,7 +344,6 @@ def measure_sklearn_estimator(
     x_test,
     y_train,
     y_test,
-    online_inference_mode,
 ):
     enable_modelbuilders = get_bench_case_value(
         bench_case, "algorithm:enable_modelbuilders", False
@@ -340,7 +359,7 @@ def measure_sklearn_estimator(
             or estimator_class.__module__.startswith("sklearnex")
         )
     )
-    sklex_patching_stream = get_sklearnex_patching_stream()
+    sklearnex_logging_stream = get_sklearnex_logging_stream()
 
     metrics = dict()
     estimator_instance = estimator_class(**estimator_params)
@@ -358,8 +377,13 @@ def measure_sklearn_estimator(
                         data_args = (x_train,)
                     else:
                         data_args = (x_test,)
-                if online_inference_mode and stage == "inference":
-                    method_instance = create_online_function(method_instance, x_test)
+                batch_size = get_bench_case_value(
+                    bench_case, f"algorithm:batch_size:{stage}"
+                )
+                if batch_size is not None:
+                    method_instance = create_online_function(
+                        method_instance, data_args, batch_size
+                    )
                 # daal4py model builders enabling branch
                 if enable_modelbuilders and stage == "inference":
                     import daal4py
@@ -375,11 +399,15 @@ def measure_sklearn_estimator(
                     metrics[method]["time std[ms]"],
                     _,
                 ) = measure_case(bench_case, method_instance, *data_args)
+                if batch_size is not None:
+                    metrics[method]["throughput[samples/ms]"] = (
+                        (data_args[0].shape[0] // batch_size) * batch_size
+                    ) / metrics[method]["time[ms]"]
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"
-                    sklex_patching_stream.seek(0)
+                    sklearnex_logging_stream.seek(0)
                     method_is_patched = verify_patching(
-                        sklex_patching_stream, full_method_name
+                        sklearnex_logging_stream, full_method_name
                     )
                     if not method_is_patched:
                         logger.warning(
@@ -428,9 +456,6 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
 
     # get estimator methods for measurement
     estimator_methods = get_estimator_methods(bench_case)
-    online_inference_mode = get_bench_case_value(
-        bench_case, "algorithm:online_inference_mode", False
-    )
 
     # benchmark case filtering
     if not bench_case_filter(bench_case, filters):
@@ -450,7 +475,6 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
             x_test,
             y_train,
             y_test,
-            online_inference_mode,
         )
 
     enable_modelbuilders = get_bench_case_value(
@@ -481,10 +505,16 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         "training": data_description["x_train"],
         "inference": data_description["x_test"],
     }
-    data_descs["inference"].update({"online_inference_mode": online_inference_mode})
-    if "n_classes" in data_description:
-        data_descs["training"].update({"n_classes": data_description["n_classes"]})
-        data_descs["inference"].update({"n_classes": data_description["n_classes"]})
+    for stage in estimator_methods.keys():
+        data_descs[stage].update(
+            {
+                "batch_size": get_bench_case_value(
+                    bench_case, f"algorithm:batch_size:{stage}"
+                )
+            }
+        )
+        if "n_classes" in data_description:
+            data_descs[stage].update({"n_classes": data_description["n_classes"]})
 
     results = list()
     for method in metrics.keys():

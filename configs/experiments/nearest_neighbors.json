@@ -44,26 +44,9 @@
         "nearest neighbors data": [
             {
                 "data": {
-                    "source": "make_classification",
-                    "generation_kwargs": {
-                        "n_samples": [50000, 500000],
-                        "n_features": [16, 64, 256, 1024, 4096],
-                        "n_classes": 5,
-                        "n_informative": "[SPECIAL_VALUE]0.75",
-                        "n_redundant": 0,
-                        "random_state": 42
-                    },
-                    "split_kwargs": {
-                        "train_size": 0.2,
-                        "test_size": 0.8,
-                        "random_state": 42
-                    }
-                }
-            },
-            {
-                "data": {
                     "dataset": ["mnist", "fashion_mnist", "sift", "gist"]
-                }
+                },
+                "algorithm": { "batch_size": { "inference": [null, 10] } }
             }
         ]
     },

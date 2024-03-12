@@ -54,6 +54,8 @@ METRICS = {
         # clustering
         "homogeneity",
         "completeness",
+        # search
+        ["throughput[samples/ms]"],
     ],
     "indifferent": [
         # SVM
