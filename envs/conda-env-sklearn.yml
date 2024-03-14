@@ -8,7 +8,9 @@ dependencies:
   - xgboost
   - catboost
   - lightgbm
+  - faiss-cpu
   - intel::scikit-learn-intelex
+  - intel::daal4py
   # sklbench dependencies
   - pandas
   - tabulate

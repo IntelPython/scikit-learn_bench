@@ -114,7 +114,13 @@ def get_number_of_classes(estimator_instance, y):
 def get_subset_metrics_of_estimator(
     task, stage, estimator_instance, data
 ) -> Dict[str, float]:
+    # brute kNN with transfer between training and inference stages
+    # is required for recall metric calculation of search task
+    global _brute_knn
+
     metrics = dict()
+    # Note: use data[0, 1] when calling estimator methods,
+    # x, y are numpy ndarrays for compatibility with sklearn metrics
     x, y = list(map(convert_to_ndarray, data))
     if stage == "training":
         if hasattr(estimator_instance, "n_iter_"):
@@ -229,6 +235,32 @@ def get_subset_metrics_of_estimator(
             metrics.update(
                 {"Kullback-Leibler divergence": float(estimator_instance.kl_divergence_)}
             )
+    elif task == "search":
+        if stage == "training":
+            from sklearn.neighbors import NearestNeighbors
+
+            _brute_knn = NearestNeighbors(algorithm="brute").fit(x)
+        else:
+            recall_degree = 10
+            ground_truth_neighbors = _brute_knn.kneighbors(
+                x, recall_degree, return_distance=False
+            )
+            predicted_neighbors = convert_to_ndarray(
+                estimator_instance.kneighbors(
+                    data[0], recall_degree, return_distance=False
+                )
+            )
+            n_relevant = 0
+            for i in range(ground_truth_neighbors.shape[0]):
+                n_relevant += len(
+                    np.intersect1d(ground_truth_neighbors[i], predicted_neighbors[i])
+                )
+            recall = (
+                n_relevant
+                / ground_truth_neighbors.shape[0]
+                / ground_truth_neighbors.shape[1]
+            )
+            metrics.update({f"recall@{recall_degree}": recall})
     if (
         hasattr(estimator_instance, "support_vectors_")
         and estimator_instance.support_vectors_ is not None

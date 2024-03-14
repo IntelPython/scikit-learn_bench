@@ -44,6 +44,13 @@ def add_report_generator_arguments(parser: argparse.ArgumentParser):
         choices=("separate-tables",),
         help='Report type ("separate-tables" is the only supported now).',
     )
+    parser.add_argument(
+        "--compatibility-mode",
+        default=False,
+        action="store_true",
+        help="[EXPERIMENTAL] Compatibility mode drops and modifies results "
+        "to make them comparable (for example, sklearn and cuML parameters).",
+    )
     # 'separate-table' report type arguments
     parser.add_argument(
         "--drop-columns",

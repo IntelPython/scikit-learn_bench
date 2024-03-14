@@ -173,7 +173,7 @@ def assign_case_special_values_on_run(
         elif library == "sklbench.emulators.faiss" and estimator == "NearestNeighbors":
             set_bench_case_value(bench_case, "algorithm:estimator_params:device", device)
         else:
-            logger.warning(f'Device "{device}" is not used for this case')
+            logger.warning(f'Device specification "{device}" is not used for this case')
     # assign "default" or changed device for output
     tree_method = get_bench_case_value(
         bench_case, "algorithm:estimator_params:tree_method", None
