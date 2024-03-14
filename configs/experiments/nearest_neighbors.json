@@ -12,7 +12,12 @@
                 "algorithm": {
                     "library": "sklbench.emulators.raft",
                     "device": "gpu",
-                    "estimator_params": { "algorithm": ["brute", "ivf_flat", "ivf_pq", "cagra"] }
+                    "estimator_params": {
+                        "algorithm": ["brute", "ivf_flat", "ivf_pq", "cagra"],
+                        "n_lists": 1024,
+                        "n_probes": 256,
+                        "m_subvectors": 0.2
+                    }
                 },
                 "data": {
                     "format": "cupy",
@@ -23,7 +28,12 @@
                 "algorithm": {
                     "library": "sklbench.emulators.faiss",
                     "device": ["cpu", "gpu"],
-                    "estimator_params": { "algorithm": ["brute", "ivf_flat", "ivf_pq"] }
+                    "estimator_params": {
+                        "algorithm": ["brute", "ivf_flat", "ivf_pq"],
+                        "n_lists": 1024,
+                        "n_probes": 256,
+                        "m_subvectors": 0.2
+                    }
                 }
             }
         ],
@@ -37,7 +47,8 @@
                 "estimator_methods": {
                     "training": "fit",
                     "inference": "kneighbors"
-                }
+                },
+                "batch_size": { "inference": [1, 10, 100, null] }
             },
             "data": { "dtype": "float32" }
         },
@@ -45,8 +56,7 @@
             {
                 "data": {
                     "dataset": ["mnist", "fashion_mnist", "sift", "gist"]
-                },
-                "algorithm": { "batch_size": { "inference": [null, 10] } }
+                }
             }
         ]
     },

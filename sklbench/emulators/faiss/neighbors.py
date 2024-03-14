@@ -16,9 +16,10 @@
 
 
 import faiss
+from ..common import NearestNeighborsBase
 
 
-class NearestNeighbors:
+class NearestNeighbors(NearestNeighborsBase):
     """
     Minimal class emulating `sklearn.neighbors.NearestNeighbors` estimator
     """
@@ -28,8 +29,8 @@ class NearestNeighbors:
         n_neighbors=5,
         algorithm="brute",
         metric="euclidean",
-        n_lists=256,
-        n_probes=20,
+        n_lists=1024,
+        n_probes=64,
         m_subvectors=16,
         n_bits=8,
         device="cpu",
@@ -45,17 +46,6 @@ class NearestNeighbors:
         if self.device == "gpu":
             self._gpu_resources = faiss.StandardGpuResources()
 
-    def get_params(self):
-        return {
-            "n_neighbors": self.n_neighbors,
-            "algorithm": self.algorithm,
-            "metric": self.metric,
-            "metric_params": None,
-            "p": 2 if "euclidean" in self.metric else None,
-            # other parameters are skipped for results compatibility
-            # in report generator
-        }
-
     def fit(self, X, y=None):
         d = X.shape[1]
         self._base_index = faiss.IndexFlatL2(d)
@@ -66,6 +56,8 @@ class NearestNeighbors:
                 self._base_index, d, self.n_lists, faiss.METRIC_L2
             )
         elif self.algorithm == "ivf_pq":
+            if isinstance(self.m_subvectors, float):
+                self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
             self._index = faiss.IndexIVFPQ(
                 self._base_index,
                 d,

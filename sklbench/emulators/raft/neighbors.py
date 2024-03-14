@@ -17,9 +17,10 @@
 import cupy as cp
 from pylibraft.common import DeviceResources
 from pylibraft.neighbors import brute_force, ivf_flat, ivf_pq, cagra
+from ..common import NearestNeighborsBase
 
 
-class NearestNeighbors:
+class NearestNeighbors(NearestNeighborsBase):
     """
     Minimal class emulating `sklearn.neighbors.NearestNeighbors` estimator
     """
@@ -29,8 +30,8 @@ class NearestNeighbors:
         n_neighbors=5,
         algorithm="brute",
         metric="euclidean",
-        n_lists=256,
-        n_probes=20,
+        n_lists=1024,
+        n_probes=64,
         m_subvectors=16,
         n_bits=8,
         intermediate_graph_degree=128,
@@ -47,24 +48,16 @@ class NearestNeighbors:
         self.graph_degree = graph_degree
         self._handle = DeviceResources()
 
-    def get_params(self):
-        return {
-            "n_neighbors": self.n_neighbors,
-            "algorithm": self.algorithm,
-            "metric": self.metric,
-            "metric_params": None,
-            "p": 2 if "euclidean" in self.metric else None,
-            # other parameters are skipped for results compatibility
-            # in report generator
-        }
-
     def fit(self, X, y=None):
+        d = X.shape[1]
         if self.algorithm == "brute":
             self._X_fit = X
         elif self.algorithm == "ivf_flat":
             index_params = ivf_flat.IndexParams(n_lists=self.n_lists, metric=self.metric)
             self._index = ivf_flat.build(index_params, X, handle=self._handle)
         elif self.algorithm == "ivf_pq":
+            if isinstance(self.m_subvectors, float):
+                self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
             index_params = ivf_pq.IndexParams(
                 n_lists=self.n_lists,
                 metric=self.metric,
@@ -108,7 +101,7 @@ class NearestNeighbors:
             )
         elif self.algorithm == "cagra":
             distances, indices = cagra.search(
-                cagra.SearchParams(itopk_size=int(1.5 * k)),
+                cagra.SearchParams(itopk_size=int(2 * k)),
                 self._index,
                 X,
                 k,

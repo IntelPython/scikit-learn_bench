@@ -55,7 +55,8 @@ METRICS = {
         "homogeneity",
         "completeness",
         # search
-        ["throughput[samples/ms]"],
+        "throughput[samples/ms]",
+        "recall@10",
     ],
     "indifferent": [
         # SVM
@@ -92,6 +93,7 @@ COLUMNS_ORDER = [
     "order",
     "n_classes",
     "n_clusters",
+    "batch_size",
 ]
 
 DIFFBY_COLUMNS = ["environment_hash", "library", "format", "device"]
@@ -164,6 +166,10 @@ def compare_df(input_df, diff_columns, diffs_selection, compared_columns=METRIC_
     splitted_dfs = split_df_by_columns(input_df, diff_columns)
     splitted_dfs = {key: df.set_index(index_columns) for key, df in splitted_dfs.items()}
 
+    # drop results with duplicated indices (keep first entry only)
+    for key, splitted_df in splitted_dfs.items():
+        splitted_dfs[key] = splitted_df[~splitted_df.index.duplicated(keep="first")]
+
     df = pd.DataFrame(index=unique_indices)
     # original values
     for key, splitted_df in splitted_dfs.items():
@@ -227,12 +233,14 @@ def get_result_tables_as_df(
     results,
     diffby_columns=DIFFBY_COLUMNS,
     splitby_columns=["estimator", "method", "function"],
+    compatibility_mode=False,
 ):
     bench_cases = pd.DataFrame(
         [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
     )
 
-    bench_cases = transform_results_to_compatible(bench_cases)
+    if compatibility_mode:
+        bench_cases = transform_results_to_compatible(bench_cases)
 
     for column in diffby_columns.copy():
         if bench_cases[column].nunique() == 1:
@@ -319,7 +327,7 @@ def generate_report(args: argparse.Namespace):
     results = merge_result_files(args.result_files)
 
     diffby, splitby = args.diff_columns, args.split_columns
-    dfs = get_result_tables_as_df(results, diffby, splitby)
+    dfs = get_result_tables_as_df(results, diffby, splitby, args.compatibility_mode)
 
     wb = xl.Workbook()
     summary_ws = wb.create_sheet("Summary")

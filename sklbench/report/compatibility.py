@@ -24,12 +24,15 @@ from ..utils.logger import logger
 
 def transform_results_to_compatible(results: pd.DataFrame):
     # cuML compatibility
-    if ((results["library"] == "cuml") | (results["library"] == "raft")).any():
+    if (
+        (results["library"] == "cuml")
+        | (results["library"] == "raft")
+        | (results["library"] == "faiss")
+    ).any():
         logger.info(
-            "Found cuML entries in provided results. They will be "
+            "Found cuML, RAFT or FAISS entries in provided results. They will be "
             "filtered and transformed to make all entries compatible "
-            "assuming config entries are aligned between cuML and other "
-            "frameworks."
+            "assuming config entries are aligned between cuML and other frameworks."
         )
         # delete extra columns related to cuML only or sklearn only
         results.drop(
@@ -94,6 +97,13 @@ def transform_results_to_compatible(results: pd.DataFrame):
                 "accuracy_metric",
                 "max_batch_size",
                 "n_streams",
+                # NearestNeighbors emulators
+                "n_lists",
+                "n_probes",
+                "m_subvectors",
+                "n_bits",
+                "intermediate_graph_degree",
+                "graph_degree",
             ],
         )
         # DBSCAN parameters renaming
