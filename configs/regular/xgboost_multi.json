@@ -63,7 +63,11 @@
 	},
 	"TEMPLATES": {
         "multi classification": {
-			"SETS": ["xgboost multiclassification", "xgboost implementations", "multiclassification data"]
+			"SETS": [
+                "xgboost multiclassification",
+                "xgboost implementations",
+                "multiclassification data"
+            ]
 		}
 	}
 }
