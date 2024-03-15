@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import os
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
@@ -40,7 +41,19 @@ def convert_data(data, dformat: str, order: str, dtype: str):
         if data.ndim == 1:
             return pd.Series(data)
         return pd.DataFrame(data)
-    elif dformat == "modin":
+    elif dformat.startswith("modin"):
+        if dformat.endswith("ray"):
+            os.environ["MODIN_ENGINE"] = "ray"
+        elif dformat.endswith("dask"):
+            os.environ["MODIN_ENGINE"] = "dask"
+        elif dformat.endswith("unidist"):
+            os.environ["MODIN_ENGINE"] = "unidist"
+            os.environ["UNIDIST_BACKEND"] = "mpi"
+        else:
+            logger.info(
+                "Modin engine is unknown or not specified. Default engine will be used."
+            )
+
         import modin.pandas as modin_pd
 
         if data.ndim == 1:

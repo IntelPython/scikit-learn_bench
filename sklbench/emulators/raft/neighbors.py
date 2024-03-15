@@ -50,14 +50,14 @@ class NearestNeighbors(NearestNeighborsBase):
 
     def fit(self, X, y=None):
         d = X.shape[1]
+        if isinstance(self.m_subvectors, float):
+            self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
         if self.algorithm == "brute":
             self._X_fit = X
         elif self.algorithm == "ivf_flat":
             index_params = ivf_flat.IndexParams(n_lists=self.n_lists, metric=self.metric)
             self._index = ivf_flat.build(index_params, X, handle=self._handle)
         elif self.algorithm == "ivf_pq":
-            if isinstance(self.m_subvectors, float):
-                self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
             index_params = ivf_pq.IndexParams(
                 n_lists=self.n_lists,
                 metric=self.metric,

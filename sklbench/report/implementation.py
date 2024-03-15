@@ -288,7 +288,11 @@ def apply_rules_for_sheet(sheet, time_color_scale, metric_color_scale):
             ]
         )
         is_time = any(
-            [isinstance(cell.value, str) and "time[ms]" in cell.value for cell in column]
+            [
+                isinstance(cell.value, str)
+                and ("time[ms]" in cell.value or "throughput[samples/ms]" in cell.value)
+                for cell in column
+            ]
         )
         if is_rel_impr:
             cell_range = f"${column_idx}1:${column_idx}{len(column)}"
