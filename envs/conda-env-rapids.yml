@@ -6,10 +6,16 @@ dependencies:
   - python=3.10
   - rapids
   - cudatoolkit
+  # blas and openmp
+  - libblas=*=*mkl
+  - _openmp_mutex=*=*llvm
   # sklbench dependencies
+  - scikit-learn
   - pandas
   - tabulate
   - fastparquet
+  - h5py
+  - kaggle
   - openpyxl
   - tqdm
   - psutil

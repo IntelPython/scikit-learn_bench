@@ -5,7 +5,7 @@
                 "algorithm": {
                     "device": "cpu",
                     "estimator_params": { "tree_method": "hist" },
-                    "enable_modelbuilders": [true, false]
+                    "enable_modelbuilders": false
                 }
             },
             {
