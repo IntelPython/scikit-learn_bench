@@ -48,6 +48,8 @@ class NearestNeighbors(NearestNeighborsBase):
 
     def fit(self, X, y=None):
         d = X.shape[1]
+        if isinstance(self.m_subvectors, float):
+            self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
         self._base_index = faiss.IndexFlatL2(d)
         if self.algorithm == "brute":
             self._index = self._base_index
@@ -56,8 +58,6 @@ class NearestNeighbors(NearestNeighborsBase):
                 self._base_index, d, self.n_lists, faiss.METRIC_L2
             )
         elif self.algorithm == "ivf_pq":
-            if isinstance(self.m_subvectors, float):
-                self.m_subvectors = self.get_m_subvectors(self.m_subvectors, d)
             self._index = faiss.IndexIVFPQ(
                 self._base_index,
                 d,
