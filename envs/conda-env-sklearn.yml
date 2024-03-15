@@ -11,9 +11,6 @@ dependencies:
   - faiss-cpu
   - intel::scikit-learn-intelex
   - intel::daal4py
-  # blas and openmp
-  - libblas=*=*mkl
-  - _openmp_mutex=*=*llvm
   # sklbench dependencies
   - scikit-learn
   - pandas
