@@ -40,6 +40,12 @@ def convert_data(data, dformat: str, order: str, dtype: str):
         if data.ndim == 1:
             return pd.Series(data)
         return pd.DataFrame(data)
+    elif dformat == "modin":
+        import modin.pandas as modin_pd
+
+        if data.ndim == 1:
+            return modin_pd.Series(data)
+        return modin_pd.DataFrame(data)
     elif dformat == "cudf":
         import cudf
 

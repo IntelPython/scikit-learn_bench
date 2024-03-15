@@ -42,7 +42,7 @@ class NearestNeighborsBase:
         """Method to get `m_subvectors` closest to specific percentile and
         compatible with RAFT and FAISS"""
         raft_comp = np.arange(1, d // 16) * 16
-        faiss_comp = np.arange(1, d)
+        faiss_comp = np.array([1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48])
         faiss_comp = faiss_comp[d % faiss_comp == 0]
         intersection = np.intersect1d(raft_comp, faiss_comp)
         if len(intersection) == 0:
