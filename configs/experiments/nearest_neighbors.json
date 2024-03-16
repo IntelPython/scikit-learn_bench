@@ -35,6 +35,17 @@
                         "m_subvectors": 0.2
                     }
                 }
+            },
+            {
+                "algorithm": {
+                    "library": "sklbench.emulators.svs",
+                    "device": "cpu",
+                    "estimator_params": {
+                        "algorithm": "vamana",
+                        "graph_max_degree": 128,
+                        "window_size": 256
+                    }
+                }
             }
         ],
         "nearest neighbors common parameters": {
