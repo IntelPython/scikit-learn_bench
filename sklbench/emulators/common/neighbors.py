@@ -27,12 +27,15 @@ class NearestNeighborsBase:
             "metric": self.metric,
             "metric_params": None,
             "p": 2 if "euclidean" in self.metric else None,
-            "n_lists": self.n_lists,
-            "n_probes": self.n_probes,
-            "m_subvectors": self.m_subvectors,
-            "n_bits": self.n_bits,
         }
-        optional_keys = ["intermediate_graph_degree", "graph_degree"]
+        optional_keys = [
+            "n_lists",
+            "n_probes",
+            "m_subvectors",
+            "n_bits",
+            "intermediate_graph_degree",
+            "graph_degree",
+        ]
         for optional_key in optional_keys:
             if hasattr(self, optional_key):
                 result[optional_key] = getattr(self, optional_key)

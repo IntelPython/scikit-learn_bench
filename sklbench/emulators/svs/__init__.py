@@ -14,4 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
-__all__ = ["common", "faiss", "raft", "svs"]
+from .neighbors import NearestNeighbors
+
+
+__all__ = ["NearestNeighbors"]
