@@ -275,15 +275,23 @@ def get_context(bench_case: BenchCase):
         for library in ["sklearn", "sklearnex"]
     ]
     if sklearnex_context is not None:
-        from sklearnex import config_context
+        data_format = get_bench_case_value(
+            bench_case, f"data:format", None
+        )
+        if data_format == "dpnp":
+            from contextlib import nullcontext
 
-        if sklearn_context is not None:
-            logger.info(
-                f"Updating sklearnex context {sklearnex_context} "
-                f"with sklearn context {sklearn_context}"
-            )
-            sklearnex_context.update(sklearn_context)
-        return config_context, sklearnex_context
+            return nullcontext, dict()
+        else:
+            from sklearnex import config_context
+
+            if sklearn_context is not None:
+                logger.info(
+                    f"Updating sklearnex context {sklearnex_context} "
+                    f"with sklearn context {sklearn_context}"
+                )
+                sklearnex_context.update(sklearn_context)
+            return config_context, sklearnex_context
     elif sklearn_context is not None:
         from sklearn import config_context
 

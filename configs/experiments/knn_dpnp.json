@@ -1,0 +1,42 @@
+{
+    "PARAMETERS_SETS": {
+        "common knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_neighbors": 10,
+                    "weights": "uniform"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": true }
+            }
+        },
+        "kd_tree knn algorithm - classification data": {
+            "algorithm": {
+                "library": "sklearnex",
+                "device": "gpu",
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": { "algorithm": "kd_tree", "metric": "minkowski", "p": 2 }
+            },
+            "data": {
+                "format": "dpnp",
+                "source": "make_classification",
+                "generation_kwargs": {
+                    "n_classes": 5,
+                    "n_samples": 50000,
+                    "n_features": 8,
+                    "n_informative": "[SPECIAL_VALUE]0.5"
+                },
+                "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "sklearn kd_tree knn clsf": {
+            "SETS": [
+                "common knn parameters",
+                "kd_tree knn algorithm - classification data"
+            ]
+        }
+    }
+}

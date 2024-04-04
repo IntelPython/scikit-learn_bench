@@ -41,6 +41,14 @@ def convert_data(data, dformat: str, order: str, dtype: str):
         if data.ndim == 1:
             return pd.Series(data)
         return pd.DataFrame(data)
+    elif dformat == "dpnp":
+        import dpnp
+
+        return dpnp.array(data)
+    elif dformat == "dpctl":
+        import dpnp
+
+        return dpnp.array(data)
     elif dformat.startswith("modin"):
         if dformat.endswith("ray"):
             os.environ["MODIN_ENGINE"] = "ray"
