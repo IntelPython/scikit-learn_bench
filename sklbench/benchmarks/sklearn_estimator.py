@@ -121,7 +121,7 @@ def get_subset_metrics_of_estimator(
     metrics = dict()
     # Note: use data[0, 1] when calling estimator methods,
     # x, y are numpy ndarrays for compatibility with sklearn metrics
-    x, y = list(map(convert_to_numpy, data))
+    x, y = list(map(lambda i: convert_to_numpy(i, dp_compat=True), data))
     if stage == "training":
         if hasattr(estimator_instance, "n_iter_"):
             iterations = estimator_instance.n_iter_

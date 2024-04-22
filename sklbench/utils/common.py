@@ -193,13 +193,23 @@ def convert_to_numeric_if_possible(value: str) -> Union[Numeric, str]:
         return value
 
 
-def convert_to_numpy(a):
+def convert_to_numpy(a, dp_compat=False):
+    if dp_compat and ("dpctl" in str(type(a)) or "dpnp" in str(type(a))):
+        return a
     if isinstance(a, np.ndarray):
         return a
     elif hasattr(a, "to_numpy"):
         return a.to_numpy()
     elif hasattr(a, "asnumpy"):
         return a.asnumpy()
+    elif "dpnp" in str(type(a)):
+        import dpnp
+
+        return dpnp.asnumpy(a)
+    elif "dpctl" in str(type(a)):
+        import dpctl.tensor
+
+        return dpctl.tensor.to_numpy(a)
     elif "cupy.ndarray" in str(type(a)):
         return a.get()
     else:

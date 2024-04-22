@@ -25,7 +25,7 @@ from ..utils.bench_case import get_bench_case_value
 from ..utils.logger import logger
 
 
-def convert_data(data, dformat: str, order: str, dtype: str):
+def convert_data(data, dformat: str, order: str, dtype: str, device: str = None):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
         data = data.toarray()
     if dtype == "preserve":
@@ -42,6 +42,14 @@ def convert_data(data, dformat: str, order: str, dtype: str):
         if data.ndim == 1:
             return pd.Series(data)
         return pd.DataFrame(data)
+    elif dformat == "dpnp":
+        import dpnp
+
+        return dpnp.array(data, dtype=dtype, order=order, device=device)
+    elif dformat == "dpctl":
+        import dpctl.tensor
+
+        return dpctl.tensor.asarray(data, dtype=dtype, order=order, device=device)
     elif dformat.startswith("modin"):
         if dformat.endswith("ray"):
             os.environ["MODIN_ENGINE"] = "ray"
@@ -100,6 +108,7 @@ def split_and_transform_data(bench_case, data, data_description):
         x_train, x_test = train_test_split_wrapper(x, **split_kwargs)
         y_train, y_test = None, None
 
+    device = get_bench_case_value(bench_case, "algorithm:device", None)
     common_data_format = get_bench_case_value(bench_case, "data:format", "pandas")
     common_data_order = get_bench_case_value(bench_case, "data:order", "F")
     common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float64")
@@ -134,7 +143,9 @@ def split_and_transform_data(bench_case, data, data_description):
         if is_label and required_label_dtype is not None:
             data_dtype = required_label_dtype
 
-        converted_data = convert_data(subset_content, data_format, data_order, data_dtype)
+        converted_data = convert_data(
+            subset_content, data_format, data_order, data_dtype, device
+        )
         data_dict[subset_name] = converted_data
         if not is_label:
             data_description[subset_name] = {
