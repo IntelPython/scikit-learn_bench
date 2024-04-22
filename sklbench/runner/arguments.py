@@ -22,32 +22,31 @@ import pandas as pd
 from ..report import add_report_generator_arguments
 
 
-def get_argument_actions(parser):
-    arg_actions = []
-
-    for action in parser._actions:
-        if isinstance(action, argparse._ArgumentGroup):
-            for subaction in action._group_actions:
-                arg_actions.append(subaction)
-        else:
-            arg_actions.append(action)
-    return arg_actions
-
-
-def parse_action(action: argparse.Action) -> Dict:
-    return {
-        "Name": "</br>".join(map(lambda x: f"`{x}`", action.option_strings)),
-        "Type": action.type.__name__ if action.type is not None else None,
-        "Default value": (
-            action.default if action.default is not argparse.SUPPRESS else None
-        ),
-        "Choices": action.choices,
-        "Description": action.help,
-    }
-
-
 def get_parser_description(parser: argparse.ArgumentParser):
     """Convert parser description to Markdown-style table."""
+
+    def get_argument_actions(parser):
+        arg_actions = []
+
+        for action in parser._actions:
+            if isinstance(action, argparse._ArgumentGroup):
+                for subaction in action._group_actions:
+                    arg_actions.append(subaction)
+            else:
+                arg_actions.append(action)
+        return arg_actions
+
+    def parse_action(action: argparse.Action) -> Dict:
+        return {
+            "Name": "</br>".join(map(lambda x: f"`{x}`", action.option_strings)),
+            "Type": action.type.__name__ if action.type is not None else None,
+            "Default value": (
+                action.default if action.default is not argparse.SUPPRESS else None
+            ),
+            "Choices": action.choices,
+            "Description": action.help,
+        }
+
     return pd.DataFrame(map(parse_action, get_argument_actions(parser))).to_markdown(
         index=False
     )
@@ -76,7 +75,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         type=str,
         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
         help="Global logging level for benchmarks: "
-        "overwrites runner, bench and report log levels.",
+        "overwrites runner, bench and report logging levels.",
     )
     # benchmarking cases finding, overwriting and filtering
     parser.add_argument(
@@ -106,7 +105,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         default="",
         type=str,
         nargs="+",
-        help="Filters benchmark bench_cases by config parameters. "
+        help="Filters benhcmarking cases by parameter values. "
         "For example: `-f data:dtype=float32 data:order=F`.",
     )
 
@@ -120,6 +119,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     parser.add_argument(
         "--environment-alias",
         "--env-alias",
+        "-e",
         type=str,
         default=None,
         help="Environment alias to use instead of it's configuration hash.",

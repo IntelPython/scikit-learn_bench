@@ -360,3 +360,4 @@ def generate_report(args: argparse.Namespace):
     # remove default sheet
     wb.remove(wb["Sheet"])
     wb.save(args.report_file)
+    return 0

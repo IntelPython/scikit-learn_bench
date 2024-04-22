@@ -12,3 +12,6 @@ xgboost
 catboost
 lightgbm
 scikit-learn-intelex
+# oneapi components
+dpctl
+dpnp

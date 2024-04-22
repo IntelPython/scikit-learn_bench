@@ -42,9 +42,9 @@ def call_benchmarks(
 ) -> Tuple[int, Dict[str, Union[Dict, List]]]:
     """Iterates over benchmarking cases with progress bar and combines their results"""
     env_info = get_environment_info()
-    env_hash = hash_from_json_repr(env_info)
+    env_name = hash_from_json_repr(env_info)
     if environment_alias is not None:
-        env_hash = environment_alias
+        env_name = environment_alias
     results = list()
     return_code = 0
     bench_cases_with_pbar = tqdm(bench_cases)
@@ -61,14 +61,14 @@ def call_benchmarks(
             if bench_return_code != 0:
                 return_code = bench_return_code
             for entry in bench_entries:
-                entry["environment_hash"] = env_hash
+                entry["environment_hash"] = env_name
                 results.append(entry)
         except KeyboardInterrupt:
             return_code = -1
             break
     full_result = {
         "bench_cases": results,
-        "environment": {env_hash: env_info},
+        "environment": {env_name: env_info},
     }
     return return_code, full_result
 

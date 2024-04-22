@@ -23,11 +23,8 @@ steps:
       pip list
     displayName: Install requirements
   - script: |
-      python -m sklbench --runner-log-level DEBUG --parameters algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
+      python -m sklbench -l DEBUG -p algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
     displayName: CLI arguments run
   - script: |
-      python -m sklbench --runner-log-level INFO --config configs/sklearn_example.json --generate-report
-    displayName: Sklearn example run
-  - script: |
-      python -m sklbench --runner-log-level INFO --config configs/xgboost_example.json
-    displayName: XGBoost example run
+      python -m sklbench -l INFO -c configs/testing/ci.json --generate-report
+    displayName: CI config run

@@ -16,6 +16,7 @@
 
 import pysvs
 from psutil import cpu_count
+
 from ..common.neighbors import NearestNeighborsBase
 
 

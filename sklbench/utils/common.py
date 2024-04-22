@@ -28,15 +28,14 @@ import numpy as np
 
 from .custom_types import JsonTypesUnion, ModuleContentMap, Numeric
 
-HASH_LIMIT = 5
-PFORMAT_INDENT = 4
+# ANSI escape codes for in-terminal formatting
 BCOLORS = {
-    "HEADER": "\033[95m",
-    "OKBLUE": "\033[94m",
-    "OKCYAN": "\033[96m",
+    "FAIL": "\033[91m",
     "OKGREEN": "\033[92m",
     "WARNING": "\033[93m",
-    "FAIL": "\033[91m",
+    "OKBLUE": "\033[94m",
+    "HEADER": "\033[95m",
+    "OKCYAN": "\033[96m",
     "ENDC": "\033[0m",
     "BOLD": "\033[1m",
     "UNDERLINE": "\033[4m",
@@ -48,8 +47,9 @@ def custom_format(
     bcolor: Union[str, None] = None,
     prettify: bool = True,
     width: int = get_terminal_size().columns,
-    indent: int = PFORMAT_INDENT,
+    indent: int = 4,
 ) -> str:
+    """Pretty format with terminal highlighting"""
     output = input_obj.copy() if hasattr(input_obj, "copy") else input_obj
     if prettify:
         output = pformat(input_obj, width=width, indent=indent)
@@ -59,13 +59,14 @@ def custom_format(
 
 
 def read_output_from_command(command: str) -> Tuple[int, str, str]:
+    """Executes command and returns code, stdout and stderr"""
     res = sp.run(
         command.split(" "), stdout=sp.PIPE, stderr=sp.PIPE, shell=False, encoding="utf-8"
     )
     return res.returncode, res.stdout[:-1], res.stderr[:-1]
 
 
-def hash_from_json_repr(x: JsonTypesUnion, hash_limit: int = HASH_LIMIT) -> str:
+def hash_from_json_repr(x: JsonTypesUnion, hash_limit: int = 5) -> str:
     h = hashlib.sha256()
     h.update(bytes(json.dumps(x), encoding="utf-8"))
     return h.hexdigest()[:hash_limit]
@@ -192,7 +193,7 @@ def convert_to_numeric_if_possible(value: str) -> Union[Numeric, str]:
         return value
 
 
-def convert_to_ndarray(a):
+def convert_to_numpy(a):
     if isinstance(a, np.ndarray):
         return a
     elif hasattr(a, "to_numpy"):

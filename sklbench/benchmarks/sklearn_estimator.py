@@ -40,7 +40,7 @@ from sklearn.metrics import (
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
 from ..utils.bench_case import get_bench_case_value, get_data_name
-from ..utils.common import convert_to_ndarray, custom_format, get_module_members
+from ..utils.common import convert_to_numpy, custom_format, get_module_members
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase, Numeric, NumpyNumeric
 from ..utils.logger import logger
@@ -121,7 +121,7 @@ def get_subset_metrics_of_estimator(
     metrics = dict()
     # Note: use data[0, 1] when calling estimator methods,
     # x, y are numpy ndarrays for compatibility with sklearn metrics
-    x, y = list(map(convert_to_ndarray, data))
+    x, y = list(map(convert_to_numpy, data))
     if stage == "training":
         if hasattr(estimator_instance, "n_iter_"):
             iterations = estimator_instance.n_iter_
@@ -134,7 +134,7 @@ def get_subset_metrics_of_estimator(
             ):
                 metrics.update({"iterations": int(iterations[0])})
     if task == "classification":
-        y_pred = convert_to_ndarray(estimator_instance.predict(x))
+        y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
             {
                 "accuracy": float(accuracy_score(y, y_pred)),
@@ -145,7 +145,7 @@ def get_subset_metrics_of_estimator(
             hasattr(estimator_instance, "probability")
             and getattr(estimator_instance, "probability") == False
         ):
-            y_pred_proba = convert_to_ndarray(estimator_instance.predict_proba(x))
+            y_pred_proba = convert_to_numpy(estimator_instance.predict_proba(x))
             metrics.update(
                 {
                     "ROC AUC": float(
@@ -163,7 +163,7 @@ def get_subset_metrics_of_estimator(
                 }
             )
     elif task == "regression":
-        y_pred = convert_to_ndarray(estimator_instance.predict(x))
+        y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
             {
                 "RMSE": float(mean_squared_error(y, y_pred) ** 0.5),
@@ -194,16 +194,14 @@ def get_subset_metrics_of_estimator(
                 {
                     "inertia": float(
                         np.power(
-                            convert_to_ndarray(estimator_instance.transform(x)).min(
-                                axis=1
-                            ),
+                            convert_to_numpy(estimator_instance.transform(x)).min(axis=1),
                             2,
                         ).sum()
                     )
                 }
             )
         if hasattr(estimator_instance, "predict"):
-            y_pred = convert_to_ndarray(estimator_instance.predict(x))
+            y_pred = convert_to_numpy(estimator_instance.predict(x))
             metrics.update(
                 {
                     "Davies-Bouldin score": float(davies_bouldin_score(x, y_pred)),
@@ -212,7 +210,7 @@ def get_subset_metrics_of_estimator(
                 }
             )
         if "DBSCAN" in str(estimator_instance) and stage == "training":
-            labels = convert_to_ndarray(estimator_instance.labels_)
+            labels = convert_to_numpy(estimator_instance.labels_)
             clusters = len(np.unique(labels[labels != -1]))
             metrics.update({"clusters": clusters})
             if clusters > 1:
@@ -245,7 +243,7 @@ def get_subset_metrics_of_estimator(
             ground_truth_neighbors = _brute_knn.kneighbors(
                 x, recall_degree, return_distance=False
             )
-            predicted_neighbors = convert_to_ndarray(
+            predicted_neighbors = convert_to_numpy(
                 estimator_instance.kneighbors(
                     data[0], recall_degree, return_distance=False
                 )

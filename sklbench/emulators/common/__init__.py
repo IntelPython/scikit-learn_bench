@@ -16,5 +16,4 @@
 
 from .neighbors import NearestNeighborsBase
 
-
 __all__ = ["NearestNeighborsBase"]

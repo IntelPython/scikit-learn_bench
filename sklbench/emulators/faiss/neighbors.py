@@ -16,6 +16,7 @@
 
 
 import faiss
+
 from ..common import NearestNeighborsBase
 
 

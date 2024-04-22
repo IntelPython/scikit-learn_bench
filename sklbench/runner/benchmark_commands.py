@@ -87,15 +87,16 @@ def run_benchmark_from_case(
     bench_case: BenchCase, filters: List[BenchCase], log_level: str
 ) -> Tuple[int, List[Dict]]:
     command = generate_benchmark_command(bench_case, filters, log_level)
-    logger.debug(f"Benchmark wrapper call command: {command}")
+    logger.debug(f"Benchmark wrapper call command:\n{command}")
     return_code, stdout, stderr = read_output_from_command(command)
 
     # filter stdout warnings
+    prefixes_to_skip = ["[W]", "[I]"]
     stdout = "\n".join(
         [
             line
             for line in stdout.split("\n")
-            if not (line.startswith("[W]") or line.startswith("[I]"))
+            if not any(map(lambda x: line.startswith(x), prefixes_to_skip))
         ]
     )
 
