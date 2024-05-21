@@ -522,9 +522,13 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         "estimator": estimator_name,
         "device": get_bench_case_value(bench_case, "algorithm:device"),
     }
+    taskset = get_bench_case_value(bench_case, "bench:taskset", None)
+    if taskset is not None:
+        result_template.update({"taskset": taskset})
     if "assume_finite" in context_params:
         result_template["assume_finite"] = context_params["assume_finite"]
-    estimator_params = estimator_instance.get_params()
+    if hasattr(estimator_instance, "get_params"):
+        estimator_params = estimator_instance.get_params()
     # note: "handle" is not JSON-serializable
     if "handle" in estimator_params:
         del estimator_params["handle"]

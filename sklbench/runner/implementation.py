@@ -27,24 +27,29 @@ from ..datasets import load_data
 from ..report import generate_report, get_result_tables_as_df
 from ..utils.bench_case import get_bench_case_name
 from ..utils.common import custom_format, hash_from_json_repr
-from ..utils.config import early_filtering, generate_bench_cases, generate_bench_filters
+from ..utils.config import (
+    early_filtering,
+    generate_bench_cases,
+    generate_bench_filters,
+    remove_duplicated_bench_cases,
+)
 from ..utils.custom_types import BenchCase
 from ..utils.env import get_environment_info
 from ..utils.logger import logger
-from .benchmark_commands import run_benchmark_from_case
+from .commands_helper import run_benchmark_from_case
 
 
 def call_benchmarks(
     bench_cases: List[BenchCase],
     filters: List[BenchCase],
     log_level: str = "WARNING",
-    environment_alias: Union[str, None] = None,
+    environment_name: Union[str, None] = None,
+    early_exit: bool = False,
 ) -> Tuple[int, Dict[str, Union[Dict, List]]]:
     """Iterates over benchmarking cases with progress bar and combines their results"""
     env_info = get_environment_info()
-    env_name = hash_from_json_repr(env_info)
-    if environment_alias is not None:
-        env_name = environment_alias
+    if environment_name is None:
+        environment_name = hash_from_json_repr(env_info)
     results = list()
     return_code = 0
     bench_cases_with_pbar = tqdm(bench_cases)
@@ -60,20 +65,22 @@ def call_benchmarks(
             )
             if bench_return_code != 0:
                 return_code = bench_return_code
+                if early_exit:
+                    break
             for entry in bench_entries:
-                entry["environment_hash"] = env_name
+                entry["environment_name"] = environment_name
                 results.append(entry)
         except KeyboardInterrupt:
             return_code = -1
             break
     full_result = {
         "bench_cases": results,
-        "environment": {env_name: env_info},
+        "environment": {environment_name: env_info},
     }
     return return_code, full_result
 
 
-def run_benchmarks(args: argparse.Namespace):
+def run_benchmarks(args: argparse.Namespace) -> int:
     # overwrite all logging levels if requested
     if args.log_level is not None:
         for log_type in ["runner", "bench", "report"]:
@@ -95,12 +102,23 @@ def run_benchmarks(args: argparse.Namespace):
     if args.prefetch_datasets:
         n_cpus = cpu_count()
         logger.info(f"Prefetching datasets with {n_cpus} processes")
+        dataset_cases = remove_duplicated_bench_cases(
+            [
+                {"data": {"dataset": case["data"]["dataset"]}}
+                for case in bench_cases
+                if "dataset" in case["data"]
+            ]
+        )
         with Pool(n_cpus) as pool:
-            pool.map(load_data, bench_cases)
+            pool.map(load_data, dataset_cases)
 
     # run bench_cases
     return_code, result = call_benchmarks(
-        bench_cases, param_filters, args.bench_log_level, args.environment_alias
+        bench_cases,
+        param_filters,
+        args.bench_log_level,
+        args.environment_name,
+        args.exit_on_error,
     )
 
     # output as pandas dataframe
@@ -115,9 +133,9 @@ def run_benchmarks(args: argparse.Namespace):
         json.dump(result, fp, indent=4)
 
     # generate report
-    if args.generate_report:
-        # override result files with single file from current run
-        args.result_files = [args.result_file]
+    if args.report:
+        if args.result_file not in args.result_files:
+            args.result_files += [args.result_file]
         generate_report(args)
 
     return return_code

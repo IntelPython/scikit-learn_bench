@@ -15,17 +15,17 @@
 # ===============================================================================
 
 import argparse
-from typing import Dict
+from typing import Dict, List
 
 import pandas as pd
 
 from ..report import add_report_generator_arguments
 
 
-def get_parser_description(parser: argparse.ArgumentParser):
+def get_parser_description(parser: argparse.ArgumentParser) -> pd.DataFrame:
     """Convert parser description to Markdown-style table."""
 
-    def get_argument_actions(parser):
+    def get_argument_actions(parser: argparse.ArgumentParser) -> List:
         arg_actions = []
 
         for action in parser._actions:
@@ -105,7 +105,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         default="",
         type=str,
         nargs="+",
-        help="Filters benhcmarking cases by parameter values. "
+        help="Filters benchmarking cases by parameter values. "
         "For example: `-f data:dtype=float32 data:order=F`.",
     )
 
@@ -117,18 +117,25 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         help="File path to store scikit-learn_bench's runned cases results.",
     )
     parser.add_argument(
-        "--environment-alias",
-        "--env-alias",
+        "--environment-name",
+        "--env-name",
         "-e",
         type=str,
         default=None,
-        help="Environment alias to use instead of it's configuration hash.",
+        help="Environment name to use instead of it's configuration hash.",
     )
     parser.add_argument(
         "--prefetch-datasets",
         default=False,
         action="store_true",
-        help="[EXPERIMENTAL] Load datasets in parallel before running benchmarks.",
+        help="[EXPERIMENTAL] Load named datasets in parallel before running benchmarks.",
+    )
+    # workflow control
+    parser.add_argument(
+        "--exit-on-error",
+        default=False,
+        action="store_true",
+        help="Interrupt runner and exit if last benchmark failed with error.",
     )
     # option to get parser description in Markdown table format for READMEs
     parser.add_argument(
@@ -139,8 +146,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     )
     # report generator arguments for optional usage
     parser.add_argument(
-        "--generate-report",
-        "--gen-report",
+        "--report",
         default=False,
         action="store_true",
         help="Enables generation of report.",

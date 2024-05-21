@@ -28,7 +28,7 @@ from ..utils.logger import logger
 
 def generate_benchmark_command(
     bench_case: BenchCase, filters: List[BenchCase], log_level: str
-):
+) -> str:
     # generate parameter and filter arguments for benchmark cli wrapper
     bench_case_str = json.dumps(bench_case).replace(" ", "")
     filters_str = json.dumps({"filters": filters}).replace(" ", "")

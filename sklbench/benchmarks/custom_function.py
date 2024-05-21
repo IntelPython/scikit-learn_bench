@@ -107,6 +107,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         "function": function_name,
         "device": get_bench_case_value(bench_case, "algorithm:device"),
     }
+    taskset = get_bench_case_value(bench_case, "bench:taskset", None)
+    if taskset is not None:
+        result.update({"taskset": taskset})
     # TODO: replace `x_train` data_desc with more informative values
     result.update(data_description["x_train"])
     result.update(metrics)

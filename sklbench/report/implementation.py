@@ -20,10 +20,10 @@ from typing import Dict, List
 
 import openpyxl as xl
 import pandas as pd
-import scipy
 from openpyxl.formatting.rule import ColorScaleRule
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
+from scipy.stats import gmean
 
 from ..utils.common import custom_format, flatten_dict, flatten_list
 from ..utils.logger import logger
@@ -41,10 +41,11 @@ METRICS = {
         "inertia",
         "Davies-Bouldin score",
         # manifold
-        # TSNE
+        # - TSNE
         "Kullback-Leibler divergence",
     ],
     "higher is better": [
+        "throughput[samples/ms]",
         # classification
         "accuracy",
         "balanced accuracy",
@@ -55,7 +56,6 @@ METRICS = {
         "homogeneity",
         "completeness",
         # search
-        "throughput[samples/ms]",
         "recall@10",
     ],
     "indifferent": [
@@ -72,6 +72,7 @@ METRICS = {
     "incomparable": ["time std[ms]"],
 }
 METRIC_NAMES = flatten_list([list(METRICS[key]) for key in METRICS])
+PERF_METRICS = ["time[ms]", "throughput[samples/ms]"]
 
 COLUMNS_ORDER = [
     # algorithm
@@ -83,7 +84,7 @@ COLUMNS_ORDER = [
     "function",
     "online_inference_mode",
     "device",
-    "environment_hash",
+    "environment_name",
     # data
     "dataset",
     "samples",
@@ -96,11 +97,11 @@ COLUMNS_ORDER = [
     "batch_size",
 ]
 
-DIFFBY_COLUMNS = ["environment_hash", "library", "format", "device"]
+DIFFBY_COLUMNS = ["environment_name", "library", "format", "device"]
 
 
 def geomean_wrapper(a):
-    return scipy.stats.gmean(a, nan_policy="omit")
+    return gmean(a, nan_policy="omit")
 
 
 def reorder_columns(input_columns: List, columns_order: List = COLUMNS_ORDER) -> List:
@@ -278,7 +279,7 @@ def get_color_rule(scale):
     )
 
 
-def apply_rules_for_sheet(sheet, time_color_scale, metric_color_scale):
+def apply_rules_for_sheet(sheet, perf_color_scale, quality_color_scale):
     for column in sheet.iter_cols():
         column_idx = get_column_letter(column[0].column)
         is_rel_impr = any(
@@ -290,7 +291,7 @@ def apply_rules_for_sheet(sheet, time_color_scale, metric_color_scale):
         is_time = any(
             [
                 isinstance(cell.value, str)
-                and ("time[ms]" in cell.value or "throughput[samples/ms]" in cell.value)
+                and (any(map(lambda x: x in cell.value, PERF_METRICS)))
                 for cell in column
             ]
         )
@@ -298,7 +299,7 @@ def apply_rules_for_sheet(sheet, time_color_scale, metric_color_scale):
             cell_range = f"${column_idx}1:${column_idx}{len(column)}"
             sheet.conditional_formatting.add(
                 cell_range,
-                get_color_rule(time_color_scale if is_time else metric_color_scale),
+                get_color_rule(perf_color_scale if is_time else quality_color_scale),
             )
 
 
@@ -346,7 +347,7 @@ def generate_report(args: argparse.Namespace):
         else:
             current_df = df
         write_df_to_sheet(current_df, ws, index=False)
-        apply_rules_for_sheet(ws, args.time_color_scale, args.metric_color_scale)
+        apply_rules_for_sheet(ws, args.perf_color_scale, args.quality_color_scale)
         summary_dfs.append(get_summary_from_df(current_df, df_name))
     # write summary to corresponding sheet
     summary_df = pd.concat(summary_dfs, axis=0, join="outer")
@@ -354,7 +355,7 @@ def generate_report(args: argparse.Namespace):
     logger.info(custom_format("Report summary", bcolor="HEADER"))
     logger.info(summary_df)
     write_df_to_sheet(summary_df, summary_ws)
-    apply_rules_for_sheet(summary_ws, args.time_color_scale, args.metric_color_scale)
+    apply_rules_for_sheet(summary_ws, args.perf_color_scale, args.quality_color_scale)
     # write environment info
     write_environment_info(results, wb)
     # remove default sheet

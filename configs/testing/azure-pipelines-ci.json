@@ -3,9 +3,6 @@
     "PARAMETERS_SETS": {
         "common parameters": {
             "data": {
-                "format": ["numpy", "pandas"],
-                "dtype": ["float32", "float64"],
-                "order": ["C", "F"],
                 "split_kwargs": {
                     "train_size": 400,
                     "test_size": 100,
@@ -19,7 +16,21 @@
             "bench": { "n_runs": 5 },
             "algorithm": { "device": "default" }
         },
-        "datasets": { 
+        "data formats": {
+            "data": [
+                {
+                    "format": "numpy",
+                    "dtype": "float64",
+                    "order": "C"
+                },
+                {
+                    "format": "pandas",
+                    "dtype": "float32",
+                    "order": "F"
+                }
+            ]
+        },
+        "datasets": {
             "data":
             [
                 {
@@ -47,7 +58,11 @@
             {
                 "algorithm": {
                     "estimator": "KMeans",
-                    "estimator_params": { "init": "random", "algorithm": "lloyd" }
+                    "estimator_params": {
+                        "init": "random",
+                        "algorithm": "lloyd",
+                        "max_iter": 20
+                    }
                 }
             },
             {
@@ -58,7 +73,8 @@
             },
             {
                 "algorithm": {
-                    "estimator": "TSNE"
+                    "estimator": "TSNE",
+                    "estimator_params": { "n_iter": 250 }
                 }
             },
             {
@@ -109,9 +125,10 @@
     "TEMPLATES": {
         "test": {
             "SETS": [
-                "common parameters",
-                "datasets",
                 "sklearn-ex[cpu] implementations",
+                "common parameters",
+                "data formats",
+                "datasets",
                 "algorithms"
             ]
         }

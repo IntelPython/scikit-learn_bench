@@ -1,34 +1,31 @@
 # Machine Learning Benchmarks
 
-[Developer Guide](docs/README.md)
-
 [![Build Status](https://dev.azure.com/daal/scikit-learn_bench/_apis/build/status/IntelPython.scikit-learn_bench?branchName=main)](https://dev.azure.com/daal/scikit-learn_bench/_build/latest?definitionId=8&branchName=main)
 
-**Scikit-learn_bench** is a benchmarking tool for libraries and frameworks implementing Scikit-learn-like APIs and other workloads.
+**Scikit-learn_bench** is a benchmark tool for libraries and frameworks implementing Scikit-learn-like APIs and other workloads.
 
-Features:
+Benefits:
 - Full control of benchmarks suite through CLI
-- Flexible and powerful benchmarking config structure
-- Ability to run with advanced profiling tools (*Intel(R) VTune(TM)* and others)
+- Flexible and powerful benchmark config structure
+- Available with advanced profiling tools, such as Intel(R) VTune* Profiler
 - Automated generation of benchmarks report
 
-## 📜 Table of content
+### 📜 Table of Contents
 
 - [Machine Learning Benchmarks](#machine-learning-benchmarks)
-  - [📜 Table of content](#-table-of-content)
-  - [🔧 How to create Python environment for benchmarking](#-how-to-create-python-environment-for-benchmarking)
-  - [🚀 How to use scikit-learn\_bench](#-how-to-use-scikit-learn_bench)
-    - [Benchmarks runner](#benchmarks-runner)
-    - [Report generator](#report-generator)
-    - [Scikit-learn\_bench high-level workflow](#scikit-learn_bench-high-level-workflow)
-  - [📚 Benchmark types](#-benchmark-types)
-  - [📑 Documentation tree](#-documentation-tree)
+  - [🔧 Create a Python Environment](#-create-a-python-environment)
+  - [🚀 How To Use Scikit-learn\_bench](#-how-to-use-scikit-learn_bench)
+    - [Benchmarks Runner](#benchmarks-runner)
+    - [Report Generator](#report-generator)
+    - [Scikit-learn\_bench High-Level Workflow](#scikit-learn_bench-high-level-workflow)
+  - [📚 Benchmark Types](#-benchmark-types)
+  - [📑 Documentation](#-documentation)
 
-## 🔧 How to create Python environment for benchmarking
+## 🔧 Create a Python Environment
 
-Create a suitable Python environment to use depending on needed frameworks:
+Create a suitable Python environment to use depending on the needed frameworks:
 
-- **sklearn, sklearnex and gradient boosting frameworks**:
+- **sklearn, sklearnex, and gradient boosting frameworks**:
 
 ```bash
 # with pip
@@ -43,41 +40,41 @@ conda env create -n sklearn -f envs/conda-env-sklearn.yml
 conda env create -n rapids --solver=libmamba -f envs/conda-env-rapids.yml
 ```
 
-## 🚀 How to use scikit-learn_bench
+## 🚀 How To Use Scikit-learn_bench
 
-### Benchmarks runner
+### Benchmarks Runner
 
-Call required benchmarking cases from specified config using `sklbench` module as runner:
+Call required benchmarking cases from specified config using the `sklbench` module as a runner:
 
 ```bash
 python -m sklbench --config configs/sklearn_example.json
 ```
 
-Default output of runner is a file with JSON-formatted results of benchmarking cases. To generate better human-readable report inplace, you can request it by adding specific argument:
+The default output is a file with JSON-formatted results of benchmarking cases. To generate a better human-readable report, use the following command:
 
 ```bash
 python -m sklbench --config configs/sklearn_example.json --generate-report
 ```
 
-By default output and report file paths are `result.json` and `report.xlsx`. Add next argument to specify custom file paths:
+By default, output and report file paths are `result.json` and `report.xlsx`. To specify custom file paths, run:
 
 ```bash
 python -m sklbench --config configs/sklearn_example.json --generate-report --result-file result_example.json --report-file report_example.xlsx
 ```
 
-For description of all benchmarks runner arguments, see [it's corresponding docs section](sklbench/runner/README.md#arguments).
+For a description of all benchmarks runner arguments, refer to [documentation](sklbench/runner/README.md#arguments).
 
-### Report generator
+### Report Generator
 
-Raw result files gathered from different environments can be combined by calling report generator:
+To combine raw result files gathered from different environments, call the report generator:
 
 ```bash
 python -m sklbench.report --result-files result_1.json result_2.json --report-file report_example.xlsx
 ```
 
-For description of all report generator arguments, see [it's corresponding docs section](sklbench/report/README.md#arguments).
+For a description of all report generator arguments, refer to [documentation](sklbench/report/README.md#arguments).
 
-### Scikit-learn_bench high-level workflow
+### Scikit-learn_bench High-Level Workflow
 
 ```mermaid
 flowchart TB
@@ -90,19 +87,18 @@ flowchart TB
     class A userStyle
 ```
 
-## 📚 Benchmark types
+## 📚 Benchmark Types
 
-**Scikit-learn_bench** supports next types of benchmarks:
+**Scikit-learn_bench** supports the following types of benchmarks:
 
- - `Scikit-learn estimator` benchmark which measures performance and quality metrics of [sklearn-like estimator](https://scikit-learn.org/stable/glossary.html#term-estimator).
- - `Function` benchmark which measures performance metrics of specified function.
+ - **Scikit-learn estimator** - Measures performance and quality metrics of the [sklearn-like estimator](https://scikit-learn.org/stable/glossary.html#term-estimator).
+ - **Function** - Measures performance metrics of specified function.
 
-## 📑 Documentation tree
+## 📑 Documentation
 [Scikit-learn_bench](README.md):
 - [Configs](configs/README.md)
-  - [Benchmarking config specification](configs/BENCH-CONFIG-SPEC.md)
-- [Benchmarks runner](sklbench/runner/README.md)
-- [Report generator](sklbench/report/README.md)
+- [Benchmarks Runner](sklbench/runner/README.md)
+- [Report Generator](sklbench/report/README.md)
 - [Benchmarks](sklbench/benchmarks/README.md)
-- [Data processing](sklbench/datasets/README.md)
+- [Data Processing](sklbench/datasets/README.md)
 - [Developer Guide](docs/README.md)

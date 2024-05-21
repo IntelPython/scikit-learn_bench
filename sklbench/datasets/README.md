@@ -1,4 +1,4 @@
-# Data handling in benchmarks
+# Data Handling in Benchmarks
 
 Data handling steps:
 1. Load data:
@@ -7,7 +7,7 @@ Data handling steps:
 2. Split data into subsets if requested
 3. Convert to requested form (data type, format, order, etc.)
 
-There are two level of cache with corresponding directories: `raw cache` for files downloaded from external sources, and just `cache` for files applicable for fast-loading in benchmarks.
+There are two levels of caching with corresponding directories: `raw cache` for files downloaded from external sources, and just `cache` for files applicable for fast-loading in benchmarks.
 
 Each dataset has few associated files in usual `cache`: data component files (`x`, `y`, `weights`, etc.) and JSON file with dataset properties (number of classes, clusters, default split arguments).
 For example:

@@ -122,14 +122,7 @@ def assign_case_special_values_on_generation(bench_case: BenchCase) -> BenchCase
         if taskset.startswith("numa"):
             numa_nodes = list(map(int, taskset.split(":")[1].split("|")))
             numa_cpus_conf = get_numa_cpus_conf()
-            cpus = []
-            for numa_node in numa_nodes:
-                cpus += numa_cpus_conf[numa_node]
-            if len(cpus) == 0:
-                raise ValueError(
-                    f"Specification of {numa_nodes} NUMA nodes resulted in zero cpus."
-                )
-            taskset = str(cpus)[1:-1].replace(" ", "")
+            taskset = ",".join([numa_cpus_conf[numa_node] for numa_node in numa_nodes])
             set_bench_case_value(bench_case, "bench:taskset", taskset)
     return bench_case
 

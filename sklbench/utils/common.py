@@ -58,10 +58,14 @@ def custom_format(
     return output
 
 
-def read_output_from_command(command: str) -> Tuple[int, str, str]:
+def read_output_from_command(command: str, shell=False) -> Tuple[int, str, str]:
     """Executes command and returns code, stdout and stderr"""
     res = sp.run(
-        command.split(" "), stdout=sp.PIPE, stderr=sp.PIPE, shell=False, encoding="utf-8"
+        command if shell else command.split(" "),
+        stdout=sp.PIPE,
+        stderr=sp.PIPE,
+        shell=shell,
+        encoding="utf-8",
     )
     return res.returncode, res.stdout[:-1], res.stderr[:-1]
 

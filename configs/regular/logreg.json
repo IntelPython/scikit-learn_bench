@@ -15,7 +15,13 @@
 			}
 		},
         "sklearn logreg parameters": {
-            "algorithm": { "estimator_params": { "solver": "lbfgs", "random_state": 42 } }
+            "algorithm": {
+                "estimator_params": {
+                    "solver": "lbfgs",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                    "random_state": 42
+                }
+            }
         },
         "cuml logreg parameters": {
             "algorithm": { "estimator_params": { "solver": "qn" } }

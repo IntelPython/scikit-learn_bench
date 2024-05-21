@@ -168,12 +168,12 @@ def preprocess_x(
     replace_nan="auto",
     category_encoding="ordinal",
     normalize=False,
-    forse_for_sparse=True,
+    force_for_sparse=True,
     **kwargs,
 ) -> Array:
     """Preprocessing function applied only for `x` data argument."""
     return_type = type(x)
-    if forse_for_sparse and isinstance(x, csr_matrix):
+    if force_for_sparse and isinstance(x, csr_matrix):
         x = x.toarray()
     if isinstance(x, np.ndarray):
         x = pd.DataFrame(x)

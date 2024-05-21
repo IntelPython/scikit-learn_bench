@@ -1,0 +1,40 @@
+{
+    "PARAMETERS_SETS": {
+        "svd": {
+            "algorithm": {
+                "library": "daal4py",
+                "estimator": "svd",
+                "estimator_methods": { "training": "compute" }
+            },
+            "data": {
+                "dataset": [
+                    "skin_segmentation",
+                    "road_network",
+                    "codrnanorm",
+                    "twodplanes",
+                    "medical_charges_nominal",
+                    "susy",
+                    "ijcnn",
+                    "hepmass",
+                    "higgs",
+                    "creditcard",
+                    "fraud",
+                    "klaverjas",
+                    "covtype",
+                    "year_prediction_msd",
+                    "sensit",
+                    "yolanda",
+                    "connect",
+                    "mnist"
+                ],
+                "split_kwargs": { "ignore": true }
+            },
+            "bench": { "n_runs": 50 }
+        }
+    },
+    "TEMPLATES": {
+        "svd": {
+            "SETS": ["svd"]
+        }
+    }
+}

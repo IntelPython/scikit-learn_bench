@@ -19,7 +19,9 @@ import argparse
 from .implementation import DIFFBY_COLUMNS
 
 
-def add_report_generator_arguments(parser: argparse.ArgumentParser):
+def add_report_generator_arguments(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
     parser.add_argument(
         "--report-log-level",
         default="WARNING",
@@ -85,18 +87,18 @@ def add_report_generator_arguments(parser: argparse.ArgumentParser):
     )
     # color scale settings
     parser.add_argument(
-        "--time-color-scale",
+        "--perf-color-scale",
         type=float,
         nargs="+",
         default=[0.8, 1.0, 10.0],
-        help="Time improvement color scale in report.",
+        help="Color scale for performance metric improvement in report.",
     )
     parser.add_argument(
-        "--metric-color-scale",
+        "--quality-color-scale",
         type=float,
         nargs="+",
         default=[0.99, 0.995, 1.01],
-        help="Metric improvement color scale in report.",
+        help="Color scale for quality metric improvement in report.",
     )
     return parser
 

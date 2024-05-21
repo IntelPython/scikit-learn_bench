@@ -25,16 +25,12 @@ from .logger import logger
 
 def get_numa_cpus_conf() -> Dict:
     try:
-        _, numactl_info, _ = read_output_from_command("numactl -H")
-        numa_cpus_conf = {}
-        for line in numactl_info.split("\n"):
-            if "cpus" in line:
-                numa_cpus_conf[int(line.split(" ")[1])] = list(
-                    map(int, line.split(": ")[1].split(" "))
-                )
-        return numa_cpus_conf
+        _, numa_cpus_map, _ = read_output_from_command(
+            "lscpu | grep NUMA | grep CPU | awk '{ print $4 }'", shell=True
+        )
+        return {i: cpus for i, cpus in enumerate(numa_cpus_map.split("\n"))}
     except FileNotFoundError:
-        logger.warning("Unable to get numa cpus configuration via numactl")
+        logger.warning("Unable to get numa cpus configuration via lscpu")
         return dict()
 
 

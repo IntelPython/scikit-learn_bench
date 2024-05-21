@@ -1,20 +1,20 @@
-# Benchmarks runner
+# Benchmarks Runner
 
-**Scikit-learn_bench**'s runner orchestrates running of individual benchmarks based on provided config files, parameters, filters and other arguments.
+**Scikit-learn_bench** runner orchestrates running of the individual benchmarks based on provided config files, parameters, filters, and other arguments.
 
-Runner consumes next types of arguments:
- - settings defining benchmarking cases (config location\[s\], global parameters and filters)
- - verbosity levels for different scikit-learn_bench stages (runner, benchmarks, report generator)
- - settings for aggregated benchmarks output
- - scikit-learn_bench workflow parameters
+Runner consumes the following types of arguments:
+ - Settings defining benchmarking cases (config location\[s\], global parameters, and filters)
+ - Verbosity levels for different scikit-learn_bench stages (runner, benchmarks, report generator)
+ - Settings for aggregated benchmarks output
+ - Scikit-learn_bench workflow parameters
 
-and follows next steps:
+And follows the next steps:
 
 1. Generate benchmarking cases
-2. Filter them where it's already possible to compare parameters and filters (early filtering)
-3. Prefetch datasets in parallel if explicitly requested with special argument
+2. Filter them if possible to compare parameters and filters (early filtering)
+3. Prefetch datasets in parallel if explicitly requested with a special argument
 4. Sequentially call individual benchmarks as subprocesses
-5. Combine raw results and output them as JSON file
+5. Combine raw results and output them as a JSON file
 6. Call report generator in-place if requested
 
 See [benchmarking config specification](../../docs/BENCH-CONFIG-SPEC.md) for explanation of config files formatting.
