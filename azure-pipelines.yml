@@ -15,7 +15,7 @@
 #===============================================================================
 variables:
   - name: python.version
-    value: "3.11"
+    value: "3.10"
 
 jobs:
   - job: Lint
@@ -24,7 +24,7 @@ jobs:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.10'
         addToPath: true
     - script: |
         python -m pip install --upgrade pip setuptools
