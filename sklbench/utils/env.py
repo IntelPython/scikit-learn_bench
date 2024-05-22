@@ -23,12 +23,21 @@ from .common import read_output_from_command
 from .logger import logger
 
 
-def get_numa_cpus_conf() -> Dict:
+def get_numa_cpus_conf() -> Dict[int, str]:
     try:
-        _, numa_cpus_map, _ = read_output_from_command(
-            "lscpu | grep NUMA | grep CPU | awk '{ print $4 }'", shell=True
-        )
-        return {i: cpus for i, cpus in enumerate(numa_cpus_map.split("\n"))}
+        _, lscpu_text, _ = read_output_from_command("lscpu")
+        return {
+            i: numa_cpus
+            for i, numa_cpus in enumerate(
+                map(
+                    lambda x: x.split(" ")[-1],
+                    filter(
+                        lambda line: "NUMA" in line and "CPU(s)" in line,
+                        lscpu_text.split("\n"),
+                    ),
+                )
+            )
+        }
     except FileNotFoundError:
         logger.warning("Unable to get numa cpus configuration via lscpu")
         return dict()
@@ -54,26 +63,25 @@ def get_software_info() -> Dict:
 
 
 def get_oneapi_devices() -> pd.DataFrame:
-    # # Removed until dpctl bug is fixed
-    # # (lost devices in subprocesses)
-    # try:
-    #     import dpctl
-    #     devices = dpctl.get_devices()
-    #     devices = {
-    #         device.filter_string: {
-    #             "name": device.name,
-    #             "vendor": device.vendor,
-    #             "type": str(device.device_type).split(".")[1],
-    #             "driver version": device.driver_version,
-    #             "memory size[GB]": device.global_mem_size / 2**30,
-    #         }
-    #         for device in devices
-    #     }
-    #     return pd.DataFrame(devices).T
-    # except (ImportError, ModuleNotFoundError):
-    #     logger.warning("dpctl can not be imported")
-    #     # 'type' is left for device type selection only
-    return pd.DataFrame({"type": list()})
+    try:
+        import dpctl
+
+        devices = dpctl.get_devices()
+        devices = {
+            device.filter_string: {
+                "name": device.name,
+                "vendor": device.vendor,
+                "type": str(device.device_type).split(".")[1],
+                "driver version": device.driver_version,
+                "memory size[GB]": device.global_mem_size / 2**30,
+            }
+            for device in devices
+        }
+        return pd.DataFrame(devices).T
+    except (ImportError, ModuleNotFoundError):
+        logger.warning("dpctl can not be imported")
+        # 'type' is left for device type selection only
+        return pd.DataFrame({"type": list()})
 
 
 def get_higher_isa(cpu_flags: str) -> str:

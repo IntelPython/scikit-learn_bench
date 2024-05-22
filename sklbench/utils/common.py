@@ -58,13 +58,12 @@ def custom_format(
     return output
 
 
-def read_output_from_command(command: str, shell=False) -> Tuple[int, str, str]:
+def read_output_from_command(command: str) -> Tuple[int, str, str]:
     """Executes command and returns code, stdout and stderr"""
     res = sp.run(
-        command if shell else command.split(" "),
+        command.split(" "),
         stdout=sp.PIPE,
         stderr=sp.PIPE,
-        shell=shell,
         encoding="utf-8",
     )
     return res.returncode, res.stdout[:-1], res.stderr[:-1]
@@ -197,7 +196,7 @@ def convert_to_numeric_if_possible(value: str) -> Union[Numeric, str]:
         return value
 
 
-def convert_to_numpy(a, dp_compat=False):
+def convert_to_numpy(a, dp_compat=False) -> np.ndarray:
     if dp_compat and ("dpctl" in str(type(a)) or "dpnp" in str(type(a))):
         return a
     if isinstance(a, np.ndarray):
