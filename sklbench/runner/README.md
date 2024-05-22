@@ -17,7 +17,7 @@ And follows the next steps:
 5. Combine raw results and output them as a JSON file
 6. Call report generator in-place if requested
 
-See [benchmarking config specification](../../docs/BENCH-CONFIG-SPEC.md) for explanation of config files formatting.
+See [benchmarking config specification](../../docs/README.md) for explanation of config files formatting.
 
 ```mermaid
 flowchart LR

@@ -24,7 +24,7 @@ Benchmark workflow:
  - Measure required estimator methods
  - Combine metrics and parameters into the output
 
-See [benchmark-specific config parameters](../../configs/BENCH-CONFIG-SPEC.md#benchmark-specific-parameters).
+See [benchmark-specific config parameters](../../configs/README.md#benchmark-specific-parameters).
 
 ## `Function`
 
@@ -35,7 +35,7 @@ Benchmark workflow:
  - Assign special values that require estimator/data to be loaded
  - Measure function performance metrics
 
-See [benchmark-specific config parameters](../../configs/BENCH-CONFIG-SPEC.md#benchmark-specific-parameters).
+See [benchmark-specific config parameters](../../configs/README.md#benchmark-specific-parameters).
 
 ---
 [Documentation tree](../../README.md#-documentation-tree)
