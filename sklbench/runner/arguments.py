@@ -128,7 +128,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         "--prefetch-datasets",
         default=False,
         action="store_true",
-        help="[EXPERIMENTAL] Load named datasets in parallel before running benchmarks.",
+        help="Load all requested datasets in parallel before running benchmarks.",
     )
     # workflow control
     parser.add_argument(

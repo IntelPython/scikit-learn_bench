@@ -23,6 +23,17 @@ from ..utils.logger import logger
 
 
 def transform_results_to_compatible(results: pd.DataFrame):
+    # sklearn and sklearnex compatibility
+    if (results["library"] == "sklearnex").any():
+        # delete extra columns related to sklearnex only
+        results.drop(
+            inplace=True,
+            errors="ignore",
+            columns=[
+                "max_bins",
+                "min_bin_size",
+            ],
+        )
     # cuML compatibility
     if (
         (results["library"] == "cuml")

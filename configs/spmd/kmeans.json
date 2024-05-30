@@ -7,8 +7,8 @@
         "kmeans": {
             "SETS": [
                 "common kmeans parameters",
-				"sklearn kmeans parameters",
-				"kmeans datasets",
+                "sklearn kmeans parameters",
+                "kmeans datasets",
                 "sklearnex spmd implementation",
                 "spmd default parameters",
                 "spmd kmeans parameters"

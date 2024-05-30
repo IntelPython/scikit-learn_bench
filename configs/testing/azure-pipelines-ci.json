@@ -101,13 +101,14 @@
             },
             {
                 "algorithm": {
-                    "estimator": ["SVC", "SVR"]
+                    "estimator": ["SVC", "SVR"],
+                    "estimator_params": { "max_iter": 1000 }
                 }
             },
             {
                 "algorithm": {
                     "estimator": ["NuSVC", "NuSVR"],
-                    "estimator_params": { "nu": 0.1 }
+                    "estimator_params": { "max_iter": 1000, "nu": 0.1 }
                 }
             },
             {

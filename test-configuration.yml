@@ -26,5 +26,5 @@ steps:
       python -m sklbench -l DEBUG -p algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
     displayName: CLI arguments run
   - script: |
-      python -m sklbench -l INFO -c configs/testing/azure-pipelines-ci.json --report
+      python -m sklbench -l INFO -c configs/testing/azure-pipelines-ci.json --prefetch-datasets --report --diff-cols library --compatibility-mode
     displayName: CI config run
