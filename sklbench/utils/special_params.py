@@ -124,6 +124,17 @@ def assign_case_special_values_on_generation(bench_case: BenchCase) -> BenchCase
             numa_cpus_conf = get_numa_cpus_conf()
             taskset = ",".join([numa_cpus_conf[numa_node] for numa_node in numa_nodes])
             set_bench_case_value(bench_case, "bench:taskset", taskset)
+
+    # remove requested parameters from the case
+    def traverse_with_removal(case: BenchCase):
+        for key, value in list(case.items()):
+            if isinstance(value, dict):
+                traverse_with_removal(value)
+            elif isinstance(value, str) and value == "[REMOVE]":
+                del case[key]
+
+    traverse_with_removal(bench_case)
+
     return bench_case
 
 

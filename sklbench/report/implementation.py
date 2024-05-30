@@ -335,7 +335,6 @@ def generate_report(args: argparse.Namespace):
     dfs = get_result_tables_as_df(results, diffby, splitby, args.compatibility_mode)
 
     wb = xl.Workbook()
-    summary_ws = wb.create_sheet("Summary")
     summary_dfs = list()
     for df_name, df in dfs.items():
         drop_columns = list(set(df.columns) & set(args.drop_columns))
@@ -352,10 +351,11 @@ def generate_report(args: argparse.Namespace):
     # write summary to corresponding sheet
     summary_df = pd.concat(summary_dfs, axis=0, join="outer")
     summary_df = summary_df[summary_df.columns.sortlevel(level=0, ascending=False)[0]]
-    logger.info(custom_format("Report summary", bcolor="HEADER"))
-    logger.info(summary_df)
-    write_df_to_sheet(summary_df, summary_ws)
-    apply_rules_for_sheet(summary_ws, args.perf_color_scale, args.quality_color_scale)
+    logger.info(f"{custom_format('Report summary', bcolor='HEADER')}\n{summary_df}")
+    if summary_df.size > 0:
+        summary_ws = wb.create_sheet("Summary")
+        write_df_to_sheet(summary_df, summary_ws)
+        apply_rules_for_sheet(summary_ws, args.perf_color_scale, args.quality_color_scale)
     # write environment info
     write_environment_info(results, wb)
     # remove default sheet

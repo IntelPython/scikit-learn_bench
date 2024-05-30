@@ -34,7 +34,19 @@ def generate_benchmark_command(
     filters_str = json.dumps({"filters": filters}).replace(" ", "")
     # get command prefix if set
     command_prefix = ""
+    # 1. taskset (cpu affinity) command prefix
     taskset = get_bench_case_value(bench_case, "bench:taskset")
+    if taskset is not None:
+        command_prefix = f"taskset -c {taskset} {command_prefix}"
+    # 2. distributed workflow (MPI, etc.) command prefix
+    distribution = get_bench_case_value(bench_case, "bench:distributor")
+    if distribution == "mpi":
+        mpi_params = get_bench_case_value(bench_case, "bench:mpi_params", dict())
+        mpi_prefix = "mpirun"
+        for mpi_param_name, mpi_param_value in mpi_params.items():
+            mpi_prefix += f" -{mpi_param_name} {mpi_param_value}"
+        command_prefix = f"{mpi_prefix} {command_prefix}"
+    # 3. Intel(R) VTune* profiling command prefix
     vtune_profiling = get_bench_case_value(bench_case, "bench:vtune_profiling")
     if vtune_profiling is not None:
         if sys.platform == "linux":
@@ -54,8 +66,8 @@ def generate_benchmark_command(
                 ),
             )
             command_prefix = (
-                f"{command_prefix}vtune -collect {vtune_profiling} "
-                f"-r {vtune_result_path} -start-paused -q -no-summary "
+                f"vtune -collect {vtune_profiling} -r {vtune_result_path} "
+                f"-start-paused -q -no-summary {command_prefix}"
             )
             # vtune CLI requires modification of quotes bench args: `"` -> `\"`
             bench_case_str = bench_case_str.replace('"', '\\"')
@@ -65,8 +77,6 @@ def generate_benchmark_command(
                 "Intel(R) VTune(TM) profiling in scikit-learn_bench "
                 "is supported only on Linux."
             )
-    if taskset is not None:
-        command_prefix = f"{command_prefix}taskset -c {taskset} "
     # benchmark selection
     if get_bench_case_value(bench_case, "algorithm:estimator") is not None:
         benchmark_name = "sklearn_estimator"

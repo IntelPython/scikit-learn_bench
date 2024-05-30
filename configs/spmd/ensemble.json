@@ -1,0 +1,59 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/ensemble.json"],
+    "PARAMETERS_SETS": {
+        "spmd ensemble classifier params": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier"
+            }
+        },
+        "spmd ensemble regressor params": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor"
+            }
+        },
+        "ensemble classification data": {
+            "data": [
+                { "dataset": "skin_segmentation", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "mnist", "split_kwargs": { "train_size": 20000, "test_size": null } }
+            ]
+        },
+        "ensemble regression data": {
+            "data": [
+                {
+                    "dataset": "road_network",
+                    "split_kwargs": {
+                        "train_size": 200000, "test_size": null,
+                        "shuffle": true, "random_state": 42
+                    }
+                },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "ensemble classification": {
+            "SETS": [
+                "common ensemble params",
+                "sklearn ensemble classifier params",
+                "ensemble classification data",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd ensemble classifier params"
+            ]
+        },
+        "ensemble regression": {
+            "SETS": [
+                "common ensemble params",
+                "sklearn ensemble regressor params",
+                "ensemble regression data",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd ensemble regressor params"
+            ]
+        }
+    }
+}

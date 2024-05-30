@@ -1,4 +1,5 @@
-scikit-learn
+# essentials
+scikit-learn==1.4.*
 pandas
 tabulate
 fastparquet

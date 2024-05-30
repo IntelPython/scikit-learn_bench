@@ -15,5 +15,6 @@
     "clustering": ["DBSCAN", "KMeans"],
     "decomposition": ["PCA"],
     "manifold": ["TSNE"],
-    "search": ["NearestNeighbors"]
+    "search": ["NearestNeighbors"],
+    "utility": ["BasicStatistics", "Covariance"]
 }

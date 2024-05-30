@@ -1,0 +1,28 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/pca.json"],
+    "PARAMETERS_SETS": {
+        "spmd pca parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "copy": "[REMOVE]",
+                    "svd_solver": "[REMOVE]",
+                    "tol": "[REMOVE]",
+                    "iterated_power": "[REMOVE]",
+                    "random_state": "[REMOVE]",
+                    "method": "cov"
+                }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "pca": {
+            "SETS": [
+                "pca parameters",
+                "pca datasets",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd pca parameters"
+            ]
+        }
+    }
+}

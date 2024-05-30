@@ -48,16 +48,16 @@ def get_software_info() -> Dict:
     # conda list
     try:
         _, conda_list, _ = read_output_from_command("conda list --json")
-        conda_packages = json.loads('{"list":\n' + conda_list + "\n}")["list"]
+        conda_packages = json.loads(conda_list)
         result["conda_packages"] = {pkg.pop("name"): pkg for pkg in conda_packages}
-    except (FileNotFoundError, PermissionError):
+    # pip list
+    except (FileNotFoundError, PermissionError, AttributeError):
         logger.warning("Unable to get python packages list via conda")
-        # pip list
         try:
             _, pip_list, _ = read_output_from_command("pip list --format json")
-            pip_packages = json.loads('{"list": ' + pip_list + " }")["list"]
+            pip_packages = json.loads(pip_list)
             result["pip_packages"] = {pkg.pop("name"): pkg for pkg in pip_packages}
-        except (FileNotFoundError, PermissionError):
+        except (FileNotFoundError, PermissionError, AttributeError):
             logger.warning("Unable to get python packages list via pip")
     return result
 
@@ -77,11 +77,14 @@ def get_oneapi_devices() -> pd.DataFrame:
             }
             for device in devices
         }
-        return pd.DataFrame(devices).T
+        if len(devices) > 0:
+            return pd.DataFrame(devices).T
+        else:
+            logger.warning("dpctl device table is empty")
     except (ImportError, ModuleNotFoundError):
         logger.warning("dpctl can not be imported")
-        # 'type' is left for device type selection only
-        return pd.DataFrame({"type": list()})
+    # 'type' is left for device type selection only
+    return pd.DataFrame({"type": list()})
 
 
 def get_higher_isa(cpu_flags: str) -> str:

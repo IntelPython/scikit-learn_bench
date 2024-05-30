@@ -16,8 +16,48 @@
 
 import argparse
 import json
+from typing import Dict
 
+from ..utils.bench_case import get_bench_case_value, get_data_name
+from ..utils.custom_types import BenchCase
 from ..utils.logger import logger
+
+
+def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
+    """Common function for all benchmarks to update
+    the result with additional information"""
+    result.update(
+        {
+            "dataset": get_data_name(bench_case, shortened=True),
+            "library": get_bench_case_value(bench_case, "algorithm:library").replace(
+                "sklbench.emulators.", ""
+            ),
+            "device": get_bench_case_value(bench_case, "algorithm:device"),
+        }
+    )
+    taskset = get_bench_case_value(bench_case, "bench:taskset", None)
+    if taskset is not None:
+        result.update({"taskset": taskset})
+    distributor = get_bench_case_value(bench_case, "bench:distributor")
+    if distributor is not None:
+        result.update({"distributor": distributor})
+    mpi_params = get_bench_case_value(bench_case, "bench:mpi_params", dict())
+    for mpi_key, mpi_value in mpi_params.items():
+        result[f"mpi_{mpi_key}"] = mpi_value
+    return result
+
+
+def check_to_print_result(bench_case: BenchCase) -> bool:
+    """Check if the benchmark should print the result"""
+    distribution = get_bench_case_value(bench_case, "bench:distributor")
+    if distribution == "mpi":
+        from mpi4py import MPI
+
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        if rank != 0:
+            return False
+    return True
 
 
 def main_template(main_method):
@@ -39,4 +79,6 @@ def main_template(main_method):
     filters = json.loads(args.filters)["filters"]
 
     results = main_method(bench_case, filters)
-    print(json.dumps(results, indent=4))
+
+    if check_to_print_result(bench_case):
+        print(json.dumps(results, indent=4))

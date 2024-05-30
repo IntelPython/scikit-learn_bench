@@ -76,6 +76,21 @@ def get_first_of_bench_case_values(
         return values[0]
 
 
+def apply_func_to_bench_case_values(
+    bench_case: BenchCase, func, copy: bool = False
+) -> BenchCase:
+    if copy:
+        result = deepcopy(bench_case)
+    else:
+        result = bench_case
+    for key, value in result.items():
+        if isinstance(value, dict):
+            apply_func_to_bench_case_values(value, func)
+        else:
+            result[key] = func(value)
+    return result
+
+
 def get_data_name(bench_case: BenchCase, shortened: bool = False) -> str:
     # check if unique dataset name is specified directly
     dataset = get_bench_case_value(bench_case, "data:dataset")
@@ -95,10 +110,7 @@ def get_data_name(bench_case: BenchCase, shortened: bool = False) -> str:
     # fetch_openml
     if source == "fetch_openml":
         openml_id = get_bench_case_value(bench_case, "data:id")
-        if shortened:
-            return f"openml_{openml_id}"
-        else:
-            return f"openml_{openml_id}"
+        return f"openml_{openml_id}"
     # make_*
     if source in ["make_classification", "make_regression", "make_blobs"]:
         name = source

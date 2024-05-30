@@ -83,6 +83,13 @@ def measure_time(
 
 # wrapper to get measurement params from benchmarking case
 def measure_case(case: BenchCase, func, *args, **kwargs):
+    distirbutor = get_bench_case_value(case, "bench:distributor")
+    if distirbutor == "mpi":
+        # sync all MPI processes
+        from mpi4py import MPI
+
+        comm = MPI.COMM_WORLD
+        comm.Barrier()
     return measure_time(
         func,
         *args,

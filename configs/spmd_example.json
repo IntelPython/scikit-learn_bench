@@ -1,0 +1,71 @@
+{
+    "PARAMETERS_SETS": {
+        "implementations": [
+            {
+                "algorithm": {
+                    "library": "sklearnex.spmd",
+                    "device": "gpu"
+                },
+                "data": { "distributed_split": "rank_based" },
+                "bench": {
+                    "distributor": "mpi",
+                    "mpi_params": { "n": 2, "ppn": 2 }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "sklearnex",
+                    "device": "cpu"
+                }
+            }
+        ],
+        "datasets": {
+            "data": [
+                {
+                    "dataset": "higgs",
+                    "split_kwargs": { "train_size": 10000, "test_size": 10000 }
+                },
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 20000,
+                        "n_features": 100,
+                        "noise": 1.0
+                    },
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                }
+            ]
+        },
+        "linear regression": {
+            "algorithm": { "estimator": "LinearRegression" }
+        },
+        "knn regression": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": { "algorithm": "brute", "n_neighbors": 5 }
+            }
+        },
+        "random forest regression": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor",
+                "estimator_params": { 
+                    "criterion": "squared_error",
+                    "max_features": 1.0,
+                    "n_estimators": 10,
+                    "max_depth": 4
+                }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "linear regression": {
+            "SETS": ["implementations", "datasets", "linear regression"]
+        },
+        "knn regression": {
+            "SETS": ["implementations", "datasets", "knn regression"]
+        },
+        "random forest regression": {
+            "SETS": ["implementations", "datasets", "random forest regression"]
+        }
+    }
+}

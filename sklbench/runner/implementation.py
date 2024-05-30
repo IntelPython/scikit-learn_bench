@@ -25,14 +25,9 @@ from tqdm import tqdm
 
 from ..datasets import load_data
 from ..report import generate_report, get_result_tables_as_df
-from ..utils.bench_case import get_bench_case_name
+from ..utils.bench_case import get_bench_case_name, get_data_name
 from ..utils.common import custom_format, hash_from_json_repr
-from ..utils.config import (
-    early_filtering,
-    generate_bench_cases,
-    generate_bench_filters,
-    remove_duplicated_bench_cases,
-)
+from ..utils.config import early_filtering, generate_bench_cases, generate_bench_filters
 from ..utils.custom_types import BenchCase
 from ..utils.env import get_environment_info
 from ..utils.logger import logger
@@ -100,17 +95,14 @@ def run_benchmarks(args: argparse.Namespace) -> int:
 
     # prefetch datasets
     if args.prefetch_datasets:
-        n_cpus = cpu_count()
-        logger.info(f"Prefetching datasets with {n_cpus} processes")
-        dataset_cases = remove_duplicated_bench_cases(
-            [
-                {"data": {"dataset": case["data"]["dataset"]}}
-                for case in bench_cases
-                if "dataset" in case["data"]
-            ]
-        )
-        with Pool(n_cpus) as pool:
-            pool.map(load_data, dataset_cases)
+        # trick: get unique dataset names only to avoid loading of same dataset
+        # by different cases/processes
+        dataset_cases = {get_data_name(case): case for case in bench_cases}
+        logger.debug(f"Unique dataset names to load:\n{list(dataset_cases.keys())}")
+        n_proc = min([16, cpu_count(), len(dataset_cases)])
+        logger.info(f"Prefetching datasets with {n_proc} processes")
+        with Pool(n_proc) as pool:
+            pool.map(load_data, dataset_cases.values())
 
     # run bench_cases
     return_code, result = call_benchmarks(

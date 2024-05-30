@@ -39,14 +39,14 @@ from sklearn.metrics import (
 
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
-from ..utils.bench_case import get_bench_case_value, get_data_name
+from ..utils.bench_case import get_bench_case_value
 from ..utils.common import convert_to_numpy, custom_format, get_module_members
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase, Numeric, NumpyNumeric
 from ..utils.logger import logger
 from ..utils.measurement import measure_case
 from ..utils.special_params import assign_case_special_values_on_run
-from .common import main_template
+from .common import enrich_result, main_template
 
 
 def get_estimator(library_name: str, estimator_name: str):
@@ -119,9 +119,10 @@ def get_subset_metrics_of_estimator(
     global _brute_knn
 
     metrics = dict()
-    # Note: use data[0, 1] when calling estimator methods,
-    # x, y are numpy ndarrays for compatibility with sklearn metrics
-    x, y = list(map(lambda i: convert_to_numpy(i, dp_compat=True), data))
+    # Note: use `x` and `y` when calling estimator methods,
+    # and `x_compat` and `y_compat` for compatibility with sklearn metrics
+    x, y = data
+    x_compat, y_compat = list(map(lambda i: convert_to_numpy(i), data))
     if stage == "training":
         if hasattr(estimator_instance, "n_iter_"):
             iterations = estimator_instance.n_iter_
@@ -137,8 +138,8 @@ def get_subset_metrics_of_estimator(
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
             {
-                "accuracy": float(accuracy_score(y, y_pred)),
-                "balanced accuracy": float(balanced_accuracy_score(y, y_pred)),
+                "accuracy": float(accuracy_score(y_compat, y_pred)),
+                "balanced accuracy": float(balanced_accuracy_score(y_compat, y_pred)),
             }
         )
         if hasattr(estimator_instance, "predict_proba") and not (
@@ -150,7 +151,7 @@ def get_subset_metrics_of_estimator(
                 {
                     "ROC AUC": float(
                         roc_auc_score(
-                            y,
+                            y_compat,
                             (
                                 y_pred_proba
                                 if y_pred_proba.shape[1] > 2
@@ -159,15 +160,15 @@ def get_subset_metrics_of_estimator(
                             multi_class="ovr",
                         )
                     ),
-                    "logloss": float(log_loss(y, y_pred_proba)),
+                    "logloss": float(log_loss(y_compat, y_pred_proba)),
                 }
             )
     elif task == "regression":
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
             {
-                "RMSE": float(mean_squared_error(y, y_pred) ** 0.5),
-                "R2": float(r2_score(y, y_pred)),
+                "RMSE": float(mean_squared_error(y_compat, y_pred) ** 0.5),
+                "R2": float(r2_score(y_compat, y_pred)),
             }
         )
     elif task == "decomposition":
@@ -204,9 +205,9 @@ def get_subset_metrics_of_estimator(
             y_pred = convert_to_numpy(estimator_instance.predict(x))
             metrics.update(
                 {
-                    "Davies-Bouldin score": float(davies_bouldin_score(x, y_pred)),
-                    "homogeneity": float(homogeneity_score(y, y_pred)),
-                    "completeness": float(completeness_score(y, y_pred)),
+                    "Davies-Bouldin score": float(davies_bouldin_score(x_compat, y_pred)),
+                    "homogeneity": float(homogeneity_score(y_compat, y_pred)),
+                    "completeness": float(completeness_score(y_compat, y_pred)),
                 }
             )
         if "DBSCAN" in str(estimator_instance) and stage == "training":
@@ -215,16 +216,24 @@ def get_subset_metrics_of_estimator(
             metrics.update({"clusters": clusters})
             if clusters > 1:
                 metrics.update(
-                    {"Davies-Bouldin score": float(davies_bouldin_score(x, labels))}
+                    {
+                        "Davies-Bouldin score": float(
+                            davies_bouldin_score(x_compat, labels)
+                        )
+                    }
                 )
             if len(np.unique(y)) < 128:
                 metrics.update(
                     {
                         "homogeneity": (
-                            float(homogeneity_score(y, labels)) if clusters > 1 else 0
+                            float(homogeneity_score(y_compat, labels))
+                            if clusters > 1
+                            else 0
                         ),
                         "completeness": (
-                            float(completeness_score(y, labels)) if clusters > 1 else 0
+                            float(completeness_score(y_compat, labels))
+                            if clusters > 1
+                            else 0
                         ),
                     }
                 )
@@ -237,16 +246,14 @@ def get_subset_metrics_of_estimator(
         if stage == "training":
             from sklearn.neighbors import NearestNeighbors
 
-            _brute_knn = NearestNeighbors(algorithm="brute").fit(x)
+            _brute_knn = NearestNeighbors(algorithm="brute").fit(x_compat)
         else:
             recall_degree = 10
             ground_truth_neighbors = _brute_knn.kneighbors(
-                x, recall_degree, return_distance=False
+                x_compat, recall_degree, return_distance=False
             )
             predicted_neighbors = convert_to_numpy(
-                estimator_instance.kneighbors(
-                    data[0], recall_degree, return_distance=False
-                )
+                estimator_instance.kneighbors(x, recall_degree, return_distance=False)
             )
             n_relevant = 0
             for i in range(ground_truth_neighbors.shape[0]):
@@ -517,14 +524,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
 
     result_template = {
         "task": task,
-        "dataset": get_data_name(bench_case, shortened=True),
-        "library": library_name.replace("sklbench.emulators.", ""),
         "estimator": estimator_name,
-        "device": get_bench_case_value(bench_case, "algorithm:device"),
     }
-    taskset = get_bench_case_value(bench_case, "bench:taskset", None)
-    if taskset is not None:
-        result_template.update({"taskset": taskset})
+    result_template = enrich_result(result_template, bench_case)
     if "assume_finite" in context_params:
         result_template["assume_finite"] = context_params["assume_finite"]
     if hasattr(estimator_instance, "get_params"):

@@ -18,14 +18,14 @@ from typing import Dict, List, Tuple
 
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
-from ..utils.bench_case import get_bench_case_value, get_data_name
+from ..utils.bench_case import get_bench_case_value
 from ..utils.common import get_module_members
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase
 from ..utils.logger import logger
 from ..utils.measurement import measure_case
 from ..utils.special_params import assign_case_special_values_on_run
-from .common import main_template
+from .common import enrich_result, main_template
 
 
 def get_function_instance(library_name: str, function_name: str):
@@ -101,15 +101,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     )
     result = {
         "task": "utility",
-        "dataset": get_data_name(bench_case, shortened=True),
-        # TODO: remove replacement when sklearnex public functions are repaired
-        "library": library_name.replace("daal4py", "sklearnex"),
         "function": function_name,
-        "device": get_bench_case_value(bench_case, "algorithm:device"),
     }
-    taskset = get_bench_case_value(bench_case, "bench:taskset", None)
-    if taskset is not None:
-        result.update({"taskset": taskset})
+    result = enrich_result(result, bench_case)
     # TODO: replace `x_train` data_desc with more informative values
     result.update(data_description["x_train"])
     result.update(metrics)

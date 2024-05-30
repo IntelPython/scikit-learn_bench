@@ -88,6 +88,8 @@ Configs have the three highest parameter keys:
 | `bench`:`vtune_results_directory` | `vtune_results` |  | Directory path to store Intel(R) VTune* Profiler results. |
 | `bench`:`n_runs` | `10` |  | Number of runs for measured entity. |
 | `bench`:`time_limit` | `3600` |  | Time limit in seconds before the benchmark early stop. |
+| `bench`:`distributor` | None | None, `mpi` | Library used to handle distributed algorithm. |
+| `bench`:`mpi_params` | Empty dict |  | Parameters for `mpirun` command of MPI library. |
 |<h3>Data parameters</h3>||||
 | `data`:`cache_directory` | `data_cache` |  | Directory path to store cached datasets for fast loading. |
 | `data`:`raw_cache_directory` | `data`:`cache_directory` + "raw" |  | Directory path to store downloaded raw datasets. |
@@ -102,6 +104,7 @@ Configs have the three highest parameter keys:
 | `data`:`format` | `pandas` | `pandas`, `numpy`, `cudf` | Data format to use in benchmark. |
 | `data`:`order` | `F` | `C`, `F` | Data order to use in benchmark: contiguous(C) or Fortran. |
 | `data`:`dtype` | `float64` |  | Data type to use in benchmark. |
+| `data`:`distributed_split` | None | None, `rank_based` | Split type used to distribute data between machines in distributed algorithm. `None` type means usage of all data without split on all machines. `rank_based` type splits the data equally between machines with split sequence based on rank id from MPI. |
 |<h3>Algorithm parameters</h3>||||
 | `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
 | `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Device selected for computation. |
@@ -159,6 +162,14 @@ Supported ranges:
  - `add:start{int}:end{int}:step{int}` - Arithmetic progression (Sequence: start + step * i <= end)
  - `mul:current{int}:end{int}:step{int}` - Geometric progression (Sequence: current * step <= end)
  - `pow:base{int}:start{int}:end{int}[:step{int}=1]` - Powers of base number
+
+## Removal of Values
+
+You can remove specific parameter from subset of cases when stacking parameters sets using `[REMOVE]` parameter value:
+
+```json
+... "estimator_params": { "n_jobs": "[REMOVE]" } ...
+```
 
 ---
 [Documentation tree](../README.md#-documentation-tree)
