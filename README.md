@@ -53,13 +53,13 @@ python -m sklbench --config configs/sklearn_example.json
 The default output is a file with JSON-formatted results of benchmarking cases. To generate a better human-readable report, use the following command:
 
 ```bash
-python -m sklbench --config configs/sklearn_example.json --generate-report
+python -m sklbench --config configs/sklearn_example.json --report
 ```
 
 By default, output and report file paths are `result.json` and `report.xlsx`. To specify custom file paths, run:
 
 ```bash
-python -m sklbench --config configs/sklearn_example.json --generate-report --result-file result_example.json --report-file report_example.xlsx
+python -m sklbench --config configs/sklearn_example.json --report --result-file result_example.json --report-file report_example.xlsx
 ```
 
 For a description of all benchmarks runner arguments, refer to [documentation](sklbench/runner/README.md#arguments).

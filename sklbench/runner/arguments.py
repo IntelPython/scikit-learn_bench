@@ -75,7 +75,7 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         type=str,
         choices=("ERROR", "WARNING", "INFO", "DEBUG"),
         help="Global logging level for benchmarks: "
-        "overwrites runner, bench and report logging levels.",
+        "overwrites runner, benchmarks and report logging levels.",
     )
     # benchmarking cases finding, overwriting and filtering
     parser.add_argument(
