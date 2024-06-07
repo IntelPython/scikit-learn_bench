@@ -19,12 +19,29 @@ steps:
     inputs:
       versionSpec: "$(python.version)"
   - script: |
+      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(python.version)
+    displayName: Environment update
+  - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
       pip install -r envs/requirements-sklearn.txt
       pip list
-    displayName: Install requirements
+    displayName: Install requirements via pip
+    condition: eq(variables['PKG_MANAGER'], 'pip')
   - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
+      conda env update -f envs/conda-env-sklearn.yml -n bench-env
+      conda list -n bench-env
+    displayName: Install requirements via conda
+    condition: eq(variables['PKG_MANAGER'], 'conda')
+  - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
       python -m sklbench -l DEBUG -p algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
     displayName: CLI arguments run
   - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
       python -m sklbench -l INFO -c configs/testing/azure-pipelines-ci.json --prefetch-datasets --report --diff-cols library --compatibility-mode
     displayName: CI config run

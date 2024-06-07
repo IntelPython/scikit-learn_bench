@@ -31,13 +31,27 @@ jobs:
         pip install isort black
         isort --check . && black --check .
       displayName: 'Linting'
-  - job: Linux_Sklearn
+  - job: Linux
+    dependsOn: Lint
+    strategy:
+      matrix:
+        Pip:
+          PKG_MANAGER: "pip"
+        Conda:
+          PKG_MANAGER: "conda"
     pool:
       vmImage: "ubuntu-latest"
     steps:
-    - template: test-configuration.yml
-  - job: Windows_Sklearn
+    - template: test-configuration-linux.yml
+  - job: Windows
+    dependsOn: Lint
+    strategy:
+      matrix:
+        Pip:
+          PKG_MANAGER: "pip"
+        Conda:
+          PKG_MANAGER: "conda"
     pool:
       vmImage: "windows-latest"
     steps:
-    - template: test-configuration.yml
+    - template: test-configuration-win.yml

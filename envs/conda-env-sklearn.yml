@@ -9,10 +9,13 @@ dependencies:
   - catboost
   - lightgbm
   - faiss-cpu
-  - scikit-learn-intelex
   - modin-all
+  - intel::scikit-learn-intelex
+  - intel::daal4py
+  - intel::dpctl
+  - intel::dpnp
   # sklbench dependencies
-  - scikit-learn
+  - scikit-learn=1.4.*
   - pandas
   - tabulate
   - fastparquet
