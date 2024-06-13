@@ -4,7 +4,8 @@
 			"algorithm": {
 				"device": "cpu",
 				"library": "xgboost",
-				"estimator_params": { "max_depth": [3, 5] }
+				"estimator_params": { "max_depth": [3, 5] },
+				"enable_modelbuilders": [true, false]
 			},
 			"bench": { "n_runs": 5, "time_limit": 60 }
 		},

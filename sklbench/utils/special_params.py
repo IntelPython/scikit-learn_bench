@@ -102,7 +102,7 @@ def assign_case_special_values_on_generation(bench_case: BenchCase) -> BenchCase
     )
     if is_special_value(n_informative):
         n_informative = float(n_informative.replace(SP_VALUE_STR, ""))
-        if n_informative <= 0.0 or n_informative >= 1.0:
+        if n_informative <= 0.0 or n_informative > 1.0:
             raise ValueError(f'Wrong special value "{n_informative}" for n_informative')
         n_features = get_bench_case_value(bench_case, "data:generation_kwargs:n_features")
         if n_features is None:

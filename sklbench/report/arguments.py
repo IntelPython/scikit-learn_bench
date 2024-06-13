@@ -33,7 +33,7 @@ def add_report_generator_arguments(
         "--result-files",
         type=str,
         nargs="+",
-        default=["result.json"],
+        default=list(),
         help="Result file path[s] from scikit-learn_bench runs for report generation.",
     )
     parser.add_argument(

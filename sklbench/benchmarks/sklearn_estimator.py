@@ -514,14 +514,6 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
             y_test,
         )
 
-    enable_modelbuilders = get_bench_case_value(
-        bench_case, "algorithm:enable_modelbuilders", False
-    )
-    if enable_modelbuilders:
-        # NOTE: while modelbuilders are stored in `daal4py.mb` namespace
-        # their results are saved as `sklearnex` for better report readability
-        library_name = "sklearnex"
-
     result_template = {
         "task": task,
         "estimator": estimator_name,

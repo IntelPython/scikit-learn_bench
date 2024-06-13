@@ -35,6 +35,17 @@ def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
             "device": get_bench_case_value(bench_case, "algorithm:device"),
         }
     )
+    enable_modelbuilders = get_bench_case_value(
+        bench_case, "algorithm:enable_modelbuilders", False
+    )
+    if enable_modelbuilders and result["library"] in ["xgboost", "lightgbm", "catboost"]:
+        # NOTE: while modelbuilders are stored in `daal4py.mb` namespace
+        # their results are saved as `sklearnex` for better report readability
+        logger.debug(
+            "Modelbuilders are enabled, changing library "
+            f"`{result['library']}` to `sklearnex` in benchmark output."
+        )
+        result["library"] = "sklearnex"
     taskset = get_bench_case_value(bench_case, "bench:taskset", None)
     if taskset is not None:
         result.update({"taskset": taskset})

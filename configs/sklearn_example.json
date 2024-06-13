@@ -59,7 +59,7 @@
 			[
 				{
 					"estimator": "PCA",
-					"estimator_params": { "svd_solver": "full", "n_components": 3 }
+					"estimator_params": { "svd_solver": "auto", "n_components": 3 }
 				},
 				{
 					"estimator": "KMeans",
@@ -74,7 +74,7 @@
 					"estimator": ["KNeighborsClassifier", "KNeighborsRegressor"],
 					"estimator_params": { "n_neighbors": 5, "algorithm": "brute" }
 				},
-				{ "estimator": "LinearRegression" },
+				{ "estimator": "ElasticNet" },
 				{ "estimator": "SVC" }
 			]
 		}
