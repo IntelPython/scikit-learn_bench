@@ -26,4 +26,4 @@ Raw results are converted into a pandas dataframe and the final report is made b
 | `--quality-color-scale`                        | float  | [0.99, 0.995, 1.01]                                 |                                                | Color scale for quality metric improvement in report.                                                                            |
 
 ---
-[Documentation tree](../../README.md#-documentation-tree)
+[Documentation tree](../../README.md#-documentation)

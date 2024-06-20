@@ -33,4 +33,4 @@ Existing data sources:
  - Custom loaders for named datasets
 
 ---
-[Documentation tree](../../README.md#-documentation-tree)
+[Documentation tree](../../README.md#-documentation)

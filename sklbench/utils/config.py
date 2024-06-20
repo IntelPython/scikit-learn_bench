@@ -96,8 +96,12 @@ def parse_config_file(config_path: str) -> List[Dict]:
         config_dir = os.path.dirname(config_path)
         include_content = dict()
         for include_config in config_content["INCLUDE"]:
-            with open(os.path.join(config_dir, include_config), "r") as include_file:
-                include_content.update(json.load(include_file)["PARAMETERS_SETS"])
+            include_path = os.path.join(config_dir, include_config)
+            if os.path.isfile(include_path):
+                with open(include_path, "r") as include_file:
+                    include_content.update(json.load(include_file)["PARAMETERS_SETS"])
+            else:
+                logger.warning(f"Include file '{include_path}' not found.")
         include_content.update(config_content["PARAMETERS_SETS"])
         config_content["PARAMETERS_SETS"] = include_content
     for template_name, template_content in config_content["TEMPLATES"].items():

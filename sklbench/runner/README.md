@@ -55,4 +55,4 @@ flowchart LR
 Also, benchmarks runner includes and takes into the account [arguments of report generator](../report/README.md#arguments) if `--report` flag is passed.
 
 ---
-[Documentation tree](../../README.md#-documentation-tree)
+[Documentation tree](../../README.md#-documentation)

@@ -38,4 +38,4 @@ Benchmark workflow:
 See [benchmark-specific config parameters](../../configs/README.md#benchmark-specific-parameters).
 
 ---
-[Documentation tree](../../README.md#-documentation-tree)
+[Documentation tree](../../README.md#-documentation)
