@@ -52,21 +52,21 @@
         ]
     },
     "TEMPLATES": {
-		"sklearn tsne": {
-			"SETS": [
+        "sklearn tsne": {
+            "SETS": [
                 "sklearn-ex[cpu,gpu] implementations",
                 "common tsne parameters",
                 "sklearn parameters",
                 "tsne datasets"
             ]
-		},
+        },
         "cuml tsne": {
-			"SETS": [
+            "SETS": [
                 "cuml implementation",
                 "common tsne parameters",
                 "cuml parameters",
                 "tsne datasets"
             ]
-		}
-	}
+        }
+    }
 }

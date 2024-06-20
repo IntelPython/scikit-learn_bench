@@ -1,5 +1,5 @@
 {
-	"PARAMETERS_SETS": {
+    "PARAMETERS_SETS": {
         "xgboost implementations": [
             {
                 "algorithm": {
@@ -17,29 +17,29 @@
             }
         ],
         "xgboost binary classification": {
-			"algorithm": {
-				"library": "xgboost",
+            "algorithm": {
+                "library": "xgboost",
                 "estimator": "XGBClassifier",
                 "estimator_params": {
                     "objective": "binary:logistic",
                     "scale_pos_weight": "[SPECIAL_VALUE]auto"
                 }
-			}
-		},
+            }
+        },
         "xgboost multiclassification": {
-			"algorithm": {
-				"library": "xgboost",
+            "algorithm": {
+                "library": "xgboost",
                 "estimator": "XGBClassifier",
                 "estimator_params": { "objective": "multi:softprob" }
-			}
-		},
+            }
+        },
         "xgboost regression": {
-			"algorithm": {
-				"library": "xgboost",
+            "algorithm": {
+                "library": "xgboost",
                 "estimator": "XGBRegressor",
                 "estimator_methods": {"inference": "predict"},
                 "estimator_params": { "objective": "reg:squarederror" }
-			}
-		}
+            }
+        }
     }
 }

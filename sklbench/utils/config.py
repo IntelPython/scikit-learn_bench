@@ -130,10 +130,14 @@ def parse_cli_parameters(params: List) -> BenchTemplate:
         param = param.split("=")
         param_path, param_values = param[0].split(":"), param[1]
         param_values = param_values.split(",")
-        # int/float values are initially read as str
+        # int/float/bool/None values are initially read as str
         for i, value in enumerate(param_values):
             if param_values[i] == "null":
                 param_values[i] = None
+            elif param_values[i] == "true":
+                param_values[i] = True
+            elif param_values[i] == "false":
+                param_values[i] = False
             else:
                 param_values[i] = convert_to_numeric_if_possible(value)
         if len(param_values) == 1:

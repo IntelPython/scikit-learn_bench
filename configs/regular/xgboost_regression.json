@@ -1,7 +1,7 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
-	"PARAMETERS_SETS": {
-		"regression data": [
+    "PARAMETERS_SETS": {
+        "regression data": [
             {
                 "data": {
                     "dataset": "twodplanes",
@@ -91,14 +91,14 @@
                 }
             }
         ]
-	},
-	"TEMPLATES": {
-		"regression": {
-			"SETS": [
+    },
+    "TEMPLATES": {
+        "regression": {
+            "SETS": [
                 "xgboost regression",
                 "xgboost implementations",
                 "regression data"
             ]
-		}
-	}
+        }
+    }
 }

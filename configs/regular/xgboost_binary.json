@@ -1,6 +1,6 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
-	"PARAMETERS_SETS": {
+    "PARAMETERS_SETS": {
         "binary classification data": [
             {
                 "data": {
@@ -97,14 +97,14 @@
                 }
             }
         ]
-	},
-	"TEMPLATES": {
+    },
+    "TEMPLATES": {
         "binary classification": {
-			"SETS": [
+            "SETS": [
                 "xgboost binary classification",
                 "xgboost implementations",
                 "binary classification data"
             ]
-		}
-	}
+        }
+    }
 }

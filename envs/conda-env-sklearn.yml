@@ -3,7 +3,6 @@ channels:
   - nodefaults
 dependencies:
   - python=3.10
-  - scikit-learn
   # additional frameworks
   - xgboost
   - catboost

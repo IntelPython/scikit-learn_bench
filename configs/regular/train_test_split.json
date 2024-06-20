@@ -34,19 +34,19 @@
         ]
     },
     "TEMPLATES": {
-		"sklearn train_test_split": {
-			"SETS": [
+        "sklearn train_test_split": {
+            "SETS": [
                 "sklearn-ex[cpu] implementations",
                 "train_test_split parameters",
                 "train_test_split datasets"
             ]
-		},
+        },
         "cuml train_test_split": {
-			"SETS": [
+            "SETS": [
                 "cuml implementation",
                 "train_test_split parameters",
                 "train_test_split datasets"
             ]
-		}
-	}
+        }
+    }
 }

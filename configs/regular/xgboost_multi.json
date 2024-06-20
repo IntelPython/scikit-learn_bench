@@ -1,6 +1,6 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
-	"PARAMETERS_SETS": {
+    "PARAMETERS_SETS": {
         "multiclassification data": [
             {
                 "data": {
@@ -60,14 +60,14 @@
                 }
             }
         ]
-	},
-	"TEMPLATES": {
+    },
+    "TEMPLATES": {
         "multi classification": {
-			"SETS": [
+            "SETS": [
                 "xgboost multiclassification",
                 "xgboost implementations",
                 "multiclassification data"
             ]
-		}
-	}
+        }
+    }
 }
