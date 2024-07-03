@@ -170,9 +170,15 @@ def assign_case_special_values_on_run(
                 raise ValueError(f"Unknown device '{device}' for xgboost {estimator}")
         # set target offload for execution context
         elif library.startswith("sklearnex") or library.startswith("daal4py"):
-            set_bench_case_value(
-                bench_case, "algorithm:sklearnex_context:target_offload", device
-            )
+            if device == "cpu":
+                logger.debug(
+                    "Skipping setting of 'target_offload' for CPU device "
+                    "to avoid extra overheads"
+                )
+            else:
+                set_bench_case_value(
+                    bench_case, "algorithm:sklearnex_context:target_offload", device
+                )
         # faiss GPU algorithm selection
         elif library == "sklbench.emulators.faiss" and estimator == "NearestNeighbors":
             set_bench_case_value(bench_case, "algorithm:estimator_params:device", device)

@@ -44,7 +44,7 @@ Runner is responsible for orchestration of benchmarking cases, individual benchm
 ## Configs parser workflow
 
 Benchmarking configuration exists as two stages:
-1. **Benchmarking template** where parameters or group of them might be defined as *range of values*
+1. **Benchmarking template** where parameters or group of them might be defined as a *range of values*
 2. **Benchmarking case** with deducted *scalar values* of parameters
 
 In other words, the template has the `Dict[str, AnyJSONSerializable]` type, while the case has `Dict[str, Dict[str, ... [str, Scalar] ... ]]`.

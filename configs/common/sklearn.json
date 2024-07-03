@@ -38,7 +38,7 @@
             "algorithm": {
                 "estimator_methods": {
                     "training": "fit",
-                    "inference": ""
+                    "inference": "predict|transform"
                 }
             },
             "data": {

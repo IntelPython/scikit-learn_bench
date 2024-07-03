@@ -1,6 +1,7 @@
 # owners and reviewers
-configs             @Alexsandruss @samir-nasibli @napetrov
-sklbench            @Alexsandruss @samir-nasibli
-*.md                @Alexsandruss @napetrov
-requirements*.txt   @Alexsandruss @napetrov
-conda-env-*.yml     @Alexsandruss @napetrov
+configs             @Alexsandruss
+configs/spmd*       @Alexsandruss @ethanglaser
+sklbench            @Alexsandruss
+*.md                @Alexsandruss @samir-nasibli
+requirements*.txt   @Alexsandruss
+conda-env-*.yml     @Alexsandruss

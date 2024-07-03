@@ -101,4 +101,5 @@ flowchart TB
 - [Report Generator](sklbench/report/README.md)
 - [Benchmarks](sklbench/benchmarks/README.md)
 - [Data Processing](sklbench/datasets/README.md)
+- [Data Processing](sklbench/emulators/README.md)
 - [Developer Guide](docs/README.md)
