@@ -2,19 +2,15 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.10
   # additional frameworks
   - xgboost
   - catboost
   - lightgbm
   - faiss-cpu
   - modin-all
-  - intel::scikit-learn-intelex
-  - intel::daal4py
-  - intel::dpctl
-  - intel::dpnp
+  - scikit-learn-intelex
   # sklbench dependencies
-  - scikit-learn=1.4.*
+  - scikit-learn<1.5
   - pandas
   - tabulate
   - fastparquet

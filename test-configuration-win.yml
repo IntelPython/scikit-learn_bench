@@ -15,14 +15,14 @@
 #===============================================================================
 steps:
   - task: UsePythonVersion@0
-    displayName: "Use Python $(python.version)"
+    displayName: "Use Python $(PYTHON_VERSION)"
     inputs:
-      versionSpec: "$(python.version)"
+      versionSpec: "$(PYTHON_VERSION)"
   - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to Windows PATH
   - script: |
-      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(python.version)
-    displayName: Environment update
+      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(PYTHON_VERSION)
+    displayName: Environment initialization
   - script: |
       call activate bench-env
       pip install -r envs/requirements-sklearn.txt
@@ -37,7 +37,7 @@ steps:
     condition: eq(variables['PKG_MANAGER'], 'conda')
   - script: |
       call activate bench-env
-      python -m sklbench -l DEBUG -p algorithm:library=sklearnex algorithm:estimator=KMeans data:dataset=a9a
+      python -m sklbench --report -l DEBUG -p algorithm:library=sklearn,sklearnex algorithm:estimator=PCA,KMeans,ElasticNet,KNeighborsClassifier data:dataset=skin_segmentation data:split_kwargs:train_size=5000 data:split_kwargs:test_size=5000
     displayName: CLI arguments run
   - script: |
       call activate bench-env

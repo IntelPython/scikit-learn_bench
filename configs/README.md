@@ -2,7 +2,7 @@
 
 Benchmarking cases in `scikit-learn_bench` are defined by configuration files and stored in the `configs` directory of the repository.
 
-Config defines:
+The configuration file (config) defines:
  - Measurement and profiling parameters
  - Library and algorithm to use
  - Algorithm-specific parameters
@@ -172,4 +172,4 @@ You can remove specific parameter from subset of cases when stacking parameters 
 ```
 
 ---
-[Documentation tree](../README.md#-documentation-tree)
+[Documentation tree](../README.md#-documentation)

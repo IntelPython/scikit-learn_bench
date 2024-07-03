@@ -13,9 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #===============================================================================
-variables:
-  - name: python.version
-    value: "3.10"
 
 jobs:
   - job: Lint
@@ -35,9 +32,23 @@ jobs:
     dependsOn: Lint
     strategy:
       matrix:
-        Pip:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
           PKG_MANAGER: "pip"
-        Conda:
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "ubuntu-latest"
@@ -47,9 +58,23 @@ jobs:
     dependsOn: Lint
     strategy:
       matrix:
-        Pip:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
           PKG_MANAGER: "pip"
-        Conda:
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "windows-latest"

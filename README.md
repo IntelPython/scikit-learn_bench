@@ -8,7 +8,7 @@ Benefits:
 - Full control of benchmarks suite through CLI
 - Flexible and powerful benchmark config structure
 - Available with advanced profiling tools, such as Intel(R) VTune* Profiler
-- Automated generation of benchmarks report
+- Automated benchmarks report generation
 
 ### 📜 Table of Contents
 
@@ -23,7 +23,7 @@ Benefits:
 
 ## 🔧 Create a Python Environment
 
-Create a suitable Python environment to use depending on the needed frameworks:
+How to create a usable Python environment with the following required frameworks:
 
 - **sklearn, sklearnex, and gradient boosting frameworks**:
 
@@ -44,7 +44,7 @@ conda env create -n rapids --solver=libmamba -f envs/conda-env-rapids.yml
 
 ### Benchmarks Runner
 
-Call required benchmarking cases from specified config using the `sklbench` module as a runner:
+How to run benchmarks using the `sklbench` module and a specific configuration:
 
 ```bash
 python -m sklbench --config configs/sklearn_example.json
