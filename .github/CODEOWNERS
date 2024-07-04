@@ -3,5 +3,5 @@ configs             @Alexsandruss
 configs/spmd*       @Alexsandruss @ethanglaser
 sklbench            @Alexsandruss
 *.md                @Alexsandruss @samir-nasibli
-requirements*.txt   @Alexsandruss
-conda-env-*.yml     @Alexsandruss
+requirements*.txt   @Alexsandruss @ethanglaser
+conda-env-*.yml     @Alexsandruss @ethanglaser
