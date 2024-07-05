@@ -3,6 +3,7 @@
         "common": {
             "algorithm": {
                 "library": ["sklearn", "sklearnex"],
+                "device": "cpu",
                 "sklearn_context": { "assume_finite": true }
             },
             "bench": { "n_runs": 10, "time_limit": 60 }

@@ -32,14 +32,24 @@ steps:
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
       conda env update -f envs/conda-env-sklearn.yml -n bench-env
-      conda list -n bench-env
+      conda list
     displayName: Install requirements via conda
     condition: eq(variables['PKG_MANAGER'], 'conda')
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
-      python -m sklbench --report -l DEBUG -p algorithm:library=sklearn,sklearnex algorithm:estimator=PCA,KMeans,ElasticNet,KNeighborsClassifier data:dataset=skin_segmentation data:split_kwargs:train_size=5000 data:split_kwargs:test_size=5000
-    displayName: CLI arguments run
+      python -m sklbench --report -l DEBUG --report -p algorithm:library=sklearn,sklearnex algorithm:estimator=PCA,KMeans,ElasticNet,KNeighborsClassifier data:dataset=skin_segmentation data:split_kwargs:train_size=5000 data:split_kwargs:test_size=5000
+    displayName: CLI arguments example run
+  - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
+      python -m sklbench --report -l DEBUG --report -c configs/sklearn_example.json
+    displayName: Sklearn example run
+  - script: |
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate bench-env
+      python -m sklbench --report -l DEBUG --report -c configs/xgboost_example.json
+    displayName: XGBoost example run
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
