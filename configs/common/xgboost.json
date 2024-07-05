@@ -1,0 +1,45 @@
+{
+    "PARAMETERS_SETS": {
+        "xgboost implementations": [
+            {
+                "algorithm": {
+                    "device": "cpu",
+                    "estimator_params": { "tree_method": "hist" },
+                    "enable_modelbuilders": false
+                }
+            },
+            {
+                "algorithm": {
+                    "device": "gpu",
+                    "estimator_params": { "tree_method": "hist" }
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "xgboost binary classification": {
+            "algorithm": {
+                "library": "xgboost",
+                "estimator": "XGBClassifier",
+                "estimator_params": {
+                    "objective": "binary:logistic",
+                    "scale_pos_weight": "[SPECIAL_VALUE]auto"
+                }
+            }
+        },
+        "xgboost multiclassification": {
+            "algorithm": {
+                "library": "xgboost",
+                "estimator": "XGBClassifier",
+                "estimator_params": { "objective": "multi:softprob" }
+            }
+        },
+        "xgboost regression": {
+            "algorithm": {
+                "library": "xgboost",
+                "estimator": "XGBRegressor",
+                "estimator_methods": {"inference": "predict"},
+                "estimator_params": { "objective": "reg:squarederror" }
+            }
+        }
+    }
+}

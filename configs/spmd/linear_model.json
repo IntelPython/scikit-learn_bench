@@ -1,0 +1,18 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/linear_model.json"],
+    "PARAMETERS_SETS": {
+        "spmd linear parameters": {}
+    },
+    "TEMPLATES": {
+        "linreg": {
+            "SETS": [
+                "common linear parameters",
+                "sklearn linear parameters",
+                "regression datasets",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd linear parameters"
+            ]
+        }
+    }
+}

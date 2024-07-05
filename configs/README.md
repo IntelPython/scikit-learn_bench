@@ -1,69 +1,175 @@
-# Config JSON Schema
+# Configs
 
-Configure benchmarks by editing the `config.json` file.
-You can configure some algorithm parameters, datasets, a list of frameworks to use, and the usage of some environment variables.
-Refer to the tables below for descriptions of all fields in the configuration file.
+Benchmarking cases in `scikit-learn_bench` are defined by configuration files and stored in the `configs` directory of the repository.
 
-- [Root Config Object](#root-config-object)
-- [Common Object](#common-object)
-- [Case Object](#case-object)
-- [Dataset Object](#dataset-object)
-- [Training Object](#training-object)
-- [Testing Object](#testing-object)
+The configuration file (config) defines:
+ - Measurement and profiling parameters
+ - Library and algorithm to use
+ - Algorithm-specific parameters
+ - Data to use as input of the algorithm
 
-## Root Config Object
+Configs are split into subdirectories and files by benchmark scope and algorithm.
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-|common| [Common Object](#common-object)| **REQUIRED** common benchmarks setting: frameworks and input data settings |
-|cases| List[[Case Object](#case-object)] | **REQUIRED**  list of algorithms, their parameters and training data |
+# Benchmarking Configs Specification
 
-## Common Object
+## Config Structure
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-|data-format| Union[str, List[str]] | **REQUIRED** Input data format: *numpy*, *pandas*, or *cudf*. |
-|data-order| Union[str, List[str]] | **REQUIRED**  Input data order: *C* (row-major, default) or *F* (column-major). |
-|dtype| Union[str, List[str]] | **REQUIRED**  Input data type: *float64* (default) or *float32*. |
-|check-finitness| List[] | Check finiteness during scikit-learn input check (disabled by default). |
-|device| array[string] | For scikit-learn only. The list of devices to run the benchmarks on.<br/>It can be *None* (default, run on CPU without sycl context) or one of the types of sycl devices: *cpu*, *gpu*, *host*.<br/>Refer to [SYCL specification](https://www.khronos.org/files/sycl/sycl-2020-reference-guide.pdf) for details.|
+Benchmark config files are written in JSON format and have a few reserved keys:
+ - `INCLUDE` - Other configuration files whose parameter sets to include
+ - `PARAMETERS_SETS` - Benchmark parameters within each set
+ - `TEMPLATES` - List different setups with parameters sets template-specific parameters
+ - `SETS` - List parameters sets to include in the template
 
-## Case Object
+Configs heavily utilize lists of scalar values and dictionaries to avoid duplication of cases.
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-|lib| Union[str, List[str]] | **REQUIRED** A test framework or a list of frameworks. Must be from [*sklearn*, *daal4py*, *cuml*, *xgboost*]. |
-|algorithm| string | **REQUIRED** Benchmark file name. |
-|dataset| List[[Dataset Object](#dataset-object)] | **REQUIRED**  Input data specifications. |
-|**specific algorithm parameters**| Union[int, float, str, List[int], List[float], List[str]] | Other algorithm-specific parameters |
+Formatting specification:
+```json
+{
+    "INCLUDE": [
+        "another_config_file_path_0"
+        ...
+    ]
+    "PARAMETERS_SETS": {
+        "parameters_set_name_0": Dict or List[Dict] of any JSON-serializable with any level of nesting,
+        ...
+    },
+    "TEMPLATES": {
+        "template_name_0": {
+            "SETS": ["parameters_set_name_0", ...],
+            Dict of any JSON-serializable with any level of nesting overwriting parameter sets
+        },
+        ...
+    }
+}
+```
 
-**Important:** You can move any parameter from **"cases"** to **"common"** if this parameter is common to all cases
+Example
+```json
+{
+    "PARAMETERS_SETS": {
+        "estimator parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": {
+                    "fit_intercept": false
+                }
+            }
+        },
+        "regression data": {
+            "data": [
+                { "source": "fetch_openml", "id": 1430 },
+                { "dataset": "california_housing" }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "linear regression": {
+            "SETS": ["estimator parameters", "regression data"],
+            "algorithm": {
+                "library": ["sklearn", "sklearnex", "cuml"]
+            }
+        }
+    }
+}
+```
 
-## Dataset Object
+## Common Parameters
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-|source| string | **REQUIRED** Data source: *synthetic*, *csv*, or *npy*. |
-|type| string | **REQUIRED for synthetic data**. The type of task for which the dataset is generated: *classification*, *blobs*, or *regression*. |
-|n_classes| int | For *synthetic* data and for *classification* type only. The number of classes (or labels) of the classification problem |
-|n_clusters| int | For *synthetic* data and for *blobs* type only. The number of centers to generate |
-|n_features| int | **REQUIRED for *synthetic* data**. The number of features to generate. |
-|name| string | Name of the dataset. |
-|training| [Training Object](#training-object) | **REQUIRED** An object with the paths to the training datasets. |
-|testing| [Testing Object](#testing-object) | An object with the paths to the testing datasets. If not provided, the training datasets are used. |
+Configs have the three highest parameter keys:
+ - `bench` - Specifies a workflow of the benchmark, such as parameters of measurement or profiling
+ - `algorithm` - Specifies measured entity parameters
+ - `data` - Specifies data parameters to use
 
-## Training Object
+| Parameter keys | Default value | Choices | Description |
+|:---------------|:--------------|:--------|:------------|
+|<h3>Benchmark workflow parameters</h3>||||
+| `bench`:`taskset` | None |  | Value for `-c` argument of `taskset` utility used over benchmark subcommand. |
+| `bench`:`vtune_profiling` | None |  | Analysis type for `collect` argument of Intel(R) VTune* Profiler tool. Linux* OS only. |
+| `bench`:`vtune_results_directory` | `vtune_results` |  | Directory path to store Intel(R) VTune* Profiler results. |
+| `bench`:`n_runs` | `10` |  | Number of runs for measured entity. |
+| `bench`:`time_limit` | `3600` |  | Time limit in seconds before the benchmark early stop. |
+| `bench`:`distributor` | None | None, `mpi` | Library used to handle distributed algorithm. |
+| `bench`:`mpi_params` | Empty dict |  | Parameters for `mpirun` command of MPI library. |
+|<h3>Data parameters</h3>||||
+| `data`:`cache_directory` | `data_cache` |  | Directory path to store cached datasets for fast loading. |
+| `data`:`raw_cache_directory` | `data`:`cache_directory` + "raw" |  | Directory path to store downloaded raw datasets. |
+| `data`:`dataset` | None |  | Name of dataset to use from implemented dataset loaders. |
+| `data`:`source` | None | `fetch_openml`, `make_regression`, `make_classification`, `make_blobs` | Data source to use for loading or synthetic generation. |
+| `data`:`id` | None |  | OpenML data id for `fetch_openml` source. |
+| `data`:`preprocessing_kwargs`:`replace_nan` | `median` | `median`, `mean` | Value to replace NaNs in preprocessed data. |
+| `data`:`preprocessing_kwargs`:`category_encoding` | `ordinal` | `ordinal`, `onehot`, `drop`, `ignore` | How to encode categorical features in preprocessed data. |
+| `data`:`preprocessing_kwargs`:`normalize` | False |  | Enables normalization of preprocessed data. |
+| `data`:`preprocessing_kwargs`:`force_for_sparse` | True |  | Forces preprocessing for sparse data formats. |
+| `data`:`split_kwargs` | Empty `dict` or default split from dataset description |  | Data split parameters for `train_test_split` function. |
+| `data`:`format` | `pandas` | `pandas`, `numpy`, `cudf` | Data format to use in benchmark. |
+| `data`:`order` | `F` | `C`, `F` | Data order to use in benchmark: contiguous(C) or Fortran. |
+| `data`:`dtype` | `float64` |  | Data type to use in benchmark. |
+| `data`:`distributed_split` | None | None, `rank_based` | Split type used to distribute data between machines in distributed algorithm. `None` type means usage of all data without split on all machines. `rank_based` type splits the data equally between machines with split sequence based on rank id from MPI. |
+|<h3>Algorithm parameters</h3>||||
+| `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
+| `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Device selected for computation. |
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-| n_samples | int | **REQUIRED** The total number of the training samples |
-| x | str | **REQUIRED** The path to the training samples |
-| y | str | **REQUIRED** The path to the training labels |
+## Benchmark-Specific Parameters
 
-## Testing Object
+### `Scikit-learn Estimator`
 
-| Field Name  | Type | Description |
-| ----- | ---- |------------ |
-| n_samples | int | **REQUIRED** The total number of the testing samples |
-| x | str | **REQUIRED** The path to the testing samples |
-| y | str | **REQUIRED** The path to the testing labels |
+| Parameter keys | Default value | Choices | Description |
+|:---------------|:--------------|:--------|:------------|
+| `algorithm`:`estimator` | None |  | Name of measured estimator. |
+| `algorithm`:`estimator_params` | Empty `dict` |  | Parameters for estimator constructor. |
+| `algorithm`:`online_inference_mode` | False |  | Enables online mode for inference methods of estimator (separate call for each sample). |
+| `algorithm`:`sklearn_context` | None |  | Parameters for sklearn `config_context` used over estimator. |
+| `algorithm`:`sklearnex_context` | None |  | Parameters for sklearnex `config_context` used over estimator. Updated by `sklearn_context` if set. |
+| `bench`:`ensure_sklearnex_patching` | True |  | If True, warns about sklearnex patching failures. |
+
+### `Function`
+
+| Parameter keys | Default value | Choices | Description |
+|:---------------|:--------------|:--------|:------------|
+| `algorithm`:`function` | None |  | Name of measured function. |
+| `algorithm`:`args_order` | `x_train\|y_train` | Any in format `{subset_0}\|..\|{subset_n}` | Arguments order for measured function. |
+| `algorithm`:`kwargs` | Empty `dict` |  | Named arguments for measured function. |
+
+## Special Value
+
+You can define some parameters as specific from other parameters or properties with `[SPECIAL_VALUE]` prefix in string value:
+```json
+... "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" } ...
+... "generation_kwargs": { "n_informative": "[SPECIAL_VALUE]0.5" } ...
+```
+
+List of available special values:
+
+| Parameter keys | Benchmark type[s] | Special value | Description |
+|:---------------|:------------------|:--------------|:------------|
+| `data`:`dataset` | all | `all_named` | Sets datasets to use as list of all named datasets available in loaders. |
+| `data`:`generation_kwargs`:`n_informative` | all | *float* value in [0, 1] range | Sets datasets to use as list of all named datasets available in loaders. |
+| `bench`:`taskset` | all | Specification of numa nodes in `numa:{numa_node_0}[\|{numa_node_1}...]` format | Sets CPUs affinity using `taskset` utility. |
+| `algorithm`:`estimator_params`:`n_jobs` | sklearn_estimator | `physical_cpus`, `logical_cpus`, or ratio of previous ones in format `{type}_cpus:{ratio}` where `ratio` is float | Sets `n_jobs` parameter to a number of physical/logical CPUs or ratio of them for an estimator. |
+| `algorithm`:`estimator_params`:`scale_pos_weight` | sklearn_estimator | `auto` | Sets `scale_pos_weight` parameter to `sum(negative instances) / sum(positive instances)` value for estimator. |
+| `algorithm`:`estimator_params`:`n_clusters` | sklearn_estimator | `auto` | Sets `n_clusters` parameter to number of clusters or classes from dataset description for estimator. |
+| `algorithm`:`estimator_params`:`eps` | sklearn_estimator | `distances_quantile:{quantile}` format where quantile is *float* value in [0, 1] range | Computes `eps` parameter as quantile value of distances in `x_train` matrix for estimator. |
+
+## Range of Values
+
+You can define some parameters as a range of values with the `[RANGE]` prefix in string value:
+```json
+... "generation_kwargs": {"n_features": "[RANGE]pow:2:5:6"} ...
+```
+
+Supported ranges:
+
+ - `add:start{int}:end{int}:step{int}` - Arithmetic progression (Sequence: start + step * i <= end)
+ - `mul:current{int}:end{int}:step{int}` - Geometric progression (Sequence: current * step <= end)
+ - `pow:base{int}:start{int}:end{int}[:step{int}=1]` - Powers of base number
+
+## Removal of Values
+
+You can remove specific parameter from subset of cases when stacking parameters sets using `[REMOVE]` parameter value:
+
+```json
+... "estimator_params": { "n_jobs": "[REMOVE]" } ...
+```
+
+---
+[Documentation tree](../README.md#-documentation)

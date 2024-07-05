@@ -1,0 +1,52 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "train_test_split parameters": {
+            "algorithm": {
+                "function": "train_test_split",
+                "args_order": "x_train|y_train",
+                "kwargs": {
+                    "test_size": 0.25,
+                    "random_state": 42,
+                    "shuffle": true
+                }
+            }
+        },
+        "train_test_split datasets": [
+            {
+                "data": {
+                    "dataset": "hepmass",
+                    "split_kwargs": {
+                        "train_size": [100000, 1000000, 10000000],
+                        "test_size": null
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["a9a", "mnist", "cifar", "gisette"],
+                    "split_kwargs": [
+                        { "train_size": 0.4 },
+                        { "ignore": true }
+                    ]
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn train_test_split": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "train_test_split parameters",
+                "train_test_split datasets"
+            ]
+        },
+        "cuml train_test_split": {
+            "SETS": [
+                "cuml implementation",
+                "train_test_split parameters",
+                "train_test_split datasets"
+            ]
+        }
+    }
+}

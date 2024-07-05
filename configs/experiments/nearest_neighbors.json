@@ -1,0 +1,83 @@
+{
+    "PARAMETERS_SETS": {
+        "nearest neighbors implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu",
+                    "estimator_params": { "algorithm": "brute" }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "sklbench.emulators.raft",
+                    "device": "gpu",
+                    "estimator_params": {
+                        "algorithm": ["brute", "ivf_flat", "ivf_pq", "cagra"],
+                        "n_lists": 1024,
+                        "n_probes": 256,
+                        "m_subvectors": 0.2
+                    }
+                },
+                "data": {
+                    "format": "cupy",
+                    "order": "C"
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "sklbench.emulators.faiss",
+                    "device": ["cpu", "gpu"],
+                    "estimator_params": {
+                        "algorithm": ["brute", "ivf_flat", "ivf_pq"],
+                        "n_lists": 1024,
+                        "n_probes": 256,
+                        "m_subvectors": 0.2
+                    }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "sklbench.emulators.svs",
+                    "device": "cpu",
+                    "estimator_params": {
+                        "algorithm": "vamana",
+                        "graph_max_degree": 128,
+                        "window_size": 256
+                    }
+                }
+            }
+        ],
+        "nearest neighbors common parameters": {
+            "algorithm": {
+                "estimator": "NearestNeighbors",
+                "estimator_params": {
+                    "metric": "euclidean",
+                    "n_neighbors": [8, 32, 128]
+                },
+                "estimator_methods": {
+                    "training": "fit",
+                    "inference": "kneighbors"
+                },
+                "batch_size": { "inference": [1, 10, 100, null] }
+            },
+            "data": { "dtype": "float32" }
+        },
+        "nearest neighbors data": [
+            {
+                "data": {
+                    "dataset": ["mnist", "fashion_mnist", "sift", "gist"]
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "nearest neighbors": {
+            "SETS": [
+                "nearest neighbors implementations",
+                "nearest neighbors common parameters",
+                "nearest neighbors data"
+            ]
+        }
+    }
+}

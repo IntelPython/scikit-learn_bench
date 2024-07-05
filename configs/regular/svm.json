@@ -1,0 +1,247 @@
+{
+    "PARAMETERS_SETS": {
+        "binary svc implementations": [
+            {
+                "algorithm": [
+                    { "library": "sklearn", "device": "cpu" },
+                    { "library": "sklearnex", "device": ["cpu", "gpu"] }
+                ]
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "verbose": false, "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "multi svc implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu",
+                    "estimator_params": { "decision_function_shape": "ovr" }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "svr implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu"
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"}
+                },
+                "data": { "format": "cudf" }
+            }
+        ],
+        "nusvm implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" }
+            ]
+        },
+        "common svm parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "kernel": "rbf",
+                    "degree": 3,
+                    "gamma": "scale",
+                    "tol": 1e-3,
+                    "cache_size": 16384,
+                    "max_iter": 10000
+                }
+            },
+            "data": { "preprocessing_kwargs": { "normalize": true } }
+        },
+        "svm clsf parameters": {
+            "algorithm": { "estimator_params": { "random_state": 42 } }
+        },
+        "svc parameters": {
+            "algorithm": { "estimator": "SVC", "estimator_params": { "C": 1.0 } }
+        },
+        "svr parameters": {
+            "algorithm": { "estimator": "SVR", "estimator_params": { "C": 1.0 } }
+        },
+        "nusvc parameters": {
+            "algorithm": { "estimator": "NuSVC", "estimator_params": { "nu": 0.5 } }
+        },
+        "nusvr parameters": {
+            "algorithm": { "estimator": "NuSVR", "estimator_params": { "nu": 0.5, "C": 1.0 } }
+        },
+        "svc binary data": [
+            {
+                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "linear" } }
+            },
+            {
+                "data": { "dataset": "skin_segmentation", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 10.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "ijcnn", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 100.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "epsilon", "split_kwargs": { "train_size": 10000, "test_size": 10000 } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
+            },
+            {
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "algorithm": {
+                    "estimator_params": { "C": 100.0, "kernel": ["linear", "poly", "rbf"] }
+                }
+            }
+        ],
+        "svc multiclass data": [
+            {
+                "data": { "dataset": "connect", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 10.0, "kernel": ["poly", "rbf"] } }
+            },
+            {
+                "data": {
+                    "dataset": "mnist",
+                    "split_kwargs": { "train_size": 20000, "test_size": null },
+                    "preprocessing_kwargs": { "normalize": false }
+                },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
+            }
+        ],
+        "svr data": [
+            {
+                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "fried", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                "algorithm": { "estimator_params": { "C": 2.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "twodplanes", "split_kwargs": { "train_size": 25000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
+            },
+            {
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
+            },
+            {
+                "data": {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 20000,
+                        "n_features": 1000,
+                        "n_informative": "[SPECIAL_VALUE]0.5"
+                    },
+                    "split_kwargs": { "train_size": 0.5 }
+                },
+                "algorithm": { "estimator_params": { "C": 0.1, "kernel": "linear" } }
+            }
+        ],
+        "nusvc data": [
+            {
+                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "algorithm": { "estimator_params": { "nu": 0.1, "kernel": ["poly", "rbf"] } }
+            },
+            {
+                "data": { "dataset": "codrnanorm", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "nu": 0.5, "kernel": "poly" } }
+            },
+            {
+                "data": { "dataset": "ijcnn", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "nu": 0.1, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "algorithm": { "estimator_params": { "nu": 0.9, "kernel": ["linear", "rbf"] } }
+            }
+        ],
+        "nusvr data": [
+            {
+                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "twodplanes", "split_kwargs": { "train_size": 25000, "test_size": null } },
+                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
+            },
+            {
+                "data": { "dataset": "fried" },
+                "algorithm": { "estimator_params": { "nu": 0.8, "C": 2.0, "kernel": "rbf" } }
+            },
+            {
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "algorithm": { "estimator_params": { "nu": 0.9, "C": 1.0, "kernel": "rbf" } }
+            },
+            {
+                "data": {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 20000,
+                        "n_features": 1000,
+                        "n_informative": "[SPECIAL_VALUE]0.5"
+                    },
+                    "split_kwargs": { "train_size": 0.5 }
+                },
+                "algorithm": { "estimator_params": { "nu": 0.5, "C": 0.1, "kernel": "linear" } }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "svc binary": {
+            "SETS": [
+                "binary svc implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "svc parameters",
+                "svc binary data"
+            ]
+        },
+        "svc multiclass": {
+            "SETS": [
+                "multi svc implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "svc parameters", 
+                "svc multiclass data"
+            ]
+        },
+        "svr": {
+            "SETS": [
+                "svr implementations",
+                "common svm parameters",
+                "svr parameters",
+                "svr data"
+            ]
+        },
+        "nusvc": {
+            "SETS": [
+                "nusvm implementations",
+                "common svm parameters",
+                "svm clsf parameters",
+                "nusvc parameters",
+                "nusvc data"
+            ]
+        },
+        "nusvr": {
+            "SETS": [
+                "nusvm implementations",
+                "common svm parameters", 
+                "nusvr parameters",
+                "nusvr data"
+            ]
+        }
+    }
+}

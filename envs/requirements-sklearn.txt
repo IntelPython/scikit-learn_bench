@@ -1,0 +1,21 @@
+# additional frameworks
+xgboost
+catboost
+lightgbm
+faiss-cpu
+modin[all]
+scikit-learn-intelex
+dpctl
+dpnp
+# sklbench dependencies
+scikit-learn<1.5
+pandas
+tabulate
+fastparquet
+h5py
+kaggle
+openpyxl
+tqdm
+psutil
+requests
+py-cpuinfo

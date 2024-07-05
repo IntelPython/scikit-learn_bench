@@ -1,0 +1,72 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common logreg parameters": {
+            "algorithm": {
+                "estimator": "LogisticRegression",
+                "estimator_methods": { "inference": "predict" },
+                "estimator_params": {
+                    "penalty": "l2",
+                    "tol": 1e-4,
+                    "C": 1.0,
+                    "l1_ratio": null,
+                    "max_iter": 200
+                }
+            }
+        },
+        "sklearn logreg parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "solver": "lbfgs",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                    "random_state": 42
+                }
+            }
+        },
+        "cuml logreg parameters": {
+            "algorithm": { "estimator_params": { "solver": "qn" } }
+        },
+        "logreg datasets": [
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_samples": 200000,
+                        "n_features": [50, 500],
+                        "n_classes": [2, 5],
+                        "n_informative": "[SPECIAL_VALUE]0.5",
+                        "class_sep": 0.75
+                    },
+                    "split_kwargs": {
+                        "train_size": 0.5,
+                        "test_size": 0.5
+                    }
+                }
+            },
+            { "data": { "dataset": "mnist", "split_kwargs": { "train_size": 20000, "test_size": 50000 } } },
+            { "data": { "dataset": "susy", "split_kwargs": { "train_size": 0.2, "test_size": 0.8 } } },
+            { "data": { "dataset": "cifar", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } } },
+            { "data": { "dataset": "klaverjas" } },
+            { "data": { "dataset": "gisette" } },
+            { "data": { "dataset": "skin_segmentation" } }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn logreg": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common logreg parameters",
+                "sklearn logreg parameters",
+                "logreg datasets"
+            ]
+        },
+        "cuml logreg": {
+            "SETS": [
+                "cuml implementation",
+                "common logreg parameters",
+                "cuml logreg parameters",
+                "logreg datasets"
+            ]
+        }
+    }
+}

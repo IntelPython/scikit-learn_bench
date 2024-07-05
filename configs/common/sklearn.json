@@ -1,0 +1,56 @@
+{
+    "PARAMETERS_SETS": {
+        "sklearn-ex[cpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" }
+            ]
+        },
+        "sklearn-ex[cpu,gpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "sklearn-ex[preview] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
+            ]
+        },
+        "sklearnex spmd implementation": {
+            "algorithm": {
+                "library": "sklearnex.spmd",
+                "device": "gpu",
+                "estimator_params": { "n_jobs": "[REMOVE]" }
+            },
+            "data": {
+                "format": "dpctl",
+                "order": "C",
+                "distributed_split": "rank_based"
+            },
+            "bench": {
+                "distributor": "mpi"
+            }
+        },
+        "spmd default parameters": {
+            "algorithm": {
+                "estimator_methods": {
+                    "training": "fit",
+                    "inference": "predict|transform"
+                }
+            },
+            "data": {
+                "dtype": "float32"
+            },
+            "bench": {
+                "mpi_params": { "n": [1, 2] }
+            }
+        },
+        "cuml implementation": {
+            "algorithm": { "library": "cuml" },
+            "data": { "format": "cudf" }
+        }
+    }
+}

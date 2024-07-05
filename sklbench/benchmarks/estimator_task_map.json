@@ -1,0 +1,20 @@
+{
+    "classification": [
+        "Classifier",
+        "LogisticRegression",
+        "SVC"
+    ],
+    "regression": [
+        "Regressor",
+        "LinearRegression",
+        "Ridge",
+        "Lasso",
+        "ElasticNet",
+        "SVR"
+    ],
+    "clustering": ["DBSCAN", "KMeans"],
+    "decomposition": ["PCA"],
+    "manifold": ["TSNE"],
+    "search": ["NearestNeighbors"],
+    "utility": ["BasicStatistics", "Covariance"]
+}

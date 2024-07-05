@@ -1,0 +1,18 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/kmeans.json"],
+    "PARAMETERS_SETS": {
+        "spmd kmeans parameters": {}
+    },
+    "TEMPLATES": {
+        "kmeans": {
+            "SETS": [
+                "common kmeans parameters",
+                "sklearn kmeans parameters",
+                "kmeans datasets",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd kmeans parameters"
+            ]
+        }
+    }
+}

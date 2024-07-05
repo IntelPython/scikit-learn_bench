@@ -1,0 +1,45 @@
+{
+    "PARAMETERS_SETS": {
+        "common": {
+            "algorithm": {
+                "device": "cpu",
+                "library": "xgboost",
+                "estimator_params": { "max_depth": [3, 5] },
+                "enable_modelbuilders": [true, false]
+            },
+            "bench": { "n_runs": 5, "time_limit": 60 }
+        },
+        "classification": {
+            "algorithm": {
+                "estimator": "XGBClassifier",
+                "estimator_params": { "scale_pos_weight": "[SPECIAL_VALUE]auto" }
+            },
+            "data": {
+                "source": "make_classification",
+                "generation_kwargs": {
+                    "n_classes": [2, 4],
+                    "n_samples": 1250,
+                    "n_features": 8,
+                    "n_informative": "[SPECIAL_VALUE]0.75"
+                },
+                "split_kwargs": { "test_size": 0.2 }
+            }
+        },
+        "regression": {
+            "algorithm": { "estimator": "XGBRegressor" },
+            "data": {
+                "source": "make_regression",
+                "generation_kwargs": { "n_samples": 1000, "n_features": 8 },
+                "split_kwargs": { "ignore": true }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "classification": {
+            "SETS": ["common", "classification"]
+        },
+        "regression": {
+            "SETS": ["common", "regression"]
+        }
+    }
+}

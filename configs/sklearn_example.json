@@ -1,0 +1,98 @@
+{
+    "PARAMETERS_SETS": {
+        "common": {
+            "algorithm": {
+                "library": ["sklearn", "sklearnex"],
+                "device": "cpu",
+                "sklearn_context": { "assume_finite": true }
+            },
+            "bench": { "n_runs": 10, "time_limit": 60 }
+        },
+        "blobs data": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 2,
+                    "n_samples": 1000,
+                    "n_features": [16, 64]
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "binary clsf data": {
+            "data": [
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 2,
+                        "n_samples": 2000,
+                        "n_features": "[RANGE]pow:2:5:6",
+                        "n_informative": "[SPECIAL_VALUE]0.5"
+                    },
+                    "split_kwargs": { "test_size": 0.2 }
+                },
+                {
+                    "source": "fetch_openml",
+                    "id": 1430,
+                    "split_kwargs": {
+                        "train_size": 1000,
+                        "test_size": 1000,
+                        "shuffle": true,
+                        "random_state": 42
+                    }
+                }
+            ]
+        },
+        "multi clsf data": {
+            "data": {
+                "source": "make_classification",
+                "generation_kwargs": {
+                    "n_classes": 4,
+                    "n_samples": 1000,
+                    "n_features": 10,
+                    "n_informative": "[SPECIAL_VALUE]0.75"
+                },
+                "split_kwargs": { "test_size": 0.1 }
+            }
+        },
+        "unsupervised algorithms": {
+            "algorithm":
+            [
+                {
+                    "estimator": "PCA",
+                    "estimator_params": { "svd_solver": "auto", "n_components": 3 }
+                },
+                {
+                    "estimator": "KMeans",
+                    "estimator_params": { "n_init": 10, "n_clusters": "[SPECIAL_VALUE]auto" },
+                    "estimator_methods": { "inference": "predict" }
+                }
+            ]
+        },
+        "supervised algorithms": {
+            "algorithm": [
+                {
+                    "estimator": ["KNeighborsClassifier", "KNeighborsRegressor"],
+                    "estimator_params": { "n_neighbors": 5, "algorithm": "brute" }
+                },
+                { "estimator": "ElasticNet" },
+                { "estimator": "SVC" }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "multi clsf": {
+            "SETS": ["common", "multi clsf data"],
+            "algorithm": {
+                "estimator": "LogisticRegression",
+                "online_inference_mode": true
+            }
+        },
+        "supervised": {
+            "SETS": ["common", "binary clsf data", "supervised algorithms"]
+        },
+        "unsupervised": {
+            "SETS": ["common", "blobs data", "unsupervised algorithms"]
+        }
+    }
+}

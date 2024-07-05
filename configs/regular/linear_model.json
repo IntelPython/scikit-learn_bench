@@ -1,0 +1,149 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "regression datasets": [
+            {
+                "data": {
+                    "source": "make_regression",
+                    "split_kwargs": { "train_size": 0.2, "test_size": 0.8 },
+                    "generation_kwargs": {
+                        "n_samples": 500000,
+                        "n_features": [400, 2000],
+                        "n_informative": 5,
+                        "noise": 2.0
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "year_prediction_msd",
+                    "preprocessing_kwargs": { "normalize": true },
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["hepmass", "susy"],
+                    "split_kwargs": { "train_size": 1000000, "test_size": null }
+                }
+            }
+        ],
+        "common linear parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": { "fit_intercept": true, "copy_X": true }
+            }
+        },
+        "common ridge parameters": {
+            "algorithm": {
+                "estimator": "Ridge",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "alpha": 2.0,
+                    "tol": 1e-4
+                }
+            }
+        },
+        "common lasso parameters": {
+            "algorithm": {
+                "estimator": "Lasso",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "max_iter": 1000,
+                    "selection": "cyclic",
+                    "alpha": 1e-3,
+                    "tol": 1e-4
+                }
+            }
+        },
+        "common elasticnet parameters": {
+            "algorithm": {
+                "estimator": "ElasticNet",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "max_iter": 1000,
+                    "selection": "cyclic",
+                    "alpha": 1e-3,
+                    "l1_ratio": 0.9,
+                    "tol": 1e-4
+                }
+            }
+        },
+        "sklearn linear parameters": {
+            "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+        },
+        "sklearn ridge parameters": {
+            "estimator_params": { "solver": "auto" }
+        },
+        "cuml L2 parameters": {
+            "estimator_params": { "solver": "eig" }
+        },
+        "cuml L1 parameters": {
+            "estimator_params": { "solver": "cd" }
+        }
+    },
+    "TEMPLATES": {
+        "sklearn linear": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common linear parameters",
+                "sklearn linear parameters",
+                "regression datasets"
+            ]
+        },
+        "sklearn ridge": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common ridge parameters",
+                "sklearn ridge parameters",
+                "regression datasets"
+            ]
+        },
+        "sklearn lasso": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common lasso parameters",
+                "regression datasets"
+            ]
+        },
+        "sklearn elasticnet": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common elasticnet parameters",
+                "regression datasets"
+            ]
+        },
+        "cuml linear": {
+            "SETS": [
+                "cuml implementation",
+                "common linear parameters",
+                "cuml L2 parameters",
+                "regression datasets"
+            ]
+        },
+        "cuml ridge": {
+            "SETS": [
+                "cuml implementation",
+                "common ridge parameters",
+                "cuml L2 parameters",
+                "regression datasets"
+            ]
+        },
+        "cuml lasso": {
+            "SETS": [
+                "cuml implementation",
+                "common lasso parameters",
+                "cuml L1 parameters",
+                "regression datasets"
+            ]
+        },
+        "cuml elasticnet": {
+            "SETS": [
+                "cuml implementation",
+                "common elasticnet parameters",
+                "cuml L1 parameters",
+                "regression datasets"
+            ]
+        }
+    }
+}

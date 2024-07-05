@@ -1,83 +1,82 @@
-variables:
-  - name: python.version
-    value: "3.9"
+#===============================================================================
+# Copyright 2024 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
 jobs:
-  - job: Linux_Sklearn
+  - job: Lint
     pool:
-      vmImage: "ubuntu-20.04"
+      vmImage: 'ubuntu-22.04'
     steps:
-      - task: UsePythonVersion@0
-        displayName: "Use Python $(python.version)"
-        inputs:
-          versionSpec: "$(python.version)"
-      - script: |
-          pip install -r requirements-common.txt
-          pip install -r sklearn_bench/requirements.txt
-          python runner.py --configs configs/testing/sklearn.json
-        displayName: Run bench
-  - job: Linux_XGBoost
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.10'
+        addToPath: true
+    - script: |
+        python -m pip install --upgrade pip setuptools
+        pip install isort black
+        isort --check . && black --check .
+      displayName: 'Linting'
+  - job: Linux
+    dependsOn: Lint
+    strategy:
+      matrix:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "pip"
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
     pool:
-      vmImage: "ubuntu-20.04"
+      vmImage: "ubuntu-latest"
     steps:
-      - task: UsePythonVersion@0
-        displayName: "Use Python $(python.version)"
-        inputs:
-          versionSpec: "$(python.version)"
-      - script: |
-          pip install -r requirements-common.txt
-          pip install -r xgboost_bench/requirements.txt
-          python runner.py --configs configs/testing/xgboost.json --no-intel-optimized
-        displayName: Run bench
-  - job: Linux_daal4py
+    - template: test-configuration-linux.yml
+  - job: Windows
+    dependsOn: Lint
+    strategy:
+      matrix:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "pip"
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
     pool:
-      vmImage: "ubuntu-20.04"
+      vmImage: "windows-latest"
     steps:
-      - task: UsePythonVersion@0
-        displayName: "Use Python $(python.version)"
-        inputs:
-          versionSpec: "$(python.version)"
-      - script: |
-          pip install -r requirements-common.txt
-          pip install -r daal4py_bench/requirements.txt
-          python runner.py --configs configs/testing/daal4py.json --no-intel-optimized
-        displayName: Run bench
-  - job: Linux_XGBoost_and_daal4py
-    pool:
-      vmImage: "ubuntu-20.04"
-    steps:
-      - script: |
-          conda update -y -q conda
-          conda create -n bench -q -y -c conda-forge python=3.9 pandas xgboost scikit-learn daal4py tqdm requests
-        displayName: Create Anaconda environment
-      - script: |
-          . /usr/share/miniconda/etc/profile.d/conda.sh
-          conda activate bench
-          python runner.py --configs configs/testing/daal4py_xgboost.json --no-intel-optimized
-        displayName: Run bench
-  - job: Pep8
-    pool:
-      vmImage: "ubuntu-20.04"
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: "$(python.version)"
-          addToPath: true
-      - script: |
-          python -m pip install --upgrade pip setuptools
-          pip install flake8 requests
-          flake8 --max-line-length=100 --count
-        displayName: "PEP 8 check"
-  - job: Mypy
-    pool:
-      vmImage: "ubuntu-20.04"
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: "$(python.version)"
-          addToPath: true
-      - script: |
-          python -m pip install --upgrade pip setuptools
-          pip install mypy data-science-types requests types-requests
-          mypy . --ignore-missing-imports
-        displayName: "mypy check"
+    - template: test-configuration-win.yml

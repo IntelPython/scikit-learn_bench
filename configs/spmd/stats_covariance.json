@@ -1,0 +1,54 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "spmd basic statistics parameters": {
+            "algorithm": {
+                "estimator": "BasicStatistics",
+                "estimator_methods": {
+                    "training": "compute"
+                }
+            }
+        },
+        "spmd covariance parameters": {
+            "algorithm": {
+                "estimator": "EmpiricalCovariance",
+                "estimator_params": {
+                    "bias": true
+                }
+            }
+        },
+        "datasets": {
+            "data": [
+                {
+                    "dataset": ["susy", "higgs"]
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "n_samples": 400000, "n_features": 1000, "centers": 1 },
+                        { "n_samples": 40000000, "n_features": 10, "centers": 1 }
+                    ],
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "basic statistics": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd basic statistics parameters",
+                "datasets"
+            ]
+        },
+        "covariance": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd covariance parameters",
+                "datasets"
+            ]
+        }
+    }
+}

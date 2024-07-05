@@ -1,0 +1,124 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common ensemble params": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_estimators": 200,
+                    "max_depth": 16,
+                    "max_samples": 1.0,
+                    "min_samples_split": 5,
+                    "min_samples_leaf": 2,
+                    "min_impurity_decrease": 0.0,
+                    "bootstrap": true,
+                    "random_state": 42
+                }
+            }
+        },
+        "sklearn ensemble classifier params": {
+            "algorithm": {
+                "estimator": ["RandomForestClassifier", "ExtraTreesClassifier"],
+                "estimator_params": {
+                    "criterion": "gini",
+                    "max_features": "sqrt",
+                    "max_leaf_nodes": null,
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "sklearn ensemble regressor params": {
+            "algorithm": {
+                "estimator": ["RandomForestRegressor", "ExtraTreesRegressor"],
+                "estimator_params": {
+                    "criterion": "squared_error",
+                    "max_features": 1.0,
+                    "max_leaf_nodes": null,
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "cuml ensemble classifier params": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier",
+                "estimator_params": {
+                    "n_streams": 4,
+                    "split_criterion": "gini",
+                    "max_features": "sqrt",
+                    "max_leaves": -1,
+                    "n_bins": 256
+                }
+            }
+        },
+        "cuml ensemble regressor params": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor",
+                "estimator_params": {
+                    "n_streams": 4,
+                    "split_criterion": "mse",
+                    "max_features": 1.0,
+                    "max_leaves": -1,
+                    "n_bins": 256
+                }
+            }
+        },
+        "ensemble classification data": {
+            "data": [
+                { "dataset": "skin_segmentation", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "mnist", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                { "dataset": "gisette", "split_kwargs": { "train_size": 5000, "test_size": 2000 } },
+                { "dataset": "svhn", "split_kwargs": { "train_size": 10000, "test_size": 10000 } }
+            ]
+        },
+        "ensemble regression data": {
+            "data": [
+                {
+                    "dataset": "road_network",
+                    "split_kwargs": {
+                        "train_size": 200000, "test_size": null,
+                        "shuffle": true, "random_state": 42
+                    }
+                },
+                { "dataset": "creditcard", "split_kwargs": { "train_size": 100000, "test_size": null } },
+                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
+                { "dataset": "a9a", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
+                { "dataset": "gisette", "split_kwargs": { "train_size": 5000, "test_size": 2000 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn ensemble classification": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common ensemble params",
+                "sklearn ensemble classifier params",
+                "ensemble classification data"
+            ]
+        },
+        "sklearn ensemble regression": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common ensemble params",
+                "sklearn ensemble regressor params",
+                "ensemble regression data"
+            ]
+        },
+        "cuml ensemble classification": {
+            "SETS": [
+                "cuml implementation",
+                "common ensemble params",
+                "cuml ensemble classifier params",
+                "ensemble classification data"
+            ]
+        },
+        "cuml ensemble regression": {
+            "SETS": [
+                "cuml implementation",
+                "common ensemble params",
+                "cuml ensemble regressor params",
+                "ensemble regression data"
+            ]
+        }
+    }
+}

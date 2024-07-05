@@ -1,0 +1,27 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/knn.json"],
+    "PARAMETERS_SETS": {
+        "spmd knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "metric": "minkowski",
+                    "p": 2,
+                    "weights": "uniform"
+                }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "knn regressor": {
+            "SETS": [
+                "common knn parameters",
+                "sklearn knn parameters",
+                "brute knn algorithm - regression data",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd knn parameters"
+            ]
+        }
+    }
+}

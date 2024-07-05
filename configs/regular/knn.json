@@ -1,0 +1,122 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_neighbors": [10, 100],
+                    "weights": "uniform"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": true }
+            }
+        },
+        "sklearn knn parameters": {
+            "algorithm": { "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" } }
+        },
+        "brute knn algorithm - classification data": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
+            },
+            "data": [
+                { "dataset": "susy", "split_kwargs": { "train_size": 100000, "test_size": 10000 } },
+                { "dataset": "connect" },
+                { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } }
+            ]
+        },
+        "kd_tree knn algorithm - classification data": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": { "algorithm": "kd_tree", "metric": "minkowski", "p": 2 }
+            },
+            "data": {
+                "source": "make_classification",
+                "generation_kwargs": {
+                    "n_classes": 5,
+                    "n_samples": [50000, 250000],
+                    "n_features": [8, 16],
+                    "n_informative": "[SPECIAL_VALUE]0.5"
+                },
+                "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+            }
+        },
+        "brute knn algorithm - regression data": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
+            },
+            "data": [
+                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 40000, "test_size": 10000 } },
+                { "dataset": ["fried", "twodplanes"] }
+            ]
+        },
+        "kd_tree knn algorithm - regression data": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": { "algorithm": "kd_tree", "metric": "minkowski", "p": 2 }
+            },
+            "data": [
+                { "dataset": "fried" },
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": [50000, 250000],
+                        "n_features": [8, 16],
+                        "noise": 0.75
+                    },
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn brute knn clsf": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common knn parameters",
+                "sklearn knn parameters",
+                "brute knn algorithm - classification data"
+            ]
+        },
+        "sklearn kd_tree knn clsf": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common knn parameters",
+                "sklearn knn parameters",
+                "kd_tree knn algorithm - classification data"
+            ]
+        },
+        "sklearn brute knn regr": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common knn parameters",
+                "sklearn knn parameters",
+                "brute knn algorithm - regression data"
+            ]
+        },
+        "sklearn kd_tree knn regr": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common knn parameters",
+                "sklearn knn parameters",
+                "kd_tree knn algorithm - regression data"
+            ]
+        },
+        "cuml brute knn clsf": {
+            "SETS": [
+                "cuml implementation",
+                "common knn parameters",
+                "brute knn algorithm - classification data"
+            ]
+        },
+        "cuml brute knn regr": {
+            "SETS": [
+                "cuml implementation",
+                "common knn parameters",
+                "brute knn algorithm - regression data"
+            ]
+        }
+    }
+}

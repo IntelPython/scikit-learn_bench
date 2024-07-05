@@ -1,0 +1,76 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common dbscan parameters": {
+            "algorithm": {
+                "estimator": "DBSCAN",
+                "estimator_params": {
+                    "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
+                    "min_samples": 5,
+                    "metric": "euclidean"
+                }
+            },
+            "data": {
+                "dtype": ["float32", "float64"]
+            }
+        },
+        "sklearn dbscan parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "cuml dbscan parameters": {
+            "algorithm": {
+                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
+            }
+        },
+        "dbscan datasets": [
+            {
+                "data": { "dataset": ["cifar", "mnist"], "split_kwargs": { "train_size": 10000 } }
+            },
+            {
+                "data": { "dataset": ["sensit", "hepmass"], "split_kwargs": { "train_size": 20000 } }
+            },
+            {
+                "data": {
+                    "dataset": "road_network",
+                    "preprocessing_kwargs": { "normalize": true },
+                    "split_kwargs": { "train_size": [20000, 50000] }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 20,
+                        "n_samples": 50000,
+                        "n_features": [4, 16, 64, 256],
+                        "cluster_std": 1.5
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn dbscan": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common dbscan parameters",
+                "sklearn dbscan parameters",
+                "dbscan datasets"
+            ]
+        },
+        "cuml dbscan": {
+            "SETS": [
+                "cuml implementation",
+                "common dbscan parameters",
+                "cuml dbscan parameters",
+                "dbscan datasets"
+            ]
+        }
+    }
+}

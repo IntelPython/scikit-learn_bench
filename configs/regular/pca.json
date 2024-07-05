@@ -1,0 +1,62 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "pca parameters": {
+            "algorithm": {
+                "estimator": "PCA",
+                "estimator_params": {
+                    "n_components": 3,
+                    "copy": true,
+                    "whiten": false,
+                    "svd_solver": "full",
+                    "tol": 0.0,
+                    "iterated_power": 15,
+                    "random_state": 42
+                }
+            }
+        },
+        "pca datasets": [
+            {
+                "data": {
+                    "dataset": ["cifar", "mnist", "yolanda"],
+                    "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 20000, "n_features": 2000, "centers": 2 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "epsilon",
+                    "split_kwargs": { "train_size": 50000, "test_size": null }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "higgs",
+                    "split_kwargs": { "train_size": 1000000, "test_size": null }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn pca": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "pca parameters",
+                "pca datasets"
+            ]
+        },
+        "cuml pca": {
+            "SETS": [
+                "cuml implementation",
+                "pca parameters",
+                "pca datasets"
+            ]
+        }
+    }
+}

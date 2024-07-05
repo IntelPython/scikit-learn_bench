@@ -1,0 +1,137 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common parameters": {
+            "data": {
+                "split_kwargs": {
+                    "train_size": 400,
+                    "test_size": 100,
+                    "shuffle": true,
+                    "random_state": 42
+                },
+                "preprocessing_kwargs": {
+                    "normalize": true
+                }
+            },
+            "bench": { "n_runs": 5 },
+            "algorithm": { "device": "default" }
+        },
+        "data formats": {
+            "data": [
+                {
+                    "format": "numpy",
+                    "dtype": "float64",
+                    "order": "C"
+                },
+                {
+                    "format": "pandas",
+                    "dtype": "float32",
+                    "order": "F"
+                }
+            ]
+        },
+        "datasets": {
+            "data":
+            [
+                {
+                    "source": "fetch_openml",
+                    "id": 1430
+                },
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 2,
+                        "n_samples": 500,
+                        "n_features": 16,
+                        "n_informative": "[SPECIAL_VALUE]0.5"
+                    }
+                }
+            ]
+        },
+        "algorithms": [
+            {
+                "algorithm": {
+                    "estimator": "DBSCAN",
+                    "estimator_params": { "algorithm": "brute" }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": "KMeans",
+                    "estimator_params": {
+                        "init": "random",
+                        "algorithm": "lloyd",
+                        "max_iter": 20
+                    }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": "PCA",
+                    "estimator_params": { "svd_solver": "full" }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": "TSNE",
+                    "estimator_params": { "n_iter": 250 }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": [
+                        "RandomForestClassifier", "ExtraTreesClassifier",
+                        "RandomForestRegressor", "ExtraTreesRegressor"
+                    ],
+                    "estimator_params": { "n_estimators": 20 }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": [
+                        "KNeighborsClassifier", "KNeighborsRegressor"
+                    ],
+                    "estimator_params": { "algorithm": ["brute", "kd_tree"] }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": ["LinearRegression", "Ridge", "Lasso", "ElasticNet"]
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": ["SVC", "SVR"],
+                    "estimator_params": { "max_iter": 1000 }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": ["NuSVC", "NuSVR"],
+                    "estimator_params": { "max_iter": 1000, "nu": 0.1 }
+                }
+            },
+            {
+                "algorithm": {
+                    "function": "train_test_split",
+                    "args_order": "x_train|y_train",
+                    "kwargs": {
+                        "random_state": 42,
+                        "shuffle": true
+                    }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "test": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common parameters",
+                "data formats",
+                "datasets",
+                "algorithms"
+            ]
+        }
+    }
+}

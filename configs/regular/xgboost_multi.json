@@ -1,0 +1,73 @@
+{
+    "INCLUDE": ["../common/xgboost.json"],
+    "PARAMETERS_SETS": {
+        "multiclassification data": [
+            {
+                "data": {
+                    "dataset": "letters",
+                    "split_kwargs": {
+                        "train_size": 0.5,
+                        "test_size": 0.5
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.05,
+                        "reg_lambda": 1,
+                        "max_depth": 6,
+                        "n_estimators": 200
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "mnist",
+                    "split_kwargs": {
+                        "train_size": 20000,
+                        "test_size": 50000
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "max_leaves": 256,
+                        "colsample_bytree": 0.2,
+                        "colsample_bynode": 0.5,
+                        "n_estimators": 100
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "covtype"
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.1,
+                        "reg_lambda": 1,
+                        "max_depth": 8,
+                        "n_estimators": 200
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "connect"
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "n_estimators": 500
+                    }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "multi classification": {
+            "SETS": [
+                "xgboost multiclassification",
+                "xgboost implementations",
+                "multiclassification data"
+            ]
+        }
+    }
+}

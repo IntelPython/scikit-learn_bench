@@ -1,0 +1,23 @@
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # additional frameworks
+  - xgboost
+  - catboost
+  - lightgbm
+  - faiss-cpu
+  - modin-all
+  - scikit-learn-intelex
+  # sklbench dependencies
+  - scikit-learn<1.5
+  - pandas
+  - tabulate
+  - fastparquet
+  - h5py
+  - kaggle
+  - openpyxl
+  - tqdm
+  - psutil
+  - requests
+  - py-cpuinfo

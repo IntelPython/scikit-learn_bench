@@ -1,0 +1,22 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../regular/logreg.json"],
+    "PARAMETERS_SETS": {
+        "spmd logreg parameters": {
+            "algorithm": {
+                "estimator_params": { "solver": "newton-cg" }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "logreg": {
+            "SETS": [
+                "common logreg parameters",
+                "sklearn logreg parameters",
+                "logreg datasets",
+                "sklearnex spmd implementation",
+                "spmd default parameters",
+                "spmd logreg parameters"
+            ]
+        }
+    }
+}
