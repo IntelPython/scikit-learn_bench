@@ -353,7 +353,7 @@ def generate_report(args: argparse.Namespace):
     summary_df = summary_df[summary_df.columns.sortlevel(level=0, ascending=False)[0]]
     logger.info(f"{custom_format('Report summary', bcolor='HEADER')}\n{summary_df}")
     if summary_df.size > 0:
-        summary_ws = wb.create_sheet("Summary")
+        summary_ws = wb.create_sheet(title="Summary", index=0)
         write_df_to_sheet(summary_df, summary_ws)
         apply_rules_for_sheet(summary_ws, args.perf_color_scale, args.quality_color_scale)
     # write environment info
