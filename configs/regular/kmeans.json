@@ -15,7 +15,7 @@
             },
             "data": {
                 "dtype": ["float32", "float64"],
-                "preprocessing_kwargs": { "normalize": false }
+                "preprocessing_kwargs": { "normalize": true }
             }
         },
         "sklearn kmeans parameters": {
