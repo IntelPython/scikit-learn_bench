@@ -6,7 +6,7 @@
                 "estimator": "KMeans",
                 "estimator_params": {
                     "n_clusters": "[SPECIAL_VALUE]auto",
-                    "n_init": 10,
+                    "n_init": 1,
                     "max_iter": 30,
                     "tol": 1e-3,
                     "random_state": 42
