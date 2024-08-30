@@ -1,0 +1,43 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../regular/knn.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd knn cls parameters": {
+            "algorithm": {
+		"estimator": "KNeighborsClassifier",
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "metric": "minkowski",
+                    "p": 2,
+                    "weights": "uniform",
+		    "n_neighbors": 5
+                },
+		"estimator_methods": {
+			"training": "fit",
+			"inference": "predict"
+		}
+	    },
+	    "bench": {
+	        "mpi_params": {}
+	    }
+        },
+        "synthetic classification data": {
+            "data": [
+		{ "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 50000 },   "generation_kwargs": {  "n_samples": 550000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
+		{ "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 500000 },   "generation_kwargs": {  "n_samples": 550000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
+                { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 50000 },   "generation_kwargs": {  "n_samples": 100000,  "n_features": 1000, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
+                { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 500000 },   "generation_kwargs": {  "n_samples": 1000000,  "n_features": 10, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
+            ]
+        }	
+    },
+    "TEMPLATES": {
+        "knn classifier": {
+            "SETS": [
+                "common knn parameters",
+                "synthetic classification data",
+                "sklearnex spmd implementation",
+		"large scale 2k parameters",
+                "spmd knn cls parameters"
+            ]
+        }
+    }
+}

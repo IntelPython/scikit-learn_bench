@@ -134,6 +134,9 @@ def get_subset_metrics_of_estimator(
                 and isinstance(iterations[0], Union[Numeric, NumpyNumeric].__args__)
             ):
                 metrics.update({"iterations": int(iterations[0])})
+        if hasattr(estimator_instance, "_n_inner_iter"):
+            inner_iters = estimator_instance._n_inner_iter
+            metrics.update({"inner_iters": int(inner_iters)})
     if task == "classification":
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
@@ -142,7 +145,7 @@ def get_subset_metrics_of_estimator(
                 "balanced accuracy": float(balanced_accuracy_score(y_compat, y_pred)),
             }
         )
-        if hasattr(estimator_instance, "predict_proba") and not (
+        '''if hasattr(estimator_instance, "predict_proba") and not (
             hasattr(estimator_instance, "probability")
             and getattr(estimator_instance, "probability") == False
         ):
@@ -162,7 +165,7 @@ def get_subset_metrics_of_estimator(
                     ),
                     "logloss": float(log_loss(y_compat, y_pred_proba)),
                 }
-            )
+            )'''
     elif task == "regression":
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
@@ -454,7 +457,6 @@ def measure_sklearn_estimator(
                         estimator_instance.get_booster()
                     )
                     method_instance = getattr(daal_model, method)
-
                 metrics[method] = dict()
                 (
                     metrics[method]["time[ms]"],

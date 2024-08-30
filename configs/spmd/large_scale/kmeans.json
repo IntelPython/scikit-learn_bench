@@ -1,0 +1,32 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../regular/kmeans.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd kmeans parameters": {
+            "algorithm": {
+                "estimator": "KMeans",
+                "estimator_params": {
+                    "algorithm": "lloyd"
+                },
+                "estimator_methods": { "training": "fit" }
+            },
+            "bench": {
+                "mpi_params": {"n": 48}
+            }
+	},
+	"synthetic data": {
+                "data": [
+                        { "source": "make_blobs", "generation_kwargs": { "n_samples": 5000000,  "n_features": 10, "centers": 10 }, "algorithm": { "n_clusters": 10, "max_iter": 10 } }
+                ]
+        }
+    },
+    "TEMPLATES": {
+        "kmeans": {
+            "SETS": [
+                "synthetic data",
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "spmd kmeans parameters"
+            ]
+        }
+    }
+}
