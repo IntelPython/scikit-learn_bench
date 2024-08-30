@@ -1,0 +1,27 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../regular/linear_model.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd linear parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_methods": { "training": "fit" }
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_regression", "generation_kwargs": { "n_samples": 30005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 30000000, "test_size": 5000 } },
+		{ "source": "make_regression", "generation_kwargs": { "n_samples": 305000,  "n_features": 1000, "noise": 1.25 }, "split_kwargs": { "train_size": 300000, "test_size": 5000 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "linreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+		"synthetic data",
+                "spmd linear parameters"
+            ]
+        }
+    }
+}

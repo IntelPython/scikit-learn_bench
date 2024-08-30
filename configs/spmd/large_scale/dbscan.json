@@ -1,0 +1,32 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../regular/dbscan.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd dbscan parameters": {
+	    "algorithm": {
+		"estimator": "DBSCAN",
+		"estimator_methods": {
+		    "training": "fit"
+		}
+	    },
+	    "data": {
+		"dtype": "float64"
+	    }
+	},
+	"synthetic dataset": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 10, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
+            ]
+	}
+    },
+    "TEMPLATES": {
+        "dbscan": {
+            "SETS": [
+                "common dbscan parameters",
+                "synthetic dataset",
+                "sklearnex spmd implementation",
+		"large scale default parameters",
+                "spmd dbscan parameters"
+            ]
+        }
+    }
+}

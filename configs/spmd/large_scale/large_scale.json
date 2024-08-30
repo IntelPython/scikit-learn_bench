@@ -1,0 +1,31 @@
+{
+    "PARAMETERS_SETS": {
+        "large scale default parameters": {
+            "data": {
+                "dtype": "float64",
+		"distributed_split": "None"
+            },
+            "bench": {
+                "mpi_params": {"n": [1,2,3,4,5,6,7,8,9,10,11,12], "ppn": 12, "-hostfile": "", "-cpu-bind=list:0-7,104-111:8-15,112-119:16-23,120-127:24-31,128-135:32-39,136-143:40-47,144-151:52-59,156-163:60-67,164-171:68-75,172-179:76-83,180-187:84-91,188-195:92-99,196-203": "--envall gpu_tile_compact.sh" }
+            }
+        },
+	"large scale 2k parameters": {
+            "data": {
+                "dtype": "float64",
+                "distributed_split": "None"
+            },
+            "bench": {
+                "mpi_params": {"n": [192,384,768,1536,3072,6144,12288,24576], "ppn": 12, "-hostfile": "", "-cpu-bind=list:0-7,104-111:8-15,112-119:16-23,120-127:24-31,128-135:32-39,136-143:40-47,144-151:52-59,156-163:60-67,164-171:68-75,172-179:76-83,180-187:84-91,188-195:92-99,196-203": "--envall gpu_tile_compact.sh" }
+            }
+        },
+	"large scale impi parameters": {
+	    "data": {
+		"dtype": "float64",
+                "distributed_split": "no"
+            },
+            "bench": {
+		    "mpi_params": {"n": [1,2,4,6,12,24], "ppn": 12}
+	    }
+	}
+    }
+}
