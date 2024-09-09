@@ -19,7 +19,7 @@
             }
         },
         "sklearn kmeans parameters": {
-            "algorithm": { "estimator_params": { "init": "k-means++", "algorithm": "lloyd" } }
+            "algorithm": { "estimator_params": { "init": ["k-means++", "random"], "algorithm": "lloyd" } }
         },
         "cuml kmeans parameters": {
             "algorithm": {
@@ -64,13 +64,68 @@
                         }
                     }
                 ]
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 10000000, "n_features": 10, "centers": 10 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 10000000, "n_features": 100, "centers": 10 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 10000000, "n_features": 500, "centers": 10 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 10000000, "n_features": 1000, "centers": 10 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 1000000, "n_features": 100, "centers": 5 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 1000000, "n_features": 2000, "centers": 5 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 1000000, "n_features": 5000, "centers": 5 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": { "n_samples": 1000000, "n_features": 10000, "centers": 5 },
+                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
+                }
             }
         ]
     },
     "TEMPLATES": {
         "sklearn kmeans": {
             "SETS": [
-                "sklearn-ex[preview] implementations",
                 "common kmeans parameters",
                 "sklearn kmeans parameters",
                 "kmeans datasets"
