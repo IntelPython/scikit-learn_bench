@@ -85,6 +85,7 @@ def run_benchmarks(args: argparse.Namespace) -> int:
 
     # find and parse configs
     bench_cases = generate_bench_cases(args)
+    print("bench_cases 1: ",bench_cases)
 
     # get parameter filters
     param_filters = generate_bench_filters(args.parameter_filters)
@@ -92,15 +93,16 @@ def run_benchmarks(args: argparse.Namespace) -> int:
     # perform early filtering based on 'data' parameters and
     # some of 'algorithm' parameters assuming they were already assigned
     bench_cases = early_filtering(bench_cases, param_filters)
+    print("bench_cases 2: ",bench_cases)
 
     # prefetch datasets
     if args.prefetch_datasets:
         # trick: get unique dataset names only to avoid loading of same dataset
         # by different cases/processes
         dataset_cases = {get_data_name(case): case for case in bench_cases}
-        print(dataset_cases)
+        print("dataset_cases:",dataset_cases)
         logger.debug(f"Unique dataset names to load:\n{list(dataset_cases.keys())}")
-        print(cpu_count())
+        print("cpu_count:",cpu_count())
         n_proc = min([16, cpu_count(), len(dataset_cases)])
         logger.info(f"Prefetching datasets with {n_proc} processes")
         with Pool(n_proc) as pool:

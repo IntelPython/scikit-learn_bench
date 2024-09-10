@@ -14,17 +14,12 @@
                 "estimator_methods": { "inference": "predict" }
             },
             "data": {
-                "dtype": ["float32", "float64"],
+                "dtype": ["float32"],
                 "preprocessing_kwargs": { "normalize": true }
             }
         },
         "sklearn kmeans parameters": {
             "algorithm": { "estimator_params": { "init": ["k-means++", "random"], "algorithm": "lloyd" } }
-        },
-        "cuml kmeans parameters": {
-            "algorithm": {
-                "estimator_params": { "init": "scalable-k-means++" }
-            }
         },
         "kmeans datasets": [
             {
@@ -102,14 +97,6 @@
             "SETS": [
                 "common kmeans parameters",
                 "sklearn kmeans parameters",
-                "kmeans datasets"
-            ]
-        },
-        "cuml kmeans": {
-            "SETS": [
-                "cuml implementation",
-                "common kmeans parameters",
-                "cuml kmeans parameters",
                 "kmeans datasets"
             ]
         }
