@@ -73,14 +73,7 @@
                     ],
                     "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
                 },
-                "algorithm": [
-                    {
-                        "estimator_params": {
-                            "n_clusters": 10,
-                            "max_iter": 100
-                        }
-                    }
-                ]
+                "algorithm": {"estimator_params": {"n_clusters": 10, "max_iter": 100}}
             }
         ]
     },
