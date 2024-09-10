@@ -3,6 +3,8 @@
     "PARAMETERS_SETS": {
         "common kmeans parameters": {
             "algorithm": {
+                "library": "sklearnex",
+                "device": "cpu",
                 "estimator": "KMeans",
                 "estimator_params": {
                     "n_clusters": "[SPECIAL_VALUE]auto",
