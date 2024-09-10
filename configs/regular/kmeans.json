@@ -68,58 +68,32 @@
             {
                 "data": {
                     "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 10000000, "n_features": 10, "centers": 10 },
+                    "generation_kwargs": [
+                        { "n_samples": 10000000, "n_features": 10, "centers": 10 },
+                        { "n_samples": 10000000, "n_features": 100, "centers": 10 },
+                        { "n_samples": 10000000, "n_features": 500, "centers": 10 },
+                        { "n_samples": 10000000, "n_features": 1000, "centers": 10 },
+                        { "n_samples": 1000000, "n_features": 100, "centers": 5 },
+                        { "n_samples": 1000000, "n_features": 2000, "centers": 5 },
+                        { "n_samples": 1000000, "n_features": 5000, "centers": 5 },
+                        { "n_samples": 1000000, "n_features": 10000, "centers": 5 }
+                    ],
                     "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 10000000, "n_features": 100, "centers": 10 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 10000000, "n_features": 500, "centers": 10 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 10000000, "n_features": 1000, "centers": 10 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 1000000, "n_features": 100, "centers": 5 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 1000000, "n_features": 2000, "centers": 5 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 1000000, "n_features": 5000, "centers": 5 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 1000000, "n_features": 10000, "centers": 5 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
+                },
+                "algorithm": [
+                    {
+                        "estimator_params": {
+                            "n_clusters": 10,
+                            "max_iter": 100
+                        }
+                    },
+                    {
+                        "estimator_params": {
+                            "n_clusters": 100,
+                            "max_iter": 10
+                        }
+                    }
+                ]
             }
         ]
     },
