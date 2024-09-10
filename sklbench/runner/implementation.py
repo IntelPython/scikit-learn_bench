@@ -98,7 +98,9 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         # trick: get unique dataset names only to avoid loading of same dataset
         # by different cases/processes
         dataset_cases = {get_data_name(case): case for case in bench_cases}
+        print(dataset_cases)
         logger.debug(f"Unique dataset names to load:\n{list(dataset_cases.keys())}")
+        print(cpu_count())
         n_proc = min([16, cpu_count(), len(dataset_cases)])
         logger.info(f"Prefetching datasets with {n_proc} processes")
         with Pool(n_proc) as pool:
