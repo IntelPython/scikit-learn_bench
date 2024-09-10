@@ -130,6 +130,7 @@ def get_bench_case_name(
     )
     data_name = get_data_name(bench_case, shortened)
     name_args = [library_name, alg_name, data_name]
+    print(name_args)
     device = get_bench_case_value(bench_case, "algorithm:device", None)
     if device is not None:
         name_args.append(device)
