@@ -1,7 +1,8 @@
 # owners and reviewers
-configs             @Alexsandruss
-configs/spmd*       @Alexsandruss @ethanglaser
-sklbench            @Alexsandruss
-*.md                @Alexsandruss @samir-nasibli
-requirements*.txt   @Alexsandruss @ethanglaser
-conda-env-*.yml     @Alexsandruss @ethanglaser
+configs                    @Alexsandruss
+configs/spmd/*             @ethanglaser
+configs/regular/xgboost*   @razdoburdin
+sklbench                   @Alexsandruss
+*.md                       @Alexsandruss @samir-nasibli
+requirements*.txt          @Alexsandruss @ethanglaser
+conda-env-*.yml            @Alexsandruss @ethanglaser
