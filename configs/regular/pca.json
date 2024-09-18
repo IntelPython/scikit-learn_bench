@@ -8,7 +8,7 @@
                     "n_components": 3,
                     "copy": true,
                     "whiten": false,
-                    "svd_solver": "full",
+                    "svd_solver": "covariance_eigh",
                     "tol": 0.0,
                     "iterated_power": 15,
                     "random_state": 42
