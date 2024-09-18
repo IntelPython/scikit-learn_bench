@@ -4,7 +4,7 @@
         "spmd basicstats parameters": {
             "algorithm": {
                 "estimator": "BasicStatistics",
-                "estimator_methods": { "training": "compute" }
+                "estimator_methods": { "training": "fit" }
             },
 	    "data": {
 		"split_kwargs": { "test_size": 0.0001 }
@@ -21,7 +21,7 @@
         "basicstats": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale default parameters",
+                "large scale 2k parameters",
 		"synthetic data",
                 "spmd basicstats parameters"
             ]
