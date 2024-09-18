@@ -1,0 +1,28 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../regular/logreg.json", "../logreg.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd logreg2 parameters": {
+	    "algorithm":{
+		"estimator": "LogisticRegression",
+                "estimator_methods": { "inference": "predict" },
+		"estimator_params": { "max_iter": 30 }
+            }
+	},
+        "synthetic data": {
+            "data": [
+		{ "source": "make_classification", "split_kwargs": { "train_size": 10000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 10001000, "n_features": 100, "n_classes": 2 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "linreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale strong 2k parameters",
+                "spmd logreg parameters",
+		"synthetic data",
+		"spmd logreg2 parameters"
+            ]
+        }
+    }
+}

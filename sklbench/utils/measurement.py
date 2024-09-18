@@ -40,6 +40,22 @@ def box_filter(timing, left=0.2, right=0.8):
     return np.mean(result) * 1000, np.std(result) * 1000
 
 
+def large_scale_measurements(timing):
+    first_iter = timing[0] * 1000
+    mean = np.mean(timing[1:]) * 1000
+    stdev = np.std(timing[1:]) * 1000
+    timing_sorted = np.sort(timing)
+    Q1, Q3 = np.percentile(timing_sorted, [25, 75])
+    IQ = Q3 - Q1
+    lower, upper = Q1 - 1.5 * IQ, Q3 + 1.5 * IQ
+    
+    filtered_times = timing_sorted[(timing_sorted >= lower) & (timing_sorted <= upper)]
+    
+    box_filter_mean = np.mean(filtered_times) * 1000 if filtered_times.size > 0 else 0
+    box_filter_stdev = np.std(filtered_times) * 1000 if filtered_times.size > 0 else 0
+    return mean, stdev, first_iter, box_filter_mean, box_filter_stdev
+
+
 def measure_time(
     func,
     *args,
@@ -72,13 +88,14 @@ def measure_time(
                 f"exceeded time limit ({time_limit} seconds)"
             )
             break
-    mean, std = box_filter(times)
-    if std / mean > std_mean_ratio:
-        logger.warning(
-            f'Measured "std / mean" time ratio of "{str(func)}" function is higher '
-            f"than threshold ({round(std / mean, 3)} vs. {std_mean_ratio})"
-        )
-    return mean, std, func_return_value
+    logger.debug(times)
+    #mean, std = box_filter(times)
+    #if std / mean > std_mean_ratio:
+    #    logger.warning(
+    #        f'Measured "std / mean" time ratio of "{str(func)}" function is higher '
+    #        f"than threshold ({round(std / mean, 3)} vs. {std_mean_ratio})"
+    #    )
+    return large_scale_measurements(times)
 
 
 # wrapper to get measurement params from benchmarking case

@@ -12,8 +12,7 @@
         },
         "synthetic data": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } },
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 1000, "centers": 1 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 25000000,  "n_features": 100, "centers": 1 } }
             ]
         }
     },
@@ -21,7 +20,7 @@
         "linreg": {
             "SETS": [
 		"sklearnex spmd implementation",
-                "large scale 2k parameters",
+                "large scale strong 2k parameters",
                 "synthetic data",
 		"spmd pca parameters"
             ]

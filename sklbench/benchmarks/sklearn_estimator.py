@@ -461,7 +461,9 @@ def measure_sklearn_estimator(
                 (
                     metrics[method]["time[ms]"],
                     metrics[method]["time std[ms]"],
-                    _,
+                    metrics[method]["first iter[ms]"],
+                    metrics[method]["box filter mean[ms]"],
+                    metrics[method]["box filter std[ms]"]
                 ) = measure_case(bench_case, method_instance, *data_args)
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"

@@ -15,9 +15,6 @@
 			"training": "fit",
 			"inference": "predict"
 		}
-	    },
-	    "bench": {
-	        "mpi_params": {}
 	    }
         },
         "synthetic classification data": {
@@ -35,7 +32,7 @@
                 "common knn parameters",
                 "synthetic classification data",
                 "sklearnex spmd implementation",
-		"large scale 2k parameters",
+		"large scale default parameters",
                 "spmd knn cls parameters"
             ]
         }
