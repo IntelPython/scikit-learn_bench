@@ -1,0 +1,26 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../spmd/stats_covariance.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd forest classification parameters": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier"
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 501000, "n_features": 10, "n_classes": 2 },  "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } } },
+                { "source": "make_classification", "split_kwargs": { "train_size": 10000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 11000, "n_features": 1000, "n_classes": 2 },  "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "basicstats": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale 2k parameters",
+		"synthetic data",
+                "spmd forest classification parameters"
+            ]
+        }
+    }
+}
