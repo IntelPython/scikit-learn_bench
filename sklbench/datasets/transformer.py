@@ -181,7 +181,7 @@ def split_and_transform_data(bench_case, data, data_description):
                 "format": data_format,
                 "order": data_order,
                 "dtype": data_dtype,
-                "samples": converted_data.shape[0],
+                "samples (per rank)": converted_data.shape[0],
             }
             if len(converted_data.shape) == 2 and converted_data.shape[1] > 1:
                 data_description[subset_name]["features"] = converted_data.shape[1]
