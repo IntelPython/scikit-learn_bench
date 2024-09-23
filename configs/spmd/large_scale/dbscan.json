@@ -24,7 +24,7 @@
                 "common dbscan parameters",
                 "synthetic dataset",
                 "sklearnex spmd implementation",
-		"large scale default parameters",
+		        "large scale default parameters",
                 "spmd dbscan parameters"
             ]
         }
