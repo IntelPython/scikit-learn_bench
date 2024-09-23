@@ -50,13 +50,6 @@
                 "pca parameters",
                 "pca datasets"
             ]
-        },
-        "cuml pca": {
-            "SETS": [
-                "cuml implementation",
-                "pca parameters",
-                "pca datasets"
-            ]
         }
     }
 }

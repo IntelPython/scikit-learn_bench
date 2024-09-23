@@ -75,14 +75,6 @@
                 "sklearn kmeans parameters",
                 "kmeans datasets"
             ]
-        },
-        "cuml kmeans": {
-            "SETS": [
-                "cuml implementation",
-                "common kmeans parameters",
-                "cuml kmeans parameters",
-                "kmeans datasets"
-            ]
         }
     }
 }
