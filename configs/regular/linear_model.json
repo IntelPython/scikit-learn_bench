@@ -85,31 +85,9 @@
     "TEMPLATES": {
         "sklearn linear": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common linear parameters",
                 "sklearn linear parameters",
-                "regression datasets"
-            ]
-        },
-        "sklearn ridge": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common ridge parameters",
-                "sklearn ridge parameters",
-                "regression datasets"
-            ]
-        },
-        "sklearn lasso": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common lasso parameters",
-                "regression datasets"
-            ]
-        },
-        "sklearn elasticnet": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common elasticnet parameters",
                 "regression datasets"
             ]
         },
