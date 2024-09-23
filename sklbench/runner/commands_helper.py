@@ -47,6 +47,7 @@ def generate_benchmark_command(
             mpi_prefix += f" -{mpi_param_name} {mpi_param_value}"
             if mpi_param_name == "-hostfile":
                 import os
+
                 mpi_prefix += os.environ.get("PBS_NODEFILE")
         command_prefix = f"{mpi_prefix} {command_prefix}"
     # 3. Intel(R) VTune* profiling command prefix

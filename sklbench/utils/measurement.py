@@ -48,9 +48,9 @@ def large_scale_measurements(timing):
     Q1, Q3 = np.percentile(timing_sorted, [25, 75])
     IQ = Q3 - Q1
     lower, upper = Q1 - 1.5 * IQ, Q3 + 1.5 * IQ
-    
+
     filtered_times = timing_sorted[(timing_sorted >= lower) & (timing_sorted <= upper)]
-    
+
     box_filter_mean = np.mean(filtered_times) * 1000 if filtered_times.size > 0 else 0
     box_filter_stdev = np.std(filtered_times) * 1000 if filtered_times.size > 0 else 0
     return mean, stdev, first_iter, box_filter_mean, box_filter_stdev
@@ -89,8 +89,8 @@ def measure_time(
             )
             break
     logger.debug(times)
-    #mean, std = box_filter(times)
-    #if std / mean > std_mean_ratio:
+    # mean, std = box_filter(times)
+    # if std / mean > std_mean_ratio:
     #    logger.warning(
     #        f'Measured "std / mean" time ratio of "{str(func)}" function is higher '
     #        f"than threshold ({round(std / mean, 3)} vs. {std_mean_ratio})"

@@ -145,7 +145,7 @@ def get_subset_metrics_of_estimator(
                 "balanced accuracy": float(balanced_accuracy_score(y_compat, y_pred)),
             }
         )
-        '''if hasattr(estimator_instance, "predict_proba") and not (
+        """if hasattr(estimator_instance, "predict_proba") and not (
             hasattr(estimator_instance, "probability")
             and getattr(estimator_instance, "probability") == False
         ):
@@ -165,7 +165,7 @@ def get_subset_metrics_of_estimator(
                     ),
                     "logloss": float(log_loss(y_compat, y_pred_proba)),
                 }
-            )'''
+            )"""
     elif task == "regression":
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
@@ -463,7 +463,7 @@ def measure_sklearn_estimator(
                     metrics[method]["time std[ms]"],
                     metrics[method]["first iter[ms]"],
                     metrics[method]["box filter mean[ms]"],
-                    metrics[method]["box filter std[ms]"]
+                    metrics[method]["box filter std[ms]"],
                 ) = measure_case(bench_case, method_instance, *data_args)
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"
@@ -546,7 +546,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     result_template = enrich_result(result_template, bench_case)
     if "assume_finite" in context_params:
         result_template["assume_finite"] = context_params["assume_finite"]
-    #if hasattr(estimator_instance, "get_params"):
+    # if hasattr(estimator_instance, "get_params"):
     #    estimator_params = estimator_instance.get_params()
     # note: "handle" is not JSON-serializable
     if "handle" in estimator_params:
