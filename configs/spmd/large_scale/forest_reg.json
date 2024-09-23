@@ -1,0 +1,25 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../spmd/stats_covariance.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd forest regression parameters": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor"
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_regression", "generation_kwargs": { "n_samples": 10000000,  "n_features": 100, "noise": 1.25 }, "split_kwargs": { "train_size": 10000000, "test_size": 5000 }, "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } }}
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "forestReg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale 2k parameters",
+		        "synthetic data",
+                "spmd forest regression parameters"
+            ]
+        }
+    }
+}
