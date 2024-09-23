@@ -14,7 +14,7 @@
         }
     },
     "TEMPLATES": {
-        "basicstats": {
+        "forestCls": {
             "SETS": [
                 "sklearnex spmd implementation",
                 "large scale 2k parameters",
