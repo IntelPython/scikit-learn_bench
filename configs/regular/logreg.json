@@ -54,7 +54,7 @@
     "TEMPLATES": {
         "sklearn logreg": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common logreg parameters",
                 "sklearn logreg parameters",
                 "logreg datasets"

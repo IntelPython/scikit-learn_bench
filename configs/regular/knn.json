@@ -74,34 +74,18 @@
     "TEMPLATES": {
         "sklearn brute knn clsf": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common knn parameters",
                 "sklearn knn parameters",
                 "brute knn algorithm - classification data"
             ]
         },
-        "sklearn kd_tree knn clsf": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common knn parameters",
-                "sklearn knn parameters",
-                "kd_tree knn algorithm - classification data"
-            ]
-        },
         "sklearn brute knn regr": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common knn parameters",
                 "sklearn knn parameters",
                 "brute knn algorithm - regression data"
-            ]
-        },
-        "sklearn kd_tree knn regr": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common knn parameters",
-                "sklearn knn parameters",
-                "kd_tree knn algorithm - regression data"
             ]
         },
         "cuml brute knn clsf": {

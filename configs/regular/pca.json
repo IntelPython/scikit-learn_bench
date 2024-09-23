@@ -46,7 +46,7 @@
     "TEMPLATES": {
         "sklearn pca": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "pca parameters",
                 "pca datasets"
             ]

@@ -12,6 +12,11 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
+        "sklearn-ex[gpu] implementations": {
+            "algorithm": [
+                { "library": "sklearnex", "device": ["gpu"] }
+            ]
+        },
         "sklearn-ex[preview] implementations": {
             "algorithm": [
                 { "library": "sklearn", "device": "cpu" },

@@ -58,7 +58,7 @@
     "TEMPLATES": {
         "sklearn dbscan": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common dbscan parameters",
                 "sklearn dbscan parameters",
                 "dbscan datasets"
