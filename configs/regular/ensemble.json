@@ -103,22 +103,6 @@
                 "sklearn ensemble regressor params",
                 "ensemble regression data"
             ]
-        },
-        "cuml ensemble classification": {
-            "SETS": [
-                "cuml implementation",
-                "common ensemble params",
-                "cuml ensemble classifier params",
-                "ensemble classification data"
-            ]
-        },
-        "cuml ensemble regression": {
-            "SETS": [
-                "cuml implementation",
-                "common ensemble params",
-                "cuml ensemble regressor params",
-                "ensemble regression data"
-            ]
         }
     }
 }

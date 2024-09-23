@@ -87,20 +87,6 @@
                 "sklearn knn parameters",
                 "brute knn algorithm - regression data"
             ]
-        },
-        "cuml brute knn clsf": {
-            "SETS": [
-                "cuml implementation",
-                "common knn parameters",
-                "brute knn algorithm - classification data"
-            ]
-        },
-        "cuml brute knn regr": {
-            "SETS": [
-                "cuml implementation",
-                "common knn parameters",
-                "brute knn algorithm - regression data"
-            ]
         }
     }
 }

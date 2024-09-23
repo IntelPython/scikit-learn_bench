@@ -63,14 +63,6 @@
                 "sklearn dbscan parameters",
                 "dbscan datasets"
             ]
-        },
-        "cuml dbscan": {
-            "SETS": [
-                "cuml implementation",
-                "common dbscan parameters",
-                "cuml dbscan parameters",
-                "dbscan datasets"
-            ]
         }
     }
 }
