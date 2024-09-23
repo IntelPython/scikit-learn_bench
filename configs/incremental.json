@@ -1,0 +1,99 @@
+{
+    "PARAMETERS_SETS": {
+        "common": {"bench": {"n_runs": 10, "time_limit": 60}},
+        "covariance data": {
+            "data": [
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 1,
+                        "n_samples": 1000,
+                        "n_features": [16, 64]
+                    },
+                    "split_kwargs": {"ignore": true}
+                }
+            ]
+        },
+        "basic_statistics data": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 1,
+                    "n_samples": 10000,
+                    "n_features": [16, 64]
+                },
+                "split_kwargs": {"ignore": true}
+            }
+        },
+        "linear_regression data": {
+            "data": {
+                "source": "make_regression",
+                "split_kwargs": {"train_size": 0.2, "test_size": 0.8},
+                "generation_kwargs": {
+                    "n_samples": 5000,
+                    "n_features": [40, 100],
+                    "n_informative": 5,
+                    "noise": 2.0
+                }
+            }
+        },
+        "pca data": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 1,
+                    "n_samples": 1000,
+                    "n_features": [16, 64]
+                },
+                "split_kwargs": {"ignore": true}
+            }
+        },
+        "covariance": {
+            "algorithm": [
+                {
+                    "estimator": "IncrementalEmpiricalCovariance",
+                    "library": "sklearnex.covariance",
+                    "estimator_methods": {"training": "partial_fit"},
+                    "num_batches": {"training": 2}
+                }
+            ]
+        },
+        "basic_statistics": {
+            "algorithm": [
+                {
+                    "estimator": "IncrementalBasicStatistics",
+                    "library": "sklearnex.basic_statistics",
+                    "num_batches": {"training": 2}
+                }
+            ]
+        },
+        "linear_regression": {
+            "algorithm": [
+                {
+                    "estimator": "IncrementalLinearRegression",
+                    "library": "sklearnex.linear_model",
+                    "num_batches": {"training": 2}
+                }
+            ]
+        },
+        "pca": {
+            "algorithm": [
+                {
+                    "estimator": "IncrementalPCA",
+                    "library": "sklearnex.preview.decomposition",
+                    "num_batches": {"training": 2}
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "covariance": {"SETS": ["common", "covariance", "covariance data"]},
+        "basic_statistics": {
+            "SETS": ["common", "basic_statistics", "basic_statistics data"]
+        },
+        "linear_regression": {
+            "SETS": ["common", "linear_regression", "linear_regression data"]
+        },
+        "pca": {"SETS": ["common", "pca", "pca data"]}
+    }
+}

@@ -43,6 +43,10 @@ steps:
       call activate bench-env
       python -m sklbench --report -l DEBUG --report -c configs/sklearn_example.json
     displayName: Sklearn example run
+    - script: |
+      call activate bench-env
+      python -m sklbench --report -l DEBUG --report -c configs/incremental.json
+    displayName: Incremental algorithms example run
   - script: |
       call activate bench-env
       python -m sklbench --report -l DEBUG --report -c configs/xgboost_example.json
