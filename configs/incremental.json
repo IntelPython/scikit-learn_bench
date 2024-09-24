@@ -88,9 +88,6 @@
     },
     "TEMPLATES": {
         "covariance": {"SETS": ["common", "covariance", "covariance data"]},
-        "basic_statistics": {
-            "SETS": ["common", "basic_statistics", "basic_statistics data"]
-        },
         "linear_regression": {
             "SETS": ["common", "linear_regression", "linear_regression data"]
         },
