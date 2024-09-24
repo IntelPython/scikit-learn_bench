@@ -19,8 +19,8 @@
         },
         "synthetic classification data": {
             "data": [
-		        { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 50000 },   "generation_kwargs": {  "n_samples": 550000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
-		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 500000 },   "generation_kwargs": {  "n_samples": 550000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
+		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 5000 },   "generation_kwargs": {  "n_samples": 55000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
+		        { "source": "make_classification", "split_kwargs": { "train_size": 5000, "test_size": 50000 },   "generation_kwargs": {  "n_samples": 55000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
             ]
         }	
     },
