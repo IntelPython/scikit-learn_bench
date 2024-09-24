@@ -458,10 +458,6 @@ def measure_sklearn_estimator(
                     metrics[method]["time std[ms]"],
                     _,
                 ) = measure_case(bench_case, method_instance, *data_args)
-                if batch_size is not None:
-                    metrics[method]["throughput[samples/ms]"] = (
-                        (data_args[0].shape[0] // batch_size) * batch_size
-                    ) / metrics[method]["time[ms]"]
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"
                     sklearnex_logging_stream.seek(0)
