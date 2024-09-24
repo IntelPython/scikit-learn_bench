@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json"],
+    "INCLUDE": ["../../common/sklearn.json"],
     "PARAMETERS_SETS": {
         "common ensemble params": {
             "algorithm": {
