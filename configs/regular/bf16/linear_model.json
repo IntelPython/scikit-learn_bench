@@ -1,0 +1,29 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "synthetic data": {
+            "data": [
+                { "source": "make_regression", "generation_kwargs": { "n_samples": 3005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 3000000, "test_size": 5000 } }
+            ]
+        },
+        "common linear parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": { "fit_intercept": true, "copy_X": true }
+            }
+        },
+        "sklearn linear parameters": {
+            "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+        }
+    },
+    "TEMPLATES": {
+        "sklearn linear": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common linear parameters",
+                "sklearn linear parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}

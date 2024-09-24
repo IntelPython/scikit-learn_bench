@@ -1,0 +1,42 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common logreg parameters": {
+            "algorithm": {
+                "estimator": "LogisticRegression",
+                "estimator_methods": { "inference": "predict" },
+                "estimator_params": {
+                    "penalty": "l2",
+                    "tol": 1e-4,
+                    "C": 1.0,
+                    "l1_ratio": null,
+                    "max_iter": 200
+                }
+            }
+        },
+        "sklearn logreg parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "solver": "lbfgs",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                    "random_state": 42
+                }
+            }
+        },
+        "synthetic data": {
+            "data": [
+		        { "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 5001000, "n_features": 10, "n_classes": 2 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn logreg": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common logreg parameters",
+                "sklearn logreg parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}

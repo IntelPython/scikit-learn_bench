@@ -10,7 +10,7 @@
 	},
         "synthetic data": {
             "data": [
-		{ "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 5001000, "n_features": 10, "n_classes": 2 } },
+		        { "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 5001000, "n_features": 10, "n_classes": 2 } },
                 { "source": "make_classification", "split_kwargs": { "train_size": 100000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 101000, "n_features": 1000, "n_classes": 2 } }
             ]
         }
