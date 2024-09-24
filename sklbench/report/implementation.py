@@ -32,6 +32,9 @@ from .compatibility import transform_results_to_compatible
 METRICS = {
     "lower is better": [
         "time[ms]",
+        "first iter[ms]",
+        "box filter mean[ms]",
+        "box filter std[ms]",
         "iterations",
         # classification
         "logloss",
