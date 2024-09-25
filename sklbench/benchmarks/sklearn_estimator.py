@@ -337,12 +337,11 @@ def verify_patching(stream: io.StringIO, function_name) -> bool:
 def create_online_function(
     estimator_instance, method_instance, data_args, num_batches, batch_size
 ):
-    n_batches = data_args[0].shape[0] // batch_size
 
     if "y" in list(inspect.signature(method_instance).parameters):
 
         def ndarray_function(x, y):
-            for i in range(n_batches):
+            for i in range(num_batches):
                 method_instance(
                     x[i * batch_size : (i + 1) * batch_size],
                     y[i * batch_size : (i + 1) * batch_size],
@@ -351,7 +350,7 @@ def create_online_function(
                 estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x, y):
-            for i in range(n_batches):
+            for i in range(num_batches):
                 method_instance(
                     x.iloc[i * batch_size : (i + 1) * batch_size],
                     y.iloc[i * batch_size : (i + 1) * batch_size],
@@ -362,13 +361,13 @@ def create_online_function(
     else:
 
         def ndarray_function(x):
-            for i in range(n_batches):
+            for i in range(num_batches):
                 method_instance(x[i * batch_size : (i + 1) * batch_size])
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x):
-            for i in range(n_batches):
+            for i in range(num_batches):
                 method_instance(x.iloc[i * batch_size : (i + 1) * batch_size])
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
