@@ -347,7 +347,8 @@ def create_online_function(
                     x[i * batch_size : (i + 1) * batch_size],
                     y[i * batch_size : (i + 1) * batch_size],
                 )
-            estimator_instance._onedal_finalize_fit()
+            if hasattr(estimator_instance, "_onedal_finalize_fit"):
+                estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x, y):
             for i in range(n_batches):
@@ -355,19 +356,22 @@ def create_online_function(
                     x.iloc[i * batch_size : (i + 1) * batch_size],
                     y.iloc[i * batch_size : (i + 1) * batch_size],
                 )
-            estimator_instance._onedal_finalize_fit()
+            if hasattr(estimator_instance, "_onedal_finalize_fit"):
+                estimator_instance._onedal_finalize_fit()
 
     else:
 
         def ndarray_function(x):
             for i in range(n_batches):
                 method_instance(x[i * batch_size : (i + 1) * batch_size])
-            estimator_instance._onedal_finalize_fit()
+            if hasattr(estimator_instance, "_onedal_finalize_fit"):
+                estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x):
             for i in range(n_batches):
                 method_instance(x.iloc[i * batch_size : (i + 1) * batch_size])
-            estimator_instance._onedal_finalize_fit()
+            if hasattr(estimator_instance, "_onedal_finalize_fit"):
+                estimator_instance._onedal_finalize_fit()
 
     if "ndarray" in str(type(data_args[0])):
         return ndarray_function
