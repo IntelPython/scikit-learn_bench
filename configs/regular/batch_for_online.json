@@ -2,19 +2,6 @@
     "INCLUDE": ["./common/sklearn.json"],
     "PARAMETERS_SETS": {
         "common": {"bench": {"n_runs": 10, "time_limit": 60}},
-        "covariance data": {
-            "data": [
-                {
-                    "source": "make_blobs",
-                    "generation_kwargs": {
-                        "centers": 1,
-                        "n_samples": 1200000,
-                        "n_features": [10, 100]
-                    },
-                    "split_kwargs": {"ignore": true}
-                }
-            ]
-        },
         "basic_statistics data": {
             "data": {
                 "source": "make_blobs",
@@ -49,15 +36,6 @@
                 "split_kwargs": {"ignore": true}
             }
         },
-        "covariance": {
-            "algorithm": [
-                {
-                    "estimator": "EmpiricalCovariance",
-                    "library": "sklearnex.covariance",
-                    "estimator_methods": {"training": "fit"}
-                }
-            ]
-        },
         "basic_statistics": {
             "algorithm": [
                 {
@@ -79,7 +57,7 @@
         "pca": {
             "algorithm": [
                 {
-                    "estimator": "IncrementalPCA",
+                    "estimator": "PCA",
                     "library": "sklearnex.decomposition",
                     "estimator_methods": {"training": "fit"}
                 }
@@ -88,7 +66,6 @@
     },
     "TEMPLATES": {
         "basic_statistics": {"SETS": ["common", "basic_statistics", "basic_statistics data", "sklearn-ex[gpu] implementations"]},
-        "covariance": {"SETS": ["common", "covariance", "covariance data", "sklearn-ex[gpu] implementations"]},
         "linear_regression": {
             "SETS": ["common", "linear_regression", "linear_regression data", "sklearn-ex[gpu] implementations"]
         },
