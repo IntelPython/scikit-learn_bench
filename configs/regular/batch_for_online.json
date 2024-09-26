@@ -7,7 +7,7 @@
                 "source": "make_blobs",
                 "generation_kwargs": {
                     "centers": 1,
-                    "n_samples": 1200000,
+                    "n_samples": 12000000,
                     "n_features": [10, 100]
                 },
                 "split_kwargs": {"ignore": true}
@@ -18,7 +18,7 @@
                 "source": "make_regression",
                 "split_kwargs": {"train_size": 0.2, "test_size": 0.8},
                 "generation_kwargs": {
-                    "n_samples": 1200000,
+                    "n_samples": 12000000,
                     "n_features": [10, 100],
                     "n_informative": 5,
                     "noise": 2.0
@@ -30,7 +30,7 @@
                 "source": "make_blobs",
                 "generation_kwargs": {
                     "centers": 1,
-                    "n_samples": 1200000,
+                    "n_samples": 12000000,
                     "n_features": [10, 100]
                 },
                 "split_kwargs": {"ignore": true}
