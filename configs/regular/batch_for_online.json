@@ -1,7 +1,7 @@
 {
     "INCLUDE": ["../common/sklearn.json"],
     "PARAMETERS_SETS": {
-        "common": {"bench": {"n_runs": 10, "time_limit": 60}},
+        "common": {"bench": {"n_runs": 10}},
         "basic_statistics data": {
             "data": {
                 "source": "make_blobs",
