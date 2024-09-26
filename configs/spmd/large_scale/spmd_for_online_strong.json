@@ -47,50 +47,14 @@
                 },
                 "split_kwargs": {"ignore": true}
             }
-        },
-        "covariance": {
-            "algorithm": [
-                {
-                    "estimator": "EmpiricalCovariance",
-                    "library": "sklearnex.covariance",
-                    "estimator_methods": {"training": "fit"}
-                }
-            ]
-        },
-        "basic_statistics": {
-            "algorithm": [
-                {
-                    "estimator": "BasicStatistics",
-                    "library": "sklearnex.basic_statistics",
-                    "estimator_methods": {"training": "fit"}
-                }
-            ]
-        },
-        "linear_regression": {
-            "algorithm": [
-                {
-                    "estimator": "LinearRegression",
-                    "library": "sklearnex.linear_model",
-                    "estimator_methods": {"training": "fit"}
-                }
-            ]
-        },
-        "pca": {
-            "algorithm": [
-                {
-                    "estimator": "IncrementalPCA",
-                    "library": "sklearnex.decomposition",
-                    "estimator_methods": {"training": "fit"}
-                }
-            ]
         }
     },
     "TEMPLATES": {
-        "basic_statistics": {"SETS": ["basic_statistics", "basic_statistics data", "large scale strong full one node parameters", "sklearnex spmd implementation"]},
-        "covariance": {"SETS": ["covariance", "covariance data", "large scale strong full one node parameters", "sklearnex spmd implementation"]},
+        "basic_statistics": {"SETS": ["basic_statistics data", "spmd default parameters", "sklearnex spmd implementation", "large scale strong full one node parameters"]},
+        "covariance": {"SETS": ["covariance data", "spmd default parameters","sklearnex spmd implementation", "large scale strong full one node parameters"]},
         "linear_regression": {
-            "SETS": ["linear_regression", "linear_regression data", "large scale strong full one node parameters", "sklearnex spmd implementation"]
+            "SETS": ["linear_regression data", "spmd default parameters", "sklearnex spmd implementation", "large scale strong full one node parameters"]
         },
-        "pca": {"SETS": ["pca", "pca data", "large scale strong full one node parameters", "sklearnex spmd implementation"]}
+        "pca": {"SETS": ["pca data", "spmd default parameters", "sklearnex spmd implementation", "large scale strong full one node parameters"]}
     }
 }
