@@ -30,7 +30,7 @@
                 "common knn parameters",
                 "synthetic classification data",
                 "sklearnex spmd implementation",
-		        "large scale strong 2k parameters",
+		        "large scale strong 32 parameters",
                 "spmd knn cls parameters"
             ]
         }
