@@ -50,11 +50,11 @@
         }
     },
     "TEMPLATES": {
-        "basic_statistics": {"SETS": ["basic_statistics data", "spmd default parameters", "sklearnex spmd implementation", "large scale full one node parameters"]},
-        "covariance": {"SETS": ["covariance data", "spmd default parameters", "sklearnex spmd implementation", "large scale full one node parameters"]},
+        "basic_statistics": {"SETS": ["basic_statistics data", "sklearnex spmd implementation", "large scale full one node parameters"]},
+        "covariance": {"SETS": ["covariance data", "sklearnex spmd implementation", "large scale full one node parameters"]},
         "linear_regression": {
-            "SETS": ["linear_regression data", "spmd default parameters", "sklearnex spmd implementation", "large scale full one node parameters"]
+            "SETS": ["linear_regression data", "sklearnex spmd implementation", "large scale full one node parameters"]
         },
-        "pca": {"SETS": ["pca data", "spmd default parameters", "sklearnex spmd implementation", "large scale full one node parameters"]}
+        "pca": {"SETS": ["pca data", "sklearnex spmd implementation", "large scale full one node parameters"]}
     }
 }
