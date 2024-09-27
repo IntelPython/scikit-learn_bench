@@ -30,7 +30,7 @@
             "algorithm": [
                 {
                     "estimator": "IncrementalEmpiricalCovariance",
-                    "library": "sklearnex",
+                    "library": "sklearnex.covariance",
                     "estimator_methods": {"training": "partial_fit"},
                     "num_batches": {"training": 2}
                 }
