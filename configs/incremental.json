@@ -1,7 +1,7 @@
 {
     "PARAMETERS_SETS": {
         "common": {"bench": {"n_runs": 10, "time_limit": 60}},
-        "covariance data": {
+        "unlabeled dataset": {
             "data": [
                 {
                     "source": "make_blobs",
@@ -14,18 +14,7 @@
                 }
             ]
         },
-        "basic_statistics data": {
-            "data": {
-                "source": "make_blobs",
-                "generation_kwargs": {
-                    "centers": 1,
-                    "n_samples": 10000,
-                    "n_features": [16, 64]
-                },
-                "split_kwargs": {"ignore": true}
-            }
-        },
-        "linear_regression data": {
+        "labeled dataset": {
             "data": {
                 "source": "make_regression",
                 "split_kwargs": {"train_size": 0.2, "test_size": 0.8},
@@ -37,22 +26,11 @@
                 }
             }
         },
-        "pca data": {
-            "data": {
-                "source": "make_blobs",
-                "generation_kwargs": {
-                    "centers": 1,
-                    "n_samples": 1000,
-                    "n_features": [16, 64]
-                },
-                "split_kwargs": {"ignore": true}
-            }
-        },
         "covariance": {
             "algorithm": [
                 {
                     "estimator": "IncrementalEmpiricalCovariance",
-                    "library": "sklearnex.covariance",
+                    "library": "sklearnex",
                     "estimator_methods": {"training": "partial_fit"},
                     "num_batches": {"training": 2}
                 }
@@ -62,7 +40,7 @@
             "algorithm": [
                 {
                     "estimator": "IncrementalBasicStatistics",
-                    "library": "sklearnex.basic_statistics",
+                    "library": "sklearnex",
                     "num_batches": {"training": 2}
                 }
             ]
@@ -71,7 +49,7 @@
             "algorithm": [
                 {
                     "estimator": "IncrementalLinearRegression",
-                    "library": "sklearnex.linear_model",
+                    "library": "sklearnex",
                     "num_batches": {"training": 2}
                 }
             ]
@@ -80,17 +58,17 @@
             "algorithm": [
                 {
                     "estimator": "IncrementalPCA",
-                    "library": "sklearnex.preview.decomposition",
+                    "library": "sklearnex.preview",
                     "num_batches": {"training": 2}
                 }
             ]
         }
     },
     "TEMPLATES": {
-        "covariance": {"SETS": ["common", "covariance", "covariance data"]},
+        "covariance": {"SETS": ["common", "covariance", "unlabeled dataset"]},
         "linear_regression": {
-            "SETS": ["common", "linear_regression", "linear_regression data"]
+            "SETS": ["common", "linear_regression", "labeled dataset"]
         },
-        "pca": {"SETS": ["common", "pca", "pca data"]}
+        "pca": {"SETS": ["common", "pca", "unlabeled dataset"]}
     }
 }
