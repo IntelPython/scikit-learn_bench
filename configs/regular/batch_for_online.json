@@ -45,6 +45,15 @@
                 }
             ]
         },
+        "covariance": {
+            "algorithm": [
+                {
+                    "estimator": "EmpiricalCovariance",
+                    "library": "sklearnex.preview.covariance",
+                    "estimator_methods": {"training": "fit"}
+                }
+            ]
+        },
         "linear_regression": {
             "algorithm": [
                 {
@@ -66,6 +75,7 @@
     },
     "TEMPLATES": {
         "basic_statistics": {"SETS": ["common", "basic_statistics", "basic_statistics data", "sklearn-ex[gpu] implementations"]},
+        "covariance": {"SETS": ["common", "basic_statistics data", "sklearn-ex[gpu] implementations", "covariance"]},
         "linear_regression": {
             "SETS": ["common", "linear_regression", "linear_regression data", "sklearn-ex[gpu] implementations"]
         },
