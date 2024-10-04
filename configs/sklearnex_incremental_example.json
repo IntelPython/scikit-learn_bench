@@ -56,6 +56,10 @@
         }
     },
     "TEMPLATES": {
-        "covariance": {"SETS": ["common", "covariance", "unlabeled dataset"]}
+        "covariance": {"SETS": ["common", "covariance", "unlabeled dataset"]},
+        "linear_regression": {
+            "SETS": ["common", "linear_regression", "labeled dataset"]
+        },
+        "pca": {"SETS": ["common", "pca", "unlabeled dataset"]}
     }
 }

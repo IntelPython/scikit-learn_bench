@@ -236,7 +236,6 @@ def get_result_tables_as_df(
     splitby_columns=["estimator", "method", "function"],
     compatibility_mode=False,
 ):
-    print(results["bench_cases"])
     bench_cases = pd.DataFrame(
         [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
     )
@@ -245,7 +244,6 @@ def get_result_tables_as_df(
     if compatibility_mode:
         bench_cases = transform_results_to_compatible(bench_cases)
 
-    print(bench_cases)
     for column in diffby_columns.copy():
         if bench_cases[column].nunique() == 1:
             bench_cases.drop(columns=[column], inplace=True)
