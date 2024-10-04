@@ -425,8 +425,12 @@ def measure_sklearn_estimator(
                         data_args = (x_test,)
 
                 if method == "partial_fit":
-                    num_batches = get_bench_case_value(bench_case, "data:num_batches")
-                    batch_size = get_bench_case_value(bench_case, "data:batch_size")
+                    num_batches = get_bench_case_value(
+                        bench_case, f"algorithm:num_batches:{stage}"
+                    )
+                    batch_size = get_bench_case_value(
+                        bench_case, f"algorithm:batch_size:{stage}"
+                    )
 
                     if batch_size is None:
                         if num_batches is None:
