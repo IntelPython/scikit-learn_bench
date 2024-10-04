@@ -12,7 +12,7 @@
 	},
 	"synthetic data": {
                 "data": [
-                        { "source": "make_blobs", "generation_kwargs": { "n_samples": 3750000,  "n_features": 10, "centers": 10 }, "algorithm": { "n_clusters": 10, "max_iter": 10 } },
+                    { "source": "make_blobs", "generation_kwargs": { "n_samples": 3750000,  "n_features": 10, "centers": 10 }, "algorithm": { "n_clusters": 10, "max_iter": 10 } },
 	                { "source": "make_blobs", "generation_kwargs": { "n_samples": 18750,  "n_features": 1000, "centers": 10 }, "algorithm": { "n_clusters": 10, "max_iter": 10 } }
                 ]
         }
