@@ -48,7 +48,7 @@ steps:
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
-      python -m sklbench --report -l DEBUG --report -c configs/incremental.json
+      python -m sklbench --report -l DEBUG --report -c configs/sklearnex_incremental_example.json
     displayName: Incremental algorithms example run
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
