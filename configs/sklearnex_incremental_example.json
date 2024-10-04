@@ -36,15 +36,6 @@
                 }
             ]
         },
-        "basic_statistics": {
-            "algorithm": [
-                {
-                    "estimator": "IncrementalBasicStatistics",
-                    "library": "sklearnex",
-                    "num_batches": {"training": 2}
-                }
-            ]
-        },
         "linear_regression": {
             "algorithm": [
                 {
