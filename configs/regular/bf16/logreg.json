@@ -10,14 +10,14 @@
                     "tol": 1e-4,
                     "C": 1.0,
                     "l1_ratio": null,
-                    "max_iter": 200
+                    "max_iter": 20
                 }
             }
         },
         "sklearn logreg parameters": {
             "algorithm": {
                 "estimator_params": {
-                    "solver": "lbfgs",
+                    "solver": "newton-cg",
                     "n_jobs": "[SPECIAL_VALUE]physical_cpus",
                     "random_state": 42
                 }
