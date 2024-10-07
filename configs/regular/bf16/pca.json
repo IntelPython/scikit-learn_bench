@@ -13,6 +13,9 @@
                     "iterated_power": 15,
                     "random_state": 42
                 }
+            },
+            "data": {
+                "dtype": ["float32"]
             }
         },
         "synthetic data": {
