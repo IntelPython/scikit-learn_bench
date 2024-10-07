@@ -14,7 +14,7 @@
                 "estimator_methods": { "inference": "predict" }
             },
             "data": {
-                "dtype": ["float32", "float64"],
+                "dtype": ["float32"],
                 "preprocessing_kwargs": { "normalize": true }
             }
         },
