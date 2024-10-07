@@ -13,6 +13,9 @@
                     "bootstrap": true,
                     "random_state": 42
                 }
+            },
+            "data": {
+                "dtype": ["float32"]
             }
         },
         "sklearn ensemble classifier params": {
