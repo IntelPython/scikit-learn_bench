@@ -9,6 +9,7 @@
                 }
             },
             "data": {
+                "dtype": ["float32"],
                 "preprocessing_kwargs": { "normalize": true }
             }
         },
