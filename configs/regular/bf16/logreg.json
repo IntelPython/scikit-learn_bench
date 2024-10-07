@@ -12,6 +12,9 @@
                     "l1_ratio": null,
                     "max_iter": 20
                 }
+            },
+	    "data": {
+                "dtype": ["float32"]
             }
         },
         "sklearn logreg parameters": {
