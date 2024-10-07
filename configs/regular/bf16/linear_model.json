@@ -10,6 +10,9 @@
             "algorithm": {
                 "estimator": "LinearRegression",
                 "estimator_params": { "fit_intercept": true, "copy_X": true }
+            },
+            "data": {
+                "dtype": ["float32"]
             }
         },
         "sklearn linear parameters": {
