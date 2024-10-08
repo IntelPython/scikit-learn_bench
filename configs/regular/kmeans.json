@@ -70,17 +70,9 @@
     "TEMPLATES": {
         "sklearn kmeans": {
             "SETS": [
-                "sklearn-ex[preview] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common kmeans parameters",
                 "sklearn kmeans parameters",
-                "kmeans datasets"
-            ]
-        },
-        "cuml kmeans": {
-            "SETS": [
-                "cuml implementation",
-                "common kmeans parameters",
-                "cuml kmeans parameters",
                 "kmeans datasets"
             ]
         }

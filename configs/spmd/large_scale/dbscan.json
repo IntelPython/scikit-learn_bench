@@ -14,7 +14,7 @@
 	},
 	"synthetic dataset": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 10, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 100, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
             ]
 	}
     },
@@ -24,7 +24,7 @@
                 "common dbscan parameters",
                 "synthetic dataset",
                 "sklearnex spmd implementation",
-		"large scale default parameters",
+		        "large scale default parameters",
                 "spmd dbscan parameters"
             ]
         }

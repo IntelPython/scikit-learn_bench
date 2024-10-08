@@ -21,7 +21,7 @@
             "SETS": [
                 "sklearnex spmd implementation",
                 "large scale strong 2k parameters",
-		"synthetic data",
+		        "synthetic data",
                 "spmd basicstats parameters"
             ]
         }

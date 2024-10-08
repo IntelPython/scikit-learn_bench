@@ -90,7 +90,7 @@
     "TEMPLATES": {
         "sklearn ensemble classification": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common ensemble params",
                 "sklearn ensemble classifier params",
                 "ensemble classification data"
@@ -98,25 +98,9 @@
         },
         "sklearn ensemble regression": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[gpu] implementations",
                 "common ensemble params",
                 "sklearn ensemble regressor params",
-                "ensemble regression data"
-            ]
-        },
-        "cuml ensemble classification": {
-            "SETS": [
-                "cuml implementation",
-                "common ensemble params",
-                "cuml ensemble classifier params",
-                "ensemble classification data"
-            ]
-        },
-        "cuml ensemble regression": {
-            "SETS": [
-                "cuml implementation",
-                "common ensemble params",
-                "cuml ensemble regressor params",
                 "ensemble regression data"
             ]
         }

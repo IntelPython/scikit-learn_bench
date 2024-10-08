@@ -1,0 +1,41 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common dbscan parameters": {
+            "algorithm": {
+                "estimator": "DBSCAN",
+                "estimator_params": {
+                    "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
+                    "min_samples": 5,
+                    "metric": "euclidean"
+                }
+            },
+            "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "sklearn dbscan parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "synthetic dataset": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 10, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
+            ]
+	    }
+    },
+    "TEMPLATES": {
+        "sklearn dbscan": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common dbscan parameters",
+                "sklearn dbscan parameters",
+                "synthetic dataset"
+            ]
+        }
+    }
+}

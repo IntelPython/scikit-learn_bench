@@ -1,0 +1,41 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_neighbors": [10, 100],
+                    "weights": "uniform"
+                }
+            },
+            "data": {
+                "dtype": ["float32"],
+                "preprocessing_kwargs": { "normalize": true }
+            }
+        },
+        "sklearn knn parameters": {
+            "algorithm": { "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" } }
+        },
+        "synthetic classification data": {
+            "data": [
+		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 51000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
+            ]
+        },
+        "synthetic regression data": {
+            "data": [
+		        { "source": "make_regression", "split_kwargs": { "train_size": 50000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 51000,  "n_features": 100, "noise":1.5 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn brute knn clsf": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common knn parameters",
+                "sklearn knn parameters",
+                "synthetic classification data",
+                "synthetic regression data"
+            ]
+        }
+    }
+}

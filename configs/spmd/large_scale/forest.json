@@ -3,7 +3,8 @@
     "PARAMETERS_SETS": {
         "spmd forest classification parameters": {
             "algorithm": {
-                "estimator": "RandomForestClassifier"
+                "estimator": "RandomForestClassifier",
+		"estimator_methods": { "training": "fit" }
             }
         },
         "synthetic data": {
@@ -14,11 +15,11 @@
         }
     },
     "TEMPLATES": {
-        "basicstats": {
+        "forestCls": {
             "SETS": [
                 "sklearnex spmd implementation",
                 "large scale 2k parameters",
-		"synthetic data",
+		        "synthetic data",
                 "spmd forest classification parameters"
             ]
         }

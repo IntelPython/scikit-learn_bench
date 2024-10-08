@@ -1,0 +1,36 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "pca parameters": {
+            "algorithm": {
+                "estimator": "PCA",
+                "estimator_params": {
+                    "n_components": 3,
+                    "copy": true,
+                    "whiten": false,
+                    "svd_solver": "covariance_eigh",
+                    "tol": 0.0,
+                    "iterated_power": 15,
+                    "random_state": 42
+                }
+            },
+            "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn pca": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "pca parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}
