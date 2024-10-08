@@ -20,8 +20,8 @@
                 "sklearnex spmd implementation",
                 "large scale strong two nodes parameters",
                 "spmd logreg parameters",
-		        "synthetic data",
-		        "spmd logreg2 parameters"
+		"synthetic data",
+		"spmd logreg2 parameters"
             ]
         }
     }

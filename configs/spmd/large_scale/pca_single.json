@@ -20,10 +20,10 @@
     "TEMPLATES": {
         "linreg": {
             "SETS": [
-		        "sklearnex spmd implementation",
+	        "sklearnex spmd implementation",
                 "large scale one node parameters",
                 "synthetic data",
-		        "spmd pca parameters"
+		"spmd pca parameters"
             ]
         }
     }

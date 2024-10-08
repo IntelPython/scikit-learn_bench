@@ -23,7 +23,7 @@
             "SETS": [
                 "synthetic dataset",
                 "sklearnex spmd implementation",
-		        "large scale strong 32 parameters",
+		"large scale strong 32 parameters",
                 "spmd dbscan parameters"
             ]
         }
