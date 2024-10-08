@@ -75,12 +75,12 @@
                 }
             ]
         },
-        "decomposition": {
+        "pca": {
             "algorithm": [
                 {
                     "estimator": "PCA",
                     "library": "sklearnex.spmd",
-                    "estimator_methods": {"training": "fit"}
+                    "estimator_methods": {"training": "fit", "inference": ""}
                 }
             ]
         }
@@ -91,6 +91,6 @@
         "linear_regression": {
             "SETS": ["linear_regression", "linear_regression data", "sklearnex spmd implementation", "large scale full one node parameters"]
         },
-        "pca": {"SETS": ["decomposition", "pca data", "sklearnex spmd implementation", "large scale full one node parameters"]}
+        "pca": {"SETS": ["pca", "pca data", "sklearnex spmd implementation", "large scale full one node parameters"]}
     }
 }
