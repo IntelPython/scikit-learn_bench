@@ -19,7 +19,7 @@
         "linreg": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale 64 parameters",
+                "large scale two nodes parameters",
 		"synthetic data",
                 "spmd linear parameters"
             ]
