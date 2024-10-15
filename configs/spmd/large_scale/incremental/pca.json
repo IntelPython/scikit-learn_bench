@@ -1,10 +1,11 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../regular/pca.json", "large_scale.json"],
+    "INCLUDE": ["../../../common/sklearn.json", "../../../regular/pca.json", "../large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd pca parameters": {
             "algorithm": {
-                "estimator": "PCA",
-                "estimator_methods": { "training": "fit", "inference": "" }
+                "estimator": "IncrementalPCA",
+                "estimator_methods": { "training": "fit", "inference": "" },
+                "num_batches": {"training": 10}
             },
             "data": {
                 "split_kwargs": { "test_size": 0.0001 }
@@ -12,7 +13,6 @@
         },
         "synthetic data": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } },
                 { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 1000, "centers": 1 } }
             ]
         }
@@ -20,8 +20,8 @@
     "TEMPLATES": {
         "linreg": {
             "SETS": [
-	        "sklearnex spmd implementation",
-                "large scale one node parameters",
+		"sklearnex spmd implementation",
+                "large scale 32 parameters",
                 "synthetic data",
 		"spmd pca parameters"
             ]

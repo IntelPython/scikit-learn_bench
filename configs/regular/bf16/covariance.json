@@ -1,0 +1,28 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "covariance parameters": {
+            "algorithm": {
+                "estimator": "EmpiricalCovariance",
+		"library": "sklearnex.preview.covariance"
+            },
+            "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "covariance": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "covariance parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}

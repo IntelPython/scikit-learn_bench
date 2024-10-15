@@ -1,0 +1,27 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "basic stats parameters": {
+            "algorithm": {
+                "estimator": "BasicStatistics"
+            },
+            "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "basic_statistics": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "basic stats parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}

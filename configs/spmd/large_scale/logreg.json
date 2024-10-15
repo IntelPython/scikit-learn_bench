@@ -10,14 +10,8 @@
 	},
         "synthetic data": {
             "data": [
-<<<<<<< HEAD
-		        { "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 5001000, "n_features": 10, "n_classes": 2 } },
-                { "source": "make_classification", "split_kwargs": { "train_size": 100000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 101000, "n_features": 1000, "n_classes": 2 } },
-                { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 501000, "n_features": 200, "n_classes":2, "n_clusters_per_class": 3, "flip_y":0.05 } }
-=======
 		{ "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 5001000, "n_features": 10, "n_classes": 2 } },
                 { "source": "make_classification", "split_kwargs": { "train_size": 100000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 101000, "n_features": 1000, "n_classes": 2 } }
->>>>>>> oleg_online/inc-dist-support
             ]
         }
     },
@@ -27,13 +21,8 @@
                 "sklearnex spmd implementation",
                 "large scale 2k parameters",
                 "spmd logreg parameters",
-<<<<<<< HEAD
-		        "synthetic data",
-		        "spmd logreg2 parameters"
-=======
 		"synthetic data",
 		"spmd logreg2 parameters"
->>>>>>> oleg_online/inc-dist-support
             ]
         }
     }

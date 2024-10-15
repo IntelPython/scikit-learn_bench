@@ -1,0 +1,34 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common forest params": {
+            "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "forest classifier params": {
+            "algorithm": {"estimator": "RandomForestClassifier"},
+	    "data": { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 501000, "n_features": 10, "n_classes": 2 },  "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } } }
+        },
+	"forest regression params": {
+            "algorithm": {"estimator": "RandomForestRegressor"},
+            "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 501000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 500000, "test_size": 1000 }, "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } }}
+        }
+    },
+    "TEMPLATES": {
+        "forest cls": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common forest params",
+                "forest classifier params"
+            ]
+        },
+	"forest reg": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common forest params",
+                "forest regression params"
+            ]
+        }
+    }
+}

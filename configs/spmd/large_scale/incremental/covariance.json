@@ -1,10 +1,11 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../spmd/stats_covariance.json", "large_scale.json"],
+    "INCLUDE": ["../../../common/sklearn.json", "../../../spmd/stats_covariance.json", "../large_scale.json"],
     "PARAMETERS_SETS": {
-        "spmd basicstats parameters": {
+        "spmd covariance parameters": {
             "algorithm": {
-                "estimator": "EmpiricalCovariance",
-                "estimator_methods": { "training": "fit" }
+                "estimator": "IncrementalEmpiricalCovariance",
+                "estimator_methods": { "training": "fit" },
+                "num_batches": {"training": 10}
             },
             "data": {
                 "split_kwargs": { "test_size": 0.0001 }
@@ -12,7 +13,6 @@
         },
         "synthetic data": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } },
                 { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 1000, "centers": 1 } }
             ]
         }
@@ -21,9 +21,9 @@
         "covariance": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale 2k parameters",
+                "large scale 32 parameters",
 		"synthetic data",
-                "spmd basicstats parameters"
+                "spmd covariance parameters"
             ]
         }
     }

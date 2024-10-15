@@ -61,7 +61,7 @@
             "algorithm": [
                 {
                     "estimator": "EmpiricalCovariance",
-                    "library": "sklearnex.spmd.covariance",
+                    "library": "sklearnex.spmd",
                     "estimator_methods": {"training": "fit"}
                 }
             ]
@@ -70,7 +70,7 @@
             "algorithm": [
                 {
                     "estimator": "LinearRegression",
-                    "library": "sklearnex.spmd.linear_model",
+                    "library": "sklearnex.spmd",
                     "estimator_methods": {"training": "fit"}
                 }
             ]
@@ -79,8 +79,8 @@
             "algorithm": [
                 {
                     "estimator": "PCA",
-                    "library": "sklearnex.spmd.decomposition",
-                    "estimator_methods": {"training": "fit"}
+                    "library": "sklearnex.spmd",
+                    "estimator_methods": {"training": "fit", "inference": ""}
                 }
             ]
         }
