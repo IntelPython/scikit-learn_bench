@@ -6,7 +6,10 @@
 		"estimator": "DBSCAN",
 		"estimator_methods": {
 		    "training": "fit"
-		}
+		},
+                "estimator_params" : {
+                        "eps": 10, "min_samples": 5
+                }
 	    },
 	    "data": {
 		"dtype": "float64"
@@ -14,7 +17,7 @@
 	},
 	"synthetic dataset": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 500000,  "n_features": 100, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 500000,  "n_features": 100, "centers": 10 } }
             ]
 	}
     },

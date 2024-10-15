@@ -6,6 +6,9 @@
 		"estimator": "DBSCAN",
 		"estimator_methods": {
 		    "training": "fit"
+		},
+		"estimator_params" : {
+			"eps": 10, "min_samples": 5
 		}
 	    },
 	    "data": {
@@ -14,7 +17,7 @@
 	},
 	"synthetic dataset": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 100, "centers": 10 }, "algorithm": { "eps": 5, "min_samples": 5 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 100, "centers": 10 } }
             ]
 	}
     },
@@ -24,7 +27,7 @@
                 "common dbscan parameters",
                 "synthetic dataset",
                 "sklearnex spmd implementation",
-		"large scale default parameters",
+		"large scale <64 parameters",
                 "spmd dbscan parameters"
             ]
         }
