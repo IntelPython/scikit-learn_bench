@@ -12,7 +12,8 @@
                 "estimator_params": { "fit_intercept": true, "copy_X": true }
             },
             "data": {
-                "dtype": ["float32"]
+                "dtype": ["float32"],
+                "order": "C",
             }
         },
         "sklearn linear parameters": {
