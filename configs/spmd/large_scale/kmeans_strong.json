@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../regular/kmeans.json", "large_scale.json"],
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd kmeans parameters": {
             "algorithm": {
@@ -23,7 +23,7 @@
             "SETS": [
                 "synthetic data",
                 "sklearnex spmd implementation",
-                "large scale strong 32 parameters",
+                "large scale strong <=64 parameters",
                 "spmd kmeans parameters"
             ]
         }

@@ -136,11 +136,11 @@ def cache(function):
         data_name = kwargs["data_name"]
         data_cache = kwargs["data_cache"]
         if len(get_filenames_by_prefix(data_cache, data_name)) > 0:
-            logger.info(f'Loading "{data_name}" dataset from cache files')
+            # logger.info(f'Loading "{data_name}" dataset from cache files')
             data = load_data_from_cache(data_cache, data_name)
             data_desc = load_data_description(data_cache, data_name)
         else:
-            logger.info(f'Loading "{data_name}" dataset from scratch')
+            # logger.info(f'Loading "{data_name}" dataset from scratch')
             data, data_desc = function(**kwargs)
             save_data_to_cache(data, data_cache, data_name)
             save_data_description(data_desc, data_cache, data_name)

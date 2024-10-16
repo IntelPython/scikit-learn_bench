@@ -1,14 +1,16 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../spmd/stats_covariance.json", "large_scale.json"],
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd forest classification parameters": {
             "algorithm": {
-                "estimator": "RandomForestClassifier"
+                "estimator": "RandomForestClassifier",
+		"estimator_methods": { "training": "fit" },
+		"estimator_params": { "n_estimators": 20, "max_depth": 4 }
             }
         },
         "synthetic data": {
             "data": [
-                { "source": "make_classification", "split_kwargs": { "train_size": 10000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 10001000, "n_features": 100, "n_classes": 2 },  "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 4 } } }
+                { "source": "make_classification", "split_kwargs": { "train_size": 10000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 10001000, "n_features": 100, "n_classes": 2 } }
             ]
         }
     },

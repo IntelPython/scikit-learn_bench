@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../regular/pca.json", "large_scale.json"],
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd pca parameters": {
             "algorithm": {

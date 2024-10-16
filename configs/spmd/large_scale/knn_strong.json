@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../regular/knn.json", "large_scale.json"],
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd knn cls parameters": {
             "algorithm": {
@@ -19,18 +19,16 @@
         },
         "synthetic classification data": {
             "data": [
-		        { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 5000 },   "generation_kwargs": {  "n_samples": 505000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } },
-		        { "source": "make_classification", "split_kwargs": { "train_size": 5000, "test_size": 500000 },   "generation_kwargs": {  "n_samples": 505000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
+		{ "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 1000000 },   "generation_kwargs": {  "n_samples": 1500000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
             ]
         }	
     },
     "TEMPLATES": {
         "knn classifier": {
             "SETS": [
-                "common knn parameters",
                 "synthetic classification data",
                 "sklearnex spmd implementation",
-		"large scale strong 32 parameters",
+		"large scale strong <=64 parameters",
                 "spmd knn cls parameters"
             ]
         }
