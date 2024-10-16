@@ -23,7 +23,7 @@
             "SETS": [
                 "synthetic data",
                 "sklearnex spmd implementation",
-                "large scale strong <64 parameters",
+                "large scale strong <=64 parameters",
                 "spmd kmeans parameters"
             ]
         }

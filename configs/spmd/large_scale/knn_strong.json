@@ -28,7 +28,7 @@
             "SETS": [
                 "synthetic classification data",
                 "sklearnex spmd implementation",
-		"large scale strong <64 parameters",
+		"large scale strong <=64 parameters",
                 "spmd knn cls parameters"
             ]
         }
