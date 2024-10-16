@@ -66,7 +66,7 @@ def get_estimator(library_name: str, estimator_name: str):
             f"Using first {classes_map[estimator_name][0]}."
         )
     estimator = classes_map[estimator_name][0]
-    #if not issubclass(estimator, BaseEstimator):
+    # if not issubclass(estimator, BaseEstimator):
     #    logger.info(f"{estimator} estimator is not derived from sklearn's BaseEstimator")
     return estimator
 
@@ -515,11 +515,14 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     estimator_params = get_bench_case_value(
         bench_case, "algorithm:estimator_params", dict()
     )
-    #logger.debug("estimator params: " + str(estimator_params))
+    # logger.debug("estimator params: " + str(estimator_params))
     if "DBSCAN" in str(estimator_name):
         if "min_samples" in estimator_params:
             from mpi4py import MPI
-            estimator_params["min_samples"] = MPI.COMM_WORLD.Get_size() * estimator_params["min_samples"]
+
+            estimator_params["min_samples"] = (
+                MPI.COMM_WORLD.Get_size() * estimator_params["min_samples"]
+            )
     # get estimator methods for measurement
     estimator_methods = get_estimator_methods(bench_case)
 
@@ -555,7 +558,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     # note: "handle" is not JSON-serializable
     if "handle" in estimator_params:
         del estimator_params["handle"]
-    #logger.debug(f"Estimator parameters:\n{custom_format(estimator_params)}")
+    # logger.debug(f"Estimator parameters:\n{custom_format(estimator_params)}")
     result_template.update(estimator_params)
 
     data_descs = {
