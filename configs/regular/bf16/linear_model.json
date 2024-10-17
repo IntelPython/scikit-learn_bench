@@ -13,7 +13,7 @@
             },
             "data": {
                 "dtype": ["float32"],
-                "order": "C",
+                "order": "C"
             }
         },
         "sklearn linear parameters": {
