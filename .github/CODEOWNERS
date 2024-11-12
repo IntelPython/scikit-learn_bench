@@ -3,6 +3,6 @@ configs                    @Alexsandruss
 configs/spmd/*             @ethanglaser
 configs/regular/xgboost*   @razdoburdin
 sklbench                   @Alexsandruss
-*.md                       @Alexsandruss @samir-nasibli
+*.md                       @Alexsandruss
 requirements*.txt          @Alexsandruss @ethanglaser
 conda-env-*.yml            @Alexsandruss @ethanglaser
