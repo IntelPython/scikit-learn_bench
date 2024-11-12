@@ -85,7 +85,7 @@ Configs have the three highest parameter keys:
 |<h3>Benchmark workflow parameters</h3>||||
 | `bench`:`taskset` | None |  | Value for `-c` argument of `taskset` utility used over benchmark subcommand. |
 | `bench`:`vtune_profiling` | None |  | Analysis type for `collect` argument of Intel(R) VTune* Profiler tool. Linux* OS only. |
-| `bench`:`vtune_results_directory` | `vtune_results` |  | Directory path to store Intel(R) VTune* Profiler results. |
+| `bench`:`vtune_results_directory` | `_vtune_results` |  | Directory path to store Intel(R) VTune* Profiler results. |
 | `bench`:`n_runs` | `10` |  | Number of runs for measured entity. |
 | `bench`:`time_limit` | `3600` |  | Time limit in seconds before the benchmark early stop. |
 | `bench`:`distributor` | None | None, `mpi` | Library used to handle distributed algorithm. |
