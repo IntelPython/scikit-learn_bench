@@ -22,6 +22,7 @@ from ..utils.common import custom_format
 from ..utils.custom_types import BenchCase
 from .loaders import (
     dataset_loading_functions,
+    load_custom_data,
     load_openml_data,
     load_sklearn_synthetic_data,
 )
@@ -47,9 +48,17 @@ def load_data(bench_case: BenchCase) -> Tuple[Dict, Dict]:
     dataset = get_bench_case_value(bench_case, "data:dataset")
     if dataset is not None:
         dataset_params = get_bench_case_value(bench_case, "data:dataset_kwargs", dict())
-        return dataset_loading_functions[dataset](
-            **common_kwargs, preproc_kwargs=preproc_kwargs, dataset_params=dataset_params
-        )
+        if dataset in dataset_loading_functions:
+            # registered dataset loading branch
+            return dataset_loading_functions[dataset](
+                **common_kwargs,
+                preproc_kwargs=preproc_kwargs,
+                dataset_params=dataset_params,
+            )
+        else:
+            # user-provided dataset loading branch
+            return load_custom_data(**common_kwargs, preproc_kwargs=preproc_kwargs)
+
     # load by source
     source = get_bench_case_value(bench_case, "data:source")
     if source is not None:
