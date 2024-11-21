@@ -1,8 +1,15 @@
-# owners and reviewers
+# benchmarking config files
 configs                    @Alexsandruss
 configs/spmd/*             @ethanglaser
 configs/regular/xgboost*   @razdoburdin
+# sklbench implementation and associated docs
 sklbench                   @Alexsandruss
+# all documentation files
 *.md                       @Alexsandruss
+# dependencies files
 requirements*.txt          @Alexsandruss @ethanglaser
 conda-env-*.yml            @Alexsandruss @ethanglaser
+# repository utilities
+/.*                        @Alexsandruss
+/*.yml                     @Alexsandruss
+/*.toml                    @Alexsandruss
