@@ -55,7 +55,7 @@ def generate_benchmark_command(
     if vtune_profiling is not None:
         if sys.platform == "linux":
             vtune_result_dir = get_bench_case_value(
-                bench_case, "bench:vtune_results_directory", "vtune_results"
+                bench_case, "bench:vtune_results_directory", "_vtune_results"
             )
             os.makedirs(vtune_result_dir, exist_ok=True)
             vtune_result_path = os.path.join(

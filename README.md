@@ -100,6 +100,6 @@ flowchart TB
 - [Benchmarks Runner](sklbench/runner/README.md)
 - [Report Generator](sklbench/report/README.md)
 - [Benchmarks](sklbench/benchmarks/README.md)
-- [Data Processing](sklbench/datasets/README.md)
+- [Data Processing and Storage](sklbench/datasets/README.md)
 - [Emulators](sklbench/emulators/README.md)
 - [Developer Guide](docs/README.md)
