@@ -16,7 +16,9 @@
 
 
 import argparse
+import gc
 import json
+import sys
 from multiprocessing import Pool
 from typing import Dict, List, Tuple, Union
 
@@ -94,7 +96,7 @@ def run_benchmarks(args: argparse.Namespace) -> int:
     bench_cases = early_filtering(bench_cases, param_filters)
 
     # prefetch datasets
-    if args.prefetch_datasets:
+    if args.prefetch_datasets or args.describe_datasets:
         # trick: get unique dataset names only to avoid loading of same dataset
         # by different cases/processes
         dataset_cases = {get_data_name(case): case for case in bench_cases}
@@ -102,7 +104,14 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         n_proc = min([16, cpu_count(), len(dataset_cases)])
         logger.info(f"Prefetching datasets with {n_proc} processes")
         with Pool(n_proc) as pool:
-            pool.map(load_data, dataset_cases.values())
+            datasets = pool.map(load_data, dataset_cases.values())
+        if args.describe_datasets:
+            for ((data, data_description), data_name) in zip(datasets, dataset_cases.keys()):
+                print(f"{data_name}:\n\tshape: {data['x'].shape}\n\tparameters: {data_description}")
+            sys.exit(0)
+        # free memory used by prefetched datasets
+        del datasets
+        gc.collect()
 
     # run bench_cases
     return_code, result = call_benchmarks(
