@@ -106,8 +106,12 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         with Pool(n_proc) as pool:
             datasets = pool.map(load_data, dataset_cases.values())
         if args.describe_datasets:
-            for ((data, data_description), data_name) in zip(datasets, dataset_cases.keys()):
-                print(f"{data_name}:\n\tshape: {data['x'].shape}\n\tparameters: {data_description}")
+            for (data, data_description), data_name in zip(
+                datasets, dataset_cases.keys()
+            ):
+                print(
+                    f"{data_name}:\n\tshape: {data['x'].shape}\n\tparameters: {data_description}"
+                )
             sys.exit(0)
         # free memory used by prefetched datasets
         del datasets
