@@ -66,7 +66,7 @@ def read_output_from_command(command: str) -> Tuple[int, str, str]:
         stderr=sp.PIPE,
         encoding="utf-8",
     )
-    return res.returncode, res.stdout[:-1], res.stderr[:-1]
+    return res.returncode, res.stdout.strip(), res.stderr.strip()
 
 
 def hash_from_json_repr(x: JsonTypesUnion, hash_limit: int = 5) -> str:
