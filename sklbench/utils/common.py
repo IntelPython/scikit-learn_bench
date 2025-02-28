@@ -124,7 +124,7 @@ def flatten_list(input_list: List, ensure_type_homogeneity: bool = False) -> Lis
 
 
 def get_module_members(
-    module_names_chain: Union[List, str]
+    module_names_chain: Union[List, str],
 ) -> Tuple[ModuleContentMap, ModuleContentMap]:
     def get_module_name(module_names_chain: List[str]) -> str:
         name = module_names_chain[0]
