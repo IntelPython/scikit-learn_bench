@@ -36,6 +36,10 @@ SP_VALUE_STR = "[SPECIAL_VALUE]"
 def is_special_value(value) -> bool:
     return isinstance(value, str) and value.startswith(SP_VALUE_STR)
 
+def float_range(start,stop,step):
+    while start < stop:
+        yield start
+        start += step
 
 def explain_range(range_str: str) -> List:
     def check_range_values_size(range_values: List[int], size: int):
@@ -47,13 +51,15 @@ def explain_range(range_str: str) -> List:
     range_values = range_str.replace("[RANGE]", "").split(":")
     # TODO: add float values
     range_type = range_values[0]
-    range_values = list(map(int, range_values[1:]))
+    #range_values = list(map(int, range_values[1:]))
+    range_values = list(map(float, range_values[1:]))
     # - add:start{int}:end{int}:step{int} - Arithmetic progression
     #   Sequence: start + step * i <= end
     if range_type == "add":
         check_range_values_size(range_values, 3)
         start, end, step = range_values
-        return list(range(start, end + step, step))
+        #return list(range(start, end + step, step))
+        return list(float_range(start, end + step, step))
     # - mul:current{int}:end{int}:step{int} - Geometric progression
     #   Sequence: current * step <= end
     elif range_type == "mul":
@@ -71,7 +77,8 @@ def explain_range(range_str: str) -> List:
             range_values.append(1)
         check_range_values_size(range_values, 4)
         base, start, end, step = range_values
-        return [base**i for i in range(start, end + step, step)]
+        #return [base**i for i in range(start, end + step, step)]
+        return [base**i for i in float_range(start, end + step, step)]
     else:
         raise ValueError(f'Unknown "{range_type}" range type')
 
