@@ -130,6 +130,12 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         action="store_true",
         help="Load all requested datasets in parallel before running benchmarks.",
     )
+    parser.add_argument(
+        "--describe-datasets",
+        default=False,
+        action="store_true",
+        help="Load all requested datasets in parallel and show their parameters.",
+    )
     # workflow control
     parser.add_argument(
         "--exit-on-error",
