@@ -802,7 +802,8 @@ def load_ann_dataset_template(url, raw_data_cache):
     }
     del x_train, x_test
     # TODO: remove placeholding zeroed y
-    y = np.zeros((x.shape[0],))
+    #y = np.zeros((x.shape[0],))
+    y = np.zeros(x.shape[0])
     return {"x": x, "y": y}, data_desc
 
 
