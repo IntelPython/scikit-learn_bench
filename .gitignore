@@ -1,18 +1,20 @@
-# Release and work directories
+# Python cache
 __pycache__*
-__work*
 
 # Visual Studio related files, e.g., ".vscode"
 .vs*
 
-# Dataset files
-data_cache
-*.csv
-*.npy
-*.npz
 
-# Results at repo root
-vtune_results
+# Misc. files at repository root:
+# - default data cache directory
+/data_cache
+# - results
+/_*results*
 /*.json
 /*.xlsx
+# - scripts
 /*.ipynb
+/*.py
+/*.sh
+# - archives with results or data
+/*.tgz
