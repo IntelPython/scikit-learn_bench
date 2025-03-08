@@ -104,11 +104,14 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         "function": function_name,
     }
     result = enrich_result(result, bench_case)
-    # TODO: replace `x_train` data_desc with more informative values
-    result.update(data_description["x_train"])
+    # Replace `x_train` data_desc with more informative values
+    result.update({
+        "memory_usage": x_train.nbytes,
+        "feature_names": list(x_train.columns) if isinstance(x_train, pd.DataFrame) else None,
+        "class_distribution": dict(pd.Series(y_train).value_counts()) if y_train is not None else None
+    })
     result.update(metrics)
     return [result]
-
 
 if __name__ == "__main__":
     main_template(main)

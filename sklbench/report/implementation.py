@@ -89,12 +89,15 @@ COLUMNS_ORDER = [
     "dataset",
     "samples",
     "features",
+    "feature_names",
     "format",
     "dtype",
     "order",
     "n_classes",
+    "class_distribution",
     "n_clusters",
     "batch_size",
+    "memory_usage",
 ]
 
 DIFFBY_COLUMNS = ["environment_name", "library", "format", "device"]
