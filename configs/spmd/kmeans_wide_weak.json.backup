@@ -1,0 +1,34 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../large_scale/large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd kmeans parameters": {
+            "algorithm": {
+                "estimator": "KMeans",
+                "estimator_params": {
+                    "algorithm": "lloyd",
+		    "max_iter": 20,
+		    "n_clusters": 10,
+		    "random_state": 42
+                },
+                "estimator_methods": { "training": "fit", "inference": "" },
+                "sklearnex_context": { "use_raw_input": true }
+            }
+        },
+        "synthetic data": {
+                "data": [
+		    { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 1000, "centers": 2000, "cluster_std":3.0,  "center_box":1000}}
+                ]
+        }
+    },
+    "TEMPLATES": {
+        "kmeans": {
+            "SETS": [
+                "synthetic data",
+                "sklearnex spmd implementation",
+                "large scale 2k parameters sample shift",
+                "spmd kmeans parameters"
+            ]
+        }
+    }
+}
+
