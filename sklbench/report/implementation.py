@@ -94,6 +94,7 @@ COLUMNS_ORDER = [
     "order",
     "n_classes",
     "n_clusters",
+    "num_batches",
     "batch_size",
 ]
 

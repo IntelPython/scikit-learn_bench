@@ -117,6 +117,7 @@ Configs have the three highest parameter keys:
 |:---------------|:--------------|:--------|:------------|
 | `algorithm`:`estimator` | None |  | Name of measured estimator. |
 | `algorithm`:`estimator_params` | Empty `dict` |  | Parameters for estimator constructor. |
+| `algorithm`:`training`:`num_batches` | 5 |  | Number of batches to benchmark `partial_fit` function, using batches the size of number of samples specified (not samples divided by `num_batches`). For incremental estimators only. |
 | `algorithm`:`online_inference_mode` | False |  | Enables online mode for inference methods of estimator (separate call for each sample). |
 | `algorithm`:`sklearn_context` | None |  | Parameters for sklearn `config_context` used over estimator. |
 | `algorithm`:`sklearnex_context` | None |  | Parameters for sklearnex `config_context` used over estimator. Updated by `sklearn_context` if set. |
