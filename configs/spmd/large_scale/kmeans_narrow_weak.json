@@ -7,15 +7,16 @@
                 "estimator_params": {
                     "algorithm": "lloyd",
 		    "max_iter": 20,
-		    "n_clusters": 100
+		    "n_clusters": 10,
+		    "random_state": 42
                 },
-                "estimator_methods": { "training": "fit", "inference": "predict" },
+                "estimator_methods": { "training": "fit", "inference": "" },
                 "sklearnex_context": { "use_raw_input": true }
             }
         },
         "synthetic data": {
                 "data": [
-                        { "source": "make_blobs", "generation_kwargs": { "n_samples": 25000000,  "n_features": 100, "centers": 100 }}
+		    { "source": "make_blobs", "generation_kwargs": { "n_samples": 2000000,  "n_features": 100, "centers": 2000, "cluster_std": 3, "center_box": 100.0}}
                 ]
         }
     },
@@ -24,10 +25,9 @@
             "SETS": [
                 "synthetic data",
                 "sklearnex spmd implementation",
-                "large scale strong <=64 parameters",
+                "large scale 2k parameters sample shift",
                 "spmd kmeans parameters"
             ]
         }
     }
 }
-
