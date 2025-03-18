@@ -191,19 +191,6 @@ def get_subset_metrics_of_estimator(
                     }
                 )
     elif task == "clustering":
-        if hasattr(estimator_instance, "inertia_"):
-            # compute inertia manually using distances to cluster centers
-            # provided by KMeans.transform
-            metrics.update(
-                {
-                    "inertia": float(
-                        np.power(
-                            convert_to_numpy(estimator_instance.transform(x)).min(axis=1),
-                            2,
-                        ).sum()
-                    )
-                }
-            )
         if hasattr(estimator_instance, "predict"):
             y_pred = convert_to_numpy(estimator_instance.predict(x))
             metrics.update(
