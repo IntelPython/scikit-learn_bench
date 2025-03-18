@@ -18,12 +18,13 @@ import os
 
 import numpy as np
 import pandas as pd
+from mpi4py import MPI
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 
 from ..utils.bench_case import get_bench_case_value
 from ..utils.logger import logger
-from mpi4py import MPI
+
 
 def convert_data(data, dformat: str, order: str, dtype: str, device: str = None):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
