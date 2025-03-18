@@ -116,34 +116,36 @@ def split_and_transform_data(bench_case, data, data_description):
     )
 
     if distributed_split == "sample_shift":
-       comm = MPI.COMM_WORLD
-       rank = comm.Get_rank()
-       size = comm.Get_size()  
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        size = comm.Get_size()
 
-       n_train = len(x_train)
-       n_test = len(x_test)
+        n_train = len(x_train)
+        n_test = len(x_test)
 
-       train_start = 0
-       train_end = n_train
-       test_start = 0
-       test_end = n_test 
+        train_start = 0
+        train_end = n_train
+        test_start = 0
+        test_end = n_test
 
-       adjust_number = (math.sqrt(rank) * 0.003) + 1
+        adjust_number = (math.sqrt(rank) * 0.003) + 1
 
-       if "y" in data:
+        if "y" in data:
             x_train, y_train = (
-                x_train[train_start:train_end] *  adjust_number,
+                x_train[train_start:train_end] * adjust_number,
                 y_train[train_start:train_end],
             )
-            
-            x_test, y_test = x_test[test_start:test_end] * adjust_number, y_test[test_start:test_end]
-       else:
+
+            x_test, y_test = (
+                x_test[test_start:test_end] * adjust_number,
+                y_test[test_start:test_end],
+            )
+        else:
             x_train = x_train[train_start:train_end]
-        
+
             x_test = x_test[test_start:test_end] * adjust_number
 
     elif distributed_split == "rank_based" or knn_split_train:
-        
 
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
@@ -156,7 +158,7 @@ def split_and_transform_data(bench_case, data, data_description):
         train_end = (1 + rank) * n_train // size
         test_start = rank * n_test // size
         test_end = (1 + rank) * n_test // size
-        x_train_rank = x_train[train_start:train_end] 
+        x_train_rank = x_train[train_start:train_end]
 
         if "y" in data:
             x_train, y_train = (

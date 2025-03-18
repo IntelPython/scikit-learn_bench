@@ -67,8 +67,11 @@ def load_data(bench_case: BenchCase) -> Tuple[Dict, Dict]:
             generation_kwargs = get_bench_case_value(
                 bench_case, "data:generation_kwargs", dict()
             )
-            if 'center_box' in generation_kwargs:
-                generation_kwargs['center_box'] = (-1 * generation_kwargs['center_box'], generation_kwargs['center_box'])
+            if "center_box" in generation_kwargs:
+                generation_kwargs["center_box"] = (
+                    -1 * generation_kwargs["center_box"],
+                    generation_kwargs["center_box"],
+                )
             return load_sklearn_synthetic_data(
                 function_name=source,
                 input_kwargs=generation_kwargs,
