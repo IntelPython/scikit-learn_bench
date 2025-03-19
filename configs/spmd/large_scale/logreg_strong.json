@@ -2,16 +2,16 @@
     "INCLUDE": ["../../common/sklearn.json", "../logreg.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "spmd logreg2 parameters": {
-	    "algorithm":{
-		"estimator": "LogisticRegression",
+            "algorithm":{
+                "estimator": "LogisticRegression",
                 "estimator_methods": { "inference": "predict" },
-		"estimator_params": { "max_iter": 16 }
+                "estimator_params": { "max_iter": 16 },
+                "sklearnex_context": { "use_raw_input": true }
             }
-	},
+        },
         "synthetic data": {
             "data": [
-		{ "source": "make_classification", "split_kwargs": { "train_size": 10000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 10001000, "n_features": 100, "n_classes": 2 } },
-		{ "source": "make_classification", "split_kwargs": { "train_size": 12000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 12001000, "n_features": 200, "n_classes": 2, "n_informative": 40, "n_clusters_per_class": 3, "flip_y": 0.05 } }
+                { "source": "make_classification", "split_kwargs": { "train_size": 12000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 12001000, "n_features": 200, "n_classes": 2, "n_informative": 40, "n_clusters_per_class": 3, "flip_y": 0.05 } }
             ]
         }
     },
@@ -19,10 +19,10 @@
         "logreg": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale strong 2k parameters",
+                "large scale strong 64 parameters",
                 "spmd logreg parameters",
-		"synthetic data",
-		"spmd logreg2 parameters"
+                "synthetic data",
+                "spmd logreg2 parameters"
             ]
         }
     }

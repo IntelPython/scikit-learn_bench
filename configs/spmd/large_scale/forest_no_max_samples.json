@@ -4,14 +4,13 @@
         "spmd forest classification parameters": {
             "algorithm": {
                 "estimator": "RandomForestClassifier",
-		"estimator_methods": { "training": "fit" },
-		"estimator_params": { "n_estimators": 20, "max_depth": 4 }
+                "estimator_params": { "n_estimators": 100, "max_depth": 7 },
+                "sklearnex_context": { "use_raw_input": true }
             }
         },
         "synthetic data": {
             "data": [
-                { "source": "make_classification", "split_kwargs": { "train_size": 500000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 501000, "n_features": 10, "n_classes": 2 } },
-                { "source": "make_classification", "split_kwargs": { "train_size": 10000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 11000, "n_features": 1000, "n_classes": 2 } }
+                { "source": "make_classification", "split_kwargs": { "train_size": 1000000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 1001000, "n_features": 100, "n_classes": 2 }, "n_informative": "[SPECIAL_VALUE]0.5" }
             ]
         }
     },
@@ -20,7 +19,7 @@
             "SETS": [
                 "sklearnex spmd implementation",
                 "large scale 2k parameters",
-		"synthetic data",
+                "synthetic data",
                 "spmd forest classification parameters"
             ]
         }

@@ -4,16 +4,17 @@
         "spmd basicstats parameters": {
             "algorithm": {
                 "estimator": "BasicStatistics",
-                "estimator_methods": { "training": "fit" }
+                "estimator_methods": { "training": "fit" },
+                "sklearnex_context": { "use_raw_input": true }
             },
-	    "data": {
-		"split_kwargs": { "test_size": 0.0001 }
-	    }
+            "data": {
+                "split_kwargs": { "test_size": 0.0001 }
+            }
         },
         "synthetic data": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000000,  "n_features": 10, "centers": 1 } },
-		{ "source": "make_blobs", "generation_kwargs": { "n_samples": 100000,  "n_features": 1000, "centers": 1 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000000,  "n_features": 10, "centers": 1 } },
+		        { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 1000, "centers": 1 } }
             ]
         }
     },
@@ -22,7 +23,7 @@
             "SETS": [
                 "sklearnex spmd implementation",
                 "large scale 2k parameters",
-		"synthetic data",
+		        "synthetic data",
                 "spmd basicstats parameters"
             ]
         }
