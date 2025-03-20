@@ -193,8 +193,8 @@ def compare_df(input_df, diff_columns, diffs_selection, compared_columns=METRIC_
                             df_ith[column] / df_jth[column]
                         )
                     elif column in METRICS["indifferent"]:
-                        df[f"{comparison_name}\n{column} is equal"] = (
-                            df_ith[column] == df_jth[column]
+                        df[f"{comparison_name}\n{column} is equal"] = df_ith[column].eq(
+                            df_jth[column]
                         )
     df = df.reset_index()
     # move to multi-index
