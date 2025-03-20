@@ -516,7 +516,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         bench_case, "algorithm:estimator_params", dict()
     )
     # logger.debug("estimator params: " + str(estimator_params))
-    if "DBSCAN" in str(estimator_name):
+    if "DBSCAN" in str(estimator_name) and get_bench_case_value(bench_case, "data:distributed_split", None) != "rank_based":
         if "min_samples" in estimator_params:
             from mpi4py import MPI
 

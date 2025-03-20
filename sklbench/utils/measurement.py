@@ -79,7 +79,7 @@ def measure_time(
         t0 = timeit.default_timer()
         func_return_value = func(*args, **kwargs)
         t1 = timeit.default_timer()
-        if hasattr(func.__self__, "_n_inner_iter"):
+        if hasattr(func, "__self__") and hasattr(func.__self__, "_n_inner_iter"):
             inners.append(func.__self__._n_inner_iter)
             iters.append(func.__self__.n_iter_)
         if enable_itt and itt_is_available:
