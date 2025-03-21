@@ -19,7 +19,6 @@ import os
 
 import numpy as np
 import pandas as pd
-from mpi4py import MPI
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 
@@ -117,6 +116,8 @@ def split_and_transform_data(bench_case, data, data_description):
     )
 
     if distributed_split == "sample_shift":
+        from mpi4py import MPI
+
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
@@ -147,6 +148,8 @@ def split_and_transform_data(bench_case, data, data_description):
             x_test = x_test[test_start:test_end] * adjust_number
 
     elif distributed_split == "rank_based" or knn_split_train:
+        from mpi4py import MPI
+        
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
