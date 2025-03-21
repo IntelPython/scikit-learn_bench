@@ -4,7 +4,8 @@
         "spmd linear parameters": {
             "algorithm": {
                 "estimator": "LinearRegression",
-                "estimator_methods": { "training": "fit" }
+                "estimator_methods": { "training": "fit" },
+                "sklearnex_context": { "use_raw_input": true }
             }
         },
         "synthetic data": {
@@ -17,8 +18,8 @@
         "linreg": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale strong 2k parameters",
-		"synthetic data",
+                "large scale strong <=64 parameters",
+                "synthetic data",
                 "spmd linear parameters"
             ]
         }

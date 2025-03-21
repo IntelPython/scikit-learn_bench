@@ -3,13 +3,14 @@
     "PARAMETERS_SETS": {
         "spmd dbscan parameters": {
 	    "algorithm": {
-		"estimator": "DBSCAN",
-		"estimator_methods": {
-		    "training": "fit"
+                "estimator": "DBSCAN",
+                "estimator_methods": {
+                "training": "fit"
 		},
                 "estimator_params" : {
-                        "eps": 10, "min_samples": 5
-                }
+                        "eps": 15, "min_samples": 50
+                },
+		"sklearnex_context": { "use_raw_input": true }
 	    },
 	    "data": {
 		"dtype": "float64"
@@ -17,7 +18,7 @@
 	},
 	"synthetic dataset": {
             "data": [
-                { "source": "make_blobs", "generation_kwargs": { "n_samples": 500000,  "n_features": 100, "centers": 10 } }
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 4000000,  "n_features": 100, "centers": 10 } }
             ]
 	}
     },
@@ -27,7 +28,7 @@
                 "common dbscan parameters",
                 "synthetic dataset",
                 "sklearnex spmd implementation",
-		"large scale strong <=64 parameters",
+                "large scale strong <=64 parameters",
                 "spmd dbscan parameters"
             ]
         }

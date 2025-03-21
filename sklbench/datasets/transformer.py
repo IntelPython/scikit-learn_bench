@@ -110,11 +110,10 @@ def split_and_transform_data(bench_case, data, data_description):
         y_train, y_test = None, None
 
     distributed_split = get_bench_case_value(bench_case, "data:distributed_split", None)
-    knn_split_train = (
-        "KNeighbors" in get_bench_case_value(bench_case, "algorithm:estimator", "")
-        and int(get_bench_case_value(bench_case, "bench:mpi_params:n", 1)) > 1
-    )
-
+    # knn_split_train = (
+    #     "KNeighbors" in get_bench_case_value(bench_case, "algorithm:estimator", "")
+    #     and int(get_bench_case_value(bench_case, "bench:mpi_params:n", 1)) > 1
+    # )
     if distributed_split == "sample_shift":
         from mpi4py import MPI
 
@@ -147,7 +146,7 @@ def split_and_transform_data(bench_case, data, data_description):
 
             x_test = x_test[test_start:test_end] * adjust_number
 
-    elif distributed_split == "rank_based" or knn_split_train:
+    elif distributed_split == "rank_based":
         from mpi4py import MPI
 
         comm = MPI.COMM_WORLD
