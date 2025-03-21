@@ -146,7 +146,7 @@ def split_and_transform_data(bench_case, data, data_description):
 
             x_test = x_test[test_start:test_end] * adjust_number
 
-    if distributed_split == "rank_based" or knn_split_train:
+    elif distributed_split == "rank_based" or knn_split_train:
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
