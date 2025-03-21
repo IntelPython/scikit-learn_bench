@@ -21,4 +21,3 @@ dependencies:
   - psutil
   - requests
   - py-cpuinfo
-  
