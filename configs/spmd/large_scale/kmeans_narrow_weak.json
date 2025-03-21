@@ -10,7 +10,7 @@
 		    "n_clusters": 10,
 		    "random_state": 42
                 },
-                "estimator_methods": { "training": "fit", "inference": "" },
+                "estimator_methods": { "training": "fit", "inference": "predict" },
                 "sklearnex_context": { "use_raw_input": true }
             }
         },
