@@ -105,7 +105,7 @@ def measure_time(
             )
         logger.debug(times)
     except ModuleNotFoundError:
-        pass
+        logger.debug(times)
     # mean, std = box_filter(times)
     # if std / mean > std_mean_ratio:
     #    logger.warning(
