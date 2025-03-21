@@ -171,7 +171,6 @@ def split_and_transform_data(bench_case, data, data_description):
             if distributed_split == "rank_based":
                 x_test = x_test[test_start:test_end]
 
-
     device = get_bench_case_value(bench_case, "algorithm:device", None)
     common_data_format = get_bench_case_value(bench_case, "data:format", "pandas")
     common_data_order = get_bench_case_value(bench_case, "data:order", "F")
