@@ -119,19 +119,7 @@ def split_and_transform_data(bench_case, data, data_description):
 
         rank = MPI.COMM_WORLD.Get_rank()
         adjust_number = (math.sqrt(rank) * 0.003) + 1
-
-        if "y" in data:
-            x_train, y_train = (
-                x_train * adjust_number,
-                y_train,
-            )
-
-            x_test, y_test = (
-                x_test * adjust_number,
-                y_test,
-            )
-        else:
-            x_test = x_test * adjust_number
+        x_test = x_test * adjust_number
 
     elif distributed_split == "rank_based":
         from mpi4py import MPI
