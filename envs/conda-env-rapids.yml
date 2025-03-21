@@ -19,3 +19,4 @@ dependencies:
   - psutil
   - requests
   - py-cpuinfo
+  - mpi4py
