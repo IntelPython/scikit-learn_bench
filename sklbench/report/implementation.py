@@ -16,7 +16,7 @@
 
 import argparse
 import json
-from typing import Dict, List
+from typing import Dict, Hashable, List
 
 import openpyxl as xl
 import pandas as pd
@@ -94,6 +94,7 @@ COLUMNS_ORDER = [
     "order",
     "n_classes",
     "n_clusters",
+    "num_batches",
     "batch_size",
 ]
 
@@ -239,6 +240,7 @@ def get_result_tables_as_df(
     bench_cases = pd.DataFrame(
         [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
     )
+    bench_cases = bench_cases.map(lambda x: str(x) if not isinstance(x, Hashable) else x)
 
     if compatibility_mode:
         bench_cases = transform_results_to_compatible(bench_cases)
@@ -248,7 +250,7 @@ def get_result_tables_as_df(
             bench_cases.drop(columns=[column], inplace=True)
             diffby_columns.remove(column)
 
-    return split_df_by_columns(bench_cases, splitby_columns)
+    return split_df_by_columns(bench_cases, splitby_columns, False)
 
 
 def get_summary_from_df(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
@@ -258,7 +260,10 @@ def get_summary_from_df(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             # only relative improvements are included in summary currently
             if len(column) > 1 and column[1] == f"{metric_name} relative improvement":
                 metric_columns.append(column)
-    summary = df[metric_columns].aggregate(geomean_wrapper, axis=0).to_frame().T
+    if metric_columns:
+        summary = df[metric_columns].aggregate(geomean_wrapper, axis=0).to_frame().T
+    else:
+        summary = pd.DataFrame()
     summary.index = pd.Index([df_name])
     return summary
 
