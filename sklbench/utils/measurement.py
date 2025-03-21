@@ -92,7 +92,7 @@ def measure_time(
                 f"exceeded time limit ({time_limit} seconds)"
             )
             break
-    
+
     try:
         from mpi4py import MPI
 
