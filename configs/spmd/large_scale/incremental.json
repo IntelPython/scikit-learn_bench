@@ -1,0 +1,77 @@
+{   "INCLUDE": [ ],
+    "PARAMETERS_SETS": {
+        "common incremental raw gpu params": {
+                "algorithm": {
+                    "device": "gpu",
+                    "sklearnex_context": { "use_raw_input": true }
+                },
+                "data": {
+                    "format":"dpctl",
+                    "order": "C"
+                }
+        },
+        "statistical batches and data": [
+                { "algorithm": { "num_batches": { "training": [1,2,6,12]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000000,  "n_features": 10, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 2} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 50000000,  "n_features": 10, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 6} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 16666667,  "n_features": 10, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 12} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 8333333,  "n_features": 10, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": [1,2,6,12]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 1000, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 2} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 500000,  "n_features": 1000, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 6} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 166667,  "n_features": 1000, "centers": 1 } } },
+                { "algorithm": { "num_batches": { "training": 12} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 83333,  "n_features": 1000, "centers": 1 } } }
+        ],
+        "regression batches and data": [
+            { "algorithm": { "num_batches": { "training": [1,2,6,12]} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 100005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 100000000, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 2} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 100005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 50000000, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 6} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 100005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 16666667, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 12} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 100005000,  "n_features": 10, "noise": 1.25 }, "split_kwargs": { "train_size": 8333333, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": [1,2,6,12]} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 3005000,  "n_features": 1000, "noise": 1.25 }, "split_kwargs": { "train_size": 3000000, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 2} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 3005000,  "n_features": 1000, "noise": 1.25 }, "split_kwargs": { "train_size": 1500000, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 6} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 3005000,  "n_features": 1000, "noise": 1.25 }, "split_kwargs": { "train_size": 500000, "test_size": 5000 } } },
+            { "algorithm": { "num_batches": { "training": 12} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 3005000,  "n_features": 1000, "noise": 1.25 }, "split_kwargs": { "train_size": 250000, "test_size": 5000 } } }
+        ],
+        "covariance": {
+            "algorithm": {
+                    "estimator": "IncrementalEmpiricalCovariance",
+                    "library": "sklearnex",
+                    "estimator_methods": {"training": "partial_fit"}
+                },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                }
+         },
+        "basic_statistics": {
+            "algorithm": {
+                    "estimator": "IncrementalBasicStatistics",
+                    "library": "sklearnex",
+                    "estimator_methods": {"training": "partial_fit"}
+                },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                }
+        },
+        "linear_regression": {
+            "algorithm": {
+                    "estimator": "IncrementalLinearRegression",
+                    "library": "sklearnex",
+                    "estimator_methods": {"training": "partial_fit"}
+                }
+        },
+        "pca": {
+            "algorithm": {
+                    "estimator": "IncrementalPCA",
+                    "library": "sklearnex.preview",
+                    "estimator_methods": {"training": "partial_fit"}
+                    },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                }
+        }
+    },
+    "TEMPLATES": {
+        "basic_statistics": { "SETS": ["common incremental raw gpu params", "basic_statistics", "statistical batches and data"] },
+        "covariance": { "SETS": ["common incremental raw gpu params", "covariance", "statistical batches and data"] },
+        "linear_regression": { "SETS": ["common incremental raw gpu params", "linear_regression", "regression batches and data"] },
+        "pca": { "SETS": ["common incremental raw gpu params", "pca", "statistical batches and data"] }
+    }
+}

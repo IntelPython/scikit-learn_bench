@@ -92,16 +92,20 @@ def measure_time(
                 f"exceeded time limit ({time_limit} seconds)"
             )
             break
-    from mpi4py import MPI
 
-    if MPI.COMM_WORLD.Get_rank() == 0:
-        logger.debug(
-            "iters across n runs: "
-            + str(iters)
-            + ", inner iters across n runs: "
-            + str(inners)
-        )
-    logger.debug(times)
+    try:
+        from mpi4py import MPI
+
+        if MPI.COMM_WORLD.Get_rank() == 0:
+            logger.debug(
+                "iters across n runs: "
+                + str(iters)
+                + ", inner iters across n runs: "
+                + str(inners)
+            )
+        logger.debug(times)
+    except ModuleNotFoundError:
+        pass
     # mean, std = box_filter(times)
     # if std / mean > std_mean_ratio:
     #    logger.warning(
