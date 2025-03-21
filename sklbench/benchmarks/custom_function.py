@@ -64,9 +64,13 @@ def get_function_args(bench_case: BenchCase, x_train, y_train, x_test, y_test) -
 
 def measure_function_instance(bench_case, function_instance, args: Tuple, kwargs: Dict):
     metrics = dict()
-    metrics["time[ms]"], metrics["time std[ms]"], _ = measure_case(
-        bench_case, function_instance, *args, **kwargs
-    )
+    (
+        metrics["time[ms]"],
+        metrics["time std[ms]"],
+        metrics["first iter[ms]"],
+        metrics["box filter mean[ms]"],
+        metrics["box filter std[ms]"],
+    ) = measure_case(bench_case, function_instance, *args, **kwargs)
     return metrics
 
 

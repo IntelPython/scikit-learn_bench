@@ -79,7 +79,7 @@ def measure_time(
         t0 = timeit.default_timer()
         func_return_value = func(*args, **kwargs)
         t1 = timeit.default_timer()
-        if hasattr(func.__self__, "_n_inner_iter"):
+        if hasattr(func, "__self__") and hasattr(func.__self__, "_n_inner_iter"):
             inners.append(func.__self__._n_inner_iter)
             iters.append(func.__self__.n_iter_)
         if enable_itt and itt_is_available:
@@ -92,16 +92,20 @@ def measure_time(
                 f"exceeded time limit ({time_limit} seconds)"
             )
             break
-    from mpi4py import MPI
 
-    if MPI.COMM_WORLD.Get_rank() == 0:
-        logger.debug(
-            "iters across n runs: "
-            + str(iters)
-            + ", inner iters across n runs: "
-            + str(inners)
-        )
-    logger.debug(times)
+    try:
+        from mpi4py import MPI
+
+        if MPI.COMM_WORLD.Get_rank() == 0:
+            logger.debug(
+                "iters across n runs: "
+                + str(iters)
+                + ", inner iters across n runs: "
+                + str(inners)
+            )
+            logger.debug(f"Runtime for all {n_runs} iterations: {times}")
+    except ModuleNotFoundError:
+        logger.debug(f"Runtime for all {n_runs} iterations: {times}")
     # mean, std = box_filter(times)
     # if std / mean > std_mean_ratio:
     #    logger.warning(

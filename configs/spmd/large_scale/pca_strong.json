@@ -4,7 +4,8 @@
         "spmd pca parameters": {
             "algorithm": {
                 "estimator": "PCA",
-                "estimator_methods": { "training": "fit", "inference": "" }
+                "estimator_methods": { "training": "fit", "inference": "" },
+                "sklearnex_context": { "use_raw_input": true }
             },
             "data": {
                 "split_kwargs": { "test_size": 0.0001 }
@@ -19,10 +20,10 @@
     "TEMPLATES": {
         "linreg": {
             "SETS": [
-	        "sklearnex spmd implementation",
-                "large scale strong 2k parameters",
+                "sklearnex spmd implementation",
+                "large scale strong <=64 parameters",
                 "synthetic data",
-		"spmd pca parameters"
+                "spmd pca parameters"
             ]
         }
     }

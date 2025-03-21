@@ -4,11 +4,12 @@
         "spmd basicstats parameters": {
             "algorithm": {
                 "estimator": "BasicStatistics",
-                "estimator_methods": { "training": "fit" }
+                "estimator_methods": { "training": "fit" },
+                "sklearnex_context": { "use_raw_input": true }
             },
-	    "data": {
-		"split_kwargs": { "test_size": 0.0001 }
-	    }
+            "data": {
+                "split_kwargs": { "test_size": 0.0001 }
+            }
         },
         "synthetic data": {
             "data": [
@@ -20,8 +21,8 @@
         "basicstats": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale strong 2k parameters",
-		"synthetic data",
+                "large scale strong <=64 parameters",
+                "synthetic data",
                 "spmd basicstats parameters"
             ]
         }
