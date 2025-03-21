@@ -103,7 +103,8 @@ def measure_time(
                 + ", inner iters across n runs: "
                 + str(inners)
             )
-        logger.debug(times)
+            logger.debug(f"Runtime for all {n_runs} iterations: {times}")
+
     except ModuleNotFoundError:
         logger.debug(times)
     # mean, std = box_filter(times)
