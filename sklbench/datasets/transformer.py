@@ -14,9 +14,9 @@
 # limitations under the License.
 # ===============================================================================
 
+import math
 import os
 
-import math
 import numpy as np
 import pandas as pd
 from mpi4py import MPI
