@@ -117,34 +117,21 @@ def split_and_transform_data(bench_case, data, data_description):
     if distributed_split == "sample_shift":
         from mpi4py import MPI
 
-        comm = MPI.COMM_WORLD
-        rank = comm.Get_rank()
-        size = comm.Get_size()
-
-        n_train = len(x_train)
-        n_test = len(x_test)
-
-        train_start = 0
-        train_end = n_train
-        test_start = 0
-        test_end = n_test
-
+        rank = MPI.COMM_WORLD.Get_rank()
         adjust_number = (math.sqrt(rank) * 0.003) + 1
 
         if "y" in data:
             x_train, y_train = (
-                x_train[train_start:train_end] * adjust_number,
-                y_train[train_start:train_end],
+                x_train * adjust_number,
+                y_train,
             )
 
             x_test, y_test = (
-                x_test[test_start:test_end] * adjust_number,
-                y_test[test_start:test_end],
+                x_test * adjust_number,
+                y_test,
             )
         else:
-            x_train = x_train[train_start:train_end]
-
-            x_test = x_test[test_start:test_end] * adjust_number
+            x_test = x_test * adjust_number
 
     elif distributed_split == "rank_based":
         from mpi4py import MPI
