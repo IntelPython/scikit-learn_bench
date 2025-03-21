@@ -124,6 +124,7 @@ def split_and_transform_data(bench_case, data, data_description):
         # The factor 0.003 was chosen arbitrarily and can be fine-tuned for other datasets and algorithms if needed.
         adjust_number = (math.sqrt(rank) * 0.003) + 1
         x_test = x_test * adjust_number
+        x_train = x_train * adjust_number
 
     elif distributed_split == "rank_based":
         from mpi4py import MPI
