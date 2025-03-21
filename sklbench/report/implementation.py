@@ -100,7 +100,8 @@ COLUMNS_ORDER = [
     "batch_size",
 ]
 
-DIFFBY_COLUMNS = ["environment_name", "library", "format", "device"]
+#DIFFBY_COLUMNS = ["environment_name", "library", "format", "device"]
+DIFFBY_COLUMNS = ["library", "format", "device"]
 
 
 def geomean_wrapper(a):
