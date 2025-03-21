@@ -48,11 +48,6 @@ steps:
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
-      python -m sklbench --report -l DEBUG --report -c configs/incremental.json
-    displayName: Incremental algorithms example run
-  - script: |
-      source /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate bench-env
       python -m sklbench --report -l DEBUG --report -c configs/xgboost_example.json
     displayName: XGBoost example run
   - script: |
