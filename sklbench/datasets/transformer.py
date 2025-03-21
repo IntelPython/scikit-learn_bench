@@ -149,7 +149,7 @@ def split_and_transform_data(bench_case, data, data_description):
 
     elif distributed_split == "rank_based" or knn_split_train:
         from mpi4py import MPI
-        
+
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
