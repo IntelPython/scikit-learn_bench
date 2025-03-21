@@ -105,6 +105,7 @@ Configs have the three highest parameter keys:
 | `data`:`order` | `F` | `C`, `F` | Data order to use in benchmark: contiguous(C) or Fortran. |
 | `data`:`dtype` | `float64` |  | Data type to use in benchmark. |
 | `data`:`distributed_split` | None | None, `rank_based` | Split type used to distribute data between machines in distributed algorithm. `None` type means usage of all data without split on all machines. `rank_based` type splits the data equally between machines with split sequence based on rank id from MPI. |
+| `data`: `sample_shift` | None | None, `rank_based` | Determines how data points are shifted based on MPI rank. `None` type means use all data without any shift across all machines. `sample_shift`: Shift each data point in a rank by \((\sqrt{\text{rank id}} \times 0.003) + 1\). |
 |<h3>Algorithm parameters</h3>||||
 | `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
 | `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Device selected for computation. |
