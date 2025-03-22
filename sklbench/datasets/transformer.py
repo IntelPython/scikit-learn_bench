@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import math
 import os
 
 import numpy as np
@@ -113,7 +114,19 @@ def split_and_transform_data(bench_case, data, data_description):
     #     "KNeighbors" in get_bench_case_value(bench_case, "algorithm:estimator", "")
     #     and int(get_bench_case_value(bench_case, "bench:mpi_params:n", 1)) > 1
     # )
-    if distributed_split == "rank_based":
+    if distributed_split == "sample_shift":
+        from mpi4py import MPI
+
+        rank = MPI.COMM_WORLD.Get_rank()
+        # This approach was chosen to shift the distribution of synthetic data on each rank
+        # for KMeans weak scaling tests. When testing with a large number of tiles, this method avoids duplication of data on each rank.
+        # For example, if there are 24,576 tiles being used, each data point in the 24,576th tile would be multiplied by 1.47.
+        # The factor 0.003 was chosen arbitrarily and can be fine-tuned for other datasets and algorithms if needed.
+        adjust_number = (math.sqrt(rank) * 0.003) + 1
+        x_test = x_test * adjust_number
+        x_train = x_train * adjust_number
+
+    elif distributed_split == "rank_based":
         from mpi4py import MPI
 
         comm = MPI.COMM_WORLD
