@@ -415,10 +415,7 @@ def measure_sklearn_estimator(
                     )
 
                     method_instance = create_online_function(
-                        estimator_instance,
-                        method_instance,
-                        data_args,
-                        num_batches
+                        estimator_instance, method_instance, data_args, num_batches
                     )
                 # daal4py model builders enabling branch
                 if enable_modelbuilders and stage == "inference":
@@ -554,7 +551,7 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
                     ),
                     "num_batches": get_bench_case_value(
                         bench_case, f"algorithm:num_batches:{stage}"
-                    )
+                    ),
                 }.items()
                 if val is not None
             }
