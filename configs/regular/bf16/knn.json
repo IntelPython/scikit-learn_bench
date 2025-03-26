@@ -4,7 +4,7 @@
         "common knn parameters": {
             "algorithm": {
                 "estimator_params": {
-                    "n_neighbors": 10,
+                    "n_neighbors": 100,
                     "weights": "uniform"
                 }
             },
