@@ -4,7 +4,7 @@
         "common knn parameters": {
             "algorithm": {
                 "estimator_params": {
-                    "n_neighbors": [10, 100],
+                    "n_neighbors": 10,
                     "weights": "uniform"
                 }
             },
@@ -19,19 +19,10 @@
         "synthetic classification data": {
 	    "algorithm": {
                 "estimator": "KNeighborsClassifier",
-                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
+                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": 2 }
             },
             "data": [
 		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 51000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
-            ]
-        },
-        "synthetic regression data": {
-	    "algorithm": {
-                "estimator": "KNeighborsRegressor",
-                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
-            },
-            "data": [
-		        { "source": "make_regression", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 5001000,  "n_features": 100, "noise":1.5 } }
             ]
         }
     },
@@ -42,14 +33,6 @@
                 "common knn parameters",
                 "sklearn knn parameters",
                 "synthetic classification data"
-            ]
-        },
-	"sklearn brute knn reg": {
-            "SETS": [
-                "sklearn-ex[gpu] implementations",
-                "common knn parameters",
-                "sklearn knn parameters",
-                "synthetic regression data"
             ]
         }
     }
