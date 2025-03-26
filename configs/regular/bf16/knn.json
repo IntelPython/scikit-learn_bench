@@ -22,7 +22,7 @@
                 "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
             },
             "data": [
-		        { "source": "make_classification", "split_kwargs": { "train_size": 5000000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 5001000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
+		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 1000 },   "generation_kwargs": {  "n_samples": 51000,  "n_features": 100, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }
             ]
         },
         "synthetic regression data": {
