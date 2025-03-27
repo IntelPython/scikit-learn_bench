@@ -25,7 +25,7 @@
             "SETS": [
                 "synthetic data",
                 "sklearnex spmd implementation",
-                "large scale 2k parameters",
+                "large scale 2k parameters sample shift",
                 "spmd kmeans parameters"
             ]
         }

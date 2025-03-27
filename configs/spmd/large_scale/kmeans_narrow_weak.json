@@ -6,9 +6,9 @@
                 "estimator": "KMeans",
                 "estimator_params": {
                     "algorithm": "lloyd",
-		    "max_iter": 20,
-		    "n_clusters": 10,
-		    "random_state": 42
+		            "max_iter": 20,
+		            "n_clusters": 10,
+		            "random_state": 42
                 },
                 "estimator_methods": { "training": "fit", "inference": "predict" },
                 "sklearnex_context": { "use_raw_input": true }

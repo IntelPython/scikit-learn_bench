@@ -6,8 +6,9 @@
                 "estimator": "KMeans",
                 "estimator_params": {
                     "algorithm": "lloyd",
-		    "max_iter": 20,
-		    "n_clusters": 100
+		            "max_iter": 20,
+		            "n_clusters": 100,
+                    "random_state": 42
                 },
                 "estimator_methods": { "training": "fit", "inference": "predict" },
                 "sklearnex_context": { "use_raw_input": true }
@@ -15,7 +16,7 @@
         },
         "synthetic data": {
                 "data": [
-                        {"source": "make_blobs", "generation_kwargs": { "n_samples": 25000000,  "n_features": 100, "centers": 100, "cluster_std" : 3.0, "center_box":100 }}
+                        {"source": "make_blobs", "generation_kwargs": { "n_samples": 25000000,  "n_features": 100, "centers": 200 }}
                 ]
         }
     },
