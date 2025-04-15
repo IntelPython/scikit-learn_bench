@@ -50,7 +50,7 @@ How to run sklearnex benchmarks on CPU using the `sklbench` module and regular s
 python -m sklbench --configs configs/regular \
     --filters algorithm:library=sklearnex algorithm:device=cpu \
     --environment-name ENV_NAME --result-file result_sklearnex_cpu_regular.json
-# same command with shorter argument aliases for typing convenience
+# Same command with shorter argument aliases for typing convenience
 python -m sklbench -c configs/regular \
     -f algorithm:library=sklearnex algorithm:device=cpu \
     -e ENV_NAME -r result_sklearnex_cpu_regular.json
@@ -72,6 +72,13 @@ python -m sklbench -c configs/regular \
     -e ENV_NAME -r result_sklearnex_cpu_regular.json \
     --report --report-file report-sklearnex-cpu-regular.xlsx \
     --prefetch-datasets -l INFO
+```
+
+To select measurement for few algorithms only, extend filter (`-f`) argument:
+```bash
+# ...
+  -f algorithm:library=sklearnex algorithm:device=cpu algorithm:estimator=PCA,KMeans
+# ...
 ```
 
 For a description of all benchmarks runner arguments, refer to [documentation](sklbench/runner/README.md#arguments).
