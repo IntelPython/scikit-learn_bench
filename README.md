@@ -44,22 +44,34 @@ conda env create -n rapids --solver=libmamba -f envs/conda-env-rapids.yml
 
 ### Benchmarks Runner
 
-How to run benchmarks using the `sklbench` module and a specific configuration:
+How to run sklearnex benchmarks on CPU using the `sklbench` module and regular scope of benchmarking cases:
 
 ```bash
-python -m sklbench --config configs/sklearn_example.json
+python -m sklbench --configs configs/regular \
+    --filters algorithm:library=sklearnex algorithm:device=cpu \
+    --environment-name ENV_NAME --result-file result_sklearnex_cpu_regular.json
+# same command with shorter argument aliases for typing convenience
+python -m sklbench -c configs/regular \
+    -f algorithm:library=sklearnex algorithm:device=cpu \
+    -e ENV_NAME -r result_sklearnex_cpu_regular.json
 ```
 
 The default output is a file with JSON-formatted results of benchmarking cases. To generate a better human-readable report, use the following command:
 
 ```bash
-python -m sklbench --config configs/sklearn_example.json --report
+python -m sklbench -c configs/regular \
+    -f algorithm:library=sklearnex algorithm:device=cpu \
+    -e ENV_NAME -r result_sklearnex_cpu_regular.json \
+    --report --report-file result-sklearnex-cpu-regular.xlsx
 ```
 
-By default, output and report file paths are `result.json` and `report.xlsx`. To specify custom file paths, run:
-
+In order to optimize datasets downloading and get more verbose output, use `--prefetch-datasets` and `-l INFO` arguments:
 ```bash
-python -m sklbench --config configs/sklearn_example.json --report --result-file result_example.json --report-file report_example.xlsx
+python -m sklbench -c configs/regular \
+    -f algorithm:library=sklearnex algorithm:device=cpu \
+    -e ENV_NAME -r result_sklearnex_cpu_regular.json \
+    --report --report-file report-sklearnex-cpu-regular.xlsx \
+    --prefetch-datasets -l INFO
 ```
 
 For a description of all benchmarks runner arguments, refer to [documentation](sklbench/runner/README.md#arguments).
@@ -69,7 +81,9 @@ For a description of all benchmarks runner arguments, refer to [documentation](s
 To combine raw result files gathered from different environments, call the report generator:
 
 ```bash
-python -m sklbench.report --result-files result_1.json result_2.json --report-file report_example.xlsx
+python -m sklbench.report \
+    --result-files result_1.json result_2.json \
+    --report-file report_example.xlsx
 ```
 
 For a description of all report generator arguments, refer to [documentation](sklbench/report/README.md#arguments).
