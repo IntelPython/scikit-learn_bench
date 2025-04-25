@@ -97,6 +97,7 @@ COLUMNS_ORDER = [
     "order",
     "n_classes",
     "n_clusters",
+    "num_batches",
     "batch_size",
 ]
 
@@ -262,10 +263,7 @@ def get_summary_from_df(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             # only relative improvements are included in summary currently
             if len(column) > 1 and column[1] == f"{metric_name} relative improvement":
                 metric_columns.append(column)
-    if metric_columns:
-        summary = df[metric_columns].aggregate(geomean_wrapper, axis=0).to_frame().T
-    else:
-        summary = pd.DataFrame()
+    summary = df[metric_columns].aggregate(geomean_wrapper, axis=0).to_frame().T
     summary.index = pd.Index([df_name])
     return summary
 

@@ -324,27 +324,19 @@ def verify_patching(stream: io.StringIO, function_name) -> bool:
     return acceleration_lines > 0 and fallback_lines == 0
 
 
-def create_online_function(
-    estimator_instance, method_instance, data_args, num_batches, batch_size
-):
+def create_online_function(estimator_instance, method_instance, data_args, num_batches):
 
     if "y" in list(inspect.signature(method_instance).parameters):
 
         def ndarray_function(x, y):
             for i in range(num_batches):
-                method_instance(
-                    x[i * batch_size : (i + 1) * batch_size],
-                    y[i * batch_size : (i + 1) * batch_size],
-                )
+                method_instance(x, y)
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x, y):
             for i in range(num_batches):
-                method_instance(
-                    x.iloc[i * batch_size : (i + 1) * batch_size],
-                    y.iloc[i * batch_size : (i + 1) * batch_size],
-                )
+                method_instance(x, y)
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
@@ -352,13 +344,13 @@ def create_online_function(
 
         def ndarray_function(x):
             for i in range(num_batches):
-                method_instance(x[i * batch_size : (i + 1) * batch_size])
+                method_instance(x)
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
         def dataframe_function(x):
             for i in range(num_batches):
-                method_instance(x.iloc[i * batch_size : (i + 1) * batch_size])
+                method_instance(x)
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
@@ -413,28 +405,17 @@ def measure_sklearn_estimator(
                         data_args = (x_train,)
                     else:
                         data_args = (x_test,)
+                batch_size = get_bench_case_value(
+                    bench_case, f"algorithm:batch_size:{stage}"
+                )
 
                 if method == "partial_fit":
-                    num_batches = get_bench_case_value(bench_case, "data:num_batches")
-                    batch_size = get_bench_case_value(bench_case, "data:batch_size")
-
-                    if batch_size is None:
-                        if num_batches is None:
-                            num_batches = 5
-                        batch_size = (
-                            data_args[0].shape[0] + num_batches - 1
-                        ) // num_batches
-                    if num_batches is None:
-                        num_batches = (
-                            data_args[0].shape[0] + batch_size - 1
-                        ) // batch_size
+                    num_batches = get_bench_case_value(
+                        bench_case, f"algorithm:num_batches:{stage}", 5
+                    )
 
                     method_instance = create_online_function(
-                        estimator_instance,
-                        method_instance,
-                        data_args,
-                        num_batches,
-                        batch_size,
+                        estimator_instance, method_instance, data_args, num_batches
                     )
                 # daal4py model builders enabling branch
                 if enable_modelbuilders and stage == "inference":
@@ -452,6 +433,10 @@ def measure_sklearn_estimator(
                     metrics[method]["box filter mean[ms]"],
                     metrics[method]["box filter std[ms]"],
                 ) = measure_case(bench_case, method_instance, *data_args)
+                if batch_size is not None:
+                    metrics[method]["throughput[samples/ms]"] = (
+                        (data_args[0].shape[0] // batch_size) * batch_size
+                    ) / metrics[method]["time[ms]"]
                 if ensure_sklearnex_patching:
                     full_method_name = f"{estimator_class.__name__}.{method}"
                     sklearnex_logging_stream.seek(0)
@@ -559,9 +544,16 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     for stage in estimator_methods.keys():
         data_descs[stage].update(
             {
-                "batch_size": get_bench_case_value(
-                    bench_case, f"algorithm:batch_size:{stage}"
-                )
+                key: val
+                for key, val in {
+                    "batch_size": get_bench_case_value(
+                        bench_case, f"algorithm:batch_size:{stage}"
+                    ),
+                    "num_batches": get_bench_case_value(
+                        bench_case, f"algorithm:num_batches:{stage}"
+                    ),
+                }.items()
+                if val is not None
             }
         )
         if "n_classes" in data_description:

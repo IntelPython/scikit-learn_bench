@@ -19,7 +19,7 @@
         "logreg": {
             "SETS": [
                 "sklearnex spmd implementation",
-                "large scale strong 64 parameters",
+                "large scale strong <=64 parameters",
                 "spmd logreg parameters",
                 "synthetic data",
                 "spmd logreg2 parameters"
