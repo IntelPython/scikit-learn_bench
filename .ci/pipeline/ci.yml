@@ -49,7 +49,7 @@ jobs:
     pool:
       vmImage: "ubuntu-latest"
     steps:
-    - template: .ci/pipeline/test-configuration-linux.yml
+    - template: test-configuration-linux.yml
   - job: Windows
     dependsOn: Lint
     strategy:
@@ -75,4 +75,4 @@ jobs:
     pool:
       vmImage: "windows-latest"
     steps:
-    - template: .ci/pipeline/test-configuration-win.yml
+    - template: test-configuration-win.yml
