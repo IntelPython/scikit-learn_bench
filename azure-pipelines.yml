@@ -27,7 +27,25 @@ jobs:
   - job: Linux
     dependsOn: Lint
     strategy:
-      ${{ template: .ci/pipeline/matrix-template.yml }}
+      matrix:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "pip"
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
     pool:
       vmImage: "ubuntu-latest"
     steps:
@@ -35,7 +53,25 @@ jobs:
   - job: Windows
     dependsOn: Lint
     strategy:
-      ${{ template: .ci/pipeline/matrix-template.yml }}
+      matrix:
+        Python3.9_Pip:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "pip"
+        Python3.10_Pip:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "pip"
+        Python3.11_Pip:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "pip"
+        Python3.9_Conda:
+          PYTHON_VERSION: "3.9"
+          PKG_MANAGER: "conda"
+        Python3.10_Conda:
+          PYTHON_VERSION: "3.10"
+          PKG_MANAGER: "conda"
+        Python3.11_Conda:
+          PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
     pool:
       vmImage: "windows-latest"
     steps:
