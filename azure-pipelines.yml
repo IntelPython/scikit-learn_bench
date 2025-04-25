@@ -75,4 +75,4 @@ jobs:
     pool:
       vmImage: "windows-latest"
     steps:
-    - template: .ci/pipeline/test-configuration-linux.yml
+    - template: .ci/pipeline/test-configuration-win.yml
