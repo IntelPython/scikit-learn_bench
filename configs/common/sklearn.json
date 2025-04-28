@@ -12,13 +12,6 @@
                 { "library": "sklearnex", "device": ["cpu", "gpu"] }
             ]
         },
-        "sklearn-ex[preview] implementations": {
-            "algorithm": [
-                { "library": "sklearn", "device": "cpu" },
-                { "library": "sklearnex", "device": "cpu" },
-                { "library": "sklearnex.preview", "device": ["cpu", "gpu"] }
-            ]
-        },
         "sklearnex spmd implementation": {
             "algorithm": {
                 "library": "sklearnex.spmd",
@@ -50,7 +43,19 @@
         },
         "cuml implementation": {
             "algorithm": { "library": "cuml" },
-            "data": { "format": "cudf" }
+            "data": { "format": "cupy" }
+        },
+        "extended data formats": {
+            "data": [
+                {
+                    "format": "numpy",
+                    "order": "C"
+                },
+                {
+                    "format": "pandas",
+                    "order": "F"
+                }
+            ]
         }
     }
 }

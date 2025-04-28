@@ -1,17 +1,13 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/train_test_split.json"],
     "PARAMETERS_SETS": {
-        "train_test_split datasets": [
+        "high-load train_test_split datasets": [
             {
                 "data": {
                     "dataset": [
-                        "road_network",
-                        "codrnanorm",
-                        "susy",
-                        "sift",
-                        "gist",
-                        "epsilon",
-                        "svhn"
+                        "airline_depdelay",
+                        "higgs",
+                        "bosch"
                     ]
                 }
             },
@@ -19,10 +15,7 @@
                 "data": {
                     "source": "make_regression",
                     "generation_kwargs": [
-                        { "n_samples": 20000000, "n_features": 5 },
-                        { "n_samples": 5000000, "n_features": 50 },
-                        { "n_samples": 1000000, "n_features": 500 },
-                        { "n_samples": 100000, "n_features": 5000 }
+                        { "n_samples": 200000000, "n_features": 5 }
                     ]
                 }
             }
@@ -33,14 +26,14 @@
             "SETS": [
                 "sklearn-ex[cpu] implementations",
                 "train_test_split parameters",
-                "train_test_split datasets"
+                "high-load train_test_split datasets"
             ]
         },
         "cuml train_test_split": {
             "SETS": [
                 "cuml implementation",
                 "train_test_split parameters",
-                "train_test_split datasets"
+                "high-load train_test_split datasets"
             ]
         }
     }

@@ -1,70 +1,51 @@
 {
-    "INCLUDE": ["../common/sklearn.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/kmeans.json"],
     "PARAMETERS_SETS": {
-        "common kmeans parameters": {
-            "algorithm": {
-                "estimator": "KMeans",
-                "estimator_params": {
-                    "n_clusters": "[SPECIAL_VALUE]auto",
-                    "n_init": 1,
-                    "max_iter": 30,
-                    "tol": 1e-3,
-                    "random_state": 42
-                },
-                "estimator_methods": { "inference": "predict" }
-            },
-            "data": {
-                "dtype": ["float32", "float64"],
-                "preprocessing_kwargs": { "normalize": true }
-            }
-        },
-        "sklearn kmeans parameters": {
-            "algorithm": { "estimator_params": { "init": "k-means++", "algorithm": "lloyd" } }
-        },
-        "cuml kmeans parameters": {
-            "algorithm": {
-                "estimator_params": { "init": "scalable-k-means++" }
-            }
-        },
         "kmeans datasets": [
             {
                 "data": [
                     {
-                        "dataset": ["covtype", "sensit"],
-                        "split_kwargs": { "ignore": true }
+                        "dataset": "covtype",
+                        "split_kwargs": { "ignore": true },
+                        "preprocessing_kwargs": { "normalize": true }
                     },
                     {
                         "dataset": ["mnist", "gisette"],
-                        "split_kwargs": { "ignore": true },
-                        "preprocessing_kwargs": { "normalize": false }
+                        "split_kwargs": { "ignore": true }
+                    },
+                    {
+                        "dataset": "cifar",
+                        "split_kwargs": { "train_size": 10000, "test_size": null }
                     }
                 ]
             },
             {
                 "data": {
-                    "dataset": "higgs",
+                    "dataset": "hepmass",
                     "split_kwargs": {
-                        "train_size": 100000,
-                        "test_size": 2000000,
+                        "train_size": 2000000,
+                        "test_size": null,
                         "shuffle": true,
                         "random_state": 42
-                    }
-                },
-                "algorithm": [
-                    {
-                        "estimator_params": {
-                            "n_clusters": 100,
-                            "max_iter": 10
-                        }
                     },
-                    {
-                        "estimator_params": {
-                            "n_clusters": 10,
-                            "max_iter": 100
-                        }
-                    }
-                ]
+                    "preprocessing_kwargs": { "normalize": true }
+                },
+                "algorithm": {
+                    "estimator_params": { "n_clusters": [2, 50] }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "centers": 20, "cluster_std": 4.0, "n_samples": 20000000, "n_features": 10 },
+                        { "centers": 20, "cluster_std": 8.0, "n_samples": 2000000, "n_features": 100 },
+                        { "centers": 20, "cluster_std": 24.0, "n_samples": 500000, "n_features": 400 }
+                    ],
+                    "split_kwargs": { "train_size": 0.2, "test_size": null }
+                }
             }
+            
         ]
     },
     "TEMPLATES": {

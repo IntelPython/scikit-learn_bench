@@ -1,0 +1,42 @@
+{
+    "PARAMETERS_SETS": {
+        "common knn parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "n_neighbors": [10, 100],
+                    "weights": "uniform"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": true }
+            }
+        },
+        "sklearn knn parameters": {
+            "algorithm": { "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" } }
+        },
+        "brute knn classification parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
+            }
+        },
+        "kd_tree knn classification parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": { "algorithm": "kd_tree", "metric": "minkowski", "p": 2 }
+            }
+        },
+        "brute knn regression parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": { "algorithm": "brute", "metric": "minkowski", "p": [1, 2] }
+            }
+        },
+        "kd_tree knn regression parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": { "algorithm": "kd_tree", "metric": "minkowski", "p": 2 }
+            }
+        }
+    }
+}

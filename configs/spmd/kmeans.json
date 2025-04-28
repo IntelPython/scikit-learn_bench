@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json", "../regular/kmeans.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/kmeans.json", "../regular/kmeans.json"],
     "PARAMETERS_SETS": {
         "spmd kmeans parameters": {}
     },

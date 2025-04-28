@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json", "../regular/dbscan.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/dbscan.json", "../regular/dbscan.json"],
     "PARAMETERS_SETS": {
         "spmd dbscan parameters": {}
     },

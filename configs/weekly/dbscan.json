@@ -1,0 +1,50 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/dbscan.json"],
+    "PARAMETERS_SETS": {
+        "high-load dbscan datasets": {
+            "data": [
+                {
+                    "dataset": ["cifar", "road_network", "covtype"],
+                    "split_kwargs": { "ignore": true },
+                    "preprocessing_kwargs": { "normalize": true }
+                },
+                {
+                    "dataset": "susy",
+                    "split_kwargs": { "train_size": 800000 },
+                    "preprocessing_kwargs": { "normalize": true }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "centers": 20, "n_samples": 1000000, "n_features": 16, "cluster_std": 2.0 },
+                        { "centers": 60, "n_samples": 200000, "n_features": 1024, "cluster_std": 10.0 }
+                    ],
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "source": "make_moons",
+                    "generation_kwargs": { "n_samples": 1000000, "noise": 0.05 },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn dbscan": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common dbscan parameters",
+                "sklearn dbscan parameters",
+                "high-load dbscan datasets"
+            ]
+        },
+        "cuml dbscan": {
+            "SETS": [
+                "cuml implementation",
+                "common dbscan parameters",
+                "cuml dbscan parameters",
+                "high-load dbscan datasets"
+            ]
+        }
+    }
+}

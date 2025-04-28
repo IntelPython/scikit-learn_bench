@@ -4,14 +4,20 @@
             {
                 "algorithm": {
                     "device": "cpu",
-                    "estimator_params": { "tree_method": "hist" },
+                    "estimator_params": {
+                        "tree_method": "hist",
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    },
                     "enable_modelbuilders": false
                 }
             },
             {
                 "algorithm": {
                     "device": "gpu",
-                    "estimator_params": { "tree_method": "hist" }
+                    "estimator_params": {
+                        "tree_method": "hist",
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    }
                 },
                 "data": { "format": "cudf" }
             }

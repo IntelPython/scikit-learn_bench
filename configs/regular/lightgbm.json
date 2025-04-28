@@ -1,0 +1,31 @@
+{
+    "INCLUDE": [
+        "../common/lightgbm.json",
+        "xgboost_binary.json",
+        "xgboost_multi.json",
+        "xgboost_regression.json"
+    ],
+    "TEMPLATES": {
+        "lightgbm binary classification": {
+            "SETS": [
+                "lightgbm binary classification",
+                "lightgbm implementations",
+                "gbt binary classification data"
+            ]
+        },
+        "lightgbm multi classification": {
+            "SETS": [
+                "lightgbm multi classification",
+                "lightgbm implementations",
+                "gbt multi classification data"
+            ]
+        },
+        "lightgbm regression": {
+            "SETS": [
+                "lightgbm regression",
+                "lightgbm implementations",
+                "gbt regression data"
+            ]
+        }
+    }
+}

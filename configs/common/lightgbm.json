@@ -1,0 +1,45 @@
+{
+    "PARAMETERS_SETS": {
+        "lightgbm implementations": [
+            {
+                "algorithm": {
+                    "device": "cpu",
+                    "estimator_params": {
+                        "boosting_type": "gbdt",
+                        "verbosity": -1,
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    },
+                    "enable_modelbuilders": false
+                }
+            }
+        ],
+        "lightgbm binary classification": {
+            "algorithm": {
+                "library": "lightgbm",
+                "estimator": "LGBMClassifier",
+                "estimator_params": {
+                    "objective": "binary"
+                }
+            }
+        },
+        "lightgbm multi classification": {
+            "algorithm": {
+                "library": "lightgbm",
+                "estimator": "LGBMClassifier",
+                "estimator_params": {
+                    "objective": "multiclass",
+                    "num_classes": "[SPECIAL_VALUE]auto"
+                }
+            }
+        },
+        "lightgbm regression": {
+            "algorithm": {
+                "library": "lightgbm",
+                "estimator": "LGBMRegressor",
+                "estimator_params": {
+                    "objective": "regression"
+                }
+            }
+        }
+    }
+}
