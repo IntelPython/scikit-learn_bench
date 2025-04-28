@@ -1,0 +1,86 @@
+{
+    "PARAMETERS_SETS": {
+        "binary svc implementations": [
+            {
+                "algorithm": [
+                    { "library": "sklearn", "device": "cpu" },
+                    { "library": "sklearnex", "device": ["cpu", "gpu"] }
+                ]
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "verbose": false, "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cupy" }
+            }
+        ],
+        "multi svc implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu",
+                    "estimator_params": { "decision_function_shape": "ovr" }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"},
+                    "estimator_params": { "multiclass_strategy": "ovr" }
+                },
+                "data": { "format": "cupy" }
+            }
+        ],
+        "svr implementations": [
+            {
+                "algorithm": {
+                    "library": ["sklearn", "sklearnex"],
+                    "device": "cpu"
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_methods": {"inference": "predict"}
+                },
+                "data": { "format": "cupy" }
+            }
+        ],
+        "nusvm implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex", "device": "cpu" }
+            ]
+        },
+        "common svm parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "kernel": "rbf",
+                    "degree": 3,
+                    "gamma": "scale",
+                    "tol": 1e-3,
+                    "cache_size": 24576,
+                    "max_iter": 10000
+                }
+            },
+            "data": { "preprocessing_kwargs": { "normalize": true } }
+        },
+        "svm clsf parameters": {
+            "algorithm": { "estimator_params": { "random_state": 42 } }
+        },
+        "svc parameters": {
+            "algorithm": { "estimator": "SVC", "estimator_params": { "C": 1.0 } }
+        },
+        "svr parameters": {
+            "algorithm": { "estimator": "SVR", "estimator_params": { "C": 1.0 } }
+        },
+        "nusvc parameters": {
+            "algorithm": { "estimator": "NuSVC", "estimator_params": { "nu": 0.5 } }
+        },
+        "nusvr parameters": {
+            "algorithm": { "estimator": "NuSVR", "estimator_params": { "nu": 0.5, "C": 1.0 } }
+        }
+    }
+}

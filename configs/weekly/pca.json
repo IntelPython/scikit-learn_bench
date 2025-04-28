@@ -1,27 +1,22 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/pca.json"],
     "PARAMETERS_SETS": {
-        "pca datasets": [
+        "high-load pca datasets": [
             {
                 "data": {
                     "source": "make_blobs",
                     "generation_kwargs": [
-                        { "n_samples": 40000000, "n_features": 5, "centers": 2 },
-                        { "n_samples": 10000000, "n_features": 20, "centers": 2 }
+                        { "n_samples": 10000000, "n_features": 200, "centers": 2 },
+                        { "n_samples": 5000000, "n_features": 1000, "centers": 2 },
+                        { "n_samples": 1000000, "n_features": 5000, "centers": 2 }
                     ],
                     "split_kwargs": { "ignore": true }
                 }
             },
             {
                 "data": {
-                    "dataset": "sift",
+                    "dataset": ["airline_depdelay", "bosch", "epsilon"],
                     "split_kwargs": { "ignore": true }
-                }
-            },
-            {
-                "data": {
-                    "dataset": ["gist", "svhn"],
-                    "split_kwargs": { "train_size": 0.25, "test_size": 0.75 }
                 }
             }
         ]
@@ -31,7 +26,7 @@
             "SETS": [
                 "sklearn-ex[cpu,gpu] implementations",
                 "pca parameters",
-                "pca datasets"
+                "high-load pca datasets"
             ]
         },
         "cuml pca": {
@@ -39,7 +34,7 @@
                 "cuml implementation",
                 "pca parameters",
                 "cuml pca parameters",
-                "pca datasets"
+                "high-load pca datasets"
             ]
         }
     }

@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json", "../regular/ensemble.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/ensemble.json", "../regular/ensemble.json"],
     "PARAMETERS_SETS": {
         "spmd ensemble classifier params": {
             "algorithm": {

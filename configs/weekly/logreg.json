@@ -1,0 +1,28 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/logreg.json", "../regular/logreg.json"],
+    "PARAMETERS_SETS": {
+        "high-load logreg datasets": [
+            { "data": { "split_kwargs": { "ignore": true } } }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn logreg": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common logreg parameters",
+                "sklearn logreg parameters",
+                "logreg datasets",
+                "high-load logreg datasets"
+            ]
+        },
+        "cuml logreg": {
+            "SETS": [
+                "cuml implementation",
+                "common logreg parameters",
+                "cuml logreg parameters",
+                "logreg datasets",
+                "high-load logreg datasets"
+            ]
+        }
+    }
+}

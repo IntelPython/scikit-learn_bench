@@ -1,0 +1,17 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "train_test_split parameters": {
+            "algorithm": {
+                "function": "train_test_split",
+                "args_order": "x_train|y_train",
+                "kwargs": {
+                    "test_size": 0.25,
+                    "random_state": 42,
+                    "shuffle": true
+                }
+            },
+            "data": { "split_kwargs": { "ignore": true } }
+        }
+    }
+}
