@@ -113,9 +113,15 @@ def enrich_metrics(
 
 def get_n_from_cache_size():
     """Gets `n` size of square matrix that fits into L3 cache"""
-    l3_size = get_cpu_info()["l3_cache_size"]
+    cache_size = 0
+    cpu_info = get_cpu_info()
+    # cache reading abibility of cpuinfo is platform dependent
+    if "l3_cache_size" in cpu_info:
+        cache_size += cpu_info["l3_cache_size"]
+    if "l2_cache_size" in cpu_info:
+        cache_size += cpu_info["l2_cache_size"] * psutil.cpu_count(logical=False)
     n_sockets = get_number_of_sockets()
-    return ceil(sqrt(n_sockets * l3_size / 8))
+    return ceil(sqrt(n_sockets * cache_size / 8))
 
 
 def flush_cache(n: int = get_n_from_cache_size()):
