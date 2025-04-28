@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json", "../regular/knn.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/knn.json", "../regular/knn.json"],
     "PARAMETERS_SETS": {
         "spmd knn parameters": {
             "algorithm": {

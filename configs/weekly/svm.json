@@ -1,66 +1,52 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/svm.json"],
     "PARAMETERS_SETS": {
-        "svc binary datasets": [
+        "high-load svc binary datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true }  },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "linear" } }
             },
             {
-                "data": { "dataset": "skin_segmentation", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "skin_segmentation", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 10.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "ijcnn", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "ijcnn", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 100.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "epsilon", "split_kwargs": { "train_size": 10000, "test_size": 10000 } },
+                "data": { "dataset": "epsilon", "split_kwargs": { "train_size": 100000, "test_size": 100000 } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
-            },
-            {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
-                "algorithm": {
-                    "estimator_params": { "C": 100.0, "kernel": ["linear", "poly", "rbf"] }
-                }
             }
         ],
-        "svc multiclass datasets": [
+        "high-load svc multiclass datasets": [
             {
-                "data": { "dataset": "connect", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "connect", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 10.0, "kernel": ["poly", "rbf"] } }
             },
             {
                 "data": {
                     "dataset": "mnist",
-                    "split_kwargs": { "train_size": 20000, "test_size": null },
+                    "split_kwargs": { "ignore": true },
                     "preprocessing_kwargs": { "normalize": false }
                 },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }
         ],
-        "svr datasets": [
+        "high-load svr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "fried", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
-                "algorithm": { "estimator_params": { "C": 2.0, "kernel": "rbf" } }
-            },
-            {
-                "data": { "dataset": "twodplanes", "split_kwargs": { "train_size": 25000, "test_size": null } },
+                "data": { "dataset": "twodplanes", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
-            },
-            {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             },
             {
                 "data": {
                     "source": "make_regression",
                     "generation_kwargs": {
-                        "n_samples": 20000,
+                        "n_samples": 200000,
                         "n_features": 1000,
                         "n_informative": "[SPECIAL_VALUE]0.5"
                     },
@@ -69,46 +55,38 @@
                 "algorithm": { "estimator_params": { "C": 0.1, "kernel": "linear" } }
             }
         ],
-        "nusvc datasets": [
+        "high-load nusvc datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true }  },
                 "algorithm": { "estimator_params": { "nu": 0.1, "kernel": ["poly", "rbf"] } }
             },
             {
-                "data": { "dataset": "codrnanorm", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "codrnanorm", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "nu": 0.5, "kernel": "poly" } }
             },
             {
-                "data": { "dataset": "ijcnn", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "ijcnn", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "nu": 0.1, "kernel": "rbf" } }
-            },
-            {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
-                "algorithm": { "estimator_params": { "nu": 0.9, "kernel": ["linear", "rbf"] } }
             }
         ],
-        "nusvr datasets": [
+        "high-load nusvr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "twodplanes", "split_kwargs": { "train_size": 25000, "test_size": null } },
+                "data": { "dataset": "twodplanes", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
             },
             {
-                "data": { "dataset": "fried" },
+                "data": { "dataset": "fried", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "nu": 0.8, "C": 2.0, "kernel": "rbf" } }
-            },
-            {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
-                "algorithm": { "estimator_params": { "nu": 0.9, "C": 1.0, "kernel": "rbf" } }
             },
             {
                 "data": {
                     "source": "make_regression",
                     "generation_kwargs": {
-                        "n_samples": 20000,
+                        "n_samples": 100000,
                         "n_features": 1000,
                         "n_informative": "[SPECIAL_VALUE]0.5"
                     },
@@ -125,7 +103,7 @@
                 "common svm parameters",
                 "svm clsf parameters",
                 "svc parameters",
-                "svc binary datasets"
+                "high-load svc binary datasets"
             ]
         },
         "svc multiclass": {
@@ -133,8 +111,8 @@
                 "multi svc implementations",
                 "common svm parameters",
                 "svm clsf parameters",
-                "svc parameters", 
-                "svc multiclass datasets"
+                "svc parameters",
+                "high-load svc multiclass datasets"
             ]
         },
         "svr": {
@@ -142,7 +120,7 @@
                 "svr implementations",
                 "common svm parameters",
                 "svr parameters",
-                "svr datasets"
+                "high-load svr datasets"
             ]
         },
         "nusvc": {
@@ -151,7 +129,7 @@
                 "common svm parameters",
                 "svm clsf parameters",
                 "nusvc parameters",
-                "nusvc datasets"
+                "high-load nusvc datasets"
             ]
         },
         "nusvr": {
@@ -159,7 +137,7 @@
                 "nusvm implementations",
                 "common svm parameters", 
                 "nusvr parameters",
-                "nusvr datasets"
+                "high-load nusvr datasets"
             ]
         }
     }

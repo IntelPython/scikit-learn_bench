@@ -1,59 +1,29 @@
 {
-    "INCLUDE": ["../common/sklearn.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/dbscan.json"],
     "PARAMETERS_SETS": {
-        "common dbscan parameters": {
-            "algorithm": {
-                "estimator": "DBSCAN",
-                "estimator_params": {
-                    "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
-                    "min_samples": 5,
-                    "metric": "euclidean"
-                }
-            },
-            "data": {
-                "dtype": ["float32", "float64"]
-            }
-        },
-        "sklearn dbscan parameters": {
-            "algorithm": {
-                "estimator_params": {
-                    "algorithm": "brute",
-                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
-                }
-            }
-        },
-        "cuml dbscan parameters": {
-            "algorithm": {
-                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
-            }
-        },
-        "dbscan datasets": [
-            {
-                "data": { "dataset": ["cifar", "mnist"], "split_kwargs": { "train_size": 10000 } }
-            },
-            {
-                "data": { "dataset": ["sensit", "hepmass"], "split_kwargs": { "train_size": 20000 } }
-            },
-            {
-                "data": {
-                    "dataset": "road_network",
-                    "preprocessing_kwargs": { "normalize": true },
-                    "split_kwargs": { "train_size": [20000, 50000] }
-                }
-            },
-            {
-                "data": {
+        "dbscan datasets": {
+            "data": [
+                { "dataset": "cifar", "split_kwargs": { "train_size": 15000 } },
+                { "dataset": "mnist", "split_kwargs": { "train_size": 40000 } },
+                { "dataset": "sensit", "split_kwargs": { "ignore": true } },
+                { "dataset": "susy", "split_kwargs": { "train_size": 100000 } },
+                {
+                    "dataset": "skin_segmentation",
+                    "split_kwargs": { "train_size": 100000 },
+                    "preprocessing_kwargs": { "normalize": true }
+                },
+                {
                     "source": "make_blobs",
                     "generation_kwargs": {
-                        "centers": 20,
+                        "centers": 10,
                         "n_samples": 50000,
-                        "n_features": [4, 16, 64, 256],
-                        "cluster_std": 1.5
+                        "n_features": [8, 64, 512],
+                        "cluster_std": 2.0
                     },
                     "split_kwargs": { "ignore": true }
                 }
-            }
-        ]
+            ]
+        }
     },
     "TEMPLATES": {
         "sklearn dbscan": {

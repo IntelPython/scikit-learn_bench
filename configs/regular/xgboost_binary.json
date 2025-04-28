@@ -1,7 +1,7 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
     "PARAMETERS_SETS": {
-        "binary classification data": [
+        "gbt binary classification data": [
             {
                 "data": {
                     "dataset": "airline_depdelay",
@@ -103,7 +103,7 @@
             "SETS": [
                 "xgboost binary classification",
                 "xgboost implementations",
-                "binary classification data"
+                "gbt binary classification data"
             ]
         }
     }
