@@ -102,8 +102,10 @@ def parse_config_file(config_path: str) -> List[Dict]:
                     include_content.update(json.load(include_file)["PARAMETERS_SETS"])
             else:
                 logger.warning(f"Include file '{include_path}' not found.")
-        include_content.update(config_content["PARAMETERS_SETS"])
-        config_content["PARAMETERS_SETS"] = include_content
+        if "PARAMETERS_SETS" in config_content:
+            config_content["PARAMETERS_SETS"].update(include_content)
+        else:
+            config_content["PARAMETERS_SETS"] = include_content
     for template_name, template_content in config_content["TEMPLATES"].items():
         new_templates = [{}]
         # 1st step: pop list of included param sets and add them to template

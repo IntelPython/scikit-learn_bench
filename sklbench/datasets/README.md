@@ -10,8 +10,12 @@ Data handling steps:
 Existing data sources:
  - Synthetic data from sklearn
  - OpenML datasets
+ - Kaggle competition datasets
  - Custom loaders for named datasets
  - User-provided datasets in compatible format
+
+Kaggle API keys and competition rules acceptance are required for next dataset:
+- [Bosch Production Line Performance (`bosch`)](https://www.kaggle.com/c/bosch-production-line-performance/overview)
 
 ## Data Caching
 

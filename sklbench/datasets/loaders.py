@@ -25,7 +25,9 @@ from sklearn.datasets import (
     load_digits,
     load_svmlight_file,
     make_blobs,
+    make_circles,
     make_classification,
+    make_moons,
     make_regression,
 )
 
@@ -64,6 +66,8 @@ def load_sklearn_synthetic_data(
         "make_classification": make_classification,
         "make_regression": make_regression,
         "make_blobs": make_blobs,
+        "make_moons": make_moons,
+        "make_circles": make_circles,
     }
     generation_kwargs = {"random_state": 42}
     generation_kwargs.update(input_kwargs)
@@ -79,8 +83,11 @@ def load_sklearn_synthetic_data(
         data_desc["n_clusters_per_class"] = generation_kwargs.get(
             "n_clusters_per_class", 2
         )
-    if function_name == "make_blobs":
+    elif function_name == "make_blobs":
         data_desc["n_clusters"] = generation_kwargs["centers"]
+    elif function_name in ["make_circles", "make_moons"]:
+        data_desc["n_classes"] = 2
+        data_desc["n_clusters"] = 2
     return {"x": x, "y": y}, data_desc
 
 

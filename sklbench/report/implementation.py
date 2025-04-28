@@ -18,6 +18,7 @@ import argparse
 import json
 from typing import Dict, List
 
+import numpy as np
 import openpyxl as xl
 import pandas as pd
 from openpyxl.formatting.rule import ColorScaleRule
@@ -25,13 +26,16 @@ from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 from scipy.stats import gmean
 
-from ..utils.common import custom_format, flatten_dict, flatten_list
+from ..utils.common import custom_format, flatten_list
 from ..utils.logger import logger
+from ..utils.measurement import enrich_metrics
 from .compatibility import transform_results_to_compatible
 
 METRICS = {
     "lower is better": [
+        "1st run time[ms]",
         "time[ms]",
+        "cost[microdollar]",
         "iterations",
         # classification
         "logloss",
@@ -40,8 +44,7 @@ METRICS = {
         # clustering
         "inertia",
         "Davies-Bouldin score",
-        # manifold
-        # - TSNE
+        # manifold - TSNE
         "Kullback-Leibler divergence",
     ],
     "higher is better": [
@@ -69,10 +72,18 @@ METRICS = {
         # 'clusters' is number of computer clusters by DBSCAN
         "clusters",
     ],
-    "incomparable": ["time std[ms]"],
+    "incomparable": [
+        "1st-mean run ratio",
+        "time CV",
+        "cpu load[%]",
+    ],
 }
+MEMORY_TYPES = ["RAM", "VRAM"]
+for memory_type in MEMORY_TYPES:
+    METRICS["incomparable"].append(f"peak {memory_type} usage[MB]")
+    METRICS["incomparable"].append(f"{memory_type} usage-iteration correlation")
 METRIC_NAMES = flatten_list([list(METRICS[key]) for key in METRICS])
-PERF_METRICS = ["time[ms]", "throughput[samples/ms]"]
+PERF_METRICS = ["time[ms]", "throughput[samples/ms]", "cost[microdollar]"]
 
 COLUMNS_ORDER = [
     # algorithm
@@ -96,6 +107,21 @@ COLUMNS_ORDER = [
     "n_clusters",
     "batch_size",
 ]
+
+RED_COLOR, YELLOW_COLOR, GREEN_COLOR, WHITE_COLOR = "F85D5E", "FAF52E", "58C144", "FFFFFF"
+COLUMN_COLOR_RULES = {
+    "time CV": ColorScaleRule(
+        start_type="num",
+        start_value=0.0,
+        start_color=GREEN_COLOR,
+        mid_type="num",
+        mid_value=0.1,
+        mid_color=YELLOW_COLOR,
+        end_type="num",
+        end_value=0.5,
+        end_color=RED_COLOR,
+    )
+}
 
 DIFFBY_COLUMNS = ["environment_name", "library", "format", "device"]
 
@@ -165,6 +191,10 @@ def compare_df(input_df, diff_columns, diffs_selection, compared_columns=METRIC_
     df = input_df.set_index(index_columns)
     unique_indices = df.index.unique()
     splitted_dfs = split_df_by_columns(input_df, diff_columns)
+    for key, df in splitted_dfs.items():
+        for index_column in index_columns:
+            if index_column not in df.columns:
+                df[index_column] = np.nan
     splitted_dfs = {key: df.set_index(index_columns) for key, df in splitted_dfs.items()}
 
     # drop results with duplicated indices (keep first entry only)
@@ -184,6 +214,8 @@ def compare_df(input_df, diff_columns, diffs_selection, compared_columns=METRIC_
             if select_comparison(i, j, diffs_selection):
                 comparison_name = f"{key_jth} vs {key_ith}"
                 for column in df_ith.columns:
+                    if column not in df_jth.columns:
+                        continue
                     if column in METRICS["higher is better"]:
                         df[f"{comparison_name}\n{column} relative improvement"] = (
                             df_jth[column] / df_ith[column]
@@ -235,9 +267,13 @@ def get_result_tables_as_df(
     diffby_columns=DIFFBY_COLUMNS,
     splitby_columns=["estimator", "method", "function"],
     compatibility_mode=False,
+    include_performance_stability_metrics=False,
 ):
     bench_cases = pd.DataFrame(
-        [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
+        [
+            enrich_metrics(bench_case, include_performance_stability_metrics)
+            for bench_case in results["bench_cases"]
+        ]
     )
 
     if compatibility_mode:
@@ -263,32 +299,32 @@ def get_summary_from_df(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     return summary
 
 
-def get_color_rule(scale):
-    red, yellow, green = "F85D5E", "FAF52E", "58C144"
+def get_color_rule_for_comparison(scale):
     start_value, mid_value, end_value = scale
     return ColorScaleRule(
         start_type="num",
         start_value=start_value,
-        start_color=red,
+        start_color=RED_COLOR,
         mid_type="num",
         mid_value=mid_value,
-        mid_color=yellow,
+        mid_color=WHITE_COLOR,
         end_type="num",
         end_value=end_value,
-        end_color=green,
+        end_color=GREEN_COLOR,
     )
 
 
 def apply_rules_for_sheet(sheet, perf_color_scale, quality_color_scale):
     for column in sheet.iter_cols():
         column_idx = get_column_letter(column[0].column)
+        cell_range = f"${column_idx}1:${column_idx}{len(column)}"
         is_rel_impr = any(
             [
                 isinstance(cell.value, str) and "relative improvement" in cell.value
                 for cell in column
             ]
         )
-        is_time = any(
+        is_perf = any(
             [
                 isinstance(cell.value, str)
                 and (any(map(lambda x: x in cell.value, PERF_METRICS)))
@@ -296,11 +332,19 @@ def apply_rules_for_sheet(sheet, perf_color_scale, quality_color_scale):
             ]
         )
         if is_rel_impr:
-            cell_range = f"${column_idx}1:${column_idx}{len(column)}"
             sheet.conditional_formatting.add(
                 cell_range,
-                get_color_rule(perf_color_scale if is_time else quality_color_scale),
+                get_color_rule_for_comparison(
+                    perf_color_scale if is_perf else quality_color_scale
+                ),
             )
+        else:
+            column_name = {cell.value for cell in column} & set(COLUMN_COLOR_RULES.keys())
+            if len(column_name) == 1:
+                column_name = column_name.pop()
+                sheet.conditional_formatting.add(
+                    cell_range, COLUMN_COLOR_RULES[column_name]
+                )
 
 
 def write_environment_info(results, workbook):
@@ -332,7 +376,13 @@ def generate_report(args: argparse.Namespace):
     results = merge_result_files(args.result_files)
 
     diffby, splitby = args.diff_columns, args.split_columns
-    dfs = get_result_tables_as_df(results, diffby, splitby, args.compatibility_mode)
+    dfs = get_result_tables_as_df(
+        results,
+        diffby,
+        splitby,
+        args.compatibility_mode,
+        args.performance_stability_metrics,
+    )
 
     wb = xl.Workbook()
     summary_dfs = list()

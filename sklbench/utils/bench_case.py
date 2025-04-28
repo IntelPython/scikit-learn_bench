@@ -112,7 +112,7 @@ def get_data_name(bench_case: BenchCase, shortened: bool = False) -> str:
         openml_id = get_bench_case_value(bench_case, "data:id")
         return f"openml_{openml_id}"
     # make_*
-    if source in ["make_classification", "make_regression", "make_blobs"]:
+    if source.startswith("make_"):
         name = source
         if shortened:
             return name.replace("classification", "clsf").replace("regression", "regr")
