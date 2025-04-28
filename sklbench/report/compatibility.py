@@ -34,6 +34,24 @@ def transform_results_to_compatible(results: pd.DataFrame):
                 "min_bin_size",
             ],
         )
+    if results["environment_name"].unique().size > 1:
+        # DBSCAN `eps` parameter drop for different CPUs
+        results.drop(
+            inplace=True,
+            errors="ignore",
+            columns=[
+                "eps",
+            ],
+        )
+        # auto-assigned `n_jobs` drop for different CPUs
+        if results["n_jobs"].unique().size > 1:
+            results.drop(
+                inplace=True,
+                errors="ignore",
+                columns=[
+                    "n_jobs",
+                ],
+            )
     # cuML compatibility
     if (
         (results["library"] == "cuml")
@@ -117,83 +135,97 @@ def transform_results_to_compatible(results: pd.DataFrame):
                 "graph_degree",
             ],
         )
-        # DBSCAN parameters renaming
-        cuml_dbscan_index = (results["estimator"] == "DBSCAN") & (
-            results["library"] == "cuml"
-        )
-        if cuml_dbscan_index.any():
-            results.loc[cuml_dbscan_index, "algorithm"] = "brute"
-        # KMeans parameters renaming
-        cuml_kmeans_index = (results["estimator"] == "KMeans") & (
-            results["library"] == "cuml"
-        )
-        if cuml_kmeans_index.any():
-            results.loc[cuml_kmeans_index, "algorithm"] = "lloyd"
-            results.loc[
-                cuml_kmeans_index & (results["init"] == "scalable-k-means++"), "init"
-            ] = "k-means++"
-        # Linear models parameters renaming
-        linear_index = (
-            (results["estimator"] == "LinearRegression")
-            | (results["estimator"] == "Ridge")
-            | (results["estimator"] == "Lasso")
-            | (results["estimator"] == "ElasticNet")
-        ) & (
-            (results["library"] == "cuml")
-            | (results["library"] == "sklearn")
-            | (results["library"] == "sklearnex")
-        )
-        if linear_index.any():
-            results.loc[linear_index, "algorithm"] = np.nan
-            results.loc[linear_index, "solver"] = np.nan
-
-        sklearn_ridge_index = (results["estimator"] == "Ridge") & (
-            (results["library"] == "sklearn") | (results["library"] == "sklearnex")
-        )
-        if sklearn_ridge_index.any():
-            results.loc[sklearn_ridge_index, "tol"] = np.nan
-
-        cuml_logreg_index = (results["estimator"] == "LogisticRegression") & (
-            results["library"] == "cuml"
-        )
-        if cuml_logreg_index.any():
-            lbfgs_solver_index = (
-                cuml_logreg_index
-                & (results["solver"] == "qn")
-                & ((results["penalty"] == "none") | (results["penalty"] == "l2"))
+        if "estimator" in results:
+            # DBSCAN parameters renaming
+            cuml_dbscan_index = (results["estimator"] == "DBSCAN") & (
+                results["library"] == "cuml"
             )
-            if lbfgs_solver_index.any():
-                results.loc[lbfgs_solver_index, "solver"] = "lbfgs"
-        # TSNE parameters renaming
-        cuml_tsne_index = (results["estimator"] == "TSNE") & (
-            results["library"] == "cuml"
-        )
-        if cuml_tsne_index.any():
-            results.loc[cuml_tsne_index, "n_neighbors"] = np.nan
-        # SVC parameters renaming
-        cuml_svc_index = (results["estimator"] == "SVC") & (results["library"] == "cuml")
-        if cuml_svc_index.any():
-            results.loc[cuml_svc_index, "decision_function_shape"] = results.loc[
-                cuml_svc_index, "multiclass_strategy"
-            ]
-            results.loc[cuml_svc_index, "multiclass_strategy"] = np.nan
-        # Ensemble parameters renaming
-        cuml_rf_index = (
-            (results["estimator"] == "RandomForestClassifier")
-            | (results["estimator"] == "RandomForestRegressor")
-        ) & (results["library"] == "cuml")
-        if cuml_rf_index.any():
-            gini_index = cuml_rf_index & (results["split_criterion"] == 0)
-            if gini_index.any():
-                results.loc[gini_index, "criterion"] = "gini"
-                results.loc[gini_index, "split_criterion"] = np.nan
-            mse_index = cuml_rf_index & (results["split_criterion"] == 2)
-            if mse_index.any():
-                results.loc[mse_index, "criterion"] = "squared_error"
-                results.loc[mse_index, "split_criterion"] = np.nan
-            inf_leaves_index = cuml_rf_index & (results["max_leaves"] == -1)
-            if inf_leaves_index.any():
-                results.loc[inf_leaves_index, "max_leaf_nodes"] = None
-                results.loc[inf_leaves_index, "max_leaves"] = np.nan
+            if cuml_dbscan_index.any():
+                results.loc[cuml_dbscan_index, "algorithm"] = "brute"
+            # KMeans parameters renaming
+            cuml_kmeans_index = (results["estimator"] == "KMeans") & (
+                results["library"] == "cuml"
+            )
+            if cuml_kmeans_index.any():
+                results.loc[cuml_kmeans_index, "algorithm"] = "lloyd"
+                results.loc[
+                    cuml_kmeans_index & (results["init"] == "scalable-k-means++"), "init"
+                ] = "k-means++"
+            # Linear models parameters renaming
+            linear_index = (
+                (results["estimator"] == "LinearRegression")
+                | (results["estimator"] == "Ridge")
+                | (results["estimator"] == "Lasso")
+                | (results["estimator"] == "ElasticNet")
+            ) & (
+                (results["library"] == "cuml")
+                | (results["library"] == "sklearn")
+                | (results["library"] == "sklearnex")
+            )
+            if linear_index.any():
+                results.loc[linear_index, "algorithm"] = np.nan
+                results.loc[linear_index, "solver"] = np.nan
+                results.loc[linear_index, "iterations"] = np.nan
+
+            sklearn_ridge_index = (results["estimator"] == "Ridge") & (
+                (results["library"] == "sklearn") | (results["library"] == "sklearnex")
+            )
+            if sklearn_ridge_index.any():
+                results.loc[sklearn_ridge_index, "tol"] = np.nan
+
+            cuml_logreg_index = (results["estimator"] == "LogisticRegression") & (
+                results["library"] == "cuml"
+            )
+            if cuml_logreg_index.any():
+                logreg_index = results["estimator"] == "LogisticRegression"
+                results.loc[logreg_index, "iterations"] = np.nan
+                lbfgs_solver_index = (
+                    cuml_logreg_index
+                    & (results["solver"] == "qn")
+                    & ((results["penalty"] == "none") | (results["penalty"] == "l2"))
+                )
+                if lbfgs_solver_index.any():
+                    results.loc[lbfgs_solver_index, "solver"] = "lbfgs"
+            # TSNE parameters renaming
+            cuml_tsne_index = (results["estimator"] == "TSNE") & (
+                results["library"] == "cuml"
+            )
+            if cuml_tsne_index.any():
+                results.loc[cuml_tsne_index, "n_neighbors"] = np.nan
+            # SVC parameters renaming
+            cuml_svc_index = (results["estimator"] == "SVC") & (
+                results["library"] == "cuml"
+            )
+            if cuml_svc_index.any():
+                results.loc[cuml_svc_index, "decision_function_shape"] = results.loc[
+                    cuml_svc_index, "multiclass_strategy"
+                ]
+                results.loc[cuml_svc_index, "multiclass_strategy"] = np.nan
+            # Ensemble parameters renaming
+            cuml_rf_index = (
+                (results["estimator"] == "RandomForestClassifier")
+                | (results["estimator"] == "RandomForestRegressor")
+            ) & (results["library"] == "cuml")
+            if cuml_rf_index.any():
+                gini_index = cuml_rf_index & (results["split_criterion"] == 0)
+                if gini_index.any():
+                    results.loc[gini_index, "criterion"] = "gini"
+                    results.loc[gini_index, "split_criterion"] = np.nan
+                mse_index = cuml_rf_index & (results["split_criterion"] == 2)
+                if mse_index.any():
+                    results.loc[mse_index, "criterion"] = "squared_error"
+                    results.loc[mse_index, "split_criterion"] = np.nan
+                inf_leaves_index = cuml_rf_index & (results["max_leaves"] == -1)
+                if inf_leaves_index.any():
+                    results.loc[inf_leaves_index, "max_leaf_nodes"] = None
+                    results.loc[inf_leaves_index, "max_leaves"] = np.nan
+            # PCA solver alignment between sklearn[ex] and cuml
+            pca_index = (
+                (results["library"] == "sklearn")
+                | (results["library"] == "sklearnex")
+                | (results["library"] == "cuml")
+            ) & (results["estimator"] == "PCA")
+            if pca_index.any():
+                results.loc[pca_index, "svd_solver"] = "full"
 
     return results

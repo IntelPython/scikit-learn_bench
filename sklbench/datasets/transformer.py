@@ -137,7 +137,7 @@ def split_and_transform_data(bench_case, data, data_description):
     device = get_bench_case_value(bench_case, "algorithm:device", None)
     common_data_format = get_bench_case_value(bench_case, "data:format", "pandas")
     common_data_order = get_bench_case_value(bench_case, "data:order", "F")
-    common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float64")
+    common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float32")
 
     data_dict = {
         "x_train": x_train,

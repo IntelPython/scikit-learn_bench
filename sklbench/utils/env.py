@@ -15,6 +15,8 @@
 # ===============================================================================
 
 import json
+import subprocess
+import sys
 from typing import Dict
 
 import pandas as pd
@@ -41,6 +43,21 @@ def get_numa_cpus_conf() -> Dict[int, str]:
     except FileNotFoundError:
         logger.warning("Unable to get numa cpus configuration via lscpu")
         return dict()
+
+
+def get_number_of_sockets():
+    if sys.platform == "win32":
+        command = "wmic cpu get DeviceID"
+        result = subprocess.check_output(command, shell=True, text=True)
+        n_sockets = len(list(filter(lambda x: x.startswith("CPU"), result.split("\n"))))
+    elif sys.platform == "linux":
+        command = "lscpu | grep 'Socket(s):' | awk '{print $2}'"
+        result = subprocess.check_output(command, shell=True, text=True)
+        n_sockets = int(result.strip("\n"))
+    else:
+        logger.warning("Unable to get number of sockets due to unknown sys.platform")
+        n_sockets = 1
+    return n_sockets
 
 
 def get_software_info() -> Dict:

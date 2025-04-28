@@ -23,7 +23,7 @@ from typing import Dict, List, Tuple, Union
 from psutil import cpu_count
 from tqdm import tqdm
 
-from ..datasets import load_data
+from ..datasets import load_data_with_cleanup
 from ..report import generate_report, get_result_tables_as_df
 from ..utils.bench_case import get_bench_case_name, get_data_name
 from ..utils.common import custom_format, hash_from_json_repr
@@ -98,11 +98,12 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         # trick: get unique dataset names only to avoid loading of same dataset
         # by different cases/processes
         dataset_cases = {get_data_name(case): case for case in bench_cases}
+        n_datasets = len(dataset_cases)
         logger.debug(f"Unique dataset names to load:\n{list(dataset_cases.keys())}")
-        n_proc = min([16, cpu_count(), len(dataset_cases)])
-        logger.info(f"Prefetching datasets with {n_proc} processes")
+        n_proc = min([16, cpu_count(), n_datasets])
+        logger.info(f"Prefetching {n_datasets} datasets with {n_proc} processes")
         with Pool(n_proc) as pool:
-            pool.map(load_data, dataset_cases.values())
+            pool.map(load_data_with_cleanup, dataset_cases.values())
 
     # run bench_cases
     return_code, result = call_benchmarks(
@@ -113,21 +114,22 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         args.exit_on_error,
     )
 
+    # output raw result
+    logger.debug(custom_format(result))
+
+    # save result to file
+    with open(args.result_file, "w") as fp:
+        json.dump(result, fp, indent=4)
+
     # output as pandas dataframe
     if len(result["bench_cases"]) != 0:
         for key, df in get_result_tables_as_df(result).items():
             logger.info(f'{custom_format(key, bcolor="HEADER")}\n{df}')
 
-    # output raw result
-    logger.debug(custom_format(result))
-
-    with open(args.result_file, "w") as fp:
-        json.dump(result, fp, indent=4)
-
     # generate report
     if args.report:
         if args.result_file not in args.result_files:
-            args.result_files += [args.result_file]
+            args.result_files.append(args.result_file)
         generate_report(args)
 
     return return_code

@@ -101,7 +101,9 @@ def download_kaggle_files(
     kaggle_type: str, kaggle_name: str, filenames: List[str], raw_data_cache_dir: str
 ):
     if not kaggle_is_imported:
-        raise ValueError("Kaggle API is not available.")
+        raise ValueError(
+            "Kaggle API is not available. Please, check if 'kaggle' package and Kaggle API key are installed."
+        )
     api = kaggle.KaggleApi()
     api.authenticate()
 

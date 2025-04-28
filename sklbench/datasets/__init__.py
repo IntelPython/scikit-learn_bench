@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import gc
 import os
 from typing import Dict, Tuple
 
@@ -31,7 +32,11 @@ from .loaders import (
 def load_data(bench_case: BenchCase) -> Tuple[Dict, Dict]:
     # get data name and cache dirs
     data_name = get_data_name(bench_case, shortened=False)
-    data_cache = get_bench_case_value(bench_case, "data:cache_directory", "data_cache")
+    data_cache = get_bench_case_value(
+        bench_case,
+        "data:cache_directory",
+        os.environ.get("SKLBENCH_DATA_CACHE", "data_cache"),
+    )
     raw_data_cache = get_bench_case_value(
         bench_case, "data:raw_cache_directory", os.path.join(data_cache, "raw")
     )
@@ -84,3 +89,9 @@ def load_data(bench_case: BenchCase) -> Tuple[Dict, Dict]:
         "Unable to get data from bench_case:\n"
         f'{custom_format(get_bench_case_value(bench_case, "data"))}'
     )
+
+
+def load_data_with_cleanup(bench_case: BenchCase):
+    result = load_data(bench_case)
+    del result
+    gc.collect()
