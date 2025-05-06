@@ -1,0 +1,242 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd basicstats parameters": {
+            "algorithm": {
+                "estimator": "BasicStatistics"
+            }
+        },
+        "spmd incremental basicstats parameters": {
+            "algorithm": {
+                "estimator": "IncrementalBasicStatistics"
+            }
+        },
+        "spmd covariance parameters": {
+            "algorithm": {
+                "estimator": "EmpiricalCovariance"
+            }
+        },
+        "spmd incremental covariance parameters": {
+            "algorithm": {
+                "estimator": "IncrementalEmpiricalCovariance"
+            }
+        },
+        "spmd pca parameters": {
+            "algorithm": {
+                "estimator": "PCA"
+            }
+        },
+        "spmd incremental pca parameters": {
+            "algorithm": {
+                "estimator": "IncrementalPCA"
+            }
+        },
+        "spmd dbscan parameters": {
+            "algorithm": {
+                "estimator": "DBSCAN"
+            }
+        },
+        "spmd kmeans parameters": {
+            "algorithm": {
+                "estimator": "KMeans"
+            },
+            "estimator_params": {
+                "algorithm": "lloyd"
+            }
+        },
+        "spmd rfcls parameters": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier"
+            }
+        },
+        "spmd knncls parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_methods": { "inference": "predict" }
+            }
+        },
+        "spmd logreg parameters": {
+            "algorithm": {
+                "estimator": "LogisticRegression"
+            },
+            "estimator_params": {
+                "solver": "newton-cg"
+            }
+        },
+        "spmd rfreg parameters": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor"
+            }
+        },
+        "spmd knnreg parameters": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor"
+            }
+        },
+        "spmd linreg parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression"
+            }
+        },
+        "spmd incremental linreg parameters": {
+            "algorithm": {
+                "estimator": "IncrementalLinearRegression"
+            }
+        },
+        "synthetic stat data": {
+            "data": [
+                { "source": "make_blobs", "generation_kwargs": { "n_samples": 10000,  "n_features": 10, "centers": 1 } }
+            ]
+        },
+        "synthetic classification data": {
+            "data": [
+                { "source": "make_classification", "split_kwargs": { "train_size": 10000, "test_size": 10000 }, "generation_kwargs": {  "n_samples": 20000, "n_features": 10, "n_classes": 2 } }
+            ]
+        },
+        "synthetic regression data": {
+            "data": [
+                { "source": "make_regression", "split_kwargs": { "train_size": 10000, "test_size": 10000 }, "generation_kwargs": { "n_samples": 20000,  "n_features": 10 } }
+            ]
+        },
+        "universal": {
+            "algorithm": {"sklearnex_context": { "use_raw_input": [ true, false ] }}
+        }
+    },
+    "TEMPLATES": {
+        "basicstats": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd basicstats parameters"
+            ]
+        },
+        "incremental basicstats": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd incremental basicstats parameters"
+            ]
+        },
+        "pca": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd pca parameters"
+            ]
+        },
+        "incremental pca": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd incremental pca parameters"
+            ]
+        },
+        "covariance": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd covariance parameters"
+            ]
+        },
+        "incremental covariance": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd incremental covariance parameters"
+            ]
+        },
+        "dbscan": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd dbscan parameters"
+            ]
+        },
+        "kmeans": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic stat data",
+                "universal",
+                "spmd kmeans parameters"
+            ]
+        },
+        "rfcls": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic classification data",
+                "universal",
+                "spmd rfcls parameters"
+            ]
+        },
+        "knncls": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic classification data",
+                "universal",
+                "spmd knncls parameters"
+            ]
+        },
+        "logreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic classification data",
+                "universal",
+                "spmd logreg parameters"
+            ]
+        },
+        "rfreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic regression data",
+                "universal",
+                "spmd rfreg parameters"
+            ]
+        },
+        "knnreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic regression data",
+                "universal",
+                "spmd knnreg parameters"
+            ]
+        },
+        "linreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic regression data",
+                "universal",
+                "spmd linreg parameters"
+            ]
+        },
+        "incremental linreg": {
+            "SETS": [
+                "sklearnex spmd implementation",
+                "large scale default parameters",
+                "synthetic regression data",
+                "universal",
+                "spmd incremental linreg parameters"
+            ]
+        }
+    }
+}
