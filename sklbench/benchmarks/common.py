@@ -52,6 +52,8 @@ def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
     distributor = get_bench_case_value(bench_case, "bench:distributor")
     if distributor is not None:
         result.update({"distributor": distributor})
+    use_raw_input = get_bench_case_value(bench_case, "algorithm:sklearnex_context:use_raw_input", False)
+    result["use_raw_input"] = use_raw_input
     mpi_params = get_bench_case_value(bench_case, "bench:mpi_params", dict())
     for mpi_key, mpi_value in mpi_params.items():
         result[f"mpi_{mpi_key}"] = mpi_value
