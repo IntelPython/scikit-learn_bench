@@ -7,8 +7,6 @@ modin[all]
 scikit-learn-intelex
 dpctl
 dpnp
-impi-devel
-mpi4py
 # sklbench dependencies
 scikit-learn
 pandas
