@@ -80,6 +80,15 @@
             "bench": {
                 "mpi_params": {"n": [1,2,4,6,9,12], "ppn": 12}
             }
+        },
+        "large scale impi parameters2": {
+            "data": {
+                "dtype": "float64",
+                "distributed_split": "no"
+            },
+            "bench": {
+                "mpi_params": {"n": [1,2], "ppn": 12}
+            }
         }
     }
 }
