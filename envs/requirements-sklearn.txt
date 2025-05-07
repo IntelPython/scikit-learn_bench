@@ -7,7 +7,7 @@ modin[all]
 scikit-learn-intelex
 dpctl
 dpnp
-impi_rt
+impi-devel
 mpi4py
 # sklbench dependencies
 scikit-learn
