@@ -1,0 +1,35 @@
+{
+    "INCLUDE": ["../../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "gpu svc parameters": {
+            "algorithm":{
+                "estimator": "SVC",
+		"estimator_params": {
+		    "C": 1.0,
+                    "kernel": "linear",
+                    "degree": 3,
+                    "gamma": "scale",
+                    "tol": 1e-3,
+                    "cache_size": 16384,
+                    "max_iter": 10000
+                },
+		"library": "sklearnex",
+		"device": "gpu"
+            }
+        },
+        "synthetic data": {
+            "data": [
+                { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 10000 },    "generation_kwargs": {  "n_samples": 60000, "n_features": 10, "n_classes": 2 } },
+                { "source": "make_classification", "split_kwargs": { "train_size": 5000, "test_size": 1000 },    "generation_kwargs": {  "n_samples": 6000, "n_features": 100, "n_classes": 2 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "logreg": {
+            "SETS": [
+                "gpu svc parameters",
+                "synthetic data"
+	    ]
+        }
+    }
+}
