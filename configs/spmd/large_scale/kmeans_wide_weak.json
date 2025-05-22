@@ -16,7 +16,7 @@
         },
         "synthetic data": {
                 "data": [
-		    { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 1000, "centers": 2000}}
+		    { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 1000, "centers": 20}}
                 ]
         }
     },
