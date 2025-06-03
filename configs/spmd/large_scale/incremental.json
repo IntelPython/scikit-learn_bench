@@ -8,7 +8,10 @@
                 "data": {
                     "format":"dpctl",
                     "order": "C"
-                }
+                },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
         },
         "statistical batches and data": [
                 { "algorithm": { "num_batches": { "training": [1,2,6,12]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 100000000,  "n_features": 10, "centers": 1 } } },

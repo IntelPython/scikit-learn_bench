@@ -1,0 +1,61 @@
+{   "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "statistical batches and data": [
+                { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 1000000,  "n_features": 100, "centers": 1 } } }
+        ],
+        "regression batches and data": [
+            { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 1005000,  "n_features": 100, "noise": 1.25 }, "split_kwargs": { "train_size": 1000000, "test_size": 5000 } } }
+        ],
+        "covariance": {
+            "algorithm": {
+                    "estimator": "IncrementalEmpiricalCovariance",
+                    "estimator_methods": {"training": "partial_fit"}
+                },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
+         },
+        "basic_statistics": {
+            "algorithm": {
+                    "estimator": "IncrementalBasicStatistics",
+                    "estimator_methods": {"training": "partial_fit"}
+                },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
+        },
+        "linear_regression": {
+            "algorithm": {
+                    "estimator": "IncrementalLinearRegression",
+                    "estimator_methods": {"training": "partial_fit"}
+                },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
+        },
+        "pca": {
+            "algorithm": {
+                    "estimator": "IncrementalPCA",
+                    "estimator_methods": {"training": "partial_fit"}
+                    },
+            "data": {
+                    "split_kwargs": { "test_size": 0.0001 }
+                },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
+        }
+    },
+    "TEMPLATES": {
+        "basic_statistics": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "basic_statistics", "statistical batches and data"] },
+        "covariance": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "covariance", "statistical batches and data"] },
+        "linear_regression": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "linear_regression", "regression batches and data"] },
+        "pca": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "pca", "statistical batches and data"] }
+    }
+}

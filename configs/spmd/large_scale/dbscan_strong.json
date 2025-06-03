@@ -14,7 +14,10 @@
 	    },
 	    "data": {
 		"dtype": "float64"
-	    }
+	    },
+            "bench": {
+                "ensure_sklearnex_patching": false
+            }
 	},
 	"synthetic dataset": {
             "data": [
