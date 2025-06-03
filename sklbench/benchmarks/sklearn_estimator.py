@@ -395,6 +395,7 @@ def measure_sklearn_estimator(
             estimator_class.__module__.startswith("daal4py")
             or estimator_class.__module__.startswith("sklearnex")
         )
+        and "spmd" not in estimator_class.__module__
     )
     sklearnex_logging_stream = get_sklearnex_logging_stream()
 
