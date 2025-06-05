@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../../common/sklearn.json", "../../common/svm.json"],
+    "INCLUDE": ["../../common/sklearn.json", "../svm.json"],
     "PARAMETERS_SETS": {
         "sklearn svm parameters": {
             "algorithm": {
