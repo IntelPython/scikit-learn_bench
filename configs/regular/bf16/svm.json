@@ -1,0 +1,32 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "../../common/svm.json"],
+    "PARAMETERS_SETS": {
+        "sklearn svm parameters": {
+            "algorithm": {
+                "estimator": "SVC",
+                "estimator_params": {
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                    "random_state": 42
+                }
+            },
+	        "data": {
+                "dtype": ["float32"]
+            }
+        },
+        "synthetic data": {
+            "data": [
+		        { "source": "make_classification", "split_kwargs": { "train_size": 50000, "test_size": 10000 }, "generation_kwargs": {  "n_samples": 60000, "n_features": 10, "n_classes": 2 } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn svm": {
+            "SETS": [
+                "sklearn-ex[gpu] implementations",
+                "common svm parameters",
+                "sklearn svm parameters",
+                "synthetic data"
+            ]
+        }
+    }
+}
