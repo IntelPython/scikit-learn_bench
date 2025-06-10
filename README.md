@@ -97,6 +97,7 @@ flowchart TB
 ## 📑 Documentation
 [Scikit-learn_bench](README.md):
 - [Configs](configs/README.md)
+  - [Benchmarking Config Specification](configs/BENCH-CONFIG-SPEC.md)
 - [Benchmarks Runner](sklbench/runner/README.md)
 - [Report Generator](sklbench/report/README.md)
 - [Benchmarks](sklbench/benchmarks/README.md)

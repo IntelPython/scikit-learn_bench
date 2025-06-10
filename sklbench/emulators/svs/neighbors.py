@@ -14,7 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
-import pysvs
+import svs
 from psutil import cpu_count
 
 from ..common.neighbors import NearestNeighborsBase
@@ -42,15 +42,14 @@ class NearestNeighbors(NearestNeighborsBase):
         self.n_jobs = n_jobs
 
     def fit(self, X, y=None):
-        build_params = pysvs.VamanaBuildParameters(
+        build_params = svs.VamanaBuildParameters(
             graph_max_degree=self.graph_max_degree,
             window_size=self.window_size,
-            num_threads=self.n_jobs,
         )
-        self._index = pysvs.Vamana.build(
+        self._index = svs.Vamana.build(
             build_params,
             X,
-            pysvs.DistanceType.L2,
+            svs.DistanceType.L2,
             num_threads=self.n_jobs,
         )
         return self

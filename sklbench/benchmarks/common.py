@@ -29,9 +29,13 @@ def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
     result.update(
         {
             "dataset": get_data_name(bench_case, shortened=True),
-            "library": get_bench_case_value(bench_case, "algorithm:library").replace(
-                "sklbench.emulators.", ""
-            ),
+            "library": get_bench_case_value(bench_case, "algorithm:library")
+            .replace(
+                # skipping emulators namespace for conciseness
+                "sklbench.emulators.",
+                "",
+            )
+            .replace(".utils", ""),
             "device": get_bench_case_value(bench_case, "algorithm:device"),
         }
     )

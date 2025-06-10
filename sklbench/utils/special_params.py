@@ -203,15 +203,15 @@ def assign_case_special_values_on_run(
             raise ValueError(f'Unknown special value {n_jobs} for "n_jobs"')
         n_jobs = int(n_cpus * get_ratio_from_n_jobs(n_jobs))
         set_bench_case_value(bench_case, "algorithm:estimator_params:n_jobs", n_jobs)
-    # classes balance for XGBoost
+    # classes balance for GBT frameworks
     scale_pos_weight = get_bench_case_value(
         bench_case, "algorithm:estimator_params:scale_pos_weight", None
     )
     if (
         is_special_value(scale_pos_weight)
         and scale_pos_weight.replace(SP_VALUE_STR, "") == "auto"
-        and library == "xgboost"
-        and estimator == "XGBClassifier"
+        and (library.endswith("gbm") or library.endswith("boost"))
+        and estimator.endswith("Classifier")
     ):
         y_train = convert_to_numpy(data[1])
         value_counts = pd.value_counts(y_train).sort_index()
@@ -231,6 +231,16 @@ def assign_case_special_values_on_run(
                 "algorithm:estimator_params:scale_pos_weight",
                 scale_pos_weight,
             )
+    # number of classes assignment for multiclass LightGBM
+    num_classes = get_bench_case_value(
+        bench_case, "algorithm:estimator_params:num_classes", None
+    )
+    if is_special_value(num_classes) and num_classes.replace(SP_VALUE_STR, "") == "auto":
+        set_bench_case_value(
+            bench_case,
+            "algorithm:estimator_params:num_classes",
+            data_description.get("n_classes", None),
+        )
     # "n_clusters" auto assignment from data description
     n_clusters = get_bench_case_value(
         bench_case, "algorithm:estimator_params:n_clusters", None
