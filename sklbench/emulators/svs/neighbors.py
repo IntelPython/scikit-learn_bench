@@ -45,7 +45,6 @@ class NearestNeighbors(NearestNeighborsBase):
         build_params = svs.VamanaBuildParameters(
             graph_max_degree=self.graph_max_degree,
             window_size=self.window_size,
-            # num_threads=self.n_jobs,
         )
         self._index = svs.Vamana.build(
             build_params,

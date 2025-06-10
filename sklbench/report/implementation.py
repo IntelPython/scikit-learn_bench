@@ -93,7 +93,6 @@ COLUMNS_ORDER = [
     "estimator",
     "method",
     "function",
-    "online_inference_mode",
     "device",
     "environment_name",
     # data
