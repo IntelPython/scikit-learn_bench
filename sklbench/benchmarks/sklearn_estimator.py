@@ -499,6 +499,14 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
             estimator_params["min_samples"] = (
                 MPI.COMM_WORLD.Get_size() * estimator_params["min_samples"]
             )
+    if (
+        "RandomForest" in str(estimator_name)
+        and estimator_params.get("local_trees_mode", False) == True
+    ):
+        from mpi4py import MPI
+        estimator_params["n_estimators"] = (
+            MPI.COMM_WORLD.Get_size() * estimator_params["n_estimators"]
+        )
     # get estimator methods for measurement
     estimator_methods = get_estimator_methods(bench_case)
 
