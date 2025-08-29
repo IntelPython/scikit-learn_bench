@@ -74,7 +74,7 @@
             {
                 "algorithm": {
                     "estimator": "TSNE",
-                    "estimator_params": { "n_iter": 250 }
+                    "estimator_params": { "max_iter": 250 }
                 }
             },
             {
