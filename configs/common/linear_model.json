@@ -1,0 +1,56 @@
+{
+    "PARAMETERS_SETS": {
+        "common linear parameters": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": { "fit_intercept": true, "copy_X": true }
+            }
+        },
+        "common ridge parameters": {
+            "algorithm": {
+                "estimator": "Ridge",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "alpha": 2.0
+                }
+            }
+        },
+        "common lasso parameters": {
+            "algorithm": {
+                "estimator": "Lasso",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "max_iter": 1000,
+                    "selection": "cyclic",
+                    "alpha": 1e-3,
+                    "tol": 1e-6
+                }
+            }
+        },
+        "common elasticnet parameters": {
+            "algorithm": {
+                "estimator": "ElasticNet",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "max_iter": 1000,
+                    "selection": "cyclic",
+                    "alpha": 1e-3,
+                    "l1_ratio": 0.9,
+                    "tol": 1e-6
+                }
+            }
+        },
+        "sklearn linear parameters": {
+            "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+        },
+        "sklearn ridge parameters": {
+            "estimator_params": { "solver": "auto", "tol": 1e-4 }
+        },
+        "cuml L2 parameters": {
+            "estimator_params": { "solver": "eig" }
+        },
+        "cuml L1 parameters": {
+            "estimator_params": { "solver": "cd" }
+        }
+    }
+}

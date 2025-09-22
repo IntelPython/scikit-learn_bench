@@ -1,59 +1,48 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/knn.json"],
     "PARAMETERS_SETS": {
-        "brute knn classification datasets": {
+        "high-load brute knn classification datasets": {
             "data": [
-                { "dataset": "susy", "split_kwargs": { "train_size": 80000, "test_size": 20000 } },
-                { "dataset": "connect" },
-                { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } }
+                { "dataset": "susy", "split_kwargs": { "train_size": 500000, "test_size": 500000 } }
             ]
         },
-        "kd_tree knn classification datasets": {
+        "high-load kd_tree knn classification datasets": {
             "data": [
-                {
-                    "dataset": ["skin_segmentation", "codrnanorm"],
-                    "split_kwargs": { "train_size": 0.25, "test_size": 0.75 }
-                },
                 {
                     "source": "make_classification",
                     "generation_kwargs": [
                         {
-                            "n_classes": 5, "n_samples": 400000, "n_features": 4,
+                            "n_classes": 5, "n_samples": 4000000, "n_features": 4,
                             "n_redundant": 0, "n_repeated": 0, "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 200000, "n_features": 8,
+                            "n_classes": 5, "n_samples": 2000000, "n_features": 8,
                             "n_redundant": 2, "n_repeated": 2, "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 100000, "n_features": 16,
+                            "n_classes": 5, "n_samples": 1000000, "n_features": 16,
                             "n_redundant": 6, "n_repeated": 6, "n_informative": 4
                         }
                     ],
-                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                    "split_kwargs": { "ignore": true }
                 }
             ]
         },
-        "brute knn regression datasets": {
+        "high-load brute knn regression datasets": {
             "data": [
-                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 40000, "test_size": 10000 } },
-                { "dataset": ["fried", "twodplanes"] }
+                { "dataset": "year_prediction_msd", "split_kwargs": { "ignore": true } }
             ]
         },
-        "kd_tree knn regression datasets": {
+        "high-load kd_tree knn regression datasets": {
             "data": [
-                {
-                    "dataset": "medical_charges_nominal",
-                    "split_kwargs": { "train_size": 0.75, "test_size": 0.25 }
-                },
                 {
                     "source": "make_regression",
                     "generation_kwargs":[
-                        { "n_samples": 400000, "n_features": 4, "noise": 1.0 },
-                        { "n_samples": 200000, "n_features": 8, "noise": 1.5 },
-                        { "n_samples": 100000, "n_features": 16, "noise": 2.0 }
+                        { "n_samples": 10000000, "n_features": 4, "noise": 1.0 },
+                        { "n_samples": 4000000, "n_features": 8, "noise": 1.5 },
+                        { "n_samples": 2000000, "n_features": 16, "noise": 2.0 }
                     ],
-                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                    "split_kwargs": { "ignore": true }
                 }
             ]
         }
@@ -65,7 +54,7 @@
                 "common knn parameters",
                 "sklearn knn parameters",
                 "brute knn classification parameters",
-                "brute knn classification datasets"
+                "high-load brute knn classification datasets"
             ]
         },
         "sklearn kd_tree knn clsf": {
@@ -74,7 +63,7 @@
                 "common knn parameters",
                 "sklearn knn parameters",
                 "kd_tree knn classification parameters",
-                "kd_tree knn classification datasets"
+                "high-load kd_tree knn classification datasets"
             ]
         },
         "sklearn brute knn regr": {
@@ -83,7 +72,7 @@
                 "common knn parameters",
                 "sklearn knn parameters",
                 "brute knn regression parameters",
-                "brute knn regression datasets"
+                "high-load brute knn regression datasets"
             ]
         },
         "sklearn kd_tree knn regr": {
@@ -92,7 +81,7 @@
                 "common knn parameters",
                 "sklearn knn parameters",
                 "kd_tree knn regression parameters",
-                "kd_tree knn regression datasets"
+                "high-load kd_tree knn regression datasets"
             ]
         },
         "cuml brute knn clsf": {
@@ -100,7 +89,7 @@
                 "cuml implementation",
                 "common knn parameters",
                 "brute knn classification parameters",
-                "brute knn classification datasets"
+                "high-load brute knn classification datasets"
             ]
         },
         "cuml brute knn regr": {
@@ -108,7 +97,7 @@
                 "cuml implementation",
                 "common knn parameters",
                 "brute knn regression parameters",
-                "brute knn regression datasets"
+                "high-load brute knn regression datasets"
             ]
         }
     }

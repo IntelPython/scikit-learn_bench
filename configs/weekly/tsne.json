@@ -1,23 +1,23 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/tsne.json"],
     "PARAMETERS_SETS": {
-        "tsne datasets": [
+        "high-load tsne datasets": [
             {
                 "data": {
-                    "dataset": "california_housing",
-                    "split_kwargs": { "train_size": 10000 }
+                    "dataset": ["medical_charges_nominal"],
+                    "split_kwargs": { "ignore": true }
                 }
             },
             {
                 "data": {
                     "dataset": "hepmass",
-                    "split_kwargs": { "train_size": [1000, 2000, 5000] }
+                    "split_kwargs": { "train_size": [100000, 200000, 500000] }
                 }
             },
             {
                 "data": {
-                    "dataset": ["a9a", "mnist", "gisette"],
-                    "split_kwargs": { "train_size": 5000 }
+                    "dataset": ["sensit", "mnist", "cifar"],
+                    "split_kwargs": { "ignore": true }
                 }
             }
         ]
@@ -28,7 +28,7 @@
                 "sklearn-ex[cpu,gpu] implementations",
                 "common tsne parameters",
                 "sklearn parameters",
-                "tsne datasets"
+                "high-load tsne datasets"
             ]
         },
         "cuml tsne": {
@@ -36,7 +36,7 @@
                 "cuml implementation",
                 "common tsne parameters",
                 "cuml parameters",
-                "tsne datasets"
+                "high-load tsne datasets"
             ]
         }
     }

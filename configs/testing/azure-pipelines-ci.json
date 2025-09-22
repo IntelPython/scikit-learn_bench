@@ -34,10 +34,6 @@
             "data":
             [
                 {
-                    "source": "fetch_openml",
-                    "id": 1430
-                },
-                {
                     "source": "make_classification",
                     "generation_kwargs": {
                         "n_classes": 2,

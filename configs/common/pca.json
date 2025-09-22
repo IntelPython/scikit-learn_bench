@@ -1,0 +1,27 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "pca parameters": {
+            "algorithm": {
+                "estimator": "PCA",
+                "estimator_params": {
+                    "n_components": 3,
+                    "copy": true,
+                    "whiten": false,
+                    "svd_solver": "covariance_eigh",
+                    "tol": 0.0,
+                    "iterated_power": 15,
+                    "random_state": 42
+                }
+            }
+        },
+        "cuml pca parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "svd_solver": "full",
+                    "random_state": "[REMOVE]"
+                }
+            }
+        }
+    }
+}

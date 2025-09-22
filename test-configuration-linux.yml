@@ -38,7 +38,7 @@ steps:
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate bench-env
-      python -m sklbench --report -l DEBUG --report -p algorithm:library=sklearn,sklearnex algorithm:estimator=PCA,KMeans,ElasticNet,KNeighborsClassifier data:dataset=skin_segmentation data:split_kwargs:train_size=5000 data:split_kwargs:test_size=5000
+      python -m sklbench --report -l DEBUG --report -p algorithm:library=sklearn,sklearnex algorithm:estimator=PCA,KMeans,ElasticNet,KNeighborsClassifier data:source=make_classification data:generation_kwargs:n_samples=10000 data:generation_kwargs:n_classes=2 data:split_kwargs:train_size=0.5 data:split_kwargs:test_size=0.5
     displayName: CLI arguments example run
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh
