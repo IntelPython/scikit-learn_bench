@@ -30,16 +30,6 @@
                         "n_informative": "[SPECIAL_VALUE]0.5"
                     },
                     "split_kwargs": { "test_size": 0.2 }
-                },
-                {
-                    "source": "fetch_openml",
-                    "id": 1430,
-                    "split_kwargs": {
-                        "train_size": 1000,
-                        "test_size": 1000,
-                        "shuffle": true,
-                        "random_state": 42
-                    }
                 }
             ]
         },
