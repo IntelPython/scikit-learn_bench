@@ -48,12 +48,21 @@ def get_numa_cpus_conf() -> Dict[int, str]:
 def get_number_of_sockets():
     if sys.platform == "win32":
         command = "wmic cpu get DeviceID"
-        result = subprocess.check_output(command, shell=True, text=True)
+        result = subprocess.check_output(command, shell=False, text=True)
         n_sockets = len(list(filter(lambda x: x.startswith("CPU"), result.split("\n"))))
     elif sys.platform == "linux":
-        command = "lscpu | grep 'Socket(s):' | awk '{print $2}'"
-        result = subprocess.check_output(command, shell=True, text=True)
-        n_sockets = int(result.strip("\n"))
+        try:
+            _, lscpu_text, _ = read_output_from_command("lscpu")
+            for line in lscpu_text.split("\n"):
+                if "Socket(s):" in line:
+                    n_sockets = int(line.split(":")[1].strip())
+                    break
+            else:
+                logger.warning("Unable to find Socket(s) information in lscpu output")
+                n_sockets = 1
+        except (FileNotFoundError, ValueError, IndexError):
+            logger.warning("Unable to get number of sockets via lscpu")
+            n_sockets = 1
     else:
         logger.warning("Unable to get number of sockets due to unknown sys.platform")
         n_sockets = 1
