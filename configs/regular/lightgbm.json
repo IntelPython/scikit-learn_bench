@@ -5,6 +5,7 @@
         "xgboost_multi.json",
         "xgboost_regression.json"
     ],
+    "PARAMETERS_SETS": {},
     "TEMPLATES": {
         "lightgbm binary classification": {
             "SETS": [
