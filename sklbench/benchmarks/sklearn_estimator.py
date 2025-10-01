@@ -239,6 +239,7 @@ def get_subset_metrics_of_estimator(
             _brute_knn = NearestNeighbors(algorithm="brute").fit(x_compat)
         else:
             recall_degree = 10
+            '''
             ground_truth_neighbors = _brute_knn.kneighbors(
                 x_compat, recall_degree, return_distance=False
             )
@@ -256,6 +257,7 @@ def get_subset_metrics_of_estimator(
                 / ground_truth_neighbors.shape[1]
             )
             metrics.update({f"recall@{recall_degree}": recall})
+            '''
     if (
         hasattr(estimator_instance, "support_vectors_")
         and estimator_instance.support_vectors_ is not None

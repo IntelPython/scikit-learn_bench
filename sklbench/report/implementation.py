@@ -243,7 +243,7 @@ def get_result_tables_as_df(
     bench_cases = pd.DataFrame(
         [flatten_dict(bench_case) for bench_case in results["bench_cases"]]
     )
-    bench_cases = bench_cases.map(lambda x: str(x) if not isinstance(x, Hashable) else x)
+    bench_cases = bench_cases.applymap(lambda x: str(x) if not isinstance(x, Hashable) else x)
 
     if compatibility_mode:
         bench_cases = transform_results_to_compatible(bench_cases)
