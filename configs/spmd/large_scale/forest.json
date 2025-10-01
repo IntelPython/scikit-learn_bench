@@ -12,8 +12,7 @@
             }
         },
         "synthetic data": [
-	    { "data": { "source": "make_classification", "split_kwargs": { "train_size": 10000000, "test_size": 1000},   "generation_kwargs": {  "n_samples": 10001000,  "n_features": 10, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }, "algorithm": { "estimator_params": { "n_estimators": 5, "max_depth": 5, "local_trees_mode": true } } },
-            { "data": { "source": "make_classification", "split_kwargs": { "train_size": 100000, "test_size": 1000},   "generation_kwargs": {  "n_samples": 101000,  "n_features": 1000, "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }, "algorithm": { "estimator_params": { "n_estimators": 20, "max_depth": 10, "local_trees_mode": true } } }
+	    { "data": { "source": "make_classification", "split_kwargs": { "train_size": 1000000, "test_size": 1000},   "generation_kwargs": {  "n_samples": 1001000,  "n_features": [10], "n_classes": 2,  "n_informative": "[SPECIAL_VALUE]0.5" } }, "algorithm": { "estimator_params": { "n_estimators": 25, "max_depth": 5, "local_trees_mode": true } } }
 	]
     },
     "TEMPLATES": {

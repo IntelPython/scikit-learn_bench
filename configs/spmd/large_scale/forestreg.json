@@ -4,7 +4,7 @@
         "spmd forest regression parameters": {
             "algorithm": {
                 "estimator": "RandomForestRegressor",
-                "estimator_params": { "n_estimators": 10, "max_depth": 5, "local_trees_mode": true },
+                "estimator_params": { "n_estimators": 20, "max_depth": 4, "local_trees_mode": true },
                 "sklearnex_context": { "use_raw_input": true }
             },
 	    "bench": {
@@ -13,7 +13,7 @@
         },
         "synthetic data": {
             "data": [
-                { "source": "make_regression", "split_kwargs": { "train_size": 100000, "test_size": 1000 }, "generation_kwargs": {  "n_samples": 101000, "n_features": 100 } }
+                { "source": "make_regression", "split_kwargs": { "train_size": 1000000, "test_size": 1000},   "generation_kwargs": {  "n_samples": 10001000,  "n_features": 10 } }
             ]
         }
     },

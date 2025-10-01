@@ -1,0 +1,34 @@
+{
+    "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
+    "PARAMETERS_SETS": {
+        "spmd knn reg parameters": {
+            "algorithm": {
+                "estimator": "NearestNeighbors",
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "metric": "minkowski",
+                    "p": 2 
+                },
+                "estimator_methods": {
+                    "training": "fit",
+		    "inference": "kneighbors"
+                },
+                "sklearnex_context": { "use_raw_input": true }
+            }
+        },
+        "synthetic regression data": [
+            { "data": { "source": "make_regression", "split_kwargs": { "train_size": 100000, "test_size": 100000},   "generation_kwargs": {  "n_samples": 2000000,  "n_features": 10 } }, "algorithm": { "estimator_params": { "n_neighbors": 5 } } },
+            { "data": { "source": "make_regression", "split_kwargs": { "train_size": 100000, "test_size": 10000},   "generation_kwargs": {  "n_samples": 2000000,  "n_features": 1000} }, "algorithm": { "estimator_params": { "n_neighbors": 100 } } }
+        ]
+    },
+    "TEMPLATES": {
+        "knn regressor": {
+            "SETS": [
+                "synthetic regression data",
+                "sklearnex spmd implementation",
+                "large scale 32 parameters",
+                "spmd knn reg parameters"
+            ]
+        }
+    }
+}
