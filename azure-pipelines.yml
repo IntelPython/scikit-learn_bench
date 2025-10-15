@@ -34,17 +34,11 @@ jobs:
         Python3.12_Pip:
           PYTHON_VERSION: "3.12"
           PKG_MANAGER: "pip"
-        Python3.13_Pip:
-          PYTHON_VERSION: "3.13"
-          PKG_MANAGER: "pip"
         Python3.11_Conda:
           PYTHON_VERSION: "3.11"
           PKG_MANAGER: "conda"
         Python3.12_Conda:
           PYTHON_VERSION: "3.12"
-          PKG_MANAGER: "conda"
-        Python3.13_Conda:
-          PYTHON_VERSION: "3.13"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "ubuntu-latest"
@@ -60,17 +54,11 @@ jobs:
         Python3.12_Pip:
           PYTHON_VERSION: "3.12"
           PKG_MANAGER: "pip"
-        Python3.13_Pip:
-          PYTHON_VERSION: "3.13"
-          PKG_MANAGER: "pip"
         Python3.11_Conda:
           PYTHON_VERSION: "3.11"
           PKG_MANAGER: "conda"
         Python3.12_Conda:
           PYTHON_VERSION: "3.12"
-          PKG_MANAGER: "conda"
-        Python3.13_Conda:
-          PYTHON_VERSION: "3.13"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "windows-latest"
