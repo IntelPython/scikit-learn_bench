@@ -15,7 +15,7 @@
             },
             {
                 "data": {
-                    "dataset": ["airline_depdelay", "bosch", "epsilon"],
+                    "dataset": ["airline_depdelay", "epsilon"],
                     "split_kwargs": { "ignore": true }
                 }
             }

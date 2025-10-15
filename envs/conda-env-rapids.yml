@@ -13,7 +13,6 @@ dependencies:
   - tabulate
   - fastparquet
   - h5py
-  - kaggle
   - openpyxl
   - tqdm
   - psutil

@@ -32,12 +32,7 @@ from sklearn.datasets import (
 )
 
 from .common import cache, load_data_description, load_data_from_cache, preprocess
-from .downloaders import (
-    download_and_read_csv,
-    download_kaggle_files,
-    load_openml,
-    retrieve,
-)
+from .downloaders import download_and_read_csv, load_openml, retrieve
 
 
 @preprocess
@@ -173,27 +168,6 @@ def load_airline_depdelay(
         "default_split": {"test_size": 0.2, "random_state": 42},
     }
     return {"x": x, "y": y}, data_description
-
-
-@cache
-def load_bosch(
-    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
-) -> Tuple[Dict, Dict]:
-    data_filename = "train_numeric.csv.zip"
-
-    data_path = download_kaggle_files(
-        "competition",
-        "bosch-production-line-performance",
-        [data_filename],
-        raw_data_cache,
-    )[data_filename]
-
-    data = pd.read_csv(data_path, index_col=0, compression="zip", dtype=np.float32)
-    y = data.iloc[:, -1].to_numpy(dtype=np.float32)
-    x = data.drop(labels=[data.columns[-1]], axis=1)
-
-    data_desc = {"default_split": {"test_size": 0.2, "random_state": 77}}
-    return {"x": x, "y": y}, data_desc
 
 
 @cache
@@ -833,7 +807,6 @@ dataset_loading_functions = {
     # classification
     "airline_depdelay": load_airline_depdelay,
     "a9a": load_a9a,
-    "bosch": load_bosch,
     "codrnanorm": load_codrnanorm,
     "covtype": load_covtype,
     "creditcard": load_creditcard,
