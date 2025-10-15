@@ -17,7 +17,7 @@
 jobs:
   - job: Lint
     pool:
-      vmImage: 'ubuntu-22.04'
+      vmImage: 'ubuntu-latest'
     steps:
     - script: |
         python -m pip install --upgrade pip pre-commit==4.0.1
@@ -28,23 +28,23 @@ jobs:
     dependsOn: Lint
     strategy:
       matrix:
-        Python3.9_Pip:
-          PYTHON_VERSION: "3.9"
-          PKG_MANAGER: "pip"
-        Python3.10_Pip:
-          PYTHON_VERSION: "3.10"
-          PKG_MANAGER: "pip"
         Python3.11_Pip:
           PYTHON_VERSION: "3.11"
           PKG_MANAGER: "pip"
-        Python3.9_Conda:
-          PYTHON_VERSION: "3.9"
-          PKG_MANAGER: "conda"
-        Python3.10_Conda:
-          PYTHON_VERSION: "3.10"
-          PKG_MANAGER: "conda"
+        Python3.12_Pip:
+          PYTHON_VERSION: "3.12"
+          PKG_MANAGER: "pip"
+        Python3.13_Pip:
+          PYTHON_VERSION: "3.13"
+          PKG_MANAGER: "pip"
         Python3.11_Conda:
           PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
+        Python3.12_Conda:
+          PYTHON_VERSION: "3.12"
+          PKG_MANAGER: "conda"
+        Python3.13_Conda:
+          PYTHON_VERSION: "3.13"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "ubuntu-latest"
@@ -54,23 +54,23 @@ jobs:
     dependsOn: Lint
     strategy:
       matrix:
-        Python3.9_Pip:
-          PYTHON_VERSION: "3.9"
-          PKG_MANAGER: "pip"
-        Python3.10_Pip:
-          PYTHON_VERSION: "3.10"
-          PKG_MANAGER: "pip"
         Python3.11_Pip:
           PYTHON_VERSION: "3.11"
           PKG_MANAGER: "pip"
-        Python3.9_Conda:
-          PYTHON_VERSION: "3.9"
-          PKG_MANAGER: "conda"
-        Python3.10_Conda:
-          PYTHON_VERSION: "3.10"
-          PKG_MANAGER: "conda"
+        Python3.12_Pip:
+          PYTHON_VERSION: "3.12"
+          PKG_MANAGER: "pip"
+        Python3.13_Pip:
+          PYTHON_VERSION: "3.13"
+          PKG_MANAGER: "pip"
         Python3.11_Conda:
           PYTHON_VERSION: "3.11"
+          PKG_MANAGER: "conda"
+        Python3.12_Conda:
+          PYTHON_VERSION: "3.12"
+          PKG_MANAGER: "conda"
+        Python3.13_Conda:
+          PYTHON_VERSION: "3.13"
           PKG_MANAGER: "conda"
     pool:
       vmImage: "windows-latest"
