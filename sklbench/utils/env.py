@@ -47,9 +47,15 @@ def get_numa_cpus_conf() -> Dict[int, str]:
 
 def get_number_of_sockets():
     if sys.platform == "win32":
-        command = "wmic cpu get DeviceID"
-        result = subprocess.check_output(command, shell=False, text=True)
-        n_sockets = len(list(filter(lambda x: x.startswith("CPU"), result.split("\n"))))
+        try:
+            command = ["wmic", "cpu", "get", "DeviceID"]
+            result = subprocess.check_output(command, shell=False, text=True)
+            n_sockets = len(
+                list(filter(lambda x: x.startswith("CPU"), result.split("\n")))
+            )
+        except (FileNotFoundError, subprocess.CalledProcessError, ValueError, IndexError):
+            logger.warning("Unable to get number of sockets via wmic")
+            n_sockets = 1
     elif sys.platform == "linux":
         try:
             _, lscpu_text, _ = read_output_from_command("lscpu")

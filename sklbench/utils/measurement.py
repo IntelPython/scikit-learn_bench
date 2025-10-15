@@ -124,7 +124,9 @@ def get_n_from_cache_size():
     return ceil(sqrt(n_sockets * cache_size / 8))
 
 
-def flush_cache(n: int = get_n_from_cache_size()):
+def flush_cache(n: int | None = None):
+    if n is None:
+        n = get_n_from_cache_size()
     np.matmul(np.random.rand(n, n), np.random.rand(n, n))
 
 
