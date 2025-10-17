@@ -23,13 +23,6 @@ import requests
 from scipy.sparse import csr_matrix
 from sklearn.datasets import fetch_openml
 
-try:
-    import kaggle
-
-    kaggle_is_imported = True
-except (ImportError, OSError, ValueError):
-    kaggle_is_imported = False
-
 
 def retrieve(url: str, filename: str) -> None:
     if os.path.isfile(filename):
@@ -95,27 +88,3 @@ def download_and_read_csv(url: str, raw_data_cache_dir: str, **reading_kwargs):
     retrieve(url, local_path)
     data = pd.read_csv(local_path, **reading_kwargs)
     return data
-
-
-def download_kaggle_files(
-    kaggle_type: str, kaggle_name: str, filenames: List[str], raw_data_cache_dir: str
-):
-    if not kaggle_is_imported:
-        raise ValueError("Kaggle API is not available.")
-    api = kaggle.KaggleApi()
-    api.authenticate()
-
-    if kaggle_type == "competition":
-        download_method = api.competition_download_file
-    elif kaggle_type == "dataset":
-        download_method = api.dataset_download_file
-    else:
-        raise ValueError(
-            f"Unknown {kaggle_type} type for " '"download_kaggle_files" function.'
-        )
-
-    output_file_paths = {}
-    for filename in filenames:
-        download_method(kaggle_name, filename, raw_data_cache_dir)
-        output_file_paths[filename] = os.path.join(raw_data_cache_dir, filename)
-    return output_file_paths

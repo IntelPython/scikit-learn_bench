@@ -100,13 +100,13 @@ def run_benchmark_from_case(
     logger.debug(f"Benchmark wrapper call command:\n{command}")
     return_code, stdout, stderr = read_output_from_command(command)
 
-    # filter stdout warnings
-    prefixes_to_skip = ["[W]", "[I]"]
+    # filter cuML stdout verbosity
+    suffixes_to_skip = ["[W]", "[I]", "[CUML]"]
     stdout = "\n".join(
         [
             line
             for line in stdout.split("\n")
-            if not any(map(lambda x: line.startswith(x), prefixes_to_skip))
+            if not any(map(lambda x: x in line, suffixes_to_skip))
         ]
     )
 

@@ -73,10 +73,7 @@
     "TEMPLATES": {
         "multi clsf": {
             "SETS": ["common", "multi clsf data"],
-            "algorithm": {
-                "estimator": "LogisticRegression",
-                "online_inference_mode": true
-            }
+            "algorithm": { "estimator": "LogisticRegression" }
         },
         "supervised": {
             "SETS": ["common", "binary clsf data", "supervised algorithms"]

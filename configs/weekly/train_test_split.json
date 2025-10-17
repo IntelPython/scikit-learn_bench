@@ -6,8 +6,7 @@
                 "data": {
                     "dataset": [
                         "airline_depdelay",
-                        "higgs",
-                        "bosch"
+                        "higgs"
                     ]
                 }
             },

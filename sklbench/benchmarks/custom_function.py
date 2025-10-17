@@ -62,14 +62,6 @@ def get_function_args(bench_case: BenchCase, x_train, y_train, x_test, y_test) -
     return args
 
 
-def measure_function_instance(bench_case, function_instance, args: Tuple, kwargs: Dict):
-    metrics = dict()
-    metrics["time[ms]"], metrics["time std[ms]"], _ = measure_case(
-        bench_case, function_instance, *args, **kwargs
-    )
-    return metrics
-
-
 def main(bench_case: BenchCase, filters: List[BenchCase]):
     library_name = get_bench_case_value(bench_case, "algorithm:library")
     function_name = get_bench_case_value(bench_case, "algorithm:function")
@@ -93,12 +85,13 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         logger.warning("Benchmarking case was filtered.")
         return list()
 
-    metrics = measure_function_instance(
+    metrics = measure_case(
         bench_case,
         function_instance,
-        function_args,
-        get_bench_case_value(bench_case, "algorithm:kwargs", dict()),
+        *function_args,
+        **get_bench_case_value(bench_case, "algorithm:kwargs", dict()),
     )
+
     result = {
         "task": "utility",
         "function": function_name,
