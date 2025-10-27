@@ -20,7 +20,18 @@
                             "n_classes": [2, 5],
                             "n_informative": "[SPECIAL_VALUE]0.6",
                             "class_sep": 1.0
-                        },
+                        }
+                    ],
+                    "split_kwargs": {
+                        "train_size": 0.05,
+                        "test_size": 0.95
+                    }
+                }
+            },
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": [
                         {
                             "n_samples": 1000000,
                             "n_features": 500,
@@ -33,12 +44,41 @@
                         "train_size": 0.05,
                         "test_size": 0.95
                     }
-                }
+                },
+                "algorithm": {"estimator_params": {"C": 1e-6}}
             },
-            { "data": { "dataset": "mnist", "split_kwargs": { "train_size": 10000, "test_size": null } } },
-            { "data": { "dataset": ["susy", "hepmass"], "split_kwargs": { "train_size": 0.1, "test_size": null } } },
-            { "data": { "dataset": "cifar", "split_kwargs": { "train_size": 0.1, "test_size": null } } },
-            { "data": { "dataset": "gisette", "split_kwargs": { "train_size": 2000, "test_size": null } } }
+            {
+                "data": { "dataset": "mnist", "split_kwargs": { "train_size": 10000, "test_size": null } },
+                "algorithm": {"estimator_params": {"C": 1e-8}}
+            },
+            {
+                "data": {
+                    "dataset": "susy",
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
+                },
+                "algorithm": { "estimator_params": {"C": 1e-2} }
+            },
+            {
+                "data": {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
+                },
+                "algorithm": { "estimator_params": {"C": 1e-5} }
+            },
+            {
+                "data": {
+                    "dataset": "cifar",
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
+                },
+                "algorithm": { "estimator_params": {"C": 1e-9} }
+            },
+            {
+                "data": {
+                    "dataset": "gisette",
+                    "split_kwargs": { "train_size": 2000, "test_size": null }
+                },
+                "algorithm": { "estimator_params": {"C": 1e1} }
+            }
         ]
     },
     "TEMPLATES": {
