@@ -6,10 +6,10 @@
                 "data": {
                     "source": "make_blobs",
                     "generation_kwargs": [
-                        { "n_samples": 40000000, "n_features": 5, "centers": 2 },
-                        { "n_samples": 10000000, "n_features": 20, "centers": 2 }
+                        { "n_samples": 5000000, "n_features": 500, "centers": 2 },
+                        { "n_samples": 500000, "n_features": 2000, "centers": 2 }
                     ],
-                    "split_kwargs": { "ignore": true }
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
                 }
             },
             {
