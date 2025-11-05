@@ -3,7 +3,7 @@ __pycache__*
 
 # Visual Studio related files, e.g., ".vscode"
 .vs*
-
+*.code-workspace
 
 # Misc. files at repository root:
 # - default data cache directory
@@ -18,3 +18,7 @@ __pycache__*
 /*.sh
 # - archives with results or data
 /*.tgz
+
+# Configurations from file explorers
+.directory
+.DS_Store
