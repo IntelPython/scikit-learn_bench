@@ -30,6 +30,7 @@ from sklearn.datasets import (
     make_moons,
     make_regression,
 )
+from sklearn.preprocessing import StandardScaler
 
 from .common import cache, load_data_description, load_data_from_cache, preprocess
 from .downloaders import download_and_read_csv, load_openml, retrieve
@@ -198,7 +199,7 @@ def load_hepmass(
     data = pd.concat([train_data, test_data])
     label = data.columns[0]
     y = data[label]
-    x = data.drop(columns=[label])
+    x = data.drop(columns=[label, "mass"])
 
     data_desc = {
         "n_classes": 2,
@@ -418,6 +419,8 @@ def load_gisette(
     x = np.vstack([x_train, x_test])
     y = np.hstack([y_train, y_test])
 
+    x = StandardScaler(with_mean=True, with_std=True).fit_transform(x)
+
     data_desc = {
         "n_classes": 2,
         "default_split": {
@@ -555,6 +558,7 @@ def load_cifar(
     Classification task. n_classes = 10.
     """
     x, y = load_openml(40927, raw_data_cache)
+    x = StandardScaler(with_mean=True, with_std=False).fit_transform(x)
     binary = dataset_params.get("binary", False)
     if binary:
         y = (y > 0).astype(int)
