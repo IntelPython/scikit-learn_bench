@@ -1,0 +1,13 @@
+# Minimal set of requirements for benchmarking any library
+# See envs/requirements-sklearn.txt for other requirements
+# that are needed to profile all the libraries being tested
+scikit-learn
+pandas
+tabulate
+fastparquet
+h5py
+openpyxl
+tqdm
+psutil
+requests
+py-cpuinfo
