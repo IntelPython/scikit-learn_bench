@@ -3,7 +3,7 @@ channels:
   - nodefaults
 dependencies:
   # additional frameworks
-  - xgboost
+  - xgboost ==3.0.5
   - catboost
   - lightgbm
   - faiss-cpu
