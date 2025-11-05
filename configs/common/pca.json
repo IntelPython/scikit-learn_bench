@@ -5,7 +5,7 @@
             "algorithm": {
                 "estimator": "PCA",
                 "estimator_params": {
-                    "n_components": 3,
+                    "n_components": 20,
                     "copy": true,
                     "whiten": false,
                     "svd_solver": "covariance_eigh",
