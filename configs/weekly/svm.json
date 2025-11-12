@@ -13,10 +13,6 @@
             {
                 "data": { "dataset": "ijcnn", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 100.0, "kernel": "rbf" } }
-            },
-            {
-                "data": { "dataset": "epsilon", "split_kwargs": { "train_size": 100000, "test_size": 100000 } },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }
         ],
         "high-load svc multiclass datasets": [
