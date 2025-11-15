@@ -5,7 +5,6 @@
             "data": [
                 { "dataset": "cifar", "split_kwargs": { "train_size": 15000 } },
                 { "dataset": "mnist", "split_kwargs": { "train_size": 40000 } },
-                { "dataset": "sensit", "split_kwargs": { "ignore": true } },
                 { "dataset": "susy", "split_kwargs": { "train_size": 100000 } },
                 {
                     "dataset": "skin_segmentation",
