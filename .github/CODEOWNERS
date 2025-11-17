@@ -1,15 +1,15 @@
 # benchmarking config files
-configs                    @Alexsandruss
+configs                    @david-cortes-intel
 configs/spmd/*             @ethanglaser
 configs/regular/xgboost*   @razdoburdin
 # sklbench implementation and associated docs
-sklbench                   @Alexsandruss
+sklbench                   @david-cortes-intel
 # all documentation files
-*.md                       @Alexsandruss
+*.md                       @david-cortes-intel
 # dependencies files
-requirements*.txt          @Alexsandruss @ethanglaser
-conda-env-*.yml            @Alexsandruss @ethanglaser
+requirements*.txt          @david-cortes-intel @ethanglaser
+conda-env-*.yml            @david-cortes-intel @ethanglaser
 # repository utilities
-/.*                        @Alexsandruss
-/*.yml                     @Alexsandruss
-/*.toml                    @Alexsandruss
+/.*                        @david-cortes-intel
+/*.yml                     @david-cortes-intel
+/*.toml                    @david-cortes-intel
