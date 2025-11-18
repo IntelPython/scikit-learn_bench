@@ -662,6 +662,7 @@ def load_sensit(
     data_desc = {"n_classes": 3, "default_split": {"test_size": 0.2, "random_state": 42}}
     return {"x": x, "y": y}, data_desc
 
+
 @cache
 def load_szilard_1m(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -724,6 +725,7 @@ def load_szilard_10m(
     data_desc = {"default_split": {"test_size": n_train, "test_size": n_test}}
 
     return {"x": x, "y": y}, data_desc
+
 
 """
 Regression datasets
@@ -867,6 +869,7 @@ def load_gist(
 ) -> Tuple[Dict, Dict]:
     url = "http://ann-benchmarks.com/gist-960-euclidean.hdf5"
     return load_ann_dataset_template(url, raw_data_cache)
+
 
 dataset_loading_functions = {
     # classification
