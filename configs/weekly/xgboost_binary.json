@@ -13,18 +13,6 @@
                         "learning_rate": 0.1
                     }
                 }
-            },
-            {
-                "data": {
-                    "dataset": "szilard_10m"
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "n_estimators": 100,
-                        "max_depth": 10,
-                        "learning_rate": 0.1
-                    }
-                }
             }
         ]
     },
