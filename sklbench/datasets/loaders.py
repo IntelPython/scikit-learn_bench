@@ -662,6 +662,68 @@ def load_sensit(
     data_desc = {"n_classes": 3, "default_split": {"test_size": 0.2, "random_state": 42}}
     return {"x": x, "y": y}, data_desc
 
+@cache
+def load_szilard_1m(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    https://github.com/szilard/GBM-perf
+    """
+    url = "https://s3.amazonaws.com/benchm-ml--main/train-1m.csv"
+    d_train = download_and_read_csv(url, raw_data_cache)
+
+    url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
+    d_test  = download_and_read_csv(url, raw_data_cache)
+
+    label_col = "dep_delayed_15min"
+    y_train = (d_train[label_col] == "Y").astype(int).values
+    y_test  = (d_test[label_col]  == "Y").astype(int).values
+    y = np.concatenate([y_train, y_test])
+
+    X_train_raw = d_train.drop(columns=[label_col])
+    X_test_raw  = d_test.drop(columns=[label_col])
+
+    combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
+    X_combined_oh = pd.get_dummies(combined, drop_first=False, dtype=np.uint8)
+    x = sparse.csr_matrix(X_combined_oh.values)
+
+    n_train = len(d_train)
+    n_test = len(d_test)
+    data_desc = {"default_split": {"test_size": n_train, "test_size": n_test}}
+
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_szilard_10m(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    https://github.com/szilard/GBM-perf
+    """
+    url = "https://s3.amazonaws.com/benchm-ml--main/train-10m.csv"
+    d_train = download_and_read_csv(url, raw_data_cache)
+
+    url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
+    d_test  = download_and_read_csv(url, raw_data_cache)
+
+    label_col = "dep_delayed_15min"
+    y_train = (d_train[label_col] == "Y").astype(int).values
+    y_test  = (d_test[label_col]  == "Y").astype(int).values
+    y = np.concatenate([y_train, y_test])
+
+    X_train_raw = d_train.drop(columns=[label_col])
+    X_test_raw  = d_test.drop(columns=[label_col])
+
+    combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
+    X_combined_oh = pd.get_dummies(combined, drop_first=False, dtype=np.uint8)
+    x = sparse.csr_matrix(X_combined_oh.values)
+
+    n_train = len(d_train)
+    n_test = len(d_test)
+    data_desc = {"default_split": {"test_size": n_train, "test_size": n_test}}
+
+    return {"x": x, "y": y}, data_desc
 
 """
 Regression datasets
@@ -806,7 +868,6 @@ def load_gist(
     url = "http://ann-benchmarks.com/gist-960-euclidean.hdf5"
     return load_ann_dataset_template(url, raw_data_cache)
 
-
 dataset_loading_functions = {
     # classification
     "airline_depdelay": load_airline_depdelay,
@@ -832,6 +893,8 @@ dataset_loading_functions = {
     "svhn": load_svhn,
     "sensit": load_sensit,
     "letters": load_letters,
+    "szilard_1m": load_szilard_1m,
+    "szilard_10m": load_szilard_10m,
     # regression
     "abalone": load_abalone,
     "california_housing": load_california_housing,
