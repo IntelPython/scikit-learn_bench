@@ -677,14 +677,14 @@ def load_szilard_1m(
 
     label_col = "dep_delayed_15min"
     y_train = (d_train[label_col] == "Y").astype(int).values
-    y_test  = (d_test[label_col]  == "Y").astype(int).values
+    y_test = (d_test[label_col] == "Y").astype(int).values
     y = np.concatenate([y_train, y_test])
 
     X_train_raw = d_train.drop(columns=[label_col])
-    X_test_raw  = d_test.drop(columns=[label_col])
+    X_test_raw = d_test.drop(columns=[label_col])
 
     combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
-    X_combined_oh = pd.get_dummies(combined, drop_first=False, dtype=np.uint8)
+    X_combined_oh = pd.get_dummies(combined)
     x = sparse.csr_matrix(X_combined_oh.values)
 
     n_train = len(d_train)
@@ -705,18 +705,18 @@ def load_szilard_10m(
     d_train = download_and_read_csv(url, raw_data_cache)
 
     url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
-    d_test  = download_and_read_csv(url, raw_data_cache)
+    d_test = download_and_read_csv(url, raw_data_cache)
 
     label_col = "dep_delayed_15min"
     y_train = (d_train[label_col] == "Y").astype(int).values
-    y_test  = (d_test[label_col]  == "Y").astype(int).values
+    y_test = (d_test[label_col] == "Y").astype(int).values
     y = np.concatenate([y_train, y_test])
 
     X_train_raw = d_train.drop(columns=[label_col])
-    X_test_raw  = d_test.drop(columns=[label_col])
+    X_test_raw = d_test.drop(columns=[label_col])
 
     combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
-    X_combined_oh = pd.get_dummies(combined, drop_first=False, dtype=np.uint8)
+    X_combined_oh = pd.get_dummies(combined)
     x = sparse.csr_matrix(X_combined_oh.values)
 
     n_train = len(d_train)
