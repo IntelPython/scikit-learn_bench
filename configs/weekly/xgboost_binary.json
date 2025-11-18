@@ -1,0 +1,28 @@
+{
+    "INCLUDE": ["../common/xgboost.json"],
+    "PARAMETERS_SETS": {
+        "xgboost data": [
+            {
+                "data": {
+                    "dataset": "szilard_1m"
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "n_estimators": 100,
+                        "max_depth": 10,
+                        "learning_rate": 0.1
+                    }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "regression": {
+            "SETS": [
+                "xgboost binary classification",
+                "xgboost implementations",
+                "xgboost data"
+            ]
+        }
+    }
+}
