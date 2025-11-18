@@ -673,7 +673,7 @@ def load_szilard_1m(
     d_train = download_and_read_csv(url, raw_data_cache)
 
     url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
-    d_test  = download_and_read_csv(url, raw_data_cache)
+    d_test = download_and_read_csv(url, raw_data_cache)
 
     label_col = "dep_delayed_15min"
     y_train = (d_train[label_col] == "Y").astype(int).values
