@@ -717,8 +717,8 @@ def load_szilard_10m(
     X_test_raw = d_test.drop(columns=[label_col])
 
     combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
-    X_combined_oh = pd.get_dummies(combined)
-    x = sparse.csr_matrix(X_combined_oh.values)
+    X_combined_oh = pd.get_dummies(combined, sparse=True)
+    x = sparse.csr_matrix(X_combined_oh)
 
     n_train = len(d_train)
     n_test = len(d_test)
