@@ -1,0 +1,50 @@
+{
+    "INCLUDE": ["../common/xgboost.json"],
+    "PARAMETERS_SETS": {
+        "xgboost data": [
+          {
+            "data": {
+              "source": "make_regression",
+              "generation_kwargs": [
+                  {
+                      "n_samples": 2097152, "n_features": 256
+                  },
+                  {
+                      "n_samples": 2097152, "n_features": 32
+                  }
+                ],
+                "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+              },
+              "algorithm": {
+                  "estimator_params": [
+                    {
+                      "n_estimators": 128,
+                      "max_depth": 8
+                    },
+                    {
+                      "n_estimators": 128,
+                      "max_depth": 3
+                    },
+                    {
+                      "n_estimators": 32,
+                      "max_depth": 8
+                    },
+                    {
+                      "n_estimators": 32,
+                      "max_depth": 3
+                    }
+                  ]
+              }
+          }
+        ]
+    },
+    "TEMPLATES": {
+        "regression": {
+            "SETS": [
+                "xgboost regression",
+                "xgboost implementations",
+                "xgboost data"
+            ]
+        }
+    }
+}
