@@ -795,11 +795,9 @@ def load_abalone(
     """
 
     DATA = (
-        (
-            "abalone.data",
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone",
-            "de37cdcdcaaa50c309d514f248f7c2302a5f1f88c168905eba23fe2fbc78449f",
-        ),
+        "abalone.data",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone",
+        "de37cdcdcaaa50c309d514f248f7c2302a5f1f88c168905eba23fe2fbc78449f",
     )
 
     data = download_and_read_csv(DATA, raw_data_cache, header=None)
@@ -855,11 +853,9 @@ def load_year_prediction_msd(
 ) -> Tuple[Dict, Dict]:
 
     ARCHIVE = (
-        (
-            "YearPredictionMSD.txt.zip",
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/00203",
-            "06f801af323bb7798e800583acce4ea1ed2697ac12c23f4424aea0a7a3d09e11",
-        ),
+        "YearPredictionMSD.txt.zip",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00203",
+        "06f801af323bb7798e800583acce4ea1ed2697ac12c23f4424aea0a7a3d09e11",
     )
 
     data = download_and_read_csv(ARCHIVE, raw_data_cache, header=None)
@@ -883,11 +879,9 @@ def load_road_network(
 ) -> Tuple[Dict, Dict]:
 
     DATA = (
-        (
-            "3D_spatial_network.txt",
-            "http://archive.ics.uci.edu/ml/machine-learning-databases/00246",
-            "d83303a61dc3c9d0842df2c7e5b496ec29aafa2080a430253acb8411cae789dc",
-        ),
+        "3D_spatial_network.txt",
+        "http://archive.ics.uci.edu/ml/machine-learning-databases/00246",
+        "d83303a61dc3c9d0842df2c7e5b496ec29aafa2080a430253acb8411cae789dc",
     )
 
     data = download_and_read_csv(DATA, raw_data_cache, dtype=dtype)
