@@ -20,6 +20,7 @@ import inspect
 import json
 import re
 import subprocess as sp
+import warnings
 from pprint import pformat
 from shutil import get_terminal_size
 from typing import Any, Dict, List, Tuple, Union
@@ -214,6 +215,12 @@ def convert_to_numpy(a, dp_compat=False) -> np.ndarray:
 
         return dpnp.asnumpy(a)
     elif "dpctl" in str(type(a)):
+        warnings.warn(
+            "dpctl tensors are deprecated and support for them "
+            "in scikit-learn_bench will be removed. "
+            "Consider using dpnp arrays instead.",
+            FutureWarning,
+        )
         import dpctl.tensor
 
         return dpctl.tensor.to_numpy(a)
