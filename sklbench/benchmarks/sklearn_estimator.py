@@ -363,7 +363,7 @@ def create_online_function(method_instance, data_args, batch_size):
             for i in range(n_batches):
                 method_instance(x.iloc[i * batch_size : (i + 1) * batch_size])
 
-    if "ndarray" in str(type(data_args[0])):
+    if "array" in str(type(data_args[0])):
         return ndarray_function
     elif "DataFrame" in str(type(data_args[0])):
         return dataframe_function

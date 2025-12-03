@@ -19,7 +19,7 @@
                 "estimator_params": { "n_jobs": "[REMOVE]" }
             },
             "data": {
-                "format": "dpctl",
+                "format": "dpnp",
                 "order": "C",
                 "distributed_split": "rank_based"
             },
