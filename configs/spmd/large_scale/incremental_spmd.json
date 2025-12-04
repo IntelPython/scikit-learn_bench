@@ -1,10 +1,10 @@
 {   "INCLUDE": ["../../common/sklearn.json", "large_scale.json"],
     "PARAMETERS_SETS": {
         "statistical batches and data": [
-                { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 30000000,  "n_features": 100, "centers": 1 } } }
+                { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_blobs", "generation_kwargs": { "n_samples": 25000000,  "n_features": 100, "centers": 1 } } }
         ],
         "regression batches and data": [
-            { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 30005000,  "n_features": 100, "noise": 1.25 }, "split_kwargs": { "train_size": 30000000, "test_size": 5000 } } }
+            { "algorithm": { "num_batches": { "training": [1,3,10]} }, "data": { "source": "make_regression", "generation_kwargs": { "n_samples": 25005000,  "n_features": 100, "noise": 1.25 }, "split_kwargs": { "train_size": 25000000, "test_size": 5000 } } }
         ],
         "covariance": {
             "algorithm": {
