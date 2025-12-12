@@ -44,23 +44,6 @@
             },
             {
                 "data": {
-                    "dataset": "epsilon",
-                    "split_kwargs": {
-                        "train_size": 10000,
-                        "test_size": 100000
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "max_depth": 8,
-                        "colsample_bytree": 0.1,
-                        "colsample_bynode": 0.1,
-                        "n_estimators": 200
-                    }
-                }
-            },
-            {
-                "data": {
                     "dataset": "gisette",
                     "split_kwargs": {
                         "train_size": 2000,
