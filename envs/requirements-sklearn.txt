@@ -1,5 +1,5 @@
 # additional frameworks
-xgboost==3.0.5
+xgboost
 catboost
 lightgbm
 faiss-cpu
