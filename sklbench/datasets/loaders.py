@@ -30,6 +30,7 @@ from sklearn.datasets import (
     make_moons,
     make_regression,
 )
+from sklearn.datasets._base import fetch_file
 from sklearn.preprocessing import StandardScaler
 
 from .common import cache, load_data_description, load_data_from_cache, preprocess
@@ -114,7 +115,12 @@ def load_airline_depdelay(
 
     Classification task. n_classes = 2.
     """
-    url = "http://kt.ijs.si/elena_ikonomovska/datasets/airline/airline_14col.data.bz2"
+
+    ARCHIVE = (
+        "airline_14col.data.bz2",
+        "http://kt.ijs.si/elena_ikonomovska/datasets/airline",
+        "1f13460fcdfb9b98f1b8932f2da3c23acc1ed3bdc906e5658c612be2849c74c5",
+    )
 
     ordered_columns = [
         "Year",
@@ -147,7 +153,7 @@ def load_airline_depdelay(
     }
 
     df = download_and_read_csv(
-        url, raw_data_cache, names=ordered_columns, dtype=column_dtypes
+        ARCHIVE, raw_data_cache, names=ordered_columns, dtype=column_dtypes
     )
 
     for col in df.select_dtypes(["object"]).columns:
@@ -181,19 +187,26 @@ def load_hepmass(
 
     Classification task. n_classes = 2.
     """
-    url_train = (
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00347/all_train.csv.gz"
+
+    BASE_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00347"
+
+    ARCHIVE_TRAIN = (
+        "all_train.csv.gz",
+        BASE_URL,
+        "52061273edbe84cbfff6cc5432a04366d3401c39baf80da99d9baf91e0165498",
     )
-    url_test = (
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00347/all_test.csv.gz"
+    ARCHIVE_TEST = (
+        "all_test.csv.gz",
+        BASE_URL,
+        "eccba00f8d82c471c582ab629084103356f8dda637fad6d43f16a056673091b3",
     )
 
     dtype = np.float32
     train_data = download_and_read_csv(
-        url_train, raw_data_cache, delimiter=",", compression="gzip", dtype=dtype
+        ARCHIVE_TRAIN, raw_data_cache, delimiter=",", compression="gzip", dtype=dtype
     )
     test_data = download_and_read_csv(
-        url_test, raw_data_cache, delimiter=",", compression="gzip", dtype=dtype
+        ARCHIVE_TEST, raw_data_cache, delimiter=",", compression="gzip", dtype=dtype
     )
 
     data = pd.concat([train_data, test_data])
@@ -222,9 +235,12 @@ def load_higgs_susy_subsample(
 
         Classification task. n_classes = 2.
         """
-        url = (
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/00279/SUSY.csv.gz"
+        ARCHIVE = (
+            "SUSY.csv.gz",
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00279",
+            "be56cb5598da8ece4b13912230ee713bab8b3431a7d118e0054ffdf3a2f25664",
         )
+
         train_size, test_size = 4500000, 500000
     elif data_name == "higgs":
         """
@@ -233,9 +249,12 @@ def load_higgs_susy_subsample(
 
         Classification task. n_classes = 2.
         """
-        url = (
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz"
+        ARCHIVE = (
+            "HIGGS.csv.gz",
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00280",
+            "ea302c18164d4e3d916a1e2e83a9a8d07069fa6ebc7771e4c0540d54e593b698",
         )
+
         train_size, test_size = 10000000, 1000000
     else:
         raise ValueError(
@@ -244,7 +263,7 @@ def load_higgs_susy_subsample(
         )
 
     data = download_and_read_csv(
-        url, raw_data_cache, delimiter=",", header=None, compression="gzip"
+        ARCHIVE, raw_data_cache, delimiter=",", header=None, compression="gzip"
     )
     assert data.shape[0] == train_size + test_size, "Wrong number of samples was loaded"
     x, y = data[data.columns[1:]], data[data.columns[0]]
@@ -280,11 +299,14 @@ def load_letters(
 
     Classification task. n_classes = 26.
     """
-    url = (
-        "http://archive.ics.uci.edu/ml/machine-learning-databases/"
-        "letter-recognition/letter-recognition.data"
+
+    ARCHIVE = (
+        "letter-recognition.data",
+        "http://archive.ics.uci.edu/ml/machine-learning-databases/letter-recognition",
+        "2b89f3602cf768d3c8355267d2f13f2417809e101fc2b5ceee10db19a60de6e2",
     )
-    data = download_and_read_csv(url, raw_data_cache, header=None, dtype=None)
+
+    data = download_and_read_csv(ARCHIVE, raw_data_cache, header=None, dtype=None)
     x, y = data.iloc[:, 1:], data.iloc[:, 0].astype("category").cat.codes.values
 
     data_desc = {"n_classes": 26, "default_split": {"test_size": 0.2, "random_state": 0}}
@@ -337,22 +359,36 @@ def load_epsilon(
 
     Classification task. n_classes = 2.
     """
-    url_train = (
-        "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary"
-        "/epsilon_normalized.bz2"
+    ARCHIVE_TRAIN = (
+        "epsilon_normalized.bz2",
+        "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary",
+        "aff916d4f97f18d286558ca088d2a9f7e1fcee9376539a5aa6ef5b7ef9dfa978",
     )
-    url_test = (
-        "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary"
-        "/epsilon_normalized.t.bz2"
+
+    ARCHIVE_TEST = (
+        "epsilon_normalized.t.bz2",
+        "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary",
+        "cb299295ad11e200696eaa3050f5d8cf700eaa9c65e6aa859bda959f8669458b",
     )
-    local_url_train = os.path.join(raw_data_cache, os.path.basename(url_train))
-    local_url_test = os.path.join(raw_data_cache, os.path.basename(url_test))
 
-    retrieve(url_train, local_url_train)
-    retrieve(url_test, local_url_test)
+    local_train_path = os.path.join(raw_data_cache, os.path.basename(ARCHIVE_TRAIN[0]))
+    local_test_path = os.path.join(raw_data_cache, os.path.basename(ARCHIVE_TEST[0]))
 
-    x_train, y_train = load_svmlight_file(local_url_train, dtype=np.float32)
-    x_test, y_test = load_svmlight_file(local_url_test, dtype=np.float32)
+    _ = fetch_file(
+        url=ARCHIVE_TRAIN[1],
+        folder=raw_data_cache,
+        local_filename=ARCHIVE_TRAIN[0],
+        sha256=ARCHIVE_TRAIN[2],
+    )
+    _ = fetch_file(
+        url=ARCHIVE_TEST[1],
+        folder=raw_data_cache,
+        local_filename=ARCHIVE_TEST[0],
+        sha256=ARCHIVE_TEST[2],
+    )
+
+    x_train, y_train = load_svmlight_file(local_train_path, dtype=np.float32)
+    x_test, y_test = load_svmlight_file(local_test_path, dtype=np.float32)
 
     x = sparse.vstack([x_train, x_test])
     y = np.hstack([y_train, y_test])
@@ -398,16 +434,33 @@ def load_gisette(
         y_out = pd.DataFrame((y_out > 0).astype(int))
         return y_out.values.reshape(-1)
 
-    url_prefix = "http://archive.ics.uci.edu/ml/machine-learning-databases"
-    data_urls = {
-        "x_train": f"{url_prefix}/gisette/GISETTE/gisette_train.data",
-        "x_test": f"{url_prefix}/gisette/GISETTE/gisette_valid.data",
-        "y_train": f"{url_prefix}/gisette/GISETTE/gisette_train.labels",
-        "y_test": f"{url_prefix}/gisette/gisette_valid.labels",
+    BASE_URL = "http://archive.ics.uci.edu/ml/machine-learning-databases"
+
+    data_meta = {
+        "x_train": (
+            "gisette_train.data",
+            f"{BASE_URL}/gisette/GISETTE",
+            "6d4c5e998afe67937b9e77a3334e03c85e545ebc65a6eb1333ffc14125cfc389",
+        ),
+        "x_test": (
+            "gisette_valid.data",
+            f"{BASE_URL}/gisette/GISETTE",
+            "5cea897956dd172a006132738254a27a8f61ecc1ceb6f5b20639c281d2942254",
+        ),
+        "y_train": (
+            "gisette_train.labels",
+            f"{BASE_URL}/gisette/GISETTE",
+            "42bd681fe51b161f033df773df14a0116e492676555ab14616c1b72edc054075",
+        ),
+        "y_test": (
+            "gisette_valid.labels",
+            f"{BASE_URL}/gisette",
+            "a6b857a0448023f033c4dda2ef848714b4be2ae45ce598d088fb3efb406e08c5",
+        ),
     }
     data = {}
-    for subset_name, subset_url in data_urls.items():
-        data[subset_name] = download_and_read_csv(subset_url, raw_data_cache, header=None)
+    for subset_name, meta in data_meta.items():
+        data[subset_name] = download_and_read_csv(meta, raw_data_cache, header=None)
 
     n_columns, train_size, test_size = 5000, 6000, 1000
 
@@ -740,8 +793,14 @@ def load_abalone(
     https://archive.ics.uci.edu/ml/machine-learning-databases/abalone
 
     """
-    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
-    data = download_and_read_csv(url, raw_data_cache, header=None)
+
+    DATA = (
+        "abalone.data",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone",
+        "de37cdcdcaaa50c309d514f248f7c2302a5f1f88c168905eba23fe2fbc78449f",
+    )
+
+    data = download_and_read_csv(DATA, raw_data_cache, header=None)
     data[0] = data[0].astype("category").cat.codes
     x, y = data.iloc[:, :-1], data.iloc[:, -1].values
 
@@ -792,11 +851,14 @@ def load_twodplanes(
 def load_year_prediction_msd(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
-    url = (
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00203/"
-        "YearPredictionMSD.txt.zip"
+
+    ARCHIVE = (
+        "YearPredictionMSD.txt.zip",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00203",
+        "06f801af323bb7798e800583acce4ea1ed2697ac12c23f4424aea0a7a3d09e11",
     )
-    data = download_and_read_csv(url, raw_data_cache, header=None)
+
+    data = download_and_read_csv(ARCHIVE, raw_data_cache, header=None)
     x, y = data.iloc[:, 1:], data.iloc[:, 0]
     data_desc = {"default_split": {"test_size": 0.1, "shuffle": False}}
     return {"x": x, "y": y}, data_desc
@@ -815,10 +877,18 @@ def load_yolanda(
 def load_road_network(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
-    url = "http://archive.ics.uci.edu/ml/machine-learning-databases/00246/3D_spatial_network.txt"
+
+    DATA = (
+        "3D_spatial_network.txt",
+        "http://archive.ics.uci.edu/ml/machine-learning-databases/00246",
+        "d83303a61dc3c9d0842df2c7e5b496ec29aafa2080a430253acb8411cae789dc",
+    )
+
+    data = download_and_read_csv(DATA, raw_data_cache, dtype=dtype)
+
     n_samples, dtype = 20000, np.float32
-    data = download_and_read_csv(url, raw_data_cache, dtype=dtype)
     x, y = data.values[:, 1:], data.values[:, 0]
+
     data_desc = {
         "default_split": {
             "train_size": n_samples,
@@ -834,11 +904,12 @@ Index/neighbors search datasets
 """
 
 
-def load_ann_dataset_template(url, raw_data_cache):
+def load_ann_dataset_template(DATA: tuple[str, str, str], raw_data_cache):
     import h5py
 
-    local_path = os.path.join(raw_data_cache, os.path.basename(url))
-    retrieve(url, local_path)
+    local_path = fetch_file(
+        url=DATA[1], folder=raw_data_cache, local_filename=DATA[0], sha256=DATA[2]
+    )
     with h5py.File(local_path, "r") as f:
         x_train = np.asarray(f["train"])
         x_test = np.asarray(f["test"])
@@ -859,16 +930,28 @@ def load_ann_dataset_template(url, raw_data_cache):
 def load_sift(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
-    url = "http://ann-benchmarks.com/sift-128-euclidean.hdf5"
-    return load_ann_dataset_template(url, raw_data_cache)
+
+    DATA = (
+        "sift-128-euclidean.hdf5",
+        "http://ann-benchmarks.com",
+        "dd6f0a6ed6b7ebb8934680f861a33ed01ff33991eaee4fd60914d854a0ca5984",
+    )
+
+    return load_ann_dataset_template(DATA, raw_data_cache)
 
 
 @cache
 def load_gist(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
-    url = "http://ann-benchmarks.com/gist-960-euclidean.hdf5"
-    return load_ann_dataset_template(url, raw_data_cache)
+
+    DATA = (
+        "gist-960-euclidean.hdf5",
+        "http://ann-benchmarks.com",
+        "8e95831936bfdbfa0a56086942e2cf98cd703517c67f985914183eb4cdbf026a",
+    )
+
+    return load_ann_dataset_template(DATA, raw_data_cache)
 
 
 dataset_loading_functions = {
