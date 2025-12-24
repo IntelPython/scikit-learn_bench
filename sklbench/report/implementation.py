@@ -99,12 +99,15 @@ COLUMNS_ORDER = [
     "dataset",
     "samples",
     "features",
+    "feature_names",
     "format",
     "dtype",
     "order",
     "n_classes",
+    "class_distribution",
     "n_clusters",
     "batch_size",
+    "memory_usage",
 ]
 
 RED_COLOR, YELLOW_COLOR, GREEN_COLOR, WHITE_COLOR = "F85D5E", "FAF52E", "58C144", "FFFFFF"
