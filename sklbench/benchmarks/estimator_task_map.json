@@ -2,6 +2,7 @@
     "classification": [
         "Classifier",
         "LogisticRegression",
+        "LogisticRegressionCV",
         "SVC"
     ],
     "regression": [

@@ -1,0 +1,47 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "sklearn logreg_cv parameters": {
+            "algorithm": {
+                "estimator": "LogisticRegressionCV",
+                "library": ["sklearn", "sklearnex"],
+                "device": "cpu",
+                "estimator_methods": { "inference": "predict" },
+                "estimator_params": {
+                    "Cs": 10,
+                    "solver": "lbfgs",
+                    "max_iter": 1000,
+                    "random_state": 123
+                }
+            }
+        },
+        "logreg_cv datasets": [
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": [
+                        {
+                            "n_samples": 100000,
+                            "n_features": 1000,
+                            "n_informative": 800,
+                            "n_classes": [2]
+                        }
+                    ],
+                    "split_kwargs": {
+                        "train_size": 0.05,
+                        "test_size": 0.95
+                    }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn logreg_cv": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn logreg_cv parameters",
+                "logreg_cv datasets"
+            ]
+        }
+    }
+}

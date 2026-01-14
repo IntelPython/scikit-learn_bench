@@ -10,7 +10,7 @@ dependencies:
   - modin-all
   - scikit-learn-intelex
   # sklbench dependencies
-  - scikit-learn
+  - scikit-learn>=1.8
   - pandas
   - tabulate
   - fastparquet
