@@ -9,7 +9,6 @@
                 "estimator_methods": { "inference": "predict" },
                 "estimator_params": {
                     "Cs": 10,
-                    "l1_ratios": [0.0],
                     "solver": "newton-cg",
                     "random_state": 123
                 }
