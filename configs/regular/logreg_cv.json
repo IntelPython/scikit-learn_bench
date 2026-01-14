@@ -1,0 +1,35 @@
+{
+    "PARAMETERS_SETS": {
+        "common logreg_cv parameters": {
+            "algorithm": {
+                "estimator": "LogisticRegressionCV",
+                "estimator_methods": { "inference": "predict" },
+                "estimator_params": {
+                    "Cs": 10,
+                    "l1_ratios": [0.0],
+                    "solver": "newton-cg",
+                    "random_state": 123
+                }
+            }
+        },
+        "logreg_cv datasets": [
+            {
+                "data": {
+                    "source": "make_classification",
+                    "generation_kwargs": [
+                        {
+                            "n_samples": 250000,
+                            "n_features": 1000,
+                            "n_informative": 800,
+                            "n_classes": [2]
+                        }
+                    ],
+                    "split_kwargs": {
+                        "train_size": 0.05,
+                        "test_size": 0.95
+                    }
+                }
+            }
+        ]
+    }
+}
