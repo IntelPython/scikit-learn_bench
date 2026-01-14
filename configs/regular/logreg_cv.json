@@ -1,6 +1,6 @@
 {
     "PARAMETERS_SETS": {
-        "common logreg_cv parameters": {
+        "sklearn logreg_cv parameters": {
             "algorithm": {
                 "estimator": "LogisticRegressionCV",
                 "estimator_methods": { "inference": "predict" },
@@ -31,5 +31,14 @@
                 }
             }
         ]
+    },
+    "TEMPLATES": {
+        "sklearn logreg_cv": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "sklearn logreg_cv parameters",
+                "logreg_cv datasets"
+            ]
+        }
     }
 }
