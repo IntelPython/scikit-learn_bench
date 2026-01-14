@@ -1,8 +1,11 @@
 {
+    "INCLUDE": ["../common/sklearn.json"],
     "PARAMETERS_SETS": {
         "sklearn logreg_cv parameters": {
             "algorithm": {
                 "estimator": "LogisticRegressionCV",
+                "library": ["sklearn", "sklearnex"],
+                "device": "cpu",
                 "estimator_methods": { "inference": "predict" },
                 "estimator_params": {
                     "Cs": 10,
