@@ -101,7 +101,7 @@ def save_data_to_cache(data: Dict, data_cache: str, data_name: str):
                 for column in list(data_compoment.columns)
             ]
             data_compoment.to_parquet(
-                component_filepath, engine="fastparquet", compression="snappy"
+                component_filepath
             )
         elif isinstance(data_compoment, csr_matrix):
             component_filepath += ".csr.npz"
