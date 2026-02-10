@@ -18,3 +18,4 @@ tqdm
 psutil
 requests
 py-cpuinfo
+openml
