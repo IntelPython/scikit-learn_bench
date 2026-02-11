@@ -16,225 +16,102 @@
 
 import os
 import time
-import warnings
 from typing import Callable, List, Union
 
 import numpy as np
+import openml
 import pandas as pd
 import requests
 from scipy.sparse import csr_matrix
-from sklearn.datasets import fetch_openml
 
 
-def retrieve(url: str, filename: str, max_retries: int = 5) -> None:
-    """
-    Download a file from a URL with retry logic and resume capability.
-
-    Args:
-        url: URL to download from
-        filename: Local file path to save to
-        max_retries: Maximum number of retry attempts for failed downloads
-    """
+def retrieve(url: str, filename: str, max_retries: int = 3) -> None:
+    """Download a file from a URL with basic retry logic."""
     if os.path.isfile(filename):
-        # Check if file is complete by comparing size
-        try:
-            head_response = requests.head(url, allow_redirects=True, timeout=30)
-            expected_size = int(head_response.headers.get("content-length", 0))
-            actual_size = os.path.getsize(filename)
-
-            if expected_size > 0 and actual_size == expected_size:
-                # File exists and is complete
-                return
-            else:
-                warnings.warn(
-                    f"Existing file {filename} is incomplete ({actual_size}/{expected_size} bytes). "
-                    f"Will attempt to resume download.",
-                    RuntimeWarning
-                )
-        except Exception as e:
-            # If we can't verify, assume file is complete
-            warnings.warn(
-                f"Could not verify file completeness for {filename}: {e}. Assuming complete.",
-                RuntimeWarning
-            )
-            return
+        return
 
     if not url.startswith("http"):
         raise ValueError(f"URL must start with http:// or https://, got: {url}")
 
-    temp_filename = filename + ".partial"
-    block_size = 8192
-
     for attempt in range(max_retries):
         try:
-            # Check if we can resume a partial download
-            resume_pos = 0
-            if os.path.isfile(temp_filename):
-                resume_pos = os.path.getsize(temp_filename)
-                headers = {"Range": f"bytes={resume_pos}-"}
-                mode = "ab"  # Append mode
-                warnings.warn(
-                    f"Resuming download of {url} from byte {resume_pos}",
-                    RuntimeWarning
-                )
-            else:
-                headers = {}
-                mode = "wb"
-
-            response = requests.get(url, stream=True, headers=headers, timeout=60)
-
-            # Handle different response codes
-            if response.status_code == 200:
-                # Full download
-                mode = "wb"
-                resume_pos = 0
-            elif response.status_code == 206:
-                # Partial content (resume successful)
-                pass
-            elif response.status_code == 416:
-                # Range not satisfiable - file might be complete
-                if os.path.isfile(temp_filename):
-                    os.rename(temp_filename, filename)
-                return
-            else:
+            response = requests.get(url, stream=True, timeout=120)
+            if response.status_code != 200:
                 raise AssertionError(
                     f"Failed to download from {url}. "
                     f"Response returned status code {response.status_code}"
                 )
 
-            # Get expected total size
-            if response.status_code == 206:
-                content_range = response.headers.get("content-range", "")
-                if content_range:
-                    total_size = int(content_range.split("/")[1])
-                else:
-                    total_size = 0
-            else:
-                total_size = int(response.headers.get("content-length", 0))
+            total_size = int(response.headers.get("content-length", 0))
+            block_size = 8192
 
-            # Download the file
-            bytes_downloaded = resume_pos
-            with open(temp_filename, mode) as datafile:
+            with open(filename, "wb") as datafile:
+                bytes_written = 0
                 for data in response.iter_content(block_size):
-                    if data:  # filter out keep-alive chunks
+                    if data:
                         datafile.write(data)
-                        bytes_downloaded += len(data)
+                        bytes_written += len(data)
 
-            # Verify download completeness
-            if total_size > 0:
-                actual_size = os.path.getsize(temp_filename)
-                if actual_size != total_size:
-                    warnings.warn(
-                        f"Download incomplete: {actual_size}/{total_size} bytes. "
-                        f"Attempt {attempt + 1}/{max_retries}",
-                        RuntimeWarning
-                    )
-                    if attempt < max_retries - 1:
-                        continue  # Retry
-                    else:
-                        raise AssertionError(
-                            f"Failed to completely download {url} after {max_retries} attempts. "
-                            f"Got {actual_size}/{total_size} bytes"
-                        )
-
-            # Download successful, rename temp file to final filename
-            os.rename(temp_filename, filename)
+            # Verify download completeness if size is known
+            if total_size > 0 and bytes_written != total_size:
+                os.remove(filename)
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
+                raise AssertionError(
+                    f"Incomplete download from {url}. "
+                    f"Expected {total_size} bytes, got {bytes_written}"
+                )
             return
 
-        except (requests.exceptions.ChunkedEncodingError,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout) as e:
-            warnings.warn(
-                f"Download interrupted for {url}: {type(e).__name__}: {e}. "
-                f"Attempt {attempt + 1}/{max_retries}",
-                RuntimeWarning
-            )
+        except (
+            requests.exceptions.RequestException,
+            IOError,
+        ) as e:
+            if os.path.isfile(filename):
+                os.remove(filename)
             if attempt < max_retries - 1:
-                wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s, 8s, 16s
-                warnings.warn(f"Waiting {wait_time}s before retry...", RuntimeWarning)
-                time.sleep(wait_time)
+                time.sleep(1)
                 continue
-            else:
-                # Clean up partial file if all retries failed
-                if os.path.isfile(temp_filename):
-                    os.remove(temp_filename)
-                raise AssertionError(
-                    f"Failed to download {url} after {max_retries} attempts. "
-                    f"Last error: {type(e).__name__}: {e}"
-                ) from e
+            raise AssertionError(
+                f"Failed to download {url} after {max_retries} attempts: {e}"
+            ) from e
 
 
 def fetch_and_correct_openml(
     data_id: int, raw_data_cache_dir: str, as_frame: str = "auto"
 ):
-    """
-    Fetch OpenML dataset with fallback for MD5 checksum errors.
+    """Fetch OpenML dataset using the openml package."""
+    # Configure openml cache directory
+    openml_cache = os.path.join(raw_data_cache_dir, "openml")
+    os.makedirs(openml_cache, exist_ok=True)
+    openml.config.set_root_cache_directory(openml_cache)
 
-    First tries sklearn's fetch_openml. If that fails due to MD5 checksum mismatch,
-    falls back to using the openml package directly, which has updated checksums.
-    """
-    try:
-        # Try sklearn's fetch_openml first
-        x, y = fetch_openml(
-            data_id=data_id, return_X_y=True, as_frame=as_frame, data_home=raw_data_cache_dir
-        )
-    except ValueError as e:
-        # Check if it's an MD5 checksum error
-        if "md5 checksum" in str(e).lower():
-            warnings.warn(
-                f"MD5 checksum validation failed for OpenML dataset {data_id}. "
-                f"Falling back to using openml package directly. "
-                f"Original error: {e}",
-                RuntimeWarning
-            )
+    # Fetch the dataset
+    dataset = openml.datasets.get_dataset(
+        data_id,
+        download_data=True,
+        download_qualities=False,
+        download_features_meta_data=False,
+    )
 
-            # Fall back to openml package which might have updated checksums
-            try:
-                import openml
-                # Configure openml to use the provided cache directory
-                openml_cache = os.path.join(raw_data_cache_dir, "openml_direct")
-                os.makedirs(openml_cache, exist_ok=True)
-                openml.config.set_root_cache_directory(openml_cache)
+    # Get the data with target column specified
+    x, y, _, _ = dataset.get_data(
+        dataset_format="dataframe" if as_frame == "auto" or as_frame else "array",
+        target=dataset.default_target_attribute,
+    )
 
-                dataset = openml.datasets.get_dataset(
-                    data_id,
-                    download_data=True,
-                    download_qualities=False,
-                    download_features_meta_data=False
-                )
-                #Get the data with target column specified
-                x, y, _, _ = dataset.get_data(
-                    dataset_format="dataframe" if as_frame == "auto" or as_frame else "array",
-                    target=dataset.default_target_attribute
-                )
-            except Exception as openml_error:
-                raise ValueError(
-                    f"Failed to load OpenML dataset {data_id} using both sklearn and openml package. "
-                    f"sklearn error: {e}. openml error: {openml_error}"
-                ) from openml_error
-        else:
-            # Not a checksum error, re-raise
-            raise
+    # Validate x type
+    if not isinstance(x, (csr_matrix, pd.DataFrame, np.ndarray)):
+        raise ValueError(f'Unknown x type "{type(x)}" returned from openml')
 
-    # Validate and convert return types
-    if (
-        isinstance(x, csr_matrix)
-        or isinstance(x, pd.DataFrame)
-        or isinstance(x, np.ndarray)
-    ):
-        pass
-    else:
-        raise ValueError(f'Unknown "{type(x)}" x type was returned from fetch_openml')
-
+    # Convert y to numpy array if needed
     if isinstance(y, pd.Series):
-        # label transforms to cat.codes if it is passed as categorical series
         if isinstance(y.dtype, pd.CategoricalDtype):
             y = y.cat.codes
         y = y.values
-    elif isinstance(y, np.ndarray):
-        pass
-    else:
-        raise ValueError(f'Unknown "{type(y)}" y type was returned from fetch_openml')
+    elif not isinstance(y, np.ndarray):
+        raise ValueError(f'Unknown y type "{type(y)}" returned from openml')
 
     return x, y
 
