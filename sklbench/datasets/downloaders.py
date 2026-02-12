@@ -109,7 +109,11 @@ def fetch_and_correct_openml(
     if isinstance(y, pd.Series):
         if isinstance(y.dtype, pd.CategoricalDtype):
             y = y.cat.codes
-        y = y.values
+        # Use to_numpy() for sparse arrays to densify them, otherwise use values
+        if pd.api.types.is_sparse(y):
+            y = y.to_numpy()
+        else:
+            y = y.values
     elif not isinstance(y, np.ndarray):
         raise ValueError(f'Unknown y type "{type(y)}" returned from openml')
 
