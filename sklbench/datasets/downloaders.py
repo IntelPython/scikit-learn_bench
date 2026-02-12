@@ -105,6 +105,11 @@ def fetch_and_correct_openml(
     if not isinstance(x, (csr_matrix, pd.DataFrame, np.ndarray)):
         raise ValueError(f'Unknown x type "{type(x)}" returned from openml')
 
+    # Convert sparse DataFrame to dense format
+    if isinstance(x, pd.DataFrame):
+        if any(pd.api.types.is_sparse(x[col]) for col in x.columns):
+            x = x.sparse.to_dense()
+
     # Convert y to numpy array if needed
     if isinstance(y, pd.Series):
         if isinstance(y.dtype, pd.CategoricalDtype):
