@@ -15,10 +15,6 @@
                 "algorithm": { "estimator_params": { "C": 100.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "epsilon", "split_kwargs": { "train_size": 10000, "test_size": 10000 } },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
-            },
-            {
                 "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
                 "algorithm": {
                     "estimator_params": { "C": 100.0, "kernel": ["linear", "poly", "rbf"] }
