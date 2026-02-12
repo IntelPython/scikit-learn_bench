@@ -97,7 +97,7 @@ def fetch_and_correct_openml(
 
     # Get the data with target column specified
     x, y, _, _ = dataset.get_data(
-        dataset_format="dataframe" if as_frame == "auto" or as_frame else "array",
+        dataset_format="dataframe" if as_frame is True else "array",
         target=dataset.default_target_attribute,
     )
 
