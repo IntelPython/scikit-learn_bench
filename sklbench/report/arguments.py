@@ -99,6 +99,18 @@ def add_report_generator_arguments(
         action="store_true",
         help="Creates 'All cases' sheet with combined results from all algorithms.",
     )
+    parser.add_argument(
+        "--draw-plots",
+        default=False,
+        action="store_true",
+        help="Draw comparison plots from summary data using matplotlib.",
+    )
+    parser.add_argument(
+        "--plot-output",
+        type=str,
+        default=None,
+        help="Output file path for plots (e.g., plots.png). If not specified, plots are displayed.",
+    )
     # color scale settings
     parser.add_argument(
         "--perf-color-scale",

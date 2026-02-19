@@ -27,6 +27,13 @@ from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 from scipy.stats import gmean
 
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import NullLocator, FixedFormatter, FixedLocator
+    matplotlib_available = True
+except ImportError:
+    matplotlib_available = False
+
 from ..utils.common import custom_format, flatten_list
 from ..utils.logger import logger
 from ..utils.measurement import enrich_metrics
@@ -511,6 +518,225 @@ def write_environment_info(results, workbook):
                 new_ws.append([None])
 
 
+def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
+    """
+    Draw plots from all_cases dataframe with algorithm comparison data.
+    Separates into fit (training) and predict (inference) plots.
+    Calculates geometric means of improvement for each group.
+    Separates KNN algorithms by parameter|algorithm value (brute force vs kd_tree).
+    """
+    if not matplotlib_available:
+        logger.warning("matplotlib is not available, skipping plot generation")
+        return
+    
+    try:
+        # Flatten column names if multi-index
+        if isinstance(all_cases_df.columns, pd.MultiIndex):
+            all_cases_df.columns = ["|".join(col).strip() for col in all_cases_df.columns.values]
+        
+        # Find algorithm name and parameter|algorithm columns
+        algo_name_col = None
+        param_algo_col = None
+        comparison_cols = []
+        
+        for col in all_cases_df.columns:
+            col_str = str(col)
+            if col_str == "algorithm|name":
+                algo_name_col = col
+            elif col_str == "parameter|algorithm":
+                param_algo_col = col
+            elif "vs" in col_str and "relative improvement" in col_str:
+                comparison_cols.append(col)
+        
+        if not algo_name_col or not comparison_cols:
+            logger.warning("Could not find required columns (algorithm|name or comparison columns)")
+            return
+        
+        # Separate fit and inference data
+        fit_grouped_data = {}
+        inference_grouped_data = {}
+        
+        for algo_name in all_cases_df[algo_name_col].unique():
+            algo_mask = all_cases_df[algo_name_col] == algo_name
+            algo_df = all_cases_df[algo_mask]
+            
+            # Determine if this is fit or inference
+            is_fit = str(algo_name).endswith("|fit") or str(algo_name) == "train_test_split"
+            is_knn = 'kneighbors' in str(algo_name).lower()
+            
+            target_dict = fit_grouped_data if is_fit else inference_grouped_data
+            if is_knn and param_algo_col:
+                # For KNN, separate by parameter|algorithm (brute, kd_tree, etc.)
+                for param_algo in algo_df[param_algo_col].dropna().unique():
+                    param_mask = algo_df[param_algo_col] == param_algo
+                    group_df = algo_df[param_mask]
+                    algo_name_parts = algo_name.split('|')
+                    group_label = f"{algo_name_parts[0]}({param_algo})|{algo_name_parts[1]}"
+                    #group_label = f"{algo_name}_{param_algo}"
+                    target_dict[group_label] = {
+                        'algo_name': algo_name,
+                        'param_algo': param_algo,
+                        'is_knn': True,
+                        'data': group_df
+                    }
+            else:
+                # For non-KNN, just use algorithm name
+                group_label = algo_name
+                target_dict[group_label] = {
+                    'algo_name': algo_name,
+                    'param_algo': None,
+                    'is_knn': False,
+                    'data': algo_df
+                }
+        
+        # Create plots for each comparison pair (fit and inference)
+        num_comparisons = len(comparison_cols)
+        if num_comparisons == 0:
+            logger.warning("No comparison columns found")
+            return
+        
+        # Colors from draw_plots2.py
+        color_fit = '#004A99'  # Blue (training)
+        color_inference = '#E66100'  # Orange (inference)
+        color_kd_tree = '#E66100'  # Orange (for kd_tree in inference)
+        color_brute = '#6B9BD1'  # Light blue (for brute in inference)
+        
+        # Create num_comparisons subplots (fit on left, inference on right)
+        fig, axes = plt.subplots(num_comparisons, 2, figsize=(16, 7 * num_comparisons))
+        if num_comparisons == 1:
+            axes = [axes]  # Make it 2D array-like for consistent indexing
+        
+        for ax_idx, comp_col in enumerate(comparison_cols):
+            # Extract comparison name from column
+            comp_col_str = str(comp_col)
+            comparison_name = comp_col_str.split("|")[0] if "|" in comp_col_str else comp_col_str
+            
+            # ===== FIT (TRAINING) PLOT (LEFT) =====
+            ax_fit = axes[ax_idx][0]
+            
+            fit_labels = []
+            fit_geomean_values = []
+            
+            for group_label, group_info in fit_grouped_data.items():
+                group_df = group_info['data']
+                comp_values = group_df[comp_col].dropna()
+                
+                if len(comp_values) > 0:
+                    gm = gmean(comp_values, nan_policy='omit')
+                    fit_labels.append(group_label)
+                    fit_geomean_values.append(gm)
+            
+            if len(fit_geomean_values) > 0:
+                x_fit = np.arange(len(fit_labels))
+                ax_fit.set_axisbelow(True)
+                # All fit algorithms use blue color
+                bars_fit = ax_fit.bar(x_fit, fit_geomean_values, color=color_fit, width=0.7, zorder=3)
+                
+                # Determine y_ticks
+                max_val_fit = max(fit_geomean_values)
+                if max_val_fit < 10:
+                    y_ticks_fit = [1, 10]
+                elif max_val_fit < 100:
+                    y_ticks_fit = [1, 10, 100]
+                elif max_val_fit < 1000:
+                    y_ticks_fit = [1, 10, 100, 1000]
+                else:
+                    y_ticks_fit = [1, 10, 100, 1000, 10000]
+                
+                ax_fit.set_yscale('log')
+                ax_fit.yaxis.set_major_locator(FixedLocator(y_ticks_fit))
+                ax_fit.yaxis.set_minor_locator(NullLocator())
+                ax_fit.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks_fit]))
+                
+                ax_fit.set_ylim(1, y_ticks_fit[-1])
+                ax_fit.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
+                
+                ax_fit.set_title(f'{comparison_name} - Training', fontsize=16, color='#555555', pad=15)
+                ax_fit.set_ylabel('Speedup (higher is better)', color='#555555', fontsize=11)
+                ax_fit.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
+                
+                ax_fit.set_xticks(x_fit)
+                ax_fit.set_xticklabels(fit_labels, rotation=45, ha='right', fontsize=9)
+                
+                for spine in ['top', 'right']:
+                    ax_fit.spines[spine].set_visible(False)
+                
+                for bar in bars_fit:
+                    height = bar.get_height()
+                    ax_fit.text(bar.get_x() + bar.get_width() / 2, height * 1.1,
+                            f'{height:.1f}', ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
+            
+            # ===== INFERENCE (PREDICT) PLOT (RIGHT) =====
+            ax_inf = axes[ax_idx][1]
+            
+            inf_labels = []
+            inf_geomean_values = []
+            
+            for group_label, group_info in inference_grouped_data.items():
+                group_df = group_info['data']
+                comp_values = group_df[comp_col].dropna()
+                
+                if len(comp_values) > 0:
+                    gm = gmean(comp_values, nan_policy='omit')
+                    inf_labels.append(group_label)
+                    inf_geomean_values.append(gm)
+            
+            # All inference algorithms use orange color
+            inf_colors_list = [color_inference] * len(inf_labels)
+            
+            if len(inf_geomean_values) > 0:
+                x_inf = np.arange(len(inf_labels))
+                ax_inf.set_axisbelow(True)
+                bars_inf = ax_inf.bar(x_inf, inf_geomean_values, color=inf_colors_list, width=0.7, zorder=3)
+                
+                # Determine y_ticks
+                max_val_inf = max(inf_geomean_values)
+                if max_val_inf < 10:
+                    y_ticks_inf = [1, 10]
+                elif max_val_inf < 100:
+                    y_ticks_inf = [1, 10, 100]
+                elif max_val_inf < 1000:
+                    y_ticks_inf = [1, 10, 100, 1000]
+                else:
+                    y_ticks_inf = [1, 10, 100, 1000, 10000]
+                
+                ax_inf.set_yscale('log')
+                ax_inf.yaxis.set_major_locator(FixedLocator(y_ticks_inf))
+                ax_inf.yaxis.set_minor_locator(NullLocator())
+                ax_inf.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks_inf]))
+                
+                ax_inf.set_ylim(1, y_ticks_inf[-1])
+                ax_inf.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
+                
+                ax_inf.set_title(f'{comparison_name} - Inference', fontsize=16, color='#555555', pad=15)
+                ax_inf.set_ylabel('Speedup (higher is better)', color='#555555', fontsize=11)
+                ax_inf.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
+                
+                ax_inf.set_xticks(x_inf)
+                ax_inf.set_xticklabels(inf_labels, rotation=45, ha='right', fontsize=9)
+                
+                for spine in ['top', 'right']:
+                    ax_inf.spines[spine].set_visible(False)
+                
+                for bar in bars_inf:
+                    height = bar.get_height()
+                    ax_inf.text(bar.get_x() + bar.get_width() / 2, height * 1.1,
+                            f'{height:.1f}', ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
+        
+        plt.tight_layout()
+        
+        if output_file:
+            plt.savefig(output_file, dpi=150, bbox_inches='tight')
+            logger.info(f"Plot saved to {output_file}")
+        else:
+            plt.show()
+        
+        plt.close()
+    
+    except Exception as e:
+        logger.error(f"Error drawing plots: {e}")
+
+
 def generate_report(args: argparse.Namespace):
     logger.setLevel(args.report_log_level)
     results = merge_result_files(args.result_files)
@@ -562,4 +788,9 @@ def generate_report(args: argparse.Namespace):
     # remove default sheet
     wb.remove(wb["Sheet"])
     wb.save(args.report_file)
+    
+    # Draw plots if requested
+    if args.draw_plots and (all_cases_df.size > 0):
+        draw_summary_plots(all_cases_df, args.plot_output)
+    
     return 0
