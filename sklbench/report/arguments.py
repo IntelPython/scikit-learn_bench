@@ -93,6 +93,12 @@ def add_report_generator_arguments(
         help="Selects which part of one-vs-one difference to show "
         "(all matrix or one of triangles).",
     )
+    parser.add_argument(
+        "--combined-results",
+        default=False,
+        action="store_true",
+        help="Creates 'All cases' sheet with combined results from all algorithms.",
+    )
     # color scale settings
     parser.add_argument(
         "--perf-color-scale",
