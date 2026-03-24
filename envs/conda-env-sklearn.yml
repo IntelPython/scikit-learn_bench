@@ -20,3 +20,4 @@ dependencies:
   - psutil
   - requests
   - py-cpuinfo
+  - openml
