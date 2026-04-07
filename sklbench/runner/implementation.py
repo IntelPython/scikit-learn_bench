@@ -17,7 +17,7 @@
 
 import argparse
 import json
-from multiprocessing import Pool
+from multiprocessing import get_context
 from typing import Dict, List, Tuple, Union
 
 from psutil import cpu_count
@@ -102,7 +102,7 @@ def run_benchmarks(args: argparse.Namespace) -> int:
         logger.debug(f"Unique dataset names to load:\n{list(dataset_cases.keys())}")
         n_proc = min([16, cpu_count(), n_datasets])
         logger.info(f"Prefetching {n_datasets} datasets with {n_proc} processes")
-        with Pool(n_proc) as pool:
+        with get_context("spawn").Pool(n_proc) as pool:
             pool.map(load_data_with_cleanup, dataset_cases.values())
 
     # run bench_cases
