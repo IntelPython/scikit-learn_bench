@@ -65,22 +65,31 @@ def enrich_metrics(
     """Transforms raw performance and other results into aggregated metrics"""
     # time metrics
     res = bench_result.copy()
-    mean, std = box_filter(res["time[ms]"])
-    if include_performance_stability_metrics:
+    if isinstance(res["time[ms]"], list):
+        mean, std = box_filter(res["time[ms]"])
+        if include_performance_stability_metrics:
+            res.update(
+                {
+                    "1st run time[ms]": res["time[ms]"][0],
+                    "1st-mean run ratio": res["time[ms]"][0] / mean,
+                }
+            )
         res.update(
             {
-                "1st run time[ms]": res["time[ms]"][0],
-                "1st-mean run ratio": res["time[ms]"][0] / mean,
+                "time[ms]": mean,
+                "time CV": std / mean,  # Coefficient of Variation
             }
         )
-    res.update(
-        {
-            "time[ms]": mean,
-            "time CV": std / mean,  # Coefficient of Variation
-        }
-    )
+    else:
+        # already aggregated (e.g. from a baseline file)
+        mean = res["time[ms]"]
+        std = res.get("time std[ms]", 0.0)
+        if mean != 0:
+            res["time CV"] = std / mean
+        else:
+            res["time CV"] = 0.0
     cost = res.get("cost[microdollar]", None)
-    if cost:
+    if cost and isinstance(cost, list):
         res["cost[microdollar]"] = box_filter(res["cost[microdollar]"])[0]
     batch_size = res.get("batch_size", None)
     if batch_size:
