@@ -37,10 +37,6 @@
         ],
         "svr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
-            },
-            {
                 "data": { "dataset": "fried", "split_kwargs": { "train_size": 0.5, "test_size": 0.5 } },
                 "algorithm": { "estimator_params": { "C": 2.0, "kernel": "rbf" } }
             },
@@ -84,10 +80,6 @@
             }
         ],
         "nusvr datasets": [
-            {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
-            },
             {
                 "data": { "dataset": "twodplanes", "split_kwargs": { "train_size": 25000, "test_size": null } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
