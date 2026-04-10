@@ -97,7 +97,7 @@ def fetch_and_correct_openml(
 
     # Get the data with target column specified
     x, y, _, _ = dataset.get_data(
-        dataset_format="dataframe" if as_frame is True else "array",
+        dataset_format="dataframe",
         target=dataset.default_target_attribute,
     )
 
@@ -109,6 +109,8 @@ def fetch_and_correct_openml(
     if isinstance(x, pd.DataFrame):
         if any(pd.api.types.is_sparse(x[col]) for col in x.columns):
             x = x.sparse.to_dense()
+        if not as_frame:
+            x = x.to_numpy()
 
     # Convert y to numpy array if needed
     if isinstance(y, pd.Series):
