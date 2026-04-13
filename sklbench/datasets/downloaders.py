@@ -109,7 +109,7 @@ def fetch_and_correct_openml(
     if isinstance(x, pd.DataFrame):
         if any(pd.api.types.is_sparse(x[col]) for col in x.columns):
             x = x.sparse.to_dense()
-        if not as_frame:
+        if as_frame is not True:
             x = x.to_numpy()
 
     # Convert y to numpy array if needed
