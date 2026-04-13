@@ -65,7 +65,7 @@
                     "max_iter": 10000
                 }
             },
-            "data": { "preprocessing_kwargs": { "normalize": true } }
+            "data": { "preprocessing_kwargs": { "normalize": "standard" } }
         },
         "svm clsf parameters": {
             "algorithm": { "estimator_params": { "random_state": 42 } }

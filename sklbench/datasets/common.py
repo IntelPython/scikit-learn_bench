@@ -24,6 +24,7 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from ..utils.custom_types import Array
 from ..utils.logger import logger
@@ -167,7 +168,7 @@ def preprocess_x(
     x: Array,
     replace_nan="auto",
     category_encoding="ordinal",
-    normalize=False,
+    normalize=None, # None, "standard", "minmax"
     force_for_sparse=True,
     **kwargs,
 ) -> Array:
@@ -219,9 +220,19 @@ def preprocess_x(
             pass
         else:
             logger.warning(f'Unknown "{category_encoding}" category encoding type.')
-    # Mean-Standard normalization
+    # Normalization
     if normalize:
-        x = (x - x.mean()) / x.std()
+        if normalize == "standard":
+            scaler = StandardScaler(with_mean=True, with_std=True)
+        elif normalize == "mean":
+            scaler = StandardScaler(with_mean=True, with_std=False)
+        elif normalize == "minmax":
+            scaler = MinMaxScaler(feature_range=(0, 1))
+        else:
+            logger.warning(f'Unknown "{normalize}" normalization type.')
+            scaler = None
+        if scaler is not None:
+            x = scaler.fit_transform(x)
     if return_type == np.ndarray:
         return x.values
     else:

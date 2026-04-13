@@ -8,7 +8,7 @@
                 }
             },
             "data": {
-                "preprocessing_kwargs": { "normalize": true }
+                "preprocessing_kwargs": { "normalize": "standard" }
             }
         },
         "sklearn knn parameters": {

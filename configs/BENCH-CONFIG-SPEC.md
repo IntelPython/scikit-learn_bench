@@ -89,7 +89,7 @@ Configs have the three highest parameter keys:
 | `data`:`id` | None |  | OpenML data id for `fetch_openml` source. |
 | `data`:`preprocessing_kwargs`:`replace_nan` | `median` | `median`, `mean` | Value to replace NaNs in preprocessed data. |
 | `data`:`preprocessing_kwargs`:`category_encoding` | `ordinal` | `ordinal`, `onehot`, `drop`, `ignore` | How to encode categorical features in preprocessed data. |
-| `data`:`preprocessing_kwargs`:`normalize` | False |  | Enables normalization of preprocessed data. |
+| `data`:`preprocessing_kwargs`:`normalize` | None | None, `mean`, `minmax`, `standard` | Enables normalization of preprocessed data. |
 | `data`:`preprocessing_kwargs`:`force_for_sparse` | True |  | Forces preprocessing for sparse data formats. |
 | `data`:`split_kwargs` | Empty `dict` or default split from dataset description |  | Data split parameters for `train_test_split` function. |
 | `data`:`format` | `pandas` | `pandas`, `numpy`, `cudf` | Data format to use in benchmark. |

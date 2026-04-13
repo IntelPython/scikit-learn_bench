@@ -31,7 +31,7 @@
                         "susy"
                     ],
                     "preprocessing_kwargs": {
-                        "normalize": true
+                        "normalize": "standard"
                     },
                     "split_kwargs": { "ignore": true }
                 }

@@ -10,7 +10,7 @@
                     "random_state": 42
                 },
                 "preprocessing_kwargs": {
-                    "normalize": true
+                    "normalize": "standard"
                 }
             },
             "bench": { "n_runs": 5 },
