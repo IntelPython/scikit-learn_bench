@@ -450,7 +450,7 @@ def load_codrnanorm(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
     def transform_x_y(x, y):
-        x = pd.DataFrame(x.todense())
+        x = pd.DataFrame(x.todense() if hasattr(x, "todense") else x)
         y = y.astype("int")
         y[y == -1] = 0
         return x, y
