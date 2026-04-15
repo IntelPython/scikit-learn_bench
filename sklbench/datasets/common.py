@@ -223,16 +223,16 @@ def preprocess_x(
     # Normalization
     if normalize:
         if normalize == "standard":
-            scaler = StandardScaler(with_mean=True, with_std=True)
+            x = (x - x.mean()) / x.std()
+            #scaler = StandardScaler(with_mean=True, with_std=True)
         elif normalize == "mean":
-            scaler = StandardScaler(with_mean=True, with_std=False)
+            x = x - x.mean()
+            # scaler = StandardScaler(with_mean=True, with_std=False)
         elif normalize == "minmax":
-            scaler = MinMaxScaler(feature_range=(0, 1))
+            x = (x - x.min()) / (x.max() - x.min())
+            # scaler = MinMaxScaler(feature_range=(0, 1))
         else:
             logger.warning(f'Unknown "{normalize}" normalization type.')
-            scaler = None
-        if scaler is not None:
-            x = scaler.fit_transform(x)
     if return_type == np.ndarray:
         return x.values
     else:
