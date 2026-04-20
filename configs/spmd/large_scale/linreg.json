@@ -5,7 +5,7 @@
             "algorithm": {
                 "estimator": "LinearRegression",
                 "estimator_methods": { "training": "fit" },
-                "sklearnex_context": { "use_raw_input": true }
+                "sklearnex_context": { "array_api_dispatch": true }
             }
         },
         "synthetic data": {

@@ -5,7 +5,7 @@
             "algorithm": {
                 "estimator": "RandomForestRegressor",
                 "estimator_params": { "n_estimators": 20, "max_depth": 4, "local_trees_mode": true },
-                "sklearnex_context": { "use_raw_input": true }
+                "sklearnex_context": { "array_api_dispatch": true }
             },
 	    "bench": {
 		"ensure_sklearnex_patching": false

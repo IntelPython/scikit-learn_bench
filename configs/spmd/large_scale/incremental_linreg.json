@@ -57,9 +57,6 @@
         }
     },
     "TEMPLATES": {
-        "basic_statistics": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "basic_statistics", "statistical batches and data"] },
-        "covariance": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "covariance", "statistical batches and data"] },
-        "linear_regression": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "linear_regression", "regression batches and data"] },
-        "pca": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "pca", "statistical batches and data"] }
+        "linear_regression": { "SETS": ["sklearnex spmd implementation", "large scale default parameters", "linear_regression", "regression batches and data"] }
     }
 }

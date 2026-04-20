@@ -15,7 +15,7 @@
                     "training": "fit",
                     "inference": "predict"
                 },
-		"sklearnex_context": { "use_raw_input": true }
+		"sklearnex_context": { "array_api_dispatch": true }
 	    }
         },
         "synthetic classification data": {

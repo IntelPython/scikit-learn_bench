@@ -5,7 +5,7 @@
             "algorithm": {
                 "estimator": "BasicStatistics",
                 "estimator_methods": { "training": "fit" },
-                "sklearnex_context": { "use_raw_input": true }
+                "sklearnex_context": { "array_api_dispatch": true }
             },
             "data": {
                 "split_kwargs": { "test_size": 0.0001 }

@@ -6,7 +6,7 @@
                 "estimator": "LogisticRegression",
                 "estimator_methods": { "inference": "predict" },
                 "estimator_params": { "max_iter": 10 },
-                "sklearnex_context": { "use_raw_input": true }
+                "sklearnex_context": { "array_api_dispatch": true }
             }
         },
         "synthetic data": {

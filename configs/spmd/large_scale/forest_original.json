@@ -6,7 +6,7 @@
                 "estimator": "RandomForestClassifier",
                 "estimator_methods": { "training": "fit" },
 		"estimator_params": { "n_estimators": 20, "max_depth": 10 },
-                "sklearnex_context": { "use_raw_input": true }
+                "sklearnex_context": { "array_api_dispatch": true }
             },
             "bench": {
                 "ensure_sklearnex_patching": false

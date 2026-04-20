@@ -10,7 +10,7 @@
                 "estimator_params" : {
                         "eps": 15, "min_samples": 50
                 },
-		"sklearnex_context": { "use_raw_input": true }
+		"sklearnex_context": { "array_api_dispatch": true }
 	    },
 	    "data": {
 		"dtype": "float64"
