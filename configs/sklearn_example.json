@@ -13,7 +13,7 @@
                 "source": "make_blobs",
                 "generation_kwargs": {
                     "centers": 2,
-                    "n_samples": 1000,
+                    "n_samples": 5000,
                     "n_features": [16, 64]
                 },
                 "split_kwargs": { "ignore": true }
@@ -33,29 +33,33 @@
                 }
             ]
         },
-        "multi clsf data": {
+        "regression data": {
             "data": {
-                "source": "make_classification",
+                "source": "make_regression",
                 "generation_kwargs": {
-                    "n_classes": 4,
-                    "n_samples": 1000,
-                    "n_features": 10,
-                    "n_informative": "[SPECIAL_VALUE]0.75"
+                    "n_samples": 10000,
+                    "n_features": 100,
+                    "n_informative": 50,
+                    "noise": 0.1
                 },
-                "split_kwargs": { "test_size": 0.1 }
+                "split_kwargs": { "test_size": 0.2 }
             }
         },
+        "regression algorithms": {
+            "algorithm": [
+                { "estimator": "LinearRegression" }
+            ]
+        },
         "unsupervised algorithms": {
-            "algorithm":
-            [
-                {
-                    "estimator": "PCA",
-                    "estimator_params": { "svd_solver": "auto", "n_components": 3 }
-                },
+            "algorithm": [
                 {
                     "estimator": "KMeans",
                     "estimator_params": { "n_init": 10, "n_clusters": "[SPECIAL_VALUE]auto" },
                     "estimator_methods": { "inference": "predict" }
+                },
+                {
+                    "estimator": "DBSCAN",
+                    "estimator_params": { "eps": 3, "min_samples": 5 }
                 }
             ]
         },
@@ -65,21 +69,19 @@
                     "estimator": ["KNeighborsClassifier", "KNeighborsRegressor"],
                     "estimator_params": { "n_neighbors": 5, "algorithm": "brute" }
                 },
-                { "estimator": "ElasticNet" },
                 { "estimator": "SVC" }
             ]
         }
     },
     "TEMPLATES": {
-        "multi clsf": {
-            "SETS": ["common", "multi clsf data"],
-            "algorithm": { "estimator": "LogisticRegression" }
-        },
         "supervised": {
             "SETS": ["common", "binary clsf data", "supervised algorithms"]
         },
         "unsupervised": {
             "SETS": ["common", "blobs data", "unsupervised algorithms"]
+        },
+        "regression": {
+            "SETS": ["common", "regression data", "regression algorithms"]
         }
     }
 }
