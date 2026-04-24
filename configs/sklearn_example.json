@@ -67,7 +67,7 @@
             "algorithm": [
                 {
                     "estimator": ["KNeighborsClassifier", "KNeighborsRegressor"],
-                    "estimator_params": { "n_neighbors": 5, "algorithm": "brute" }
+                    "estimator_params": { "n_neighbors": 5, "algorithm": "kd_tree" }
                 },
                 { "estimator": "SVC" }
             ]
