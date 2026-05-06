@@ -23,8 +23,12 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import (
+    MinMaxScaler,
+    OneHotEncoder,
+    OrdinalEncoder,
+    StandardScaler,
+)
 
 from ..utils.custom_types import Array
 from ..utils.logger import logger

@@ -367,6 +367,7 @@ def load_epsilon(
     }
     return {"x": x, "y": y}, data_desc
 
+
 @preprocess
 @cache
 def load_gisette(
@@ -540,6 +541,7 @@ def load_skin_segmentation(
     x, y = load_openml(1502, raw_data_cache, transform_x_y)
     data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
     return {"x": x, "y": y}, data_desc
+
 
 @preprocess
 @cache
