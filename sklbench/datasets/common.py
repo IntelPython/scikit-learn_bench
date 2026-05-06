@@ -168,7 +168,7 @@ def preprocess_x(
     x: Array,
     replace_nan="auto",
     category_encoding="ordinal",
-    normalize=None, # None, "standard", "minmax"
+    normalize=None,
     force_for_sparse=True,
     **kwargs,
 ) -> Array:
@@ -223,13 +223,10 @@ def preprocess_x(
     # Normalization
     if normalize:
         if normalize == "standard":
-            #x = (x - x.mean()) / x.std()
             scaler = StandardScaler(with_mean=True, with_std=True)
         elif normalize == "mean":
-            #x = x - x.mean()
             scaler = StandardScaler(with_mean=True, with_std=False)
         elif normalize == "minmax":
-            #x = (x - x.min()) / (x.max() - x.min())
             scaler = MinMaxScaler(feature_range=(0, 1))
         else:
             logger.warning(f'Unknown "{normalize}" normalization type.')
