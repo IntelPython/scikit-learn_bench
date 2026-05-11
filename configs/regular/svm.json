@@ -30,7 +30,7 @@
                 "data": {
                     "dataset": "mnist",
                     "split_kwargs": { "train_size": 20000, "test_size": null },
-                    "preprocessing_kwargs": {"normalize" : null}
+                    "preprocessing_kwargs": { "normalize" : null }
                 },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }

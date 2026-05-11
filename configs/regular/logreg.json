@@ -61,8 +61,7 @@
             {
                 "data": {
                     "dataset": "hepmass",
-                    "split_kwargs": { "train_size": 0.1, "test_size": null },
-                    "preprocessing_kwargs": { "normalize": "standard" }
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
                 },
                 "algorithm": { "estimator_params": {"C": 1e-5} }
             },
