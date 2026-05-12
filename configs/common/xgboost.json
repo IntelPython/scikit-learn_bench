@@ -43,7 +43,7 @@
             "algorithm": {
                 "library": "xgboost",
                 "estimator": "XGBRegressor",
-                "estimator_methods": {"inference": "predict"},
+                "estimator_methods": { "inference": "predict" },
                 "estimator_params": { "objective": "reg:squarederror" }
             }
         }

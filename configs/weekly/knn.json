@@ -2,9 +2,7 @@
     "INCLUDE": ["../common/sklearn.json", "../common/knn.json"],
     "PARAMETERS_SETS": {
         "high-load brute knn classification datasets": {
-            "data": [
-                { "dataset": "susy", "split_kwargs": { "train_size": 500000, "test_size": 500000 } }
-            ]
+            "data": [{ "dataset": "susy", "split_kwargs": { "train_size": 500000, "test_size": 500000 } }]
         },
         "high-load kd_tree knn classification datasets": {
             "data": [
@@ -12,16 +10,28 @@
                     "source": "make_classification",
                     "generation_kwargs": [
                         {
-                            "n_classes": 5, "n_samples": 4000000, "n_features": 4,
-                            "n_redundant": 0, "n_repeated": 0, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 4000000,
+                            "n_features": 4,
+                            "n_redundant": 0,
+                            "n_repeated": 0,
+                            "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 2000000, "n_features": 8,
-                            "n_redundant": 2, "n_repeated": 2, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 2000000,
+                            "n_features": 8,
+                            "n_redundant": 2,
+                            "n_repeated": 2,
+                            "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 1000000, "n_features": 16,
-                            "n_redundant": 6, "n_repeated": 6, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 1000000,
+                            "n_features": 16,
+                            "n_redundant": 6,
+                            "n_repeated": 6,
+                            "n_informative": 4
                         }
                     ],
                     "split_kwargs": { "ignore": true }
@@ -29,15 +39,13 @@
             ]
         },
         "high-load brute knn regression datasets": {
-            "data": [
-                { "dataset": "year_prediction_msd", "split_kwargs": { "ignore": true } }
-            ]
+            "data": [{ "dataset": "year_prediction_msd", "split_kwargs": { "ignore": true } }]
         },
         "high-load kd_tree knn regression datasets": {
             "data": [
                 {
                     "source": "make_regression",
-                    "generation_kwargs":[
+                    "generation_kwargs": [
                         { "n_samples": 10000000, "n_features": 4, "noise": 1.0 },
                         { "n_samples": 4000000, "n_features": 8, "noise": 1.5 },
                         { "n_samples": 2000000, "n_features": 16, "noise": 2.0 }

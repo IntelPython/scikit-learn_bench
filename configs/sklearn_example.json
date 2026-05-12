@@ -46,9 +46,7 @@
             }
         },
         "regression algorithms": {
-            "algorithm": [
-                { "estimator": "LinearRegression" }
-            ]
+            "algorithm": [{ "estimator": "LinearRegression" }]
         },
         "unsupervised algorithms": {
             "algorithm": [

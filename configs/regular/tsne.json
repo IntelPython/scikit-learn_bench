@@ -32,12 +32,7 @@
             ]
         },
         "cuml tsne": {
-            "SETS": [
-                "cuml implementation",
-                "common tsne parameters",
-                "cuml parameters",
-                "tsne datasets"
-            ]
+            "SETS": ["cuml implementation", "common tsne parameters", "cuml parameters", "tsne datasets"]
         }
     }
 }

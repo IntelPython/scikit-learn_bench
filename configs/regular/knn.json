@@ -18,16 +18,28 @@
                     "source": "make_classification",
                     "generation_kwargs": [
                         {
-                            "n_classes": 5, "n_samples": 400000, "n_features": 4,
-                            "n_redundant": 0, "n_repeated": 0, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 400000,
+                            "n_features": 4,
+                            "n_redundant": 0,
+                            "n_repeated": 0,
+                            "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 200000, "n_features": 8,
-                            "n_redundant": 2, "n_repeated": 2, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 200000,
+                            "n_features": 8,
+                            "n_redundant": 2,
+                            "n_repeated": 2,
+                            "n_informative": 4
                         },
                         {
-                            "n_classes": 5, "n_samples": 100000, "n_features": 16,
-                            "n_redundant": 6, "n_repeated": 6, "n_informative": 4
+                            "n_classes": 5,
+                            "n_samples": 100000,
+                            "n_features": 16,
+                            "n_redundant": 6,
+                            "n_repeated": 6,
+                            "n_informative": 4
                         }
                     ],
                     "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
@@ -48,7 +60,7 @@
                 },
                 {
                     "source": "make_regression",
-                    "generation_kwargs":[
+                    "generation_kwargs": [
                         { "n_samples": 400000, "n_features": 4, "noise": 1.0 },
                         { "n_samples": 200000, "n_features": 8, "noise": 1.5 },
                         { "n_samples": 100000, "n_features": 16, "noise": 2.0 }

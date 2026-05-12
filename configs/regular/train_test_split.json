@@ -4,14 +4,7 @@
         "train_test_split datasets": [
             {
                 "data": {
-                    "dataset": [
-                        "road_network",
-                        "codrnanorm",
-                        "susy",
-                        "sift",
-                        "gist",
-                        "svhn"
-                    ]
+                    "dataset": ["road_network", "codrnanorm", "susy", "sift", "gist", "svhn"]
                 }
             },
             {
@@ -29,18 +22,10 @@
     },
     "TEMPLATES": {
         "sklearn train_test_split": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "train_test_split parameters",
-                "train_test_split datasets"
-            ]
+            "SETS": ["sklearn-ex[cpu] implementations", "train_test_split parameters", "train_test_split datasets"]
         },
         "cuml train_test_split": {
-            "SETS": [
-                "cuml implementation",
-                "train_test_split parameters",
-                "train_test_split datasets"
-            ]
+            "SETS": ["cuml implementation", "train_test_split parameters", "train_test_split datasets"]
         }
     }
 }

@@ -3,7 +3,7 @@
     "PARAMETERS_SETS": {
         "high-load svc binary datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "linear" } }
             },
             {
@@ -35,7 +35,10 @@
         ],
         "high-load svr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
+                "data": {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 50000, "test_size": null }
+                },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
             },
             {
@@ -57,7 +60,7 @@
         ],
         "high-load nusvc datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "ignore": true } },
                 "algorithm": { "estimator_params": { "nu": 0.1, "kernel": ["poly", "rbf"] } }
             },
             {
@@ -71,7 +74,10 @@
         ],
         "high-load nusvr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 50000, "test_size": null } },
+                "data": {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 50000, "test_size": null }
+                },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
             },
             {
@@ -116,12 +122,7 @@
             ]
         },
         "svr": {
-            "SETS": [
-                "svr implementations",
-                "common svm parameters",
-                "svr parameters",
-                "high-load svr datasets"
-            ]
+            "SETS": ["svr implementations", "common svm parameters", "svr parameters", "high-load svr datasets"]
         },
         "nusvc": {
             "SETS": [
@@ -133,12 +134,7 @@
             ]
         },
         "nusvr": {
-            "SETS": [
-                "nusvm implementations",
-                "common svm parameters", 
-                "nusvr parameters",
-                "high-load nusvr datasets"
-            ]
+            "SETS": ["nusvm implementations", "common svm parameters", "nusvr parameters", "high-load nusvr datasets"]
         }
     }
 }

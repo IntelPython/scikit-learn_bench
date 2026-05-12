@@ -3,7 +3,7 @@
     "PARAMETERS_SETS": {
         "svc binary datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": "linear" } }
             },
             {
@@ -63,7 +63,7 @@
         ],
         "nusvc datasets": [
             {
-                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null }  },
+                "data": { "dataset": "a9a", "split_kwargs": { "train_size": 5000, "test_size": null } },
                 "algorithm": { "estimator_params": { "nu": 0.1, "kernel": ["poly", "rbf"] } }
             },
             {
@@ -121,17 +121,12 @@
                 "multi svc implementations",
                 "common svm parameters",
                 "svm clsf parameters",
-                "svc parameters", 
+                "svc parameters",
                 "svc multiclass datasets"
             ]
         },
         "svr": {
-            "SETS": [
-                "svr implementations",
-                "common svm parameters",
-                "svr parameters",
-                "svr datasets"
-            ]
+            "SETS": ["svr implementations", "common svm parameters", "svr parameters", "svr datasets"]
         },
         "nusvc": {
             "SETS": [
@@ -143,12 +138,7 @@
             ]
         },
         "nusvr": {
-            "SETS": [
-                "nusvm implementations",
-                "common svm parameters", 
-                "nusvr parameters",
-                "nusvr datasets"
-            ]
+            "SETS": ["nusvm implementations", "common svm parameters", "nusvr parameters", "nusvr datasets"]
         }
     }
 }

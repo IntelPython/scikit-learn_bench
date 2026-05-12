@@ -1,9 +1,7 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/logreg.json", "../regular/logreg.json"],
     "PARAMETERS_SETS": {
-        "high-load logreg datasets": [
-            { "data": { "split_kwargs": { "ignore": true } } }
-        ]
+        "high-load logreg datasets": [{ "data": { "split_kwargs": { "ignore": true } } }]
     },
     "TEMPLATES": {
         "sklearn logreg": {

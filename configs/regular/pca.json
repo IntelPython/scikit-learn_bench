@@ -28,19 +28,10 @@
     },
     "TEMPLATES": {
         "sklearn pca": {
-            "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
-                "pca parameters",
-                "pca datasets"
-            ]
+            "SETS": ["sklearn-ex[cpu,gpu] implementations", "pca parameters", "pca datasets"]
         },
         "cuml pca": {
-            "SETS": [
-                "cuml implementation",
-                "pca parameters",
-                "cuml pca parameters",
-                "pca datasets"
-            ]
+            "SETS": ["cuml implementation", "pca parameters", "cuml pca parameters", "pca datasets"]
         }
     }
 }

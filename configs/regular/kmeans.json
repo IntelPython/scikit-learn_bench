@@ -45,7 +45,6 @@
                     "split_kwargs": { "train_size": 0.2, "test_size": null }
                 }
             }
-            
         ]
     },
     "TEMPLATES": {
@@ -58,12 +57,7 @@
             ]
         },
         "cuml kmeans": {
-            "SETS": [
-                "cuml implementation",
-                "common kmeans parameters",
-                "cuml kmeans parameters",
-                "kmeans datasets"
-            ]
+            "SETS": ["cuml implementation", "common kmeans parameters", "cuml kmeans parameters", "kmeans datasets"]
         }
     }
 }

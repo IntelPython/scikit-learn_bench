@@ -31,8 +31,7 @@
             ]
         },
         "datasets": {
-            "data":
-            [
+            "data": [
                 {
                     "source": "make_classification",
                     "generation_kwargs": {
@@ -76,17 +75,17 @@
             {
                 "algorithm": {
                     "estimator": [
-                        "RandomForestClassifier", "ExtraTreesClassifier",
-                        "RandomForestRegressor", "ExtraTreesRegressor"
+                        "RandomForestClassifier",
+                        "ExtraTreesClassifier",
+                        "RandomForestRegressor",
+                        "ExtraTreesRegressor"
                     ],
                     "estimator_params": { "n_estimators": 20 }
                 }
             },
             {
                 "algorithm": {
-                    "estimator": [
-                        "KNeighborsClassifier", "KNeighborsRegressor"
-                    ],
+                    "estimator": ["KNeighborsClassifier", "KNeighborsRegressor"],
                     "estimator_params": { "algorithm": ["brute", "kd_tree"] }
                 }
             },
@@ -121,13 +120,7 @@
     },
     "TEMPLATES": {
         "test": {
-            "SETS": [
-                "sklearn-ex[cpu] implementations",
-                "common parameters",
-                "data formats",
-                "datasets",
-                "algorithms"
-            ]
+            "SETS": ["sklearn-ex[cpu] implementations", "common parameters", "data formats", "datasets", "algorithms"]
         }
     }
 }

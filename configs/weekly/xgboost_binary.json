@@ -18,11 +18,7 @@
     },
     "TEMPLATES": {
         "regression": {
-            "SETS": [
-                "xgboost binary classification",
-                "xgboost implementations",
-                "xgboost data"
-            ]
+            "SETS": ["xgboost binary classification", "xgboost implementations", "xgboost data"]
         }
     }
 }

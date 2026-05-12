@@ -4,18 +4,13 @@
         "high-load train_test_split datasets": [
             {
                 "data": {
-                    "dataset": [
-                        "airline_depdelay",
-                        "higgs"
-                    ]
+                    "dataset": ["airline_depdelay", "higgs"]
                 }
             },
             {
                 "data": {
                     "source": "make_regression",
-                    "generation_kwargs": [
-                        { "n_samples": 200000000, "n_features": 5 }
-                    ]
+                    "generation_kwargs": [{ "n_samples": 200000000, "n_features": 5 }]
                 }
             }
         ]
@@ -29,11 +24,7 @@
             ]
         },
         "cuml train_test_split": {
-            "SETS": [
-                "cuml implementation",
-                "train_test_split parameters",
-                "high-load train_test_split datasets"
-            ]
+            "SETS": ["cuml implementation", "train_test_split parameters", "high-load train_test_split datasets"]
         }
     }
 }

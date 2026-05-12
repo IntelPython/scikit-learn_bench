@@ -45,39 +45,39 @@
                         "test_size": 0.95
                     }
                 },
-                "algorithm": {"estimator_params": {"C": 1e-6}}
+                "algorithm": { "estimator_params": { "C": 1e-6 } }
             },
             {
                 "data": { "dataset": "mnist", "split_kwargs": { "train_size": 10000, "test_size": null } },
-                "algorithm": {"estimator_params": {"C": 1e-8}}
+                "algorithm": { "estimator_params": { "C": 1e-8 } }
             },
             {
                 "data": {
                     "dataset": "susy",
                     "split_kwargs": { "train_size": 0.1, "test_size": null }
                 },
-                "algorithm": { "estimator_params": {"C": 1e-2} }
+                "algorithm": { "estimator_params": { "C": 1e-2 } }
             },
             {
                 "data": {
                     "dataset": "hepmass",
                     "split_kwargs": { "train_size": 0.1, "test_size": null }
                 },
-                "algorithm": { "estimator_params": {"C": 1e-5} }
+                "algorithm": { "estimator_params": { "C": 1e-5 } }
             },
             {
                 "data": {
                     "dataset": "cifar",
                     "split_kwargs": { "train_size": 0.1, "test_size": null }
                 },
-                "algorithm": { "estimator_params": {"C": 1e-9} }
+                "algorithm": { "estimator_params": { "C": 1e-9 } }
             },
             {
                 "data": {
                     "dataset": "gisette",
                     "split_kwargs": { "train_size": 2000, "test_size": null }
                 },
-                "algorithm": { "estimator_params": {"C": 1e1} }
+                "algorithm": { "estimator_params": { "C": 1e1 } }
             }
         ]
     },
@@ -91,12 +91,7 @@
             ]
         },
         "cuml logreg": {
-            "SETS": [
-                "cuml implementation",
-                "common logreg parameters",
-                "cuml logreg parameters",
-                "logreg datasets"
-            ]
+            "SETS": ["cuml implementation", "common logreg parameters", "cuml logreg parameters", "logreg datasets"]
         }
     }
 }

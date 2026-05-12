@@ -64,11 +64,7 @@
     },
     "TEMPLATES": {
         "binary classification": {
-            "SETS": [
-                "xgboost binary classification",
-                "xgboost implementations",
-                "gbt binary classification data"
-            ]
+            "SETS": ["xgboost binary classification", "xgboost implementations", "gbt binary classification data"]
         }
     }
 }

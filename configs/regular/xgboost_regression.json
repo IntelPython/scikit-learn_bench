@@ -94,11 +94,7 @@
     },
     "TEMPLATES": {
         "regression": {
-            "SETS": [
-                "xgboost regression",
-                "xgboost implementations",
-                "gbt regression data"
-            ]
+            "SETS": ["xgboost regression", "xgboost implementations", "gbt regression data"]
         }
     }
 }
