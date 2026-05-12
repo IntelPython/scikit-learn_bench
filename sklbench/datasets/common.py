@@ -237,7 +237,7 @@ def preprocess_x(
         if scaler is not None:
             x = pd.DataFrame(scaler.fit_transform(x), columns=x.columns, index=x.index)
     if return_type == np.ndarray:
-        return x.values
+        return np.array(x)
     else:
         return x
 
