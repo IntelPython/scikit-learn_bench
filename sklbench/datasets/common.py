@@ -235,7 +235,7 @@ def preprocess_x(
         else:
             logger.warning(f'Unknown "{normalize}" normalization type.')
         if scaler is not None:
-            return pd.DataFrame(scaler.fit_transform(x), columns=x.columns, index=x.index)
+            x = pd.DataFrame(scaler.fit_transform(x), columns=x.columns, index=x.index)
     if return_type == np.ndarray:
         return x.values
     else:
