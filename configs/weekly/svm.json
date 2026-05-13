@@ -28,7 +28,7 @@
                 "data": {
                     "dataset": "mnist",
                     "split_kwargs": { "ignore": true },
-                    "preprocessing_kwargs": { "normalize": false }
+                    "preprocessing_kwargs": { "normalize": null }
                 },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }

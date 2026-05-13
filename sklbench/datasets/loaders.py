@@ -30,7 +30,6 @@ from sklearn.datasets import (
     make_moons,
     make_regression,
 )
-from sklearn.preprocessing import StandardScaler
 
 from .common import cache, load_data_description, load_data_from_cache, preprocess
 from .downloaders import download_and_read_csv, load_openml, retrieve
@@ -369,6 +368,7 @@ def load_epsilon(
     return {"x": x, "y": y}, data_desc
 
 
+@preprocess
 @cache
 def load_gisette(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -418,8 +418,6 @@ def load_gisette(
 
     x = np.vstack([x_train, x_test])
     y = np.hstack([y_train, y_test])
-
-    x = StandardScaler(with_mean=True, with_std=True).fit_transform(x)
 
     data_desc = {
         "n_classes": 2,
@@ -545,6 +543,7 @@ def load_skin_segmentation(
     return {"x": x, "y": y}, data_desc
 
 
+@preprocess
 @cache
 def load_cifar(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -558,7 +557,6 @@ def load_cifar(
     Classification task. n_classes = 10.
     """
     x, y = load_openml(40927, raw_data_cache)
-    x = StandardScaler(with_mean=True, with_std=False).fit_transform(x)
     binary = dataset_params.get("binary", False)
     if binary:
         y = (y > 0).astype(int)

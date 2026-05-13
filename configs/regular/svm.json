@@ -15,7 +15,7 @@
                 "algorithm": { "estimator_params": { "C": 100.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": "standard" } },
                 "algorithm": {
                     "estimator_params": { "C": 100.0, "kernel": ["linear", "poly", "rbf"] }
                 }
@@ -30,7 +30,7 @@
                 "data": {
                     "dataset": "mnist",
                     "split_kwargs": { "train_size": 20000, "test_size": null },
-                    "preprocessing_kwargs": { "normalize": false }
+                    "preprocessing_kwargs": { "normalize" : null }
                 },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             }
@@ -45,7 +45,7 @@
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["linear", "poly", "rbf"] } }
             },
             {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": "standard" } },
                 "algorithm": { "estimator_params": { "C": 1.0, "kernel": ["poly", "rbf"] } }
             },
             {
@@ -75,7 +75,7 @@
                 "algorithm": { "estimator_params": { "nu": 0.1, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": "standard" } },
                 "algorithm": { "estimator_params": { "nu": 0.9, "kernel": ["linear", "rbf"] } }
             }
         ],
@@ -89,7 +89,7 @@
                 "algorithm": { "estimator_params": { "nu": 0.8, "C": 2.0, "kernel": "rbf" } }
             },
             {
-                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } },
+                "data": { "dataset": "gisette", "preprocessing_kwargs": { "normalize": "standard" } },
                 "algorithm": { "estimator_params": { "nu": 0.9, "C": 1.0, "kernel": "rbf" } }
             },
             {

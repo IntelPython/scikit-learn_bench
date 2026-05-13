@@ -68,14 +68,16 @@
             {
                 "data": {
                     "dataset": "cifar",
-                    "split_kwargs": { "train_size": 0.1, "test_size": null }
+                    "split_kwargs": { "train_size": 0.1, "test_size": null },
+                    "preprocessing_kwargs": { "normalize": "mean" }
                 },
                 "algorithm": { "estimator_params": { "C": 1e-9 } }
             },
             {
                 "data": {
                     "dataset": "gisette",
-                    "split_kwargs": { "train_size": 2000, "test_size": null }
+                    "split_kwargs": { "train_size": 2000, "test_size": null },
+                    "preprocessing_kwargs": { "normalize": "standard" }
                 },
                 "algorithm": { "estimator_params": { "C": 1e1 } }
             }

@@ -5,7 +5,7 @@
             "data": [
                 { "dataset": "susy", "split_kwargs": { "train_size": 80000, "test_size": 20000 } },
                 { "dataset": "connect" },
-                { "dataset": "gisette", "preprocessing_kwargs": { "normalize": false } }
+                { "dataset": "gisette", "preprocessing_kwargs": { "normalize": null } }
             ]
         },
         "kd_tree knn classification datasets": {

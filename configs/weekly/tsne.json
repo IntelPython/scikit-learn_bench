@@ -16,8 +16,15 @@
             },
             {
                 "data": {
-                    "dataset": ["sensit", "mnist", "cifar"],
+                    "dataset": ["sensit", "mnist"],
                     "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "dataset" : "cifar",
+                    "split_kwargs": { "ignore" : true },
+                    "preprocessing_kwargs": { "normalize": "mean" }
                 }
             }
         ]

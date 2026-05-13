@@ -15,7 +15,7 @@
                 "data": {
                     "dataset": ["susy", "hepmass"],
                     "split_kwargs": { "ignore": true },
-                    "preprocessing_kwargs": { "normalize": true }
+                    "preprocessing_kwargs": { "normalize": "standard" }
                 }
             },
             {
@@ -37,7 +37,8 @@
             {
                 "data": {
                     "dataset": "cifar",
-                    "split_kwargs": { "ignore": true }
+                    "split_kwargs": { "ignore": true },
+                    "preprocessing_kwargs": { "normalize": "mean" }
                 }
             }
         ]

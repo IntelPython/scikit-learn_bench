@@ -4,14 +4,19 @@
         "high-load dbscan datasets": {
             "data": [
                 {
-                    "dataset": ["cifar", "road_network", "covtype"],
+                    "dataset": "cifar",
                     "split_kwargs": { "ignore": true },
-                    "preprocessing_kwargs": { "normalize": true }
+                    "preprocessing_kwargs": { "normalize": "mean" }
+                },
+                {
+                    "dataset": ["road_network", "covtype"],
+                    "split_kwargs": { "ignore": true },
+                    "preprocessing_kwargs": { "normalize": "standard" }
                 },
                 {
                     "dataset": "susy",
                     "split_kwargs": { "train_size": 800000 },
-                    "preprocessing_kwargs": { "normalize": true }
+                    "preprocessing_kwargs": { "normalize": "standard" }
                 },
                 {
                     "source": "make_blobs",

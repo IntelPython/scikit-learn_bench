@@ -334,6 +334,48 @@ def verify_patching(stream: io.StringIO, function_name) -> bool:
     return acceleration_lines > 0 and fallback_lines == 0
 
 
+def validate_estimator_params(estimator_class, estimator_params: Dict) -> Dict:
+    """Validates parameters and returns only those supported by the estimator.
+
+    Args:
+        estimator_class: The estimator class to validate against
+        estimator_params: Dictionary of parameters to validate
+
+    Returns:
+        Dictionary with only valid parameters
+    """
+    try:
+        init_signature = inspect.signature(estimator_class.__init__)
+        valid_params = set(init_signature.parameters.keys()) - {"self"}
+
+        # Check if estimator accepts **kwargs
+        has_var_keyword = any(
+            param.kind == inspect.Parameter.VAR_KEYWORD
+            for param in init_signature.parameters.values()
+        )
+
+        # If accepts **kwargs, return all params
+        if has_var_keyword:
+            return estimator_params
+
+        # Filter out invalid params and warn
+        filtered_params = {}
+        for param_name, param_value in estimator_params.items():
+            if param_name in valid_params:
+                filtered_params[param_name] = param_value
+            else:
+                logger.warning(
+                    f"Parameter '{param_name}' is not supported by "
+                    f"{estimator_class.__name__} and will be ignored"
+                )
+
+        return filtered_params
+
+    except Exception as e:
+        logger.debug(f"Could not validate parameters for {estimator_class.__name__}: {e}")
+        return estimator_params
+
+
 def create_online_function(method_instance, data_args, batch_size):
     n_batches = data_args[0].shape[0] // batch_size
 
@@ -490,6 +532,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
     estimator_params = get_bench_case_value(
         bench_case, "algorithm:estimator_params", dict()
     )
+
+    # validate and filter estimator parameters
+    estimator_params = validate_estimator_params(estimator_class, estimator_params)
 
     # get estimator methods for measurement
     estimator_methods = get_estimator_methods(bench_case)
