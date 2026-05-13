@@ -15,7 +15,7 @@
                     },
                     {
                         "dataset": "gisette",
-                        "split_kwargs": {"ignore": true},
+                        "split_kwargs": { "ignore": true },
                         "preprocessing_kwargs": { "normalize": "standard" }
                     },
                     {
