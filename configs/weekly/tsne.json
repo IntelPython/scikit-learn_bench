@@ -22,8 +22,8 @@
             },
             {
                 "data": {
-                    "dataset" : "cifar",
-                    "split_kwargs": { "ignore" : true },
+                    "dataset": "cifar",
+                    "split_kwargs": { "ignore": true },
                     "preprocessing_kwargs": { "normalize": "mean" }
                 }
             }
