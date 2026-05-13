@@ -1,0 +1,71 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "common parameters": {
+            "data": {
+                "split_kwargs": {
+                    "train_size": 8000,
+                    "test_size": 2000,
+                    "shuffle": true,
+                    "random_state": 42
+                }
+            },
+            "algorithm": { "device": "default" }
+        },
+        "throughput settings": {
+            "bench": {
+                "num_instances": 4,
+                "cores_per_instance": 4,
+                "measurement_duration": 30
+            }
+        },
+        "datasets": {
+            "data": [
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 2,
+                        "n_samples": 10000,
+                        "n_features": 64,
+                        "n_informative": 32
+                    }
+                }
+            ]
+        },
+        "algorithms": [
+            {
+                "algorithm": {
+                    "estimator": "RandomForestClassifier",
+                    "estimator_params": { "n_estimators": 50 }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": "KMeans",
+                    "estimator_params": {
+                        "n_clusters": 10,
+                        "init": "random",
+                        "algorithm": "lloyd",
+                        "max_iter": 100
+                    }
+                }
+            },
+            {
+                "algorithm": {
+                    "estimator": "LinearRegression"
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "throughput_test": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "common parameters",
+                "throughput settings",
+                "datasets",
+                "algorithms"
+            ]
+        }
+    }
+}
