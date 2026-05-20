@@ -1,5 +1,5 @@
 # ===============================================================================
-# Copyright 2024 Intel Corporation
+# Copyright 2026 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ import argparse
 import inspect
 import json
 import socket
-import sys
 import time
 from typing import Dict, List, Tuple
 
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
+from ..utils.barrier import recv_until
 from ..utils.bench_case import get_bench_case_value
-from ..utils.common import convert_to_numpy
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase
 from ..utils.logger import logger
@@ -38,16 +37,6 @@ from .sklearn_estimator import (
     validate_estimator_params,
 )
 
-
-def barrier_wait(sock: socket.socket, msg_send: bytes, msg_expect_prefix: bytes):
-    """Send a message and block until response from parent."""
-    sock.sendall(msg_send)
-    data = b""
-    while not data.startswith(msg_expect_prefix):
-        chunk = sock.recv(1024)
-        if not chunk:
-            raise ConnectionError("Barrier socket closed unexpectedly")
-        data += chunk
 
 
 def run_measurement_loop(
@@ -184,12 +173,7 @@ def main():
             continue
 
         # Wait for "go" signal from parent before each stage
-        data = b""
-        while b"go" not in data:
-            chunk = sock.recv(1024)
-            if not chunk:
-                raise ConnectionError("Barrier socket closed unexpectedly")
-            data += chunk
+        recv_until(sock, b"go")
 
         method_name = available_methods[0]
         method_instance, data_args = get_method_and_args(

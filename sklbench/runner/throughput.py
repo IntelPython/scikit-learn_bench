@@ -1,5 +1,5 @@
 # ===============================================================================
-# Copyright 2024 Intel Corporation
+# Copyright 2026 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 import argparse
 import json
-import socket
 import subprocess
 import time
 from typing import Dict, List, Tuple, Union
@@ -24,6 +23,7 @@ from typing import Dict, List, Tuple, Union
 import numpy as np
 from tqdm import tqdm
 
+from ..utils.barrier import accept_and_wait, create_server, send_all, wait_all
 from ..utils.bench_case import get_bench_case_name, get_bench_case_value
 from ..utils.common import custom_format, hash_from_json_repr
 from ..utils.core_assignment import compute_core_assignments
@@ -37,60 +37,14 @@ def validate_throughput_args(
 ):
     if num_instances is None or num_instances < 1:
         raise ValueError(
-            "--num-instances is required and must be >= 1 in throughput mode"
+            "bench:num_instances is required and must be >= 1 in throughput mode"
         )
     if cores_per_instance is None or cores_per_instance < 1:
         raise ValueError(
-            "--cores-per-instance is required and must be >= 1 in throughput mode"
+            "bench:cores_per_instance is required and must be >= 1 in throughput mode"
         )
     if measurement_duration <= 0:
-        raise ValueError("--measurement-duration must be > 0")
-
-
-def create_barrier_server() -> Tuple[socket.socket, int]:
-    """Create a TCP server socket on localhost with OS-assigned port."""
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind(("localhost", 0))
-    server.listen(128)
-    port = server.getsockname()[1]
-    return server, port
-
-
-def wait_for_workers_ready(
-    server: socket.socket, num_instances: int, timeout: float
-) -> List[socket.socket]:
-    """Accept connections from all workers and wait for 'ready' message."""
-    server.settimeout(timeout)
-    connections = []
-    for _ in range(num_instances):
-        conn, _ = server.accept()
-        data = b""
-        while b"ready" not in data:
-            chunk = conn.recv(1024)
-            if not chunk:
-                raise ConnectionError("Worker disconnected before sending 'ready'")
-            data += chunk
-        connections.append(conn)
-    return connections
-
-
-def send_go_to_all(connections: List[socket.socket]):
-    """Send 'go' signal to all workers."""
-    for conn in connections:
-        conn.sendall(b"go")
-
-
-def wait_for_workers_done(connections: List[socket.socket], timeout: float):
-    """Wait for 'done' message from all workers."""
-    for conn in connections:
-        conn.settimeout(timeout)
-        data = b""
-        while b"done" not in data:
-            chunk = conn.recv(1024)
-            if not chunk:
-                raise ConnectionError("Worker disconnected before sending 'done'")
-            data += chunk
+        raise ValueError("bench:measurement_duration must be > 0")
 
 
 def validate_sync_quality(instance_outputs: List[Dict], stage: str):
@@ -137,7 +91,6 @@ def aggregate_stage_results(
     stage: str,
     measurement_duration: float,
     core_assignments: List[str],
-    full_logs: bool = False,
 ) -> Dict:
     """Aggregate per-instance results into a single stage result entry."""
     instances = []
@@ -162,10 +115,6 @@ def aggregate_stage_results(
             "throughput_iterations_per_sec": float(throughput),
         }
         instance_entry.update(compute_instance_stats(durations, start_timestamps))
-
-        if full_logs:
-            instance_entry["start_ts"] = start_timestamps
-            instance_entry["duration_ms"] = durations
 
         instances.append(instance_entry)
         all_iterations.append(iters)
@@ -196,19 +145,25 @@ def run_single_throughput_case(
     measurement_duration: float,
     emergency_timeout: float,
     log_level: str,
-    full_logs: bool = False,
 ) -> Tuple[int, List[Dict]]:
     """Run a single benchmark case in throughput mode."""
+    # Preload dataset in parent process to avoid cache race condition
+    # when multiple workers try to download/generate and save simultaneously
+    from ..datasets import load_data
+
+    logger.info("Preloading dataset in parent process to populate cache")
+    load_data(bench_case)
+
     numa_conf = get_numa_cpus_conf()
     core_assignments = compute_core_assignments(
-        num_instances, cores_per_instance, numa_conf if numa_conf else None
+        num_instances, cores_per_instance, numa_conf or None
     )
 
     logger.info(
         f"Core assignments for {num_instances} instances: {core_assignments}"
     )
 
-    server, port = create_barrier_server()
+    server, port = create_server()
     logger.debug(f"Barrier server listening on localhost:{port}")
 
     bench_case_str = json.dumps(bench_case).replace(" ", "")
@@ -236,33 +191,18 @@ def run_single_throughput_case(
         processes.append(proc)
 
     try:
-        # Wait for all workers to be ready (prep phase - unlimited, but bounded by emergency timeout)
-        connections = wait_for_workers_ready(server, num_instances, emergency_timeout)
+        connections = accept_and_wait(server, num_instances, b"ready", emergency_timeout)
         logger.info("All workers ready, starting measurement stages")
 
-        # Determine which stages exist
-        estimator_methods_training = get_bench_case_value(
-            bench_case, "algorithm:estimator_methods:training", None
-        )
-        estimator_methods_inference = get_bench_case_value(
-            bench_case, "algorithm:estimator_methods:inference", None
-        )
-        stages = []
-        if estimator_methods_training is not None:
-            stages = ["training", "inference"]
-        else:
-            # default stages
-            stages = ["training", "inference"]
-
-        stage_timeout = measurement_duration + 60  # extra time for one stage
+        stages = ["training", "inference"]
+        stage_timeout = measurement_duration + 60
 
         for stage in stages:
             logger.info(f"Sending 'go' for {stage} stage")
-            send_go_to_all(connections)
-            wait_for_workers_done(connections, stage_timeout)
+            send_all(connections, b"go")
+            wait_all(connections, b"done", stage_timeout)
             logger.info(f"All workers done with {stage} stage")
 
-        # Close barrier connections
         for conn in connections:
             conn.close()
 
@@ -326,7 +266,7 @@ def run_single_throughput_case(
 
     for stage in stages:
         stage_result = aggregate_stage_results(
-            instance_outputs, stage, measurement_duration, core_assignments, full_logs
+            instance_outputs, stage, measurement_duration, core_assignments
         )
         if not stage_result:
             continue
@@ -368,13 +308,6 @@ def run_throughput_benchmarks(
     env_info = get_environment_info()
     environment_name = args.environment_name or hash_from_json_repr(env_info)
 
-    # Resolve global defaults from CLI
-    default_num_instances = args.num_instances
-    default_cores_per_instance = args.cores_per_instance
-    default_measurement_duration = args.measurement_duration
-    default_emergency_timeout = args.emergency_timeout
-    full_logs = args.throughput_full_logs
-
     results = []
     return_code = 0
 
@@ -386,18 +319,14 @@ def run_throughput_benchmarks(
             )
         )
 
-        # Per-case config overrides CLI defaults
-        num_instances = get_bench_case_value(
-            bench_case, "bench:num_instances", default_num_instances
-        )
-        cores_per_instance = get_bench_case_value(
-            bench_case, "bench:cores_per_instance", default_cores_per_instance
-        )
+        # All throughput parameters come from bench_case config
+        num_instances = get_bench_case_value(bench_case, "bench:num_instances")
+        cores_per_instance = get_bench_case_value(bench_case, "bench:cores_per_instance")
         measurement_duration = get_bench_case_value(
-            bench_case, "bench:measurement_duration", default_measurement_duration
+            bench_case, "bench:measurement_duration", 60.0
         )
         emergency_timeout = get_bench_case_value(
-            bench_case, "bench:emergency_timeout", default_emergency_timeout
+            bench_case, "bench:emergency_timeout", 3600.0
         )
 
         try:
@@ -420,7 +349,6 @@ def run_throughput_benchmarks(
                 measurement_duration,
                 emergency_timeout,
                 args.bench_log_level,
-                full_logs,
             )
             if case_return_code != 0:
                 return_code = case_return_code

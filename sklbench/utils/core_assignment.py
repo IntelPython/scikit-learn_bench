@@ -1,5 +1,5 @@
 # ===============================================================================
-# Copyright 2024 Intel Corporation
+# Copyright 2026 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 # limitations under the License.
 # ===============================================================================
 
+import os
 from typing import Dict, List, Optional
 
 from .logger import logger
@@ -51,6 +52,22 @@ def cores_to_range_str(cores: List[int]) -> str:
     return ",".join(ranges)
 
 
+def is_consecutive(cores: List[int]) -> bool:
+    """Check if a sorted list of core IDs is consecutive."""
+    for i in range(1, len(cores)):
+        if cores[i] != cores[i - 1] + 1:
+            return False
+    return True
+
+
+def get_numa_node_for_core(core_id: int, numa_cpus_conf: Dict[int, str]) -> int:
+    """Return NUMA node ID for a given core, or -1 if unknown."""
+    for node, cpu_str in numa_cpus_conf.items():
+        if core_id in parse_cpu_range(cpu_str):
+            return node
+    return -1
+
+
 def compute_core_assignments(
     num_instances: int,
     cores_per_instance: int,
@@ -59,69 +76,48 @@ def compute_core_assignments(
     """
     Returns list of physcpubind strings for numactl, one per instance.
 
-    NUMA-aware: keeps each instance within a single NUMA node when possible.
-    Fallback: sequential blocks from core 0.
-    Raises ValueError if insufficient cores.
+    Uses only CPUs available to the current process (respects parent's taskset).
+    Splits available cores into sequential groups of cores_per_instance.
+    Warns if a group is non-consecutive or spans NUMA nodes.
+    Raises ValueError if the process doesn't have enough cores.
     """
+    available_cores = sorted(os.sched_getaffinity(0))
     total_needed = num_instances * cores_per_instance
 
+    if total_needed > len(available_cores):
+        raise ValueError(
+            f"Need {total_needed} cores ({num_instances} instances x "
+            f"{cores_per_instance} cores) but only {len(available_cores)} "
+            f"available to this process"
+        )
+
+    # Build NUMA lookup if available
+    numa_lookup = {}
     if numa_cpus_conf:
-        numa_cores = {
-            node: parse_cpu_range(cpu_str)
-            for node, cpu_str in numa_cpus_conf.items()
-        }
-        total_available = sum(len(c) for c in numa_cores.values())
-        if total_needed > total_available:
-            raise ValueError(
-                f"Need {total_needed} cores ({num_instances} instances x "
-                f"{cores_per_instance} cores) but only {total_available} available"
+        for node, cpu_str in numa_cpus_conf.items():
+            for core in parse_cpu_range(cpu_str):
+                numa_lookup[core] = node
+
+    assignments = []
+    for i in range(num_instances):
+        instance_cores = available_cores[
+            i * cores_per_instance : (i + 1) * cores_per_instance
+        ]
+
+        if not is_consecutive(instance_cores):
+            logger.warning(
+                f"Instance {i}: assigned non-consecutive cores "
+                f"{cores_to_range_str(instance_cores)}"
             )
 
-        assignments = []
-        remaining = {node: list(cores) for node, cores in numa_cores.items()}
-
-        for _ in range(num_instances):
-            assigned = False
-            for node in sorted(remaining.keys()):
-                if len(remaining[node]) >= cores_per_instance:
-                    instance_cores = remaining[node][:cores_per_instance]
-                    remaining[node] = remaining[node][cores_per_instance:]
-                    assignments.append(cores_to_range_str(instance_cores))
-                    assigned = True
-                    break
-            if not assigned:
-                # couldn't fit in a single node, take from multiple nodes
-                instance_cores = []
-                for node in sorted(remaining.keys()):
-                    take = min(
-                        len(remaining[node]),
-                        cores_per_instance - len(instance_cores),
-                    )
-                    instance_cores.extend(remaining[node][:take])
-                    remaining[node] = remaining[node][take:]
-                    if len(instance_cores) == cores_per_instance:
-                        break
-                if len(instance_cores) < cores_per_instance:
-                    raise ValueError("Insufficient cores for assignment")
+        if numa_lookup:
+            nodes = set(numa_lookup.get(c, -1) for c in instance_cores)
+            if len(nodes) > 1:
                 logger.warning(
-                    f"Instance assigned cores across NUMA nodes: "
-                    f"{cores_to_range_str(instance_cores)}"
+                    f"Instance {i}: cores {cores_to_range_str(instance_cores)} "
+                    f"span multiple NUMA nodes {sorted(nodes)}"
                 )
-                assignments.append(cores_to_range_str(instance_cores))
 
-        return assignments
-    else:
-        from psutil import cpu_count
+        assignments.append(cores_to_range_str(instance_cores))
 
-        available = cpu_count(logical=True)
-        if total_needed > available:
-            raise ValueError(
-                f"Need {total_needed} cores ({num_instances} instances x "
-                f"{cores_per_instance} cores) but only {available} available"
-            )
-        assignments = []
-        for i in range(num_instances):
-            start = i * cores_per_instance
-            end = start + cores_per_instance - 1
-            assignments.append(f"{start}-{end}")
-        return assignments
+    return assignments

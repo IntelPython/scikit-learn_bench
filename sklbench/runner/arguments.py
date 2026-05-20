@@ -137,44 +137,14 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         action="store_true",
         help="Interrupt runner and exit if last benchmark failed with error.",
     )
-    # throughput mode arguments
+    # throughput mode
     parser.add_argument(
         "--throughput-mode",
         default=False,
         action="store_true",
         help="Run in throughput mode: multiple synchronized parallel instances "
-        "with CPU pinning via numactl.",
-    )
-    parser.add_argument(
-        "--num-instances",
-        type=int,
-        default=None,
-        help="Number of parallel instances in throughput mode.",
-    )
-    parser.add_argument(
-        "--cores-per-instance",
-        type=int,
-        default=None,
-        help="CPU cores per instance in throughput mode.",
-    )
-    parser.add_argument(
-        "--measurement-duration",
-        type=float,
-        default=60.0,
-        help="Duration (seconds) for each measurement stage in throughput mode.",
-    )
-    parser.add_argument(
-        "--emergency-timeout",
-        type=float,
-        default=3600.0,
-        help="Emergency subprocess timeout (seconds). Safety net only.",
-    )
-    parser.add_argument(
-        "--throughput-full-logs",
-        default=False,
-        action="store_true",
-        help="Store per-iteration start_ts and duration_ms arrays in throughput results. "
-        "Disabled by default to reduce output size.",
+        "with CPU pinning via numactl. Configure via bench:num_instances, "
+        "bench:cores_per_instance, bench:measurement_duration in config.",
     )
     # option to get parser description in Markdown table format for READMEs
     parser.add_argument(
