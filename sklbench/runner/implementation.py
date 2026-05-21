@@ -128,8 +128,8 @@ def run_benchmarks(args: argparse.Namespace) -> int:
     with open(args.result_file, "w") as fp:
         json.dump(result, fp, indent=4)
 
-    # output as pandas dataframe (skip for throughput mode which has nested results)
-    if len(result["bench_cases"]) != 0 and not args.throughput_mode:
+    # output as pandas dataframe
+    if len(result["bench_cases"]) != 0:
         for key, df in get_result_tables_as_df(result).items():
             logger.info(f'{custom_format(key, bcolor="HEADER")}\n{df}')
 

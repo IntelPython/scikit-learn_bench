@@ -49,6 +49,10 @@ METRICS = {
     ],
     "higher is better": [
         "throughput[samples/ms]",
+        # throughput mode
+        "total_iterations",
+        "total_throughput_iterations_per_sec",
+        "mean_throughput_per_instance",
         # classification
         "accuracy",
         "balanced accuracy",
@@ -76,6 +80,11 @@ METRICS = {
         "1st-mean run ratio",
         "time CV",
         "cpu load[%]",
+        # throughput mode
+        "std_throughput_per_instance",
+        "min_iterations_per_instance",
+        "max_iterations_per_instance",
+        "measurement_wall_time_sec",
     ],
 }
 MEMORY_TYPES = ["RAM", "VRAM"]
@@ -274,13 +283,18 @@ def get_result_tables_as_df(
             for bench_case in results["bench_cases"]
         ]
     )
+    # Drop columns that contain non-scalar data (e.g. per-instance details)
+    for col in bench_cases.columns:
+        if bench_cases[col].apply(lambda x: isinstance(x, (list, dict))).any():
+            bench_cases.drop(columns=[col], inplace=True)
 
     if compatibility_mode:
         bench_cases = transform_results_to_compatible(bench_cases)
 
     for column in diffby_columns.copy():
-        if bench_cases[column].nunique() == 1:
-            bench_cases.drop(columns=[column], inplace=True)
+        if column not in bench_cases.columns or bench_cases[column].nunique() == 1:
+            if column in bench_cases.columns:
+                bench_cases.drop(columns=[column], inplace=True)
             diffby_columns.remove(column)
 
     return split_df_by_columns(bench_cases, splitby_columns)

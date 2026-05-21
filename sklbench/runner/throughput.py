@@ -254,7 +254,6 @@ def run_single_throughput_case(
     results = []
     estimator_name = get_bench_case_value(bench_case, "algorithm:estimator")
     library_name = get_bench_case_value(bench_case, "algorithm:library")
-    from .commands_helper import generate_benchmark_command
 
     from ..benchmarks.sklearn_estimator import estimator_to_task
 
@@ -263,6 +262,11 @@ def run_single_throughput_case(
     # Get quality metrics from first instance (all should be similar)
     quality_metrics = instance_outputs[0].get("quality_metrics", {})
     final_estimator_params = instance_outputs[0].get("estimator_params", {})
+
+    # Dataset info from bench_case
+    from ..utils.bench_case import get_data_name
+
+    dataset_name = get_data_name(bench_case, shortened=True)
 
     for stage in stages:
         stage_result = aggregate_stage_results(
@@ -279,21 +283,26 @@ def run_single_throughput_case(
                 method = stage_data.get("method", "unknown")
                 break
 
+        # Flatten aggregate metrics to top-level for report compatibility
+        aggregate = stage_result.pop("aggregate")
+        instances_detail = stage_result.pop("instances")
+
         result_entry = {
             "mode": "throughput",
             "stage": stage,
             "method": method,
             "task": task,
             "estimator": estimator_name,
+            "dataset": dataset_name,
             "library": library_name,
             "device": get_bench_case_value(bench_case, "algorithm:device"),
             "num_instances": num_instances,
             "cores_per_instance": cores_per_instance,
             "measurement_duration_seconds": measurement_duration,
         }
+        result_entry.update(aggregate)
         result_entry.update(quality_metrics)
-        result_entry.update(final_estimator_params)
-        result_entry.update(stage_result)
+        result_entry["instances"] = instances_detail
         results.append(result_entry)
 
     return return_code, results
