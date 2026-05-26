@@ -42,8 +42,8 @@ def load_openml_data(
 ) -> Tuple[Dict, Dict]:
     x, y = load_openml(openml_id, raw_data_cache)
     data_desc = dict()
-    unique_labels = dict(pd.value_counts(y))
-    if len(unique_labels) < 32 and all(map(lambda x: x > 4, unique_labels.values())):
+    unique_labels = pd.Series(y).value_counts()
+    if len(unique_labels) < 32 and (unique_labels > 4).all():
         data_desc["n_classes"] = len(unique_labels)
     return {"x": x, "y": y}, data_desc
 

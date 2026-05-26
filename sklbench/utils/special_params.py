@@ -214,7 +214,7 @@ def assign_case_special_values_on_run(
         and estimator.endswith("Classifier")
     ):
         y_train = convert_to_numpy(data[1])
-        value_counts = pd.value_counts(y_train).sort_index()
+        value_counts = pd.Series(y_train).value_counts().sort_index()
         if len(value_counts) != 2:
             logger.info(
                 f"Number of classes ({len(value_counts)}) != 2 "
