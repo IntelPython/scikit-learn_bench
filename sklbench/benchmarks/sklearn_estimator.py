@@ -134,6 +134,16 @@ def get_subset_metrics_of_estimator(
                 and isinstance(iterations[0], Union[Numeric, NumpyNumeric].__args__)
             ):
                 metrics.update({"iterations": int(iterations[0])})
+        if hasattr(estimator_instance, "estimators_"):
+            estimators_with_trees = [
+                t
+                for t in estimator_instance.estimators_
+                if hasattr(t, "tree_") and hasattr(t.tree_, "node_count")
+            ]
+            if estimators_with_trees:
+                metrics["n_nodes"] = sum(
+                    t.tree_.node_count for t in estimators_with_trees
+                )
     if task == "classification":
         y_pred = convert_to_numpy(estimator_instance.predict(x))
         metrics.update(
