@@ -494,6 +494,182 @@ def prepare_all_cases_df(all_cases_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
+    """
+    Write 'All cases 2' sheet: copies results from individual algorithm sheets
+    into a single page with columns:
+      Algorithm | sklearn time[ms] | sklearnex time[ms] | speedup | parameters...
+    Each group has its own header row with its specific parameter columns.
+    KNN algorithms are split by method (brute/kd_tree).
+    Each group ends with a GEOMEAN formula row.
+    Returns list of (group_name, geomean_row_number) for use by Summary 2.
+    """
+    KNN_ESTIMATORS = [
+        "KNeighborsClassifier",
+        "KNeighborsRegressor",
+    ]
+
+    ws = wb.create_sheet(title="All cases 2", index=2)
+    current_row = 1
+    geomean_rows = []
+
+    for df_name, df in dfs.items():
+        if not isinstance(df.columns, pd.MultiIndex):
+            continue
+
+        param_cols = [col for col in df.columns if col[0] == "parameter"]
+        sklearn_time_col = None
+        sklearnex_time_col = None
+        speedup_col = None
+
+        for col in df.columns:
+            if col[1] == "time[ms]" and col[0] == "sklearn":
+                sklearn_time_col = col
+            elif col[1] == "time[ms]" and col[0] == "sklearnex":
+                sklearnex_time_col = col
+            elif "time[ms] relative improvement" in col[1]:
+                speedup_col = col
+
+        if sklearn_time_col is None or sklearnex_time_col is None or speedup_col is None:
+            continue
+
+        algo_param_col = None
+        for col in param_cols:
+            if col[1] == "algorithm":
+                algo_param_col = col
+                break
+
+        estimator_name = df_name.split("|")[0] if "|" in df_name else df_name
+        is_knn = estimator_name in KNN_ESTIMATORS
+
+        display_param_cols = [
+            col for col in param_cols
+            if not (is_knn and col[1] == "algorithm")
+        ]
+
+        if is_knn and algo_param_col is not None:
+            groups = {}
+            for algo_val in df[algo_param_col].dropna().unique():
+                mask = df[algo_param_col] == algo_val
+                group_label = f"{df_name} ({algo_val})"
+                groups[group_label] = df[mask]
+        else:
+            groups = {df_name: df}
+
+        for group_name, group_df in groups.items():
+            # Write header for this group
+            header = ["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
+            header += [col[1] for col in display_param_cols]
+            ws.append(header)
+            current_row += 1
+
+            group_start_row = current_row
+
+            for _, row in group_df.iterrows():
+                row_data = [group_name]
+                row_data.append(row[sklearn_time_col])
+                row_data.append(row[sklearnex_time_col])
+                row_data.append(row[speedup_col])
+                for col in display_param_cols:
+                    if col in row.index:
+                        row_data.append(row[col])
+                    else:
+                        row_data.append(None)
+                ws.append(row_data)
+                current_row += 1
+
+            group_end_row = current_row - 1
+
+            if group_end_row >= group_start_row:
+                sklearn_col_letter = get_column_letter(2)
+                sklearnex_col_letter = get_column_letter(3)
+                speedup_col_letter = get_column_letter(4)
+
+                sklearn_range = f"{sklearn_col_letter}{group_start_row}:{sklearn_col_letter}{group_end_row}"
+                sklearnex_range = f"{sklearnex_col_letter}{group_start_row}:{sklearnex_col_letter}{group_end_row}"
+                speedup_range = f"{speedup_col_letter}{group_start_row}:{speedup_col_letter}{group_end_row}"
+
+                geomean_row = [
+                    "GEOMEAN",
+                    f"=GEOMEAN({sklearn_range})",
+                    f"=GEOMEAN({sklearnex_range})",
+                    f"=GEOMEAN({speedup_range})",
+                ]
+                ws.append(geomean_row)
+                geomean_rows.append((group_name, current_row))
+                current_row += 1
+
+                # Apply per-group color scale on speedup column (D)
+                # Include the GEOMEAN row itself in the formatting
+                geomean_row_num = current_row - 1
+                speedup_values = group_df[speedup_col].dropna()
+                if len(speedup_values) > 0:
+                    min_val = float(speedup_values.min())
+                    max_val = float(speedup_values.max())
+                    mid_val = (min_val + max_val) / 2
+                    cell_range = f"$D${group_start_row}:$D${geomean_row_num}"
+                    color_rule = ColorScaleRule(
+                        start_type="num",
+                        start_value=min_val,
+                        start_color=RED_COLOR,
+                        mid_type="num",
+                        mid_value=mid_val,
+                        mid_color=YELLOW_COLOR,
+                        end_type="num",
+                        end_value=max_val,
+                        end_color=GREEN_COLOR,
+                    )
+                    ws.conditional_formatting.add(cell_range, color_rule)
+
+            # Empty separator row
+            ws.append([])
+            current_row += 1
+
+    return geomean_rows
+
+
+def write_summary_2_sheet(geomean_rows, wb):
+    """
+    Write 'Summary 2' sheet with columns:
+      Algorithm | geomean sklearn | geomean sklearnex | geomean speedup
+    Values are cell references to the GEOMEAN rows in 'All cases 2'.
+    Includes an overall GEOMEAN of speedups and conditional formatting.
+    """
+    src_sheet_name = "'All cases 2'"
+    ws = wb.create_sheet(title="Summary 2", index=0)
+
+    # Header
+    ws.append(["Algorithm", "geomean sklearn time[ms]",
+               "geomean sklearnex time[ms]", "geomean speedup"])
+
+    for i, (group_name, geomean_row) in enumerate(geomean_rows, start=2):
+        sklearn_ref = f"={src_sheet_name}!B{geomean_row}"
+        sklearnex_ref = f"={src_sheet_name}!C{geomean_row}"
+        speedup_ref = f"={src_sheet_name}!D{geomean_row}"
+        ws.append([group_name, sklearn_ref, sklearnex_ref, speedup_ref])
+
+    # Overall GEOMEAN row
+    data_start = 2
+    data_end = len(geomean_rows) + 1
+    overall_row = data_end + 1
+    speedup_col_letter = get_column_letter(4)
+    speedup_range = f"{speedup_col_letter}{data_start}:{speedup_col_letter}{data_end}"
+    ws.append(["Overall GEOMEAN", None, None, f"=GEOMEAN({speedup_range})"])
+
+    # Conditional formatting on speedup column (D) including the overall GEOMEAN row
+    cell_range = f"$D${data_start}:$D${overall_row}"
+    color_rule = ColorScaleRule(
+        start_type="min",
+        start_color=RED_COLOR,
+        mid_type="percentile",
+        mid_value=50,
+        mid_color=YELLOW_COLOR,
+        end_type="max",
+        end_color=GREEN_COLOR,
+    )
+    ws.conditional_formatting.add(cell_range, color_rule)
+
+
 def write_environment_info(results, workbook):
     env_infos = results["environment"]
     for env_name, env_info in env_infos.items():
@@ -753,6 +929,7 @@ def generate_report(args: argparse.Namespace):
     wb = xl.Workbook()
     summary_dfs = list()
     all_dfs = list()
+    compared_dfs = dict()
     for df_name, df in dfs.items():
         drop_columns = list(set(df.columns) & set(args.drop_columns))
         df = df.drop(columns=drop_columns)
@@ -765,6 +942,7 @@ def generate_report(args: argparse.Namespace):
         write_df_to_sheet(current_df, ws, index=False)
         apply_rules_for_sheet(ws, args.perf_color_scale, args.quality_color_scale)
         summary_dfs.append(get_summary_from_df(current_df, df_name))
+        compared_dfs[df_name] = current_df
         # Add algorithm name column for tracking in all_cases sheet
         current_df_with_name = current_df.copy()
         current_df_with_name.insert(0, ("algorithm", "name"), df_name)
@@ -783,6 +961,11 @@ def generate_report(args: argparse.Namespace):
         all_cases_df = prepare_all_cases_df(all_cases_df)
         all_cases_ws = wb.create_sheet(title="All cases", index=1)
         write_all_cases_sheet_with_groups(all_cases_df, all_cases_ws, args.perf_color_scale, args.quality_color_scale)
+        # Write "All cases 2" sheet with simplified format and GEOMEAN formulas
+        geomean_rows = write_all_cases_2_sheet(all_dfs, compared_dfs, diffby, wb)
+        # Write "Summary 2" sheet referencing geomean values from "All cases 2"
+        if geomean_rows:
+            write_summary_2_sheet(geomean_rows, wb)
     # write environment info
     write_environment_info(results, wb)
     # remove default sheet

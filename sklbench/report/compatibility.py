@@ -34,6 +34,12 @@ def transform_results_to_compatible(results: pd.DataFrame):
                 "min_bin_size",
             ],
         )
+    if (
+        "n_jobs" in results.columns
+        and results["n_jobs"].isna().any()
+        and results["n_jobs"].notna().any()
+    ):
+        results.drop(inplace=True, columns=["n_jobs"])
     if results["environment_name"].unique().size > 1:
         # DBSCAN `eps` parameter drop for different CPUs
         results.drop(
