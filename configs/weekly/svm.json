@@ -39,7 +39,7 @@
                     "dataset": "year_prediction_msd",
                     "split_kwargs": { "train_size": 50000, "test_size": null }
                 },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
+                "algorithm": { "estimator_params": { "C": 0.01, "kernel": "rbf" } }
             },
             {
                 "data": { "dataset": "twodplanes", "split_kwargs": { "ignore": true } },
@@ -78,7 +78,7 @@
                     "dataset": "year_prediction_msd",
                     "split_kwargs": { "train_size": 50000, "test_size": null }
                 },
-                "algorithm": { "estimator_params": { "C": 1.0, "kernel": "rbf" } }
+                "algorithm": { "estimator_params": { "C": 0.01, "kernel": "rbf" } }
             },
             {
                 "data": { "dataset": "twodplanes", "split_kwargs": { "ignore": true } },

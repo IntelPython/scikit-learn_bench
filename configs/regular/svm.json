@@ -37,7 +37,10 @@
         ],
         "svr datasets": [
             {
-                "data": { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 20000, "test_size": null } },
+                "data": {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 20000, "test_size": null }
+                },
                 "algorithm": { "estimator_params": { "C": 0.01, "kernel": "rbf" } }
             },
             {
