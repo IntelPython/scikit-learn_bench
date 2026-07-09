@@ -326,6 +326,48 @@ def verify_patching(stream: io.StringIO, function_name) -> bool:
     return acceleration_lines > 0 and fallback_lines == 0
 
 
+def validate_estimator_params(estimator_class, estimator_params: Dict) -> Dict:
+    """Validates parameters and returns only those supported by the estimator.
+
+    Args:
+        estimator_class: The estimator class to validate against
+        estimator_params: Dictionary of parameters to validate
+
+    Returns:
+        Dictionary with only valid parameters
+    """
+    try:
+        init_signature = inspect.signature(estimator_class.__init__)
+        valid_params = set(init_signature.parameters.keys()) - {"self"}
+
+        # Check if estimator accepts **kwargs
+        has_var_keyword = any(
+            param.kind == inspect.Parameter.VAR_KEYWORD
+            for param in init_signature.parameters.values()
+        )
+
+        # If accepts **kwargs, return all params
+        if has_var_keyword:
+            return estimator_params
+
+        # Filter out invalid params and warn
+        filtered_params = {}
+        for param_name, param_value in estimator_params.items():
+            if param_name in valid_params:
+                filtered_params[param_name] = param_value
+            else:
+                logger.warning(
+                    f"Parameter '{param_name}' is not supported by "
+                    f"{estimator_class.__name__} and will be ignored"
+                )
+
+        return filtered_params
+
+    except Exception as e:
+        logger.debug(f"Could not validate parameters for {estimator_class.__name__}: {e}")
+        return estimator_params
+
+
 def create_online_function(estimator_instance, method_instance, data_args, num_batches):
 
     if "y" in list(inspect.signature(method_instance).parameters):
@@ -356,7 +398,7 @@ def create_online_function(estimator_instance, method_instance, data_args, num_b
             if hasattr(estimator_instance, "_onedal_finalize_fit"):
                 estimator_instance._onedal_finalize_fit()
 
-    if "ndarray" in str(type(data_args[0])):
+    if "array" in str(type(data_args[0])):
         return ndarray_function
     elif "DataFrame" in str(type(data_args[0])):
         return dataframe_function
@@ -423,9 +465,18 @@ def measure_sklearn_estimator(
                 if enable_modelbuilders and stage == "inference":
                     import daal4py
 
-                    daal_model = daal4py.mb.convert_model(
-                        estimator_instance.get_booster()
-                    )
+                    if hasattr(estimator_instance, "get_booster"):
+                        # XGBoost branch
+                        daal_model = daal4py.mb.convert_model(
+                            estimator_instance.get_booster()
+                        )
+                    elif hasattr(estimator_instance, "booster_"):
+                        # LightGBM branch
+                        daal_model = daal4py.mb.convert_model(estimator_instance.booster_)
+                    else:
+                        raise ValueError(
+                            "Unable to get convert model to daal4py GBT format."
+                        )
                     method_instance = getattr(daal_model, method)
                 metrics[method] = dict()
                 (
@@ -509,6 +560,9 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         estimator_params["n_estimators"] = (
             MPI.COMM_WORLD.Get_size() * estimator_params["n_estimators"]
         )
+    # validate and filter estimator parameters
+    estimator_params = validate_estimator_params(estimator_class, estimator_params)
+
     # get estimator methods for measurement
     estimator_methods = get_estimator_methods(bench_case)
 

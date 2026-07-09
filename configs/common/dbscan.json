@@ -1,0 +1,27 @@
+{
+    "PARAMETERS_SETS": {
+        "common dbscan parameters": {
+            "algorithm": {
+                "estimator": "DBSCAN",
+                "estimator_params": {
+                    "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
+                    "min_samples": 5,
+                    "metric": "euclidean"
+                }
+            }
+        },
+        "sklearn dbscan parameters": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": "brute",
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            }
+        },
+        "cuml dbscan parameters": {
+            "algorithm": {
+                "estimator_params": { "calc_core_sample_indices": false, "verbose": 2 }
+            }
+        }
+    }
+}

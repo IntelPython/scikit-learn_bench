@@ -1,0 +1,45 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/tsne.json"],
+    "PARAMETERS_SETS": {
+        "high-load tsne datasets": [
+            {
+                "data": {
+                    "dataset": ["medical_charges_nominal"],
+                    "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": [100000, 200000, 500000] }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["sensit", "mnist"],
+                    "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "cifar",
+                    "split_kwargs": { "ignore": true },
+                    "preprocessing_kwargs": { "normalize": "mean" }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn tsne": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common tsne parameters",
+                "sklearn parameters",
+                "high-load tsne datasets"
+            ]
+        },
+        "cuml tsne": {
+            "SETS": ["cuml implementation", "common tsne parameters", "cuml parameters", "high-load tsne datasets"]
+        }
+    }
+}

@@ -16,6 +16,7 @@
 
 import math
 import os
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -48,6 +49,12 @@ def convert_data(data, dformat: str, order: str, dtype: str, device: str = None)
 
         return dpnp.array(data, dtype=dtype, order=order, device=device)
     elif dformat == "dpctl":
+        warnings.warn(
+            "dpctl tensors are deprecated and support for them "
+            "in scikit-learn_bench will be removed. "
+            "Consider using dpnp arrays instead.",
+            FutureWarning,
+        )
         import dpctl.tensor
 
         return dpctl.tensor.asarray(data, dtype=dtype, order=order, device=device)
@@ -156,7 +163,7 @@ def split_and_transform_data(bench_case, data, data_description):
     device = get_bench_case_value(bench_case, "algorithm:device", None)
     common_data_format = get_bench_case_value(bench_case, "data:format", "pandas")
     common_data_order = get_bench_case_value(bench_case, "data:order", "F")
-    common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float64")
+    common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float32")
 
     data_dict = {
         "x_train": x_train,

@@ -31,4 +31,6 @@ BenchTemplate = Dict[str, Any]
 # case is expected to be nested dict
 BenchCase = Dict[str, Dict[str, Any]]
 
+BenchResult = Dict[str, Union[Scalar, List]]
+
 Array = Union[pd.DataFrame, np.ndarray, csr_matrix]

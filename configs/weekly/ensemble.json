@@ -1,0 +1,65 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/ensemble.json"],
+    "PARAMETERS_SETS": {
+        "high-load ensemble params": {
+            "n_estimators": 2000,
+            "max_depth": null
+        },
+        "high-load ensemble classification datasets": {
+            "data": [
+                { "dataset": "codrnanorm", "split_kwargs": { "ignore": true } },
+                { "dataset": "creditcard", "split_kwargs": { "ignore": true } },
+                { "dataset": "connect", "split_kwargs": { "ignore": true } },
+                { "dataset": "mnist", "split_kwargs": { "ignore": true } },
+                { "dataset": "svhn", "split_kwargs": { "ignore": true } },
+                { "dataset": "gisette", "split_kwargs": { "ignore": true } }
+            ]
+        },
+        "high-load ensemble regression datasets": {
+            "data": [
+                { "dataset": "skin_segmentation", "split_kwargs": { "ignore": true } },
+                { "dataset": "codrnanorm", "split_kwargs": { "ignore": true } },
+                { "dataset": "medical_charges_nominal", "split_kwargs": { "ignore": true } },
+                { "dataset": "creditcard", "split_kwargs": { "ignore": true } },
+                { "dataset": "year_prediction_msd", "split_kwargs": { "train_size": 0.5, "test_size": null } },
+                { "dataset": "gisette", "split_kwargs": { "ignore": true } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn ensemble classification": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common ensemble params",
+                "sklearn ensemble classifier params",
+                "high-load ensemble classification datasets"
+            ]
+        },
+        "sklearn ensemble regression": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common ensemble params",
+                "sklearn ensemble regressor params",
+                "high-load ensemble regression datasets"
+            ]
+        },
+        "cuml ensemble classification": {
+            "SETS": [
+                "cuml implementation",
+                "common ensemble params",
+                "cuml ensemble classifier params",
+                "high-load ensemble params",
+                "high-load ensemble classification datasets"
+            ]
+        },
+        "cuml ensemble regression": {
+            "SETS": [
+                "cuml implementation",
+                "common ensemble params",
+                "cuml ensemble regressor params",
+                "high-load ensemble params",
+                "high-load ensemble regression datasets"
+            ]
+        }
+    }
+}

@@ -4,14 +4,20 @@
             {
                 "algorithm": {
                     "device": "cpu",
-                    "estimator_params": { "tree_method": "hist" },
+                    "estimator_params": {
+                        "tree_method": "hist",
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    },
                     "enable_modelbuilders": false
                 }
             },
             {
                 "algorithm": {
                     "device": "gpu",
-                    "estimator_params": { "tree_method": "hist" }
+                    "estimator_params": {
+                        "tree_method": "hist",
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                    }
                 },
                 "data": { "format": "cudf" }
             }
@@ -37,7 +43,7 @@
             "algorithm": {
                 "library": "xgboost",
                 "estimator": "XGBRegressor",
-                "estimator_methods": {"inference": "predict"},
+                "estimator_methods": { "inference": "predict" },
                 "estimator_params": { "objective": "reg:squarederror" }
             }
         }

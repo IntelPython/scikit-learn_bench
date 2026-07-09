@@ -1,7 +1,7 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
     "PARAMETERS_SETS": {
-        "multiclassification data": [
+        "gbt multi classification data": [
             {
                 "data": {
                     "dataset": "letters",
@@ -63,11 +63,7 @@
     },
     "TEMPLATES": {
         "multi classification": {
-            "SETS": [
-                "xgboost multiclassification",
-                "xgboost implementations",
-                "multiclassification data"
-            ]
+            "SETS": ["xgboost multiclassification", "xgboost implementations", "gbt multi classification data"]
         }
     }
 }

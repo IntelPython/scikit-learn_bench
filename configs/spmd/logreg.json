@@ -1,5 +1,5 @@
 {
-    "INCLUDE": ["../common/sklearn.json", "../regular/logreg.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/logreg.json", "../regular/logreg.json"],
     "PARAMETERS_SETS": {
         "spmd logreg parameters": {
             "algorithm": {

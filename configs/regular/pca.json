@@ -1,55 +1,37 @@
 {
-    "INCLUDE": ["../common/sklearn.json"],
+    "INCLUDE": ["../common/sklearn.json", "../common/pca.json"],
     "PARAMETERS_SETS": {
-        "pca parameters": {
-            "algorithm": {
-                "estimator": "PCA",
-                "estimator_params": {
-                    "n_components": 3,
-                    "copy": true,
-                    "whiten": false,
-                    "svd_solver": "covariance_eigh",
-                    "tol": 0.0,
-                    "iterated_power": 15,
-                    "random_state": 42
-                }
-            }
-        },
         "pca datasets": [
             {
                 "data": {
-                    "dataset": ["cifar", "mnist", "yolanda"],
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "n_samples": 5000000, "n_features": 500, "centers": 2 },
+                        { "n_samples": 500000, "n_features": 2000, "centers": 2 }
+                    ],
+                    "split_kwargs": { "train_size": 0.1, "test_size": null }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "sift",
                     "split_kwargs": { "ignore": true }
                 }
             },
             {
                 "data": {
-                    "source": "make_blobs",
-                    "generation_kwargs": { "n_samples": 20000, "n_features": 2000, "centers": 2 },
-                    "split_kwargs": { "train_size": 0.1, "test_size": 0.9 }
-                }
-            },
-            {
-                "data": {
-                    "dataset": "epsilon",
-                    "split_kwargs": { "train_size": 50000, "test_size": null }
-                }
-            },
-            {
-                "data": {
-                    "dataset": "higgs",
-                    "split_kwargs": { "train_size": 1000000, "test_size": null }
+                    "dataset": ["gist", "svhn"],
+                    "split_kwargs": { "train_size": 0.25, "test_size": 0.75 }
                 }
             }
         ]
     },
     "TEMPLATES": {
         "sklearn pca": {
-            "SETS": [
-                "sklearn-ex[gpu] implementations",
-                "pca parameters",
-                "pca datasets"
-            ]
+            "SETS": ["sklearn-ex[cpu,gpu] implementations", "pca parameters", "pca datasets"]
+        },
+        "cuml pca": {
+            "SETS": ["cuml implementation", "pca parameters", "cuml pca parameters", "pca datasets"]
         }
     }
 }

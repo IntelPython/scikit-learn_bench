@@ -25,17 +25,14 @@ from sklearn.datasets import (
     load_digits,
     load_svmlight_file,
     make_blobs,
+    make_circles,
     make_classification,
+    make_moons,
     make_regression,
 )
 
 from .common import cache, load_data_description, load_data_from_cache, preprocess
-from .downloaders import (
-    download_and_read_csv,
-    download_kaggle_files,
-    load_openml,
-    retrieve,
-)
+from .downloaders import download_and_read_csv, load_openml, retrieve
 
 
 @preprocess
@@ -45,8 +42,8 @@ def load_openml_data(
 ) -> Tuple[Dict, Dict]:
     x, y = load_openml(openml_id, raw_data_cache)
     data_desc = dict()
-    unique_labels = dict(pd.value_counts(y))
-    if len(unique_labels) < 32 and all(map(lambda x: x > 4, unique_labels.values())):
+    unique_labels = pd.Series(y).value_counts()
+    if len(unique_labels) < 32 and (unique_labels > 4).all():
         data_desc["n_classes"] = len(unique_labels)
     return {"x": x, "y": y}, data_desc
 
@@ -64,6 +61,8 @@ def load_sklearn_synthetic_data(
         "make_classification": make_classification,
         "make_regression": make_regression,
         "make_blobs": make_blobs,
+        "make_moons": make_moons,
+        "make_circles": make_circles,
     }
     generation_kwargs = {"random_state": 42}
     generation_kwargs.update(input_kwargs)
@@ -79,8 +78,11 @@ def load_sklearn_synthetic_data(
         data_desc["n_clusters_per_class"] = generation_kwargs.get(
             "n_clusters_per_class", 2
         )
-    if function_name == "make_blobs":
+    elif function_name == "make_blobs":
         data_desc["n_clusters"] = generation_kwargs["centers"]
+    elif function_name in ["make_circles", "make_moons"]:
+        data_desc["n_classes"] = 2
+        data_desc["n_clusters"] = 2
     return {"x": x, "y": y}, data_desc
 
 
@@ -169,27 +171,6 @@ def load_airline_depdelay(
 
 
 @cache
-def load_bosch(
-    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
-) -> Tuple[Dict, Dict]:
-    data_filename = "train_numeric.csv.zip"
-
-    data_path = download_kaggle_files(
-        "competition",
-        "bosch-production-line-performance",
-        [data_filename],
-        raw_data_cache,
-    )[data_filename]
-
-    data = pd.read_csv(data_path, index_col=0, compression="zip", dtype=np.float32)
-    y = data.iloc[:, -1].to_numpy(dtype=np.float32)
-    x = data.drop(labels=[data.columns[-1]], axis=1)
-
-    data_desc = {"default_split": {"test_size": 0.2, "random_state": 77}}
-    return {"x": x, "y": y}, data_desc
-
-
-@cache
 def load_hepmass(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
@@ -217,7 +198,7 @@ def load_hepmass(
     data = pd.concat([train_data, test_data])
     label = data.columns[0]
     y = data[label]
-    x = data.drop(columns=[label])
+    x = data.drop(columns=[label, "mass"])
 
     data_desc = {
         "n_classes": 2,
@@ -387,6 +368,7 @@ def load_epsilon(
     return {"x": x, "y": y}, data_desc
 
 
+@preprocess
 @cache
 def load_gisette(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -466,7 +448,7 @@ def load_codrnanorm(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
     def transform_x_y(x, y):
-        x = pd.DataFrame(x.todense())
+        x = pd.DataFrame(x)
         y = y.astype("int")
         y[y == -1] = 0
         return x, y
@@ -561,6 +543,7 @@ def load_skin_segmentation(
     return {"x": x, "y": y}, data_desc
 
 
+@preprocess
 @cache
 def load_cifar(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -675,6 +658,70 @@ def load_sensit(
     """
     x, y = load_openml(1593, raw_data_cache)
     data_desc = {"n_classes": 3, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_szilard_1m(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    https://github.com/szilard/GBM-perf
+    """
+    url = "https://s3.amazonaws.com/benchm-ml--main/train-1m.csv"
+    d_train = download_and_read_csv(url, raw_data_cache)
+
+    url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
+    d_test = download_and_read_csv(url, raw_data_cache)
+
+    label_col = "dep_delayed_15min"
+    y_train = (d_train[label_col] == "Y").astype(int).values
+    y_test = (d_test[label_col] == "Y").astype(int).values
+    y = np.concatenate([y_train, y_test])
+
+    X_train_raw = d_train.drop(columns=[label_col])
+    X_test_raw = d_test.drop(columns=[label_col])
+
+    combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
+    X_combined_oh = pd.get_dummies(combined)
+    x = sparse.csr_matrix(X_combined_oh.values)
+
+    n_train = len(d_train)
+    n_test = len(d_test)
+    data_desc = {"default_split": {"test_size": n_train, "test_size": n_test}}
+
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_szilard_10m(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    https://github.com/szilard/GBM-perf
+    """
+    url = "https://s3.amazonaws.com/benchm-ml--main/train-10m.csv"
+    d_train = download_and_read_csv(url, raw_data_cache)
+
+    url = "https://s3.amazonaws.com/benchm-ml--main/test.csv"
+    d_test = download_and_read_csv(url, raw_data_cache)
+
+    label_col = "dep_delayed_15min"
+    y_train = (d_train[label_col] == "Y").astype(int).values
+    y_test = (d_test[label_col] == "Y").astype(int).values
+    y = np.concatenate([y_train, y_test])
+
+    X_train_raw = d_train.drop(columns=[label_col])
+    X_test_raw = d_test.drop(columns=[label_col])
+
+    combined = pd.concat([X_train_raw, X_test_raw], axis=0, ignore_index=True)
+    X_combined_oh = pd.get_dummies(combined, sparse=True)
+    x = sparse.csr_matrix(X_combined_oh)
+
+    n_train = len(d_train)
+    n_test = len(d_test)
+    data_desc = {"default_split": {"test_size": n_train, "test_size": n_test}}
+
     return {"x": x, "y": y}, data_desc
 
 
@@ -826,7 +873,6 @@ dataset_loading_functions = {
     # classification
     "airline_depdelay": load_airline_depdelay,
     "a9a": load_a9a,
-    "bosch": load_bosch,
     "codrnanorm": load_codrnanorm,
     "covtype": load_covtype,
     "creditcard": load_creditcard,
@@ -848,6 +894,8 @@ dataset_loading_functions = {
     "svhn": load_svhn,
     "sensit": load_sensit,
     "letters": load_letters,
+    "szilard_1m": load_szilard_1m,
+    "szilard_10m": load_szilard_10m,
     # regression
     "abalone": load_abalone,
     "california_housing": load_california_housing,

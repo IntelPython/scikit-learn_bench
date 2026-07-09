@@ -15,9 +15,9 @@ dependencies:
   - tabulate
   - fastparquet
   - h5py
-  - kaggle
   - openpyxl
   - tqdm
   - psutil
   - requests
   - py-cpuinfo
+  - openml

@@ -1,7 +1,7 @@
 {
     "INCLUDE": ["../common/xgboost.json"],
     "PARAMETERS_SETS": {
-        "binary classification data": [
+        "gbt binary classification data": [
             {
                 "data": {
                     "dataset": "airline_depdelay",
@@ -44,42 +44,6 @@
             },
             {
                 "data": {
-                    "dataset": "bosch",
-                    "split_kwargs": {
-                        "train_size": 200000,
-                        "test_size": null
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "learning_rate": 0.01,
-                        "reg_alpha": 1.0,
-                        "max_leaves": 256,
-                        "colsample_bytree": 0.5,
-                        "colsample_bynode": 0.5,
-                        "n_estimators": 200
-                    }
-                }
-            },
-            {
-                "data": {
-                    "dataset": "epsilon",
-                    "split_kwargs": {
-                        "train_size": 10000,
-                        "test_size": 100000
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "max_depth": 8,
-                        "colsample_bytree": 0.1,
-                        "colsample_bynode": 0.1,
-                        "n_estimators": 200
-                    }
-                }
-            },
-            {
-                "data": {
                     "dataset": "gisette",
                     "split_kwargs": {
                         "train_size": 2000,
@@ -100,11 +64,7 @@
     },
     "TEMPLATES": {
         "binary classification": {
-            "SETS": [
-                "xgboost binary classification",
-                "xgboost implementations",
-                "binary classification data"
-            ]
+            "SETS": ["xgboost binary classification", "xgboost implementations", "gbt binary classification data"]
         }
     }
 }

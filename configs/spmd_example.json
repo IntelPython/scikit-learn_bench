@@ -48,7 +48,7 @@
         "random forest regression": {
             "algorithm": {
                 "estimator": "RandomForestRegressor",
-                "estimator_params": { 
+                "estimator_params": {
                     "criterion": "squared_error",
                     "max_features": 1.0,
                     "n_estimators": 10,

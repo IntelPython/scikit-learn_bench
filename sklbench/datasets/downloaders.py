@@ -15,66 +15,115 @@
 # ===============================================================================
 
 import os
+import time
 from typing import Callable, List, Union
 
 import numpy as np
+import openml
 import pandas as pd
 import requests
 from scipy.sparse import csr_matrix
-from sklearn.datasets import fetch_openml
-
-try:
-    import kaggle
-
-    kaggle_is_imported = True
-except (ImportError, OSError, ValueError):
-    kaggle_is_imported = False
 
 
-def retrieve(url: str, filename: str) -> None:
+def retrieve(url: str, filename: str, max_retries: int = 3) -> None:
+    """Download a file from a URL with basic retry logic."""
     if os.path.isfile(filename):
         return
-    elif url.startswith("http"):
-        response = requests.get(url, stream=True)
-        if response.status_code != 200:
+
+    if not url.startswith("http"):
+        raise ValueError(f"URL must start with http:// or https://, got: {url}")
+
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, stream=True, timeout=120)
+            if response.status_code != 200:
+                raise AssertionError(
+                    f"Failed to download from {url}. "
+                    f"Response returned status code {response.status_code}"
+                )
+
+            total_size = int(response.headers.get("content-length", 0))
+            block_size = 8192
+
+            with open(filename, "wb") as datafile:
+                bytes_written = 0
+                for data in response.iter_content(block_size):
+                    if data:
+                        datafile.write(data)
+                        bytes_written += len(data)
+
+            # Verify download completeness if size is known
+            if total_size > 0 and bytes_written != total_size:
+                os.remove(filename)
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
+                raise AssertionError(
+                    f"Incomplete download from {url}. "
+                    f"Expected {total_size} bytes, got {bytes_written}"
+                )
+            return
+
+        except (
+            requests.exceptions.RequestException,
+            IOError,
+        ) as e:
+            if os.path.isfile(filename):
+                os.remove(filename)
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
             raise AssertionError(
-                f"Failed to download from {url}.\n"
-                f"Response returned status code {response.status_code}"
-            )
-        total_size = int(response.headers.get("content-length", 0))
-        block_size = 8192
-        n = 0
-        with open(filename, "wb+") as datafile:
-            for data in response.iter_content(block_size):
-                n += len(data) / 1024
-                datafile.write(data)
-        if total_size != 0 and n != total_size / 1024:
-            raise AssertionError("Some content was present but not downloaded/written")
+                f"Failed to download {url} after {max_retries} attempts: {e}"
+            ) from e
 
 
 def fetch_and_correct_openml(
     data_id: int, raw_data_cache_dir: str, as_frame: str = "auto"
 ):
-    x, y = fetch_openml(
-        data_id=data_id, return_X_y=True, as_frame=as_frame, data_home=raw_data_cache_dir
+    """Fetch OpenML dataset using the openml package."""
+    # Configure openml cache directory
+    openml_cache = os.path.join(raw_data_cache_dir, "openml")
+    os.makedirs(openml_cache, exist_ok=True)
+    openml.config.set_root_cache_directory(openml_cache)
+
+    # Fetch the dataset
+    dataset = openml.datasets.get_dataset(
+        data_id,
+        download_data=True,
+        download_qualities=False,
+        download_features_meta_data=False,
     )
-    if (
-        isinstance(x, csr_matrix)
-        or isinstance(x, pd.DataFrame)
-        or isinstance(x, np.ndarray)
-    ):
-        pass
-    else:
-        raise ValueError(f'Unknown "{type(x)}" x type was returned from fetch_openml')
+
+    # Get the data with target column specified
+    x, y, _, _ = dataset.get_data(
+        dataset_format="dataframe",
+        target=dataset.default_target_attribute,
+    )
+
+    # Validate x type
+    if not isinstance(x, (csr_matrix, pd.DataFrame, np.ndarray)):
+        raise ValueError(f'Unknown x type "{type(x)}" returned from openml')
+
+    # Convert sparse DataFrame to dense format
+    if isinstance(x, pd.DataFrame):
+        if any(pd.api.types.is_sparse(x[col]) for col in x.columns):
+            x = x.sparse.to_dense()
+        if as_frame is not True:
+            x = x.to_numpy()
+
+    # Convert y to numpy array if needed
     if isinstance(y, pd.Series):
-        # label transforms to cat.codes if it is passed as categorical series
         if isinstance(y.dtype, pd.CategoricalDtype):
             y = y.cat.codes
-        y = y.values
-    elif isinstance(y, np.ndarray):
-        pass
-    else:
-        raise ValueError(f'Unknown "{type(y)}" y type was returned from fetch_openml')
+        # Use to_numpy() for sparse arrays to densify them, otherwise use values
+        if pd.api.types.is_sparse(y):
+            y = y.to_numpy()
+        else:
+            y = y.values
+    elif not isinstance(y, np.ndarray):
+        raise ValueError(f'Unknown y type "{type(y)}" returned from openml')
+
     return x, y
 
 
@@ -95,27 +144,3 @@ def download_and_read_csv(url: str, raw_data_cache_dir: str, **reading_kwargs):
     retrieve(url, local_path)
     data = pd.read_csv(local_path, **reading_kwargs)
     return data
-
-
-def download_kaggle_files(
-    kaggle_type: str, kaggle_name: str, filenames: List[str], raw_data_cache_dir: str
-):
-    if not kaggle_is_imported:
-        raise ValueError("Kaggle API is not available.")
-    api = kaggle.KaggleApi()
-    api.authenticate()
-
-    if kaggle_type == "competition":
-        download_method = api.competition_download_file
-    elif kaggle_type == "dataset":
-        download_method = api.dataset_download_file
-    else:
-        raise ValueError(
-            f"Unknown {kaggle_type} type for " '"download_kaggle_files" function.'
-        )
-
-    output_file_paths = {}
-    for filename in filenames:
-        download_method(kaggle_name, filename, raw_data_cache_dir)
-        output_file_paths[filename] = os.path.join(raw_data_cache_dir, filename)
-    return output_file_paths
