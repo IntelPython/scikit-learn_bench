@@ -1,0 +1,41 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "preprocessing parameters": {
+            "algorithm": {
+                "estimator": "MaxAbsScaler",
+                "estimator_methods": { "training": "fit", "inference": "transform" }
+            }
+        },
+        "preprocessing datasets": [
+            {
+                "data": {
+                    "source": "make_regression",
+                    "generation_kwargs": [
+                        { "n_samples": 100000, "n_features": 5000, "noise": 1.0 },
+                        { "n_samples": 1000000, "n_features": 500, "noise": 1.0 },
+                        { "n_samples": 10000000, "n_features": 50, "noise": 1.0 }
+                    ],
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 },
+                    "dtype": ["float32", "float64"]
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["sift", "gist", "svhn"],
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 },
+                    "dtype": ["float32", "float64"]
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn preprocessing": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "preprocessing parameters",
+                "preprocessing datasets"
+            ]
+        }
+    }
+}
