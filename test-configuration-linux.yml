@@ -19,7 +19,7 @@ steps:
     inputs:
       versionSpec: "$(PYTHON_VERSION)"
   - script: |
-      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(PYTHON_VERSION)
+      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(PYTHON_VERSION) pip
     displayName: Environment initialization
   - script: |
       source /usr/share/miniconda/etc/profile.d/conda.sh

@@ -21,7 +21,7 @@ steps:
   - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to Windows PATH
   - script: |
-      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(PYTHON_VERSION)
+      conda create -y -n bench-env -c conda-forge -c nodefaults python=$(PYTHON_VERSION) pip
     displayName: Environment initialization
   - script: |
       call activate bench-env
