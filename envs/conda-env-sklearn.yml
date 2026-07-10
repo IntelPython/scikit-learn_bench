@@ -8,7 +8,7 @@ dependencies:
   - lightgbm
   - faiss-cpu
   - modin-all
-  - scikit-learn-intelex>=2026.1
+  - scikit-learn-intelex
   # sklbench dependencies
   - scikit-learn
   - pandas
