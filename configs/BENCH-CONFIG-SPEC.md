@@ -98,7 +98,7 @@ Configs have the three highest parameter keys:
 | `data`:`distributed_split` | None | None, `rank_based` | Split type used to distribute data between machines in distributed algorithm. `None` type means usage of all data without split on all machines. `rank_based` type splits the data equally between machines with split sequence based on rank id from MPI. |
 |<h3>Algorithm parameters</h3>||||
 | `algorithm`:`library` | None |  | Python module containing measured entity (class or function). |
-| `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Device selected for computation. |
+| `algorithm`:`device` | `default` | `default`, `cpu`, `gpu` | Device selected for computation. `sklearnex`+`gpu` cases enable sklearn's `array_api_dispatch` and use `dpnp` data by default (see `sklearn_context` below); requires `SCIPY_ARRAY_API=1` to be set in the environment. |
 
 ## Benchmark-Specific Parameters
 
