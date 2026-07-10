@@ -31,11 +31,7 @@
     },
     "TEMPLATES": {
         "sklearn preprocessing": {
-            "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
-                "preprocessing parameters",
-                "preprocessing datasets"
-            ]
+            "SETS": ["sklearn-ex[cpu,gpu] implementations", "preprocessing parameters", "preprocessing datasets"]
         }
     }
 }
