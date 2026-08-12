@@ -22,7 +22,7 @@ import numpy as np
 import openpyxl as xl
 import pandas as pd
 from openpyxl.formatting.rule import ColorScaleRule
-from openpyxl.styles import Border, Side
+from openpyxl.styles import Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 from scipy.stats import gmean
@@ -42,6 +42,7 @@ from .compatibility import transform_results_to_compatible
 METRICS = {
     "lower is better": [
         "1st run time[ms]",
+        "median time[ms]",
         "time[ms]",
         "cost[microdollar]",
         "iterations",
@@ -547,6 +548,15 @@ def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
             if not (is_knn and col[1] == "algorithm")
         ]
 
+        # Detect stability metric columns (per library and comparison)
+        STABILITY_METRICS = ["1st run time[ms]", "median time[ms]", "time CV"]
+        stability_cols = []
+        for metric in STABILITY_METRICS:
+            for prefix in ["sklearn", "sklearnex"]:
+                col = (prefix, metric)
+                if col in df.columns:
+                    stability_cols.append(col)
+
         if is_knn and algo_param_col is not None:
             groups = {}
             for algo_val in df[algo_param_col].dropna().unique():
@@ -557,10 +567,19 @@ def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
             groups = {df_name: df}
 
         for group_name, group_df in groups.items():
+            # Sort by dtype and dataset (stable sort preserves original order for ties)
+            sort_cols = [c for c in [("parameter", "dtype"), ("parameter", "dataset")]
+                         if c in group_df.columns]
+            if sort_cols:
+                group_df = group_df.sort_values(sort_cols, kind="mergesort")
+
             # Write header for this group
             header = ["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
+            header += [f"{col[0]} {col[1]}" for col in stability_cols]
             header += [col[1] for col in display_param_cols]
             ws.append(header)
+            for cell in ws[current_row]:
+                cell.alignment = Alignment(wrap_text=True)
             current_row += 1
 
             group_start_row = current_row
@@ -570,11 +589,10 @@ def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
                 row_data.append(row[sklearn_time_col])
                 row_data.append(row[sklearnex_time_col])
                 row_data.append(row[speedup_col])
+                for col in stability_cols:
+                    row_data.append(row[col] if col in row.index else None)
                 for col in display_param_cols:
-                    if col in row.index:
-                        row_data.append(row[col])
-                    else:
-                        row_data.append(None)
+                    row_data.append(row[col] if col in row.index else None)
                 ws.append(row_data)
                 current_row += 1
 
@@ -585,22 +603,50 @@ def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
                 sklearnex_col_letter = get_column_letter(3)
                 speedup_col_letter = get_column_letter(4)
 
+                # Track rows per dtype for per-dtype GEOMEAN
+                dtype_col = ("parameter", "dtype")
+                dtype_ranges = {}
+                if dtype_col in group_df.columns:
+                    row_num = group_start_row
+                    for _, row in group_df.iterrows():
+                        dtype_val = row.get(dtype_col, None)
+                        dtype_key = str(dtype_val) if dtype_val is not None else "unknown"
+                        if dtype_key not in dtype_ranges:
+                            dtype_ranges[dtype_key] = [row_num, row_num]
+                        else:
+                            dtype_ranges[dtype_key][1] = row_num
+                        row_num += 1
+
+                # Write per-dtype GEOMEAN rows
+                dtype_geomean_row_nums = {}
+                for dtype_key, (dt_start, dt_end) in dtype_ranges.items():
+                    sklearn_range = f"{sklearn_col_letter}{dt_start}:{sklearn_col_letter}{dt_end}"
+                    sklearnex_range = f"{sklearnex_col_letter}{dt_start}:{sklearnex_col_letter}{dt_end}"
+                    speedup_range = f"{speedup_col_letter}{dt_start}:{speedup_col_letter}{dt_end}"
+                    ws.append([
+                        f"GEOMEAN {dtype_key}",
+                        f"=GEOMEAN({sklearn_range})",
+                        f"=GEOMEAN({sklearnex_range})",
+                        f"=GEOMEAN({speedup_range})",
+                    ])
+                    dtype_geomean_row_nums[dtype_key] = current_row
+                    current_row += 1
+
+                # Write total GEOMEAN row
                 sklearn_range = f"{sklearn_col_letter}{group_start_row}:{sklearn_col_letter}{group_end_row}"
                 sklearnex_range = f"{sklearnex_col_letter}{group_start_row}:{sklearnex_col_letter}{group_end_row}"
                 speedup_range = f"{speedup_col_letter}{group_start_row}:{speedup_col_letter}{group_end_row}"
-
-                geomean_row = [
-                    "GEOMEAN",
+                ws.append([
+                    "GEOMEAN total",
                     f"=GEOMEAN({sklearn_range})",
                     f"=GEOMEAN({sklearnex_range})",
                     f"=GEOMEAN({speedup_range})",
-                ]
-                ws.append(geomean_row)
-                geomean_rows.append((group_name, current_row))
+                ])
+                geomean_rows.append((group_name, current_row, dtype_geomean_row_nums))
                 current_row += 1
 
                 # Apply per-group color scale on speedup column (D)
-                # Include the GEOMEAN row itself in the formatting
+                # Include the GEOMEAN rows in the formatting
                 geomean_row_num = current_row - 1
                 speedup_values = group_df[speedup_col].dropna()
                 if len(speedup_values) > 0:
@@ -638,36 +684,64 @@ def write_summary_2_sheet(geomean_rows, wb):
     src_sheet_name = "'All cases 2'"
     ws = wb.create_sheet(title="Summary 2", index=0)
 
-    # Header
-    ws.append(["Algorithm", "geomean sklearn time[ms]",
-               "geomean sklearnex time[ms]", "geomean speedup"])
+    # Separate into training and inference groups
+    training_rows = [(n, r, d) for n, r, d in geomean_rows
+                     if "|fit" in n or n == "train_test_split"]
+    inference_rows = [(n, r, d) for n, r, d in geomean_rows
+                      if (n, r, d) not in training_rows]
 
-    for i, (group_name, geomean_row) in enumerate(geomean_rows, start=2):
-        sklearn_ref = f"={src_sheet_name}!B{geomean_row}"
-        sklearnex_ref = f"={src_sheet_name}!C{geomean_row}"
-        speedup_ref = f"={src_sheet_name}!D{geomean_row}"
-        ws.append([group_name, sklearn_ref, sklearnex_ref, speedup_ref])
+    # Columns: A=algo, B/C/D=total, E/F/G=fp32, H/I/J=fp64
+    # Each triplet: sklearn time, sklearnex time, speedup
+    speedup_cols = ["D", "G", "J"]
+    current_row = 1
 
-    # Overall GEOMEAN row
-    data_start = 2
-    data_end = len(geomean_rows) + 1
-    overall_row = data_end + 1
-    speedup_col_letter = get_column_letter(4)
-    speedup_range = f"{speedup_col_letter}{data_start}:{speedup_col_letter}{data_end}"
-    ws.append(["Overall GEOMEAN", None, None, f"=GEOMEAN({speedup_range})"])
+    HEADER = ["Algorithm",
+              "sklearn time[ms]", "sklearnex time[ms]", "speedup",
+              "sklearn fp32", "sklearnex fp32", "speedup fp32",
+              "sklearn fp64", "sklearnex fp64", "speedup fp64"]
 
-    # Conditional formatting on speedup column (D) including the overall GEOMEAN row
-    cell_range = f"$D${data_start}:$D${overall_row}"
-    color_rule = ColorScaleRule(
-        start_type="min",
-        start_color=RED_COLOR,
-        mid_type="percentile",
-        mid_value=50,
-        mid_color=YELLOW_COLOR,
-        end_type="max",
-        end_color=GREEN_COLOR,
-    )
-    ws.conditional_formatting.add(cell_range, color_rule)
+    def refs_for_row(row_num):
+        if row_num is None:
+            return [None, None, None]
+        return [f"={src_sheet_name}!{c}{row_num}" for c in "BCD"]
+
+    def write_section(title, rows):
+        nonlocal current_row
+        ws.append([title] + HEADER[1:])
+        current_row += 1
+        start = current_row
+        for name, total_row, dtype_rows in rows:
+            ws.append([name]
+                      + refs_for_row(total_row)
+                      + refs_for_row(dtype_rows.get("float32"))
+                      + refs_for_row(dtype_rows.get("float64")))
+            current_row += 1
+        end = current_row - 1
+        for col in speedup_cols:
+            ws.conditional_formatting.add(
+                f"${col}${start}:${col}${end}",
+                ColorScaleRule(
+                    start_type="min", start_color=RED_COLOR,
+                    mid_type="percentile", mid_value=50, mid_color=YELLOW_COLOR,
+                    end_type="max", end_color=GREEN_COLOR,
+                ))
+        return start, end
+
+    t_start, t_end = write_section("Training", training_rows)
+    i_start, i_end = write_section("Inference", inference_rows)
+
+    # Summary GEOMEANs (uncolored)
+    ws.append([])
+    current_row += 1
+    for label, ranges in [
+        ("Training GEOMEAN", [(t_start, t_end)]),
+        ("Inference GEOMEAN", [(i_start, i_end)]),
+        ("Total GEOMEAN", [(t_start, t_end), (i_start, i_end)]),
+    ]:
+        def gm(col):
+            return f"=GEOMEAN({','.join(f'{col}{s}:{col}{e}' for s, e in ranges)})"
+        ws.append([label, None, None, gm("D"), None, None, gm("G"), None, None, gm("J")])
+        current_row += 1
 
 
 def write_environment_info(results, workbook):
@@ -827,12 +901,13 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
                 ax_fit.set_ylim(1, y_ticks_fit[-1])
                 ax_fit.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
                 
-                ax_fit.set_title(f'{comparison_name} - Training', fontsize=16, color='#555555', pad=15)
-                ax_fit.set_ylabel('Speedup (higher is better)', color='#555555', fontsize=11)
+                ax_fit.set_title('Training', fontsize=16, color='#555555', pad=15)
+                ax_fit.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
                 ax_fit.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
                 
                 ax_fit.set_xticks(x_fit)
-                ax_fit.set_xticklabels(fit_labels, rotation=45, ha='right', fontsize=9)
+                ax_fit.set_xticklabels([l.replace("|", " | ") for l in fit_labels],
+                                       rotation=45, ha='right', fontsize=9)
                 
                 for spine in ['top', 'right']:
                     ax_fit.spines[spine].set_visible(False)
@@ -884,12 +959,13 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
                 ax_inf.set_ylim(1, y_ticks_inf[-1])
                 ax_inf.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
                 
-                ax_inf.set_title(f'{comparison_name} - Inference', fontsize=16, color='#555555', pad=15)
-                ax_inf.set_ylabel('Speedup (higher is better)', color='#555555', fontsize=11)
+                ax_inf.set_title('Inference', fontsize=16, color='#555555', pad=15)
+                ax_inf.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
                 ax_inf.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
                 
                 ax_inf.set_xticks(x_inf)
-                ax_inf.set_xticklabels(inf_labels, rotation=45, ha='right', fontsize=9)
+                ax_inf.set_xticklabels([l.replace("|", " | ") for l in inf_labels],
+                                       rotation=45, ha='right', fontsize=9)
                 
                 for spine in ['top', 'right']:
                     ax_inf.spines[spine].set_visible(False)
@@ -899,16 +975,74 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
                     ax_inf.text(bar.get_x() + bar.get_width() / 2, height * 1.1,
                             f'{height:.1f}', ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
         
-        plt.tight_layout()
-        
+        # Reserve top margin for the two-component title
+        plt.tight_layout(rect=[0, 0.06, 1, 0.90])
+
+        # Two-component suptitle (black main title + blue subtitle)
+        fig.text(
+            0.5, 0.98,
+            "Performance Benefits of Extension for Scikit-learn*",
+            fontsize=22, color='#404040', ha='center', va='top',
+        )
+        fig.text(
+            0.5, 0.935,
+            "Combined Averages of FP32 & FP64 Workloads",
+            fontsize=17, color='#0068B5', ha='center', va='top',
+        )
+
+        # Footnote / disclaimer, drawn line by line so the URL renders as a link.
+        # Each entry is (text, is_bold); "__URL__" is a special marker for the
+        # line that embeds the www.Intel.com/PerformanceIndex link.
+        footnote_lines = [
+            (r"$\bf{Testing\ Date:}$ Performance results are based on $\bf{testing\ by\ Intel\ as\ of\ June\ 1,\ 2026}$ and may not reflect all publically available security updates", False),
+            (r"$\bf{Configuration\ Details\ and\ Workload\ Setup:}$ 1-node, 6th Gen Intel® Xeon® 6767P CPU, 64 cores per socket, 2 sockets (1 used), microcode 0x10003a2, HT on (only physical cores were used), Turbo on, SNC on (4 NUMA nodes),", False),
+            ("1024GB (16x64GB DDR5 8800MT/s), Ubuntu 24.04.3 LTS, 6.8.0-47-generic. Python 3.12.13, NumPy 2.4.4, pandas 3.0.2, SciPy 1.17.1, scikit-learn 1.8.0, scikit-learn-intelex 2026.0.0", False),
+            ('Benchmarks were run using "numactl --physcpubind=0-63 --membind=0,1" command prefix. See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ', False),
+            ("__URL__", False),
+            ("No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.", False),
+            ("© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.", False),
+        ]
+
+        url_prefix = "and may not reflect all publicly available updates. Results may vary. Performance varies by use, configuration and other factors. Learn more at "
+        url_text = "www.Intel.com/PerformanceIndex"
+        url_suffix = "."
+
+        # Render once so text extents can be measured for link placement
+        fig.canvas.draw()
+        renderer = fig.canvas.get_renderer()
+        fig_w, fig_h = fig.bbox.width, fig.bbox.height
+
+        x0, y0, step = 0.01, 0.05, 0.022
+        gray, blue = "#606060", "#0068B5"
+        y = y0
+        for text, is_bold in footnote_lines:
+            if text == "__URL__":
+                t_pref = fig.text(x0, y, url_prefix, fontsize=9, color=gray,
+                                  ha="left", va="top")
+                w_pref = t_pref.get_window_extent(renderer=renderer).width / fig_w
+                t_url = fig.text(x0 + w_pref, y, url_text, fontsize=9, color=blue,
+                                 ha="left", va="top")
+                ext = t_url.get_window_extent(renderer=renderer)
+                x_start, x_end = ext.x0 / fig_w, ext.x1 / fig_w
+                y_line = ext.y0 / fig_h
+                fig.add_artist(plt.Line2D([x_start, x_end], [y_line, y_line],
+                                          transform=fig.transFigure,
+                                          color=blue, linewidth=0.8))
+                fig.text(x_end, y, url_suffix, fontsize=9, color=gray,
+                         ha="left", va="top")
+            else:
+                fig.text(x0, y, text, fontsize=9, color=gray, ha="left", va="top",
+                         fontweight="bold" if is_bold else "normal")
+            y -= step
+
         if output_file:
             plt.savefig(output_file, dpi=150, bbox_inches='tight')
             logger.info(f"Plot saved to {output_file}")
         else:
             plt.show()
-        
+
         plt.close()
-    
+
     except Exception as e:
         logger.error(f"Error drawing plots: {e}")
 
