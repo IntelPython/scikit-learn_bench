@@ -22,7 +22,7 @@ import numpy as np
 import openpyxl as xl
 import pandas as pd
 from openpyxl.formatting.rule import ColorScaleRule
-from openpyxl.styles import Alignment, Border, Side
+from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 from scipy.stats import gmean
@@ -355,96 +355,6 @@ def apply_rules_for_sheet(sheet, perf_color_scale, quality_color_scale):
                 )
 
 
-def write_all_cases_sheet_with_groups(all_cases_df: pd.DataFrame, sheet, perf_color_scale, quality_color_scale):
-    """
-    Write all cases data to sheet with algorithm groups separated by borders
-    and individual color scales per group on comparison columns only.
-    Uses green-yellow-red color scale with values computed per group.
-    """
-    thick_border_top = Border(
-        top=Side(style='thick'),
-
-    )
-    thick_border_bottom = Border(
-        bottom=Side(style='thick')
-    )
-    
-    # Get algorithm name column
-    algo_col_name = None
-    for col in all_cases_df.columns:
-        if isinstance(col, tuple) and col[0] == "algorithm" and col[1] == "name":
-            algo_col_name = col
-            break
-    
-    if algo_col_name is None:
-        # Fallback: just write normally
-        write_df_to_sheet(all_cases_df, sheet, index=False)
-        return
-    
-    # Write header
-    header_row = list(all_cases_df.columns)
-    header_row_str = ["|".join(col) if isinstance(col, tuple) else str(col) for col in header_row]
-    sheet.append(header_row_str)
-    
-    # Group data by algorithm name
-    grouped = all_cases_df.groupby(algo_col_name)
-    current_row = 2
-    
-    for algo_idx, (algo_name, group_df) in enumerate(grouped):
-        group_start_row = current_row
-        
-        # Write group data
-        for _, row in group_df.iterrows():
-            row_data = [row[col] for col in all_cases_df.columns]
-            sheet.append(row_data)
-            current_row += 1
-        
-        group_end_row = current_row - 1
-        
-        # Apply borders to group (thick on top and bottom)
-        for row_num in range(group_start_row, group_end_row + 1):
-            for col_idx in range(1, len(all_cases_df.columns) + 1):
-                cell = sheet.cell(row=row_num, column=col_idx)
-                if row_num == group_start_row:
-                    cell.border = thick_border_top
-                elif row_num == group_end_row:
-                    cell.border = thick_border_bottom
-        
-        # Apply color scales per group only on comparison columns
-        for col_idx, col_name in enumerate(all_cases_df.columns, 1):
-            col_letter = get_column_letter(col_idx)
-            group_range = f"${col_letter}${group_start_row}:${col_letter}${group_end_row}"
-            
-            col_str = "|".join(col_name) if isinstance(col_name, tuple) else str(col_name)
-            
-            # Check if this is a comparison column (contains "vs" or "relative improvement")
-            is_comparison = "vs" in col_str or "relative improvement" in col_str
-            
-            if is_comparison:
-                # Get min and max values for this column in this group
-                group_values = group_df[col_name].dropna()
-                
-                if len(group_values) > 0:
-                    min_val = group_values.min()
-                    max_val = group_values.max()
-                    mid_val = (min_val + max_val) / 2
-                    
-                    # Create red-yellow-green color scale (red for lowest, green for highest)
-                    color_rule = ColorScaleRule(
-                        start_type="num",
-                        start_value=min_val,
-                        start_color=RED_COLOR,  # Red for lowest values
-                        mid_type="num",
-                        mid_value=mid_val,
-                        mid_color=YELLOW_COLOR,  # Yellow for middle
-                        end_type="num",
-                        end_value=max_val,
-                        end_color=GREEN_COLOR,  # Green for highest values
-                    )
-                    sheet.conditional_formatting.add(group_range, color_rule)
-
-
-
 def prepare_all_cases_df(all_cases_df: pd.DataFrame) -> pd.DataFrame:
     """
     Prepare All cases dataframe with specific column ordering:
@@ -495,194 +405,110 @@ def prepare_all_cases_df(all_cases_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def write_all_cases_2_sheet(all_dfs, dfs, diffby_columns, wb):
+def write_all_cases_2_sheet(dfs, wb):
     """
-    Write 'All cases 2' sheet: copies results from individual algorithm sheets
-    into a single page with columns:
-      Algorithm | sklearn time[ms] | sklearnex time[ms] | speedup | parameters...
-    Each group has its own header row with its specific parameter columns.
-    KNN algorithms are split by method (brute/kd_tree).
-    Each group ends with a GEOMEAN formula row.
-    Returns list of (group_name, geomean_row_number) for use by Summary 2.
+    Write 'All cases' sheet: one block per algorithm group with columns
+      Algorithm | sklearn time[ms] | sklearnex time[ms] | Speedup | <stability> | <parameters>.
+    KNN groups are split by method (brute/kd_tree); rows are sorted by dtype then dataset.
+    Each block ends with per-dtype and total GEOMEAN formula rows plus a speedup color scale.
+    Returns list of (group_name, total_geomean_row, {dtype: geomean_row}) for the summary sheet.
     """
-    KNN_ESTIMATORS = [
-        "KNeighborsClassifier",
-        "KNeighborsRegressor",
-    ]
+    KNN = ("KNeighborsClassifier", "KNeighborsRegressor")
+    STABILITY = ["1st run time[ms]", "median time[ms]", "time CV"]
+    ws = wb.create_sheet(title="All cases", index=1)
+    row, geomean_rows = 1, []
 
-    ws = wb.create_sheet(title="All cases 2", index=2)
-    current_row = 1
-    geomean_rows = []
+    def geomean_row(label, r0, r1):
+        nonlocal row
+        ws.append([label] + [f"=GEOMEAN({get_column_letter(c)}{r0}:{get_column_letter(c)}{r1})"
+                             for c in (2, 3, 4)])
+        row += 1
+        return row - 1
 
     for df_name, df in dfs.items():
         if not isinstance(df.columns, pd.MultiIndex):
             continue
-
-        param_cols = [col for col in df.columns if col[0] == "parameter"]
-        sklearn_time_col = None
-        sklearnex_time_col = None
-        speedup_col = None
-
-        for col in df.columns:
-            if col[1] == "time[ms]" and col[0] == "sklearn":
-                sklearn_time_col = col
-            elif col[1] == "time[ms]" and col[0] == "sklearnex":
-                sklearnex_time_col = col
-            elif "time[ms] relative improvement" in col[1]:
-                speedup_col = col
-
-        if sklearn_time_col is None or sklearnex_time_col is None or speedup_col is None:
+        time_cols = {p: (p, "time[ms]") for p in ("sklearn", "sklearnex")
+                     if (p, "time[ms]") in df.columns}
+        speedup = next((c for c in df.columns if "time[ms] relative improvement" in c[1]), None)
+        if len(time_cols) < 2 or speedup is None:
             continue
 
-        algo_param_col = None
-        for col in param_cols:
-            if col[1] == "algorithm":
-                algo_param_col = col
-                break
+        is_knn = df_name.split("|")[0] in KNN
+        params = [c for c in df.columns
+                  if c[0] == "parameter" and not (is_knn and c[1] == "algorithm")]
+        stability = [(p, m) for m in STABILITY for p in ("sklearn", "sklearnex")
+                     if (p, m) in df.columns]
+        value_cols = [time_cols["sklearn"], time_cols["sklearnex"], speedup] + stability + params
 
-        estimator_name = df_name.split("|")[0] if "|" in df_name else df_name
-        is_knn = estimator_name in KNN_ESTIMATORS
-
-        display_param_cols = [
-            col for col in param_cols
-            if not (is_knn and col[1] == "algorithm")
-        ]
-
-        # Detect stability metric columns (per library and comparison)
-        STABILITY_METRICS = ["1st run time[ms]", "median time[ms]", "time CV"]
-        stability_cols = []
-        for metric in STABILITY_METRICS:
-            for prefix in ["sklearn", "sklearnex"]:
-                col = (prefix, metric)
-                if col in df.columns:
-                    stability_cols.append(col)
-
-        if is_knn and algo_param_col is not None:
-            groups = {}
-            for algo_val in df[algo_param_col].dropna().unique():
-                mask = df[algo_param_col] == algo_val
-                group_label = f"{df_name} ({algo_val})"
-                groups[group_label] = df[mask]
+        algo_col = ("parameter", "algorithm")
+        if is_knn and algo_col in df.columns:
+            groups = {f"{df_name} ({v})": df[df[algo_col] == v]
+                      for v in df[algo_col].dropna().unique()}
         else:
             groups = {df_name: df}
 
-        for group_name, group_df in groups.items():
-            # Sort by dtype and dataset (stable sort preserves original order for ties)
-            sort_cols = [c for c in [("parameter", "dtype"), ("parameter", "dataset")]
-                         if c in group_df.columns]
+        for name, gdf in groups.items():
+            sort_cols = [c for c in (("parameter", "dtype"), ("parameter", "dataset"))
+                         if c in gdf.columns]
             if sort_cols:
-                group_df = group_df.sort_values(sort_cols, kind="mergesort")
+                gdf = gdf.sort_values(sort_cols, kind="mergesort")
 
-            # Write header for this group
-            header = ["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
-            header += [f"{col[0]} {col[1]}" for col in stability_cols]
-            header += [col[1] for col in display_param_cols]
+            header = (["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
+                      + [f"{p} {m}" for p, m in stability] + [c[1] for c in params])
             ws.append(header)
-            for cell in ws[current_row]:
+            for cell in ws[row]:
                 cell.alignment = Alignment(wrap_text=True)
-            current_row += 1
+            row += 1
 
-            group_start_row = current_row
+            start = row
+            for _, r in gdf.iterrows():
+                ws.append([name] + [r.get(c) for c in value_cols])
+                row += 1
+            end = row - 1
 
-            for _, row in group_df.iterrows():
-                row_data = [group_name]
-                row_data.append(row[sklearn_time_col])
-                row_data.append(row[sklearnex_time_col])
-                row_data.append(row[speedup_col])
-                for col in stability_cols:
-                    row_data.append(row[col] if col in row.index else None)
-                for col in display_param_cols:
-                    row_data.append(row[col] if col in row.index else None)
-                ws.append(row_data)
-                current_row += 1
-
-            group_end_row = current_row - 1
-
-            if group_end_row >= group_start_row:
-                sklearn_col_letter = get_column_letter(2)
-                sklearnex_col_letter = get_column_letter(3)
-                speedup_col_letter = get_column_letter(4)
-
-                # Track rows per dtype for per-dtype GEOMEAN
+            if end >= start:
+                # per-dtype GEOMEAN rows (data is dtype-sorted, so each dtype is contiguous)
+                dtype_rows = {}
                 dtype_col = ("parameter", "dtype")
-                dtype_ranges = {}
-                if dtype_col in group_df.columns:
-                    row_num = group_start_row
-                    for _, row in group_df.iterrows():
-                        dtype_val = row.get(dtype_col, None)
-                        dtype_key = str(dtype_val) if dtype_val is not None else "unknown"
-                        if dtype_key not in dtype_ranges:
-                            dtype_ranges[dtype_key] = [row_num, row_num]
-                        else:
-                            dtype_ranges[dtype_key][1] = row_num
-                        row_num += 1
+                if dtype_col in gdf.columns:
+                    dtypes = gdf[dtype_col].astype(str).tolist()
+                    i = 0
+                    while i < len(dtypes):
+                        j = i
+                        while j + 1 < len(dtypes) and dtypes[j + 1] == dtypes[i]:
+                            j += 1
+                        dtype_rows[dtypes[i]] = geomean_row(f"GEOMEAN {dtypes[i]}", start + i, start + j)
+                        i = j + 1
 
-                # Write per-dtype GEOMEAN rows
-                dtype_geomean_row_nums = {}
-                for dtype_key, (dt_start, dt_end) in dtype_ranges.items():
-                    sklearn_range = f"{sklearn_col_letter}{dt_start}:{sklearn_col_letter}{dt_end}"
-                    sklearnex_range = f"{sklearnex_col_letter}{dt_start}:{sklearnex_col_letter}{dt_end}"
-                    speedup_range = f"{speedup_col_letter}{dt_start}:{speedup_col_letter}{dt_end}"
-                    ws.append([
-                        f"GEOMEAN {dtype_key}",
-                        f"=GEOMEAN({sklearn_range})",
-                        f"=GEOMEAN({sklearnex_range})",
-                        f"=GEOMEAN({speedup_range})",
-                    ])
-                    dtype_geomean_row_nums[dtype_key] = current_row
-                    current_row += 1
+                total_row = geomean_row("GEOMEAN total", start, end)
+                geomean_rows.append((name, total_row, dtype_rows))
 
-                # Write total GEOMEAN row
-                sklearn_range = f"{sklearn_col_letter}{group_start_row}:{sklearn_col_letter}{group_end_row}"
-                sklearnex_range = f"{sklearnex_col_letter}{group_start_row}:{sklearnex_col_letter}{group_end_row}"
-                speedup_range = f"{speedup_col_letter}{group_start_row}:{speedup_col_letter}{group_end_row}"
-                ws.append([
-                    "GEOMEAN total",
-                    f"=GEOMEAN({sklearn_range})",
-                    f"=GEOMEAN({sklearnex_range})",
-                    f"=GEOMEAN({speedup_range})",
-                ])
-                geomean_rows.append((group_name, current_row, dtype_geomean_row_nums))
-                current_row += 1
+                vals = gdf[speedup].dropna()
+                if len(vals):
+                    lo, hi = float(vals.min()), float(vals.max())
+                    ws.conditional_formatting.add(
+                        f"$D${start}:$D${total_row}",
+                        ColorScaleRule(
+                            start_type="num", start_value=lo, start_color=RED_COLOR,
+                            mid_type="num", mid_value=(lo + hi) / 2, mid_color=YELLOW_COLOR,
+                            end_type="num", end_value=hi, end_color=GREEN_COLOR))
 
-                # Apply per-group color scale on speedup column (D)
-                # Include the GEOMEAN rows in the formatting
-                geomean_row_num = current_row - 1
-                speedup_values = group_df[speedup_col].dropna()
-                if len(speedup_values) > 0:
-                    min_val = float(speedup_values.min())
-                    max_val = float(speedup_values.max())
-                    mid_val = (min_val + max_val) / 2
-                    cell_range = f"$D${group_start_row}:$D${geomean_row_num}"
-                    color_rule = ColorScaleRule(
-                        start_type="num",
-                        start_value=min_val,
-                        start_color=RED_COLOR,
-                        mid_type="num",
-                        mid_value=mid_val,
-                        mid_color=YELLOW_COLOR,
-                        end_type="num",
-                        end_value=max_val,
-                        end_color=GREEN_COLOR,
-                    )
-                    ws.conditional_formatting.add(cell_range, color_rule)
-
-            # Empty separator row
             ws.append([])
-            current_row += 1
+            row += 1
 
     return geomean_rows
 
 
 def write_summary_2_sheet(geomean_rows, wb):
     """
-    Write 'Summary 2' sheet with columns:
+    Write 'Summary (for plots)' sheet with columns:
       Algorithm | geomean sklearn | geomean sklearnex | geomean speedup
-    Values are cell references to the GEOMEAN rows in 'All cases 2'.
+    Values are cell references to the GEOMEAN rows in 'All cases'.
     Includes an overall GEOMEAN of speedups and conditional formatting.
     """
-    src_sheet_name = "'All cases 2'"
-    ws = wb.create_sheet(title="Summary 2", index=0)
+    src_sheet_name = "'All cases'"
+    ws = wb.create_sheet(title="Summary (for plots)", index=0)
 
     # Separate into training and inference groups
     training_rows = [(n, r, d) for n, r, d in geomean_rows
@@ -783,198 +609,72 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
         # Flatten column names if multi-index
         if isinstance(all_cases_df.columns, pd.MultiIndex):
             all_cases_df.columns = ["|".join(col).strip() for col in all_cases_df.columns.values]
-        
-        # Find algorithm name and parameter|algorithm columns
-        algo_name_col = None
-        param_algo_col = None
-        comparison_cols = []
-        
-        for col in all_cases_df.columns:
-            col_str = str(col)
-            if col_str == "algorithm|name":
-                algo_name_col = col
-            elif col_str == "parameter|algorithm":
-                param_algo_col = col
-            elif "vs" in col_str and "relative improvement" in col_str:
-                comparison_cols.append(col)
-        
+
+        algo_name_col = "algorithm|name" if "algorithm|name" in all_cases_df.columns else None
+        param_algo_col = "parameter|algorithm" if "parameter|algorithm" in all_cases_df.columns else None
+        comparison_cols = [c for c in all_cases_df.columns
+                           if "vs" in str(c) and "relative improvement" in str(c)]
         if not algo_name_col or not comparison_cols:
             logger.warning("Could not find required columns (algorithm|name or comparison columns)")
             return
-        
-        # Separate fit and inference data
-        fit_grouped_data = {}
-        inference_grouped_data = {}
-        
+
+        # Group rows into training/inference; split KNN by method (brute/kd_tree)
+        fit_groups, inf_groups = {}, {}
         for algo_name in all_cases_df[algo_name_col].unique():
-            algo_mask = all_cases_df[algo_name_col] == algo_name
-            algo_df = all_cases_df[algo_mask]
-            
-            # Determine if this is fit or inference
-            is_fit = str(algo_name).endswith("|fit") or str(algo_name) == "train_test_split"
-            is_knn = 'kneighbors' in str(algo_name).lower()
-            
-            target_dict = fit_grouped_data if is_fit else inference_grouped_data
-            if is_knn and param_algo_col:
-                # For KNN, separate by parameter|algorithm (brute, kd_tree, etc.)
-                for param_algo in algo_df[param_algo_col].dropna().unique():
-                    param_mask = algo_df[param_algo_col] == param_algo
-                    group_df = algo_df[param_mask]
-                    algo_name_parts = algo_name.split('|')
-                    group_label = f"{algo_name_parts[0]}({param_algo})|{algo_name_parts[1]}"
-                    #group_label = f"{algo_name}_{param_algo}"
-                    target_dict[group_label] = {
-                        'algo_name': algo_name,
-                        'param_algo': param_algo,
-                        'is_knn': True,
-                        'data': group_df
-                    }
+            adf = all_cases_df[all_cases_df[algo_name_col] == algo_name]
+            target = (fit_groups if str(algo_name).endswith("|fit")
+                      or str(algo_name) == "train_test_split" else inf_groups)
+            if "kneighbors" in str(algo_name).lower() and param_algo_col:
+                base, _, method = str(algo_name).partition("|")
+                for pa in adf[param_algo_col].dropna().unique():
+                    target[f"{base}({pa})|{method}"] = adf[adf[param_algo_col] == pa]
             else:
-                # For non-KNN, just use algorithm name
-                group_label = algo_name
-                target_dict[group_label] = {
-                    'algo_name': algo_name,
-                    'param_algo': None,
-                    'is_knn': False,
-                    'data': algo_df
-                }
-        
-        # Create plots for each comparison pair (fit and inference)
-        num_comparisons = len(comparison_cols)
-        if num_comparisons == 0:
-            logger.warning("No comparison columns found")
-            return
-        
-        # Colors from draw_plots2.py
-        color_fit = '#004A99'  # Blue (training)
-        color_inference = '#E66100'  # Orange (inference)
-        color_kd_tree = '#E66100'  # Orange (for kd_tree in inference)
-        color_brute = '#6B9BD1'  # Light blue (for brute in inference)
-        
-        # Create num_comparisons subplots (fit on left, inference on right)
-        fig, axes = plt.subplots(num_comparisons, 2, figsize=(16, 7 * num_comparisons))
-        if num_comparisons == 1:
-            axes = [axes]  # Make it 2D array-like for consistent indexing
-        
-        for ax_idx, comp_col in enumerate(comparison_cols):
-            # Extract comparison name from column
-            comp_col_str = str(comp_col)
-            comparison_name = comp_col_str.split("|")[0] if "|" in comp_col_str else comp_col_str
-            
-            # ===== FIT (TRAINING) PLOT (LEFT) =====
-            ax_fit = axes[ax_idx][0]
-            
-            fit_labels = []
-            fit_geomean_values = []
-            
-            for group_label, group_info in fit_grouped_data.items():
-                group_df = group_info['data']
-                comp_values = group_df[comp_col].dropna()
-                
-                if len(comp_values) > 0:
-                    gm = gmean(comp_values, nan_policy='omit')
-                    fit_labels.append(group_label)
-                    fit_geomean_values.append(gm)
-            
-            if len(fit_geomean_values) > 0:
-                x_fit = np.arange(len(fit_labels))
-                ax_fit.set_axisbelow(True)
-                # All fit algorithms use blue color
-                bars_fit = ax_fit.bar(x_fit, fit_geomean_values, color=color_fit, width=0.7, zorder=3)
-                
-                # Determine y_ticks
-                max_val_fit = max(fit_geomean_values)
-                if max_val_fit < 10:
-                    y_ticks_fit = [1, 10]
-                elif max_val_fit < 100:
-                    y_ticks_fit = [1, 10, 100]
-                elif max_val_fit < 1000:
-                    y_ticks_fit = [1, 10, 100, 1000]
-                else:
-                    y_ticks_fit = [1, 10, 100, 1000, 10000]
-                
-                ax_fit.set_yscale('log')
-                ax_fit.yaxis.set_major_locator(FixedLocator(y_ticks_fit))
-                ax_fit.yaxis.set_minor_locator(NullLocator())
-                ax_fit.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks_fit]))
-                
-                ax_fit.set_ylim(1, y_ticks_fit[-1])
-                ax_fit.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
-                
-                ax_fit.set_title('Training', fontsize=16, color='#555555', pad=15)
-                ax_fit.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
-                ax_fit.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
-                
-                ax_fit.set_xticks(x_fit)
-                ax_fit.set_xticklabels([l.replace("|", " | ") for l in fit_labels],
-                                       rotation=45, ha='right', fontsize=9)
-                
-                for spine in ['top', 'right']:
-                    ax_fit.spines[spine].set_visible(False)
-                
-                for bar in bars_fit:
-                    height = bar.get_height()
-                    ax_fit.text(bar.get_x() + bar.get_width() / 2, height * 1.1,
-                            f'{height:.1f}', ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
-            
-            # ===== INFERENCE (PREDICT) PLOT (RIGHT) =====
-            ax_inf = axes[ax_idx][1]
-            
-            inf_labels = []
-            inf_geomean_values = []
-            
-            for group_label, group_info in inference_grouped_data.items():
-                group_df = group_info['data']
-                comp_values = group_df[comp_col].dropna()
-                
-                if len(comp_values) > 0:
-                    gm = gmean(comp_values, nan_policy='omit')
-                    inf_labels.append(group_label)
-                    inf_geomean_values.append(gm)
-            
-            # All inference algorithms use orange color
-            inf_colors_list = [color_inference] * len(inf_labels)
-            
-            if len(inf_geomean_values) > 0:
-                x_inf = np.arange(len(inf_labels))
-                ax_inf.set_axisbelow(True)
-                bars_inf = ax_inf.bar(x_inf, inf_geomean_values, color=inf_colors_list, width=0.7, zorder=3)
-                
-                # Determine y_ticks
-                max_val_inf = max(inf_geomean_values)
-                if max_val_inf < 10:
-                    y_ticks_inf = [1, 10]
-                elif max_val_inf < 100:
-                    y_ticks_inf = [1, 10, 100]
-                elif max_val_inf < 1000:
-                    y_ticks_inf = [1, 10, 100, 1000]
-                else:
-                    y_ticks_inf = [1, 10, 100, 1000, 10000]
-                
-                ax_inf.set_yscale('log')
-                ax_inf.yaxis.set_major_locator(FixedLocator(y_ticks_inf))
-                ax_inf.yaxis.set_minor_locator(NullLocator())
-                ax_inf.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks_inf]))
-                
-                ax_inf.set_ylim(1, y_ticks_inf[-1])
-                ax_inf.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
-                
-                ax_inf.set_title('Inference', fontsize=16, color='#555555', pad=15)
-                ax_inf.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
-                ax_inf.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
-                
-                ax_inf.set_xticks(x_inf)
-                ax_inf.set_xticklabels([l.replace("|", " | ") for l in inf_labels],
-                                       rotation=45, ha='right', fontsize=9)
-                
-                for spine in ['top', 'right']:
-                    ax_inf.spines[spine].set_visible(False)
-                
-                for bar in bars_inf:
-                    height = bar.get_height()
-                    ax_inf.text(bar.get_x() + bar.get_width() / 2, height * 1.1,
-                            f'{height:.1f}', ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
-        
+                target[algo_name] = adf
+
+        color_fit, color_inference = '#004A99', '#E66100'
+
+        def draw_panel(ax, groups, comp_col, title, color):
+            labels, values = [], []
+            for label, gdf in groups.items():
+                vals = gdf[comp_col].dropna()
+                if len(vals) > 0:
+                    labels.append(label)
+                    values.append(gmean(vals, nan_policy='omit'))
+            if not values:
+                return
+            x = np.arange(len(labels))
+            ax.set_axisbelow(True)
+            bars = ax.bar(x, values, color=color, width=0.7, zorder=3)
+            exp = min(4, max(1, int(np.floor(np.log10(max(values)))) + 1))
+            y_ticks = [10 ** i for i in range(exp + 1)]
+            ax.set_yscale('log')
+            ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+            ax.yaxis.set_minor_locator(NullLocator())
+            ax.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks]))
+            ax.set_ylim(1, y_ticks[-1])
+            ax.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
+            ax.set_title(title, fontsize=16, color='#555555', pad=15)
+            ax.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
+            ax.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
+            ax.set_xticks(x)
+            ax.set_xticklabels([l.replace("|", " | ") for l in labels],
+                               rotation=45, ha='right', fontsize=9)
+            for spine in ('top', 'right'):
+                ax.spines[spine].set_visible(False)
+            for bar in bars:
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width() / 2, height * 1.1, f'{height:.1f}',
+                        ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
+
+        # One row per comparison: training (left) + inference (right)
+        n = len(comparison_cols)
+        fig, axes = plt.subplots(n, 2, figsize=(16, 7 * n))
+        if n == 1:
+            axes = [axes]
+        for i, comp_col in enumerate(comparison_cols):
+            draw_panel(axes[i][0], fit_groups, comp_col, 'Training', color_fit)
+            draw_panel(axes[i][1], inf_groups, comp_col, 'Inference', color_inference)
+
         # Reserve top margin for the two-component title
         plt.tight_layout(rect=[0, 0.06, 1, 0.90])
 
@@ -990,14 +690,31 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
             fontsize=17, color='#0068B5', ha='center', va='top',
         )
 
+        # Configuration placeholders — edit these to match the machine/run.
+        TEST_DATE = "Month DD, YYYY"
+        HARDWARE_CONFIG = (
+            "x-node, CPU NAME, xx cores per socket, x sockets (x used), "
+            "microcode xxx, HT on/off, Turbo on/off, SNC on/off (x NUMA nodes), "
+            "xxxxGB (RAM type)"
+        )
+        SOFTWARE_CONFIG = (
+            "Ubuntu xxx Python xxx "
+            "Python libraries"
+        )
+
+        def mathbf(text):
+            # Bold run for matplotlib mathtext (spaces must be escaped as '\ ')
+            return r"$\bf{" + text.replace(" ", r"\ ") + "}$"
+
         # Footnote / disclaimer, drawn line by line so the URL renders as a link.
         # Each entry is (text, is_bold); "__URL__" is a special marker for the
         # line that embeds the www.Intel.com/PerformanceIndex link.
         footnote_lines = [
-            (r"$\bf{Testing\ Date:}$ Performance results are based on $\bf{testing\ by\ Intel\ as\ of\ June\ 1,\ 2026}$ and may not reflect all publically available security updates", False),
-            (r"$\bf{Configuration\ Details\ and\ Workload\ Setup:}$ 1-node, 6th Gen Intel® Xeon® 6767P CPU, 64 cores per socket, 2 sockets (1 used), microcode 0x10003a2, HT on (only physical cores were used), Turbo on, SNC on (4 NUMA nodes),", False),
-            ("1024GB (16x64GB DDR5 8800MT/s), Ubuntu 24.04.3 LTS, 6.8.0-47-generic. Python 3.12.13, NumPy 2.4.4, pandas 3.0.2, SciPy 1.17.1, scikit-learn 1.8.0, scikit-learn-intelex 2026.0.0", False),
-            ('Benchmarks were run using "numactl --physcpubind=0-63 --membind=0,1" command prefix. See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ', False),
+            (f"{mathbf('Testing Date:')} Performance results are based on "
+             f"{mathbf(f'testing by Intel as of {TEST_DATE}')} and may not reflect all publically available security updates", False),
+            (f"{mathbf('Configuration Details and Workload Setup:')} {HARDWARE_CONFIG}", False),
+            (SOFTWARE_CONFIG, False),
+            ('See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ', False),
             ("__URL__", False),
             ("No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.", False),
             ("© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.", False),
@@ -1091,13 +808,11 @@ def generate_report(args: argparse.Namespace):
         write_df_to_sheet(summary_df, summary_ws)
         apply_rules_for_sheet(summary_ws, args.perf_color_scale, args.quality_color_scale)
     if (all_cases_df.size > 0) and args.combined_results:
-        # Prepare all_cases_df with proper column ordering
+        # Prepare all_cases_df with proper column ordering (used for plots)
         all_cases_df = prepare_all_cases_df(all_cases_df)
-        all_cases_ws = wb.create_sheet(title="All cases", index=1)
-        write_all_cases_sheet_with_groups(all_cases_df, all_cases_ws, args.perf_color_scale, args.quality_color_scale)
-        # Write "All cases 2" sheet with simplified format and GEOMEAN formulas
-        geomean_rows = write_all_cases_2_sheet(all_dfs, compared_dfs, diffby, wb)
-        # Write "Summary 2" sheet referencing geomean values from "All cases 2"
+        # Write "All cases" sheet with simplified format and GEOMEAN formulas
+        geomean_rows = write_all_cases_2_sheet(compared_dfs, wb)
+        # Write "Summary (for plots)" sheet referencing geomean values from "All cases"
         if geomean_rows:
             write_summary_2_sheet(geomean_rows, wb)
     # write environment info
