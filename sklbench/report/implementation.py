@@ -29,7 +29,8 @@ from scipy.stats import gmean
 
 try:
     import matplotlib.pyplot as plt
-    from matplotlib.ticker import NullLocator, FixedFormatter, FixedLocator
+    from matplotlib.ticker import FixedFormatter, FixedLocator, NullLocator
+
     matplotlib_available = True
 except ImportError:
     matplotlib_available = False
@@ -364,44 +365,48 @@ def prepare_all_cases_df(all_cases_df: pd.DataFrame) -> pd.DataFrame:
     4. Exclude metric columns (except time[ms])
     """
     df = all_cases_df.copy()
-    
+
     # Flatten multi-index columns for easier processing
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = ["|".join(col).strip() for col in df.columns.values]
-    
+
     # Identify column groups
     algorithm_cols = [col for col in df.columns if col.startswith("parameter|")]
-    time_cols = [col for col in df.columns if "time[ms]" in col and "parameter" not in col]
-    
+    time_cols = [
+        col for col in df.columns if "time[ms]" in col and "parameter" not in col
+    ]
+
     # Get all metric columns to exclude (except time[ms])
     metric_cols_to_exclude = [
-        col for col in df.columns
+        col
+        for col in df.columns
         if any(metric in col for metric in METRIC_NAMES)
         and "time[ms]" not in col
         and "parameter" not in col
     ]
-    
+
     # Get remaining columns (parameters) - exclude metrics
     remaining_cols = [
-        col for col in df.columns
+        col
+        for col in df.columns
         if col not in algorithm_cols
         and col not in time_cols
         and col not in metric_cols_to_exclude
     ]
-    
-    ordered_cols = remaining_cols + time_cols + algorithm_cols 
-    
+
+    ordered_cols = remaining_cols + time_cols + algorithm_cols
+
     # Filter to only include columns that exist
     ordered_cols = [col for col in ordered_cols if col in df.columns]
     # Select only the ordered columns
     df = df[ordered_cols]
-    
+
     # Convert back to multi-index columns if there were multi-index columns
     if "|" in ordered_cols[0] if ordered_cols else False:
         df.columns = pd.MultiIndex.from_tuples(
             [tuple(col.split("|")) for col in df.columns]
         )
-    
+
     return df
 
 
@@ -420,42 +425,69 @@ def write_all_cases_2_sheet(dfs, wb):
 
     def geomean_row(label, r0, r1):
         nonlocal row
-        ws.append([label] + [f"=GEOMEAN({get_column_letter(c)}{r0}:{get_column_letter(c)}{r1})"
-                             for c in (2, 3, 4)])
+        ws.append(
+            [label]
+            + [
+                f"=GEOMEAN({get_column_letter(c)}{r0}:{get_column_letter(c)}{r1})"
+                for c in (2, 3, 4)
+            ]
+        )
         row += 1
         return row - 1
 
     for df_name, df in dfs.items():
         if not isinstance(df.columns, pd.MultiIndex):
             continue
-        time_cols = {p: (p, "time[ms]") for p in ("sklearn", "sklearnex")
-                     if (p, "time[ms]") in df.columns}
-        speedup = next((c for c in df.columns if "time[ms] relative improvement" in c[1]), None)
+        time_cols = {
+            p: (p, "time[ms]")
+            for p in ("sklearn", "sklearnex")
+            if (p, "time[ms]") in df.columns
+        }
+        speedup = next(
+            (c for c in df.columns if "time[ms] relative improvement" in c[1]), None
+        )
         if len(time_cols) < 2 or speedup is None:
             continue
 
         is_knn = df_name.split("|")[0] in KNN
-        params = [c for c in df.columns
-                  if c[0] == "parameter" and not (is_knn and c[1] == "algorithm")]
-        stability = [(p, m) for m in STABILITY for p in ("sklearn", "sklearnex")
-                     if (p, m) in df.columns]
-        value_cols = [time_cols["sklearn"], time_cols["sklearnex"], speedup] + stability + params
+        params = [
+            c
+            for c in df.columns
+            if c[0] == "parameter" and not (is_knn and c[1] == "algorithm")
+        ]
+        stability = [
+            (p, m)
+            for m in STABILITY
+            for p in ("sklearn", "sklearnex")
+            if (p, m) in df.columns
+        ]
+        value_cols = (
+            [time_cols["sklearn"], time_cols["sklearnex"], speedup] + stability + params
+        )
 
         algo_col = ("parameter", "algorithm")
         if is_knn and algo_col in df.columns:
-            groups = {f"{df_name} ({v})": df[df[algo_col] == v]
-                      for v in df[algo_col].dropna().unique()}
+            groups = {
+                f"{df_name} ({v})": df[df[algo_col] == v]
+                for v in df[algo_col].dropna().unique()
+            }
         else:
             groups = {df_name: df}
 
         for name, gdf in groups.items():
-            sort_cols = [c for c in (("parameter", "dtype"), ("parameter", "dataset"))
-                         if c in gdf.columns]
+            sort_cols = [
+                c
+                for c in (("parameter", "dtype"), ("parameter", "dataset"))
+                if c in gdf.columns
+            ]
             if sort_cols:
                 gdf = gdf.sort_values(sort_cols, kind="mergesort")
 
-            header = (["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
-                      + [f"{p} {m}" for p, m in stability] + [c[1] for c in params])
+            header = (
+                ["Algorithm", "sklearn time[ms]", "sklearnex time[ms]", "Speedup"]
+                + [f"{p} {m}" for p, m in stability]
+                + [c[1] for c in params]
+            )
             ws.append(header)
             for cell in ws[row]:
                 cell.alignment = Alignment(wrap_text=True)
@@ -478,7 +510,9 @@ def write_all_cases_2_sheet(dfs, wb):
                         j = i
                         while j + 1 < len(dtypes) and dtypes[j + 1] == dtypes[i]:
                             j += 1
-                        dtype_rows[dtypes[i]] = geomean_row(f"GEOMEAN {dtypes[i]}", start + i, start + j)
+                        dtype_rows[dtypes[i]] = geomean_row(
+                            f"GEOMEAN {dtypes[i]}", start + i, start + j
+                        )
                         i = j + 1
 
                 total_row = geomean_row("GEOMEAN total", start, end)
@@ -490,9 +524,17 @@ def write_all_cases_2_sheet(dfs, wb):
                     ws.conditional_formatting.add(
                         f"$D${start}:$D${total_row}",
                         ColorScaleRule(
-                            start_type="num", start_value=lo, start_color=RED_COLOR,
-                            mid_type="num", mid_value=(lo + hi) / 2, mid_color=YELLOW_COLOR,
-                            end_type="num", end_value=hi, end_color=GREEN_COLOR))
+                            start_type="num",
+                            start_value=lo,
+                            start_color=RED_COLOR,
+                            mid_type="num",
+                            mid_value=(lo + hi) / 2,
+                            mid_color=YELLOW_COLOR,
+                            end_type="num",
+                            end_value=hi,
+                            end_color=GREEN_COLOR,
+                        ),
+                    )
 
             ws.append([])
             row += 1
@@ -511,20 +553,30 @@ def write_summary_2_sheet(geomean_rows, wb):
     ws = wb.create_sheet(title="Summary (for plots)", index=0)
 
     # Separate into training and inference groups
-    training_rows = [(n, r, d) for n, r, d in geomean_rows
-                     if "|fit" in n or n == "train_test_split"]
-    inference_rows = [(n, r, d) for n, r, d in geomean_rows
-                      if (n, r, d) not in training_rows]
+    training_rows = [
+        (n, r, d) for n, r, d in geomean_rows if "|fit" in n or n == "train_test_split"
+    ]
+    inference_rows = [
+        (n, r, d) for n, r, d in geomean_rows if (n, r, d) not in training_rows
+    ]
 
     # Columns: A=algo, B/C/D=total, E/F/G=fp32, H/I/J=fp64
     # Each triplet: sklearn time, sklearnex time, speedup
     speedup_cols = ["D", "G", "J"]
     current_row = 1
 
-    HEADER = ["Algorithm",
-              "sklearn time[ms]", "sklearnex time[ms]", "speedup",
-              "sklearn fp32", "sklearnex fp32", "speedup fp32",
-              "sklearn fp64", "sklearnex fp64", "speedup fp64"]
+    HEADER = [
+        "Algorithm",
+        "sklearn time[ms]",
+        "sklearnex time[ms]",
+        "speedup",
+        "sklearn fp32",
+        "sklearnex fp32",
+        "speedup fp32",
+        "sklearn fp64",
+        "sklearnex fp64",
+        "speedup fp64",
+    ]
 
     def refs_for_row(row_num):
         if row_num is None:
@@ -537,20 +589,27 @@ def write_summary_2_sheet(geomean_rows, wb):
         current_row += 1
         start = current_row
         for name, total_row, dtype_rows in rows:
-            ws.append([name]
-                      + refs_for_row(total_row)
-                      + refs_for_row(dtype_rows.get("float32"))
-                      + refs_for_row(dtype_rows.get("float64")))
+            ws.append(
+                [name]
+                + refs_for_row(total_row)
+                + refs_for_row(dtype_rows.get("float32"))
+                + refs_for_row(dtype_rows.get("float64"))
+            )
             current_row += 1
         end = current_row - 1
         for col in speedup_cols:
             ws.conditional_formatting.add(
                 f"${col}${start}:${col}${end}",
                 ColorScaleRule(
-                    start_type="min", start_color=RED_COLOR,
-                    mid_type="percentile", mid_value=50, mid_color=YELLOW_COLOR,
-                    end_type="max", end_color=GREEN_COLOR,
-                ))
+                    start_type="min",
+                    start_color=RED_COLOR,
+                    mid_type="percentile",
+                    mid_value=50,
+                    mid_color=YELLOW_COLOR,
+                    end_type="max",
+                    end_color=GREEN_COLOR,
+                ),
+            )
         return start, end
 
     t_start, t_end = write_section("Training", training_rows)
@@ -564,8 +623,10 @@ def write_summary_2_sheet(geomean_rows, wb):
         ("Inference GEOMEAN", [(i_start, i_end)]),
         ("Total GEOMEAN", [(t_start, t_end), (i_start, i_end)]),
     ]:
+
         def gm(col):
             return f"=GEOMEAN({','.join(f'{col}{s}:{col}{e}' for s, e in ranges)})"
+
         ws.append([label, None, None, gm("D"), None, None, gm("G"), None, None, gm("J")])
         current_row += 1
 
@@ -604,26 +665,42 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
     if not matplotlib_available:
         logger.warning("matplotlib is not available, skipping plot generation")
         return
-    
+
     try:
         # Flatten column names if multi-index
         if isinstance(all_cases_df.columns, pd.MultiIndex):
-            all_cases_df.columns = ["|".join(col).strip() for col in all_cases_df.columns.values]
+            all_cases_df.columns = [
+                "|".join(col).strip() for col in all_cases_df.columns.values
+            ]
 
-        algo_name_col = "algorithm|name" if "algorithm|name" in all_cases_df.columns else None
-        param_algo_col = "parameter|algorithm" if "parameter|algorithm" in all_cases_df.columns else None
-        comparison_cols = [c for c in all_cases_df.columns
-                           if "vs" in str(c) and "relative improvement" in str(c)]
+        algo_name_col = (
+            "algorithm|name" if "algorithm|name" in all_cases_df.columns else None
+        )
+        param_algo_col = (
+            "parameter|algorithm"
+            if "parameter|algorithm" in all_cases_df.columns
+            else None
+        )
+        comparison_cols = [
+            c
+            for c in all_cases_df.columns
+            if "vs" in str(c) and "relative improvement" in str(c)
+        ]
         if not algo_name_col or not comparison_cols:
-            logger.warning("Could not find required columns (algorithm|name or comparison columns)")
+            logger.warning(
+                "Could not find required columns (algorithm|name or comparison columns)"
+            )
             return
 
         # Group rows into training/inference; split KNN by method (brute/kd_tree)
         fit_groups, inf_groups = {}, {}
         for algo_name in all_cases_df[algo_name_col].unique():
             adf = all_cases_df[all_cases_df[algo_name_col] == algo_name]
-            target = (fit_groups if str(algo_name).endswith("|fit")
-                      or str(algo_name) == "train_test_split" else inf_groups)
+            target = (
+                fit_groups
+                if str(algo_name).endswith("|fit") or str(algo_name) == "train_test_split"
+                else inf_groups
+            )
             if "kneighbors" in str(algo_name).lower() and param_algo_col:
                 base, _, method = str(algo_name).partition("|")
                 for pa in adf[param_algo_col].dropna().unique():
@@ -631,7 +708,7 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
             else:
                 target[algo_name] = adf
 
-        color_fit, color_inference = '#004A99', '#E66100'
+        color_fit, color_inference = "#004A99", "#E66100"
 
         def draw_panel(ax, groups, comp_col, title, color):
             labels, values = [], []
@@ -639,32 +716,59 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
                 vals = gdf[comp_col].dropna()
                 if len(vals) > 0:
                     labels.append(label)
-                    values.append(gmean(vals, nan_policy='omit'))
+                    values.append(gmean(vals, nan_policy="omit"))
             if not values:
                 return
             x = np.arange(len(labels))
             ax.set_axisbelow(True)
             bars = ax.bar(x, values, color=color, width=0.7, zorder=3)
             exp = min(4, max(1, int(np.floor(np.log10(max(values)))) + 1))
-            y_ticks = [10 ** i for i in range(exp + 1)]
-            ax.set_yscale('log')
+            y_ticks = [10**i for i in range(exp + 1)]
+            ax.set_yscale("log")
             ax.yaxis.set_major_locator(FixedLocator(y_ticks))
             ax.yaxis.set_minor_locator(NullLocator())
-            ax.yaxis.set_major_formatter(FixedFormatter([f'{float(t):.1f}' for t in y_ticks]))
+            ax.yaxis.set_major_formatter(
+                FixedFormatter([f"{float(t):.1f}" for t in y_ticks])
+            )
             ax.set_ylim(1, y_ticks[-1])
-            ax.grid(axis='y', which='major', linestyle='-', linewidth=0.8, color='#e0e0e0', zorder=0)
-            ax.set_title(title, fontsize=16, color='#555555', pad=15)
-            ax.set_ylabel('Speedup over original version\n(higher is better)', color='#555555', fontsize=11)
-            ax.set_xlabel('scikit-learn* Algorithms', fontweight='bold', labelpad=10, fontsize=11)
+            ax.grid(
+                axis="y",
+                which="major",
+                linestyle="-",
+                linewidth=0.8,
+                color="#e0e0e0",
+                zorder=0,
+            )
+            ax.set_title(title, fontsize=16, color="#555555", pad=15)
+            ax.set_ylabel(
+                "Speedup over original version\n(higher is better)",
+                color="#555555",
+                fontsize=11,
+            )
+            ax.set_xlabel(
+                "scikit-learn* Algorithms", fontweight="bold", labelpad=10, fontsize=11
+            )
             ax.set_xticks(x)
-            ax.set_xticklabels([l.replace("|", " | ") for l in labels],
-                               rotation=45, ha='right', fontsize=9)
-            for spine in ('top', 'right'):
+            ax.set_xticklabels(
+                [l.replace("|", " | ") for l in labels],
+                rotation=45,
+                ha="right",
+                fontsize=9,
+            )
+            for spine in ("top", "right"):
                 ax.spines[spine].set_visible(False)
             for bar in bars:
                 height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width() / 2, height * 1.1, f'{height:.1f}',
-                        ha='center', va='bottom', rotation=90, fontsize=8, color='#555555')
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    height * 1.1,
+                    f"{height:.1f}",
+                    ha="center",
+                    va="bottom",
+                    rotation=90,
+                    fontsize=8,
+                    color="#555555",
+                )
 
         # One row per comparison: training (left) + inference (right)
         n = len(comparison_cols)
@@ -672,22 +776,30 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
         if n == 1:
             axes = [axes]
         for i, comp_col in enumerate(comparison_cols):
-            draw_panel(axes[i][0], fit_groups, comp_col, 'Training', color_fit)
-            draw_panel(axes[i][1], inf_groups, comp_col, 'Inference', color_inference)
+            draw_panel(axes[i][0], fit_groups, comp_col, "Training", color_fit)
+            draw_panel(axes[i][1], inf_groups, comp_col, "Inference", color_inference)
 
         # Reserve top margin for the two-component title
         plt.tight_layout(rect=[0, 0.06, 1, 0.90])
 
         # Two-component suptitle (black main title + blue subtitle)
         fig.text(
-            0.5, 0.98,
+            0.5,
+            0.98,
             "Performance Benefits of Extension for Scikit-learn*",
-            fontsize=22, color='#404040', ha='center', va='top',
+            fontsize=22,
+            color="#404040",
+            ha="center",
+            va="top",
         )
         fig.text(
-            0.5, 0.935,
+            0.5,
+            0.935,
             "Combined Averages of FP32 & FP64 Workloads",
-            fontsize=17, color='#0068B5', ha='center', va='top',
+            fontsize=17,
+            color="#0068B5",
+            ha="center",
+            va="top",
         )
 
         # Configuration placeholders — edit these to match the machine/run.
@@ -697,10 +809,7 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
             "microcode xxx, HT on/off, Turbo on/off, SNC on/off (x NUMA nodes), "
             "xxxxGB (RAM type)"
         )
-        SOFTWARE_CONFIG = (
-            "Ubuntu xxx Python xxx "
-            "Python libraries"
-        )
+        SOFTWARE_CONFIG = "Ubuntu xxx Python xxx " "Python libraries"
 
         def mathbf(text):
             # Bold run for matplotlib mathtext (spaces must be escaped as '\ ')
@@ -710,14 +819,29 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
         # Each entry is (text, is_bold); "__URL__" is a special marker for the
         # line that embeds the www.Intel.com/PerformanceIndex link.
         footnote_lines = [
-            (f"{mathbf('Testing Date:')} Performance results are based on "
-             f"{mathbf(f'testing by Intel as of {TEST_DATE}')} and may not reflect all publically available security updates", False),
-            (f"{mathbf('Configuration Details and Workload Setup:')} {HARDWARE_CONFIG}", False),
+            (
+                f"{mathbf('Testing Date:')} Performance results are based on "
+                f"{mathbf(f'testing by Intel as of {TEST_DATE}')} and may not reflect all publically available security updates",
+                False,
+            ),
+            (
+                f"{mathbf('Configuration Details and Workload Setup:')} {HARDWARE_CONFIG}",
+                False,
+            ),
             (SOFTWARE_CONFIG, False),
-            ('See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ', False),
+            (
+                "See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ",
+                False,
+            ),
             ("__URL__", False),
-            ("No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.", False),
-            ("© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.", False),
+            (
+                "No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.",
+                False,
+            ),
+            (
+                "© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.",
+                False,
+            ),
         ]
 
         url_prefix = "and may not reflect all publicly available updates. Results may vary. Performance varies by use, configuration and other factors. Learn more at "
@@ -734,26 +858,43 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
         y = y0
         for text, is_bold in footnote_lines:
             if text == "__URL__":
-                t_pref = fig.text(x0, y, url_prefix, fontsize=9, color=gray,
-                                  ha="left", va="top")
+                t_pref = fig.text(
+                    x0, y, url_prefix, fontsize=9, color=gray, ha="left", va="top"
+                )
                 w_pref = t_pref.get_window_extent(renderer=renderer).width / fig_w
-                t_url = fig.text(x0 + w_pref, y, url_text, fontsize=9, color=blue,
-                                 ha="left", va="top")
+                t_url = fig.text(
+                    x0 + w_pref, y, url_text, fontsize=9, color=blue, ha="left", va="top"
+                )
                 ext = t_url.get_window_extent(renderer=renderer)
                 x_start, x_end = ext.x0 / fig_w, ext.x1 / fig_w
                 y_line = ext.y0 / fig_h
-                fig.add_artist(plt.Line2D([x_start, x_end], [y_line, y_line],
-                                          transform=fig.transFigure,
-                                          color=blue, linewidth=0.8))
-                fig.text(x_end, y, url_suffix, fontsize=9, color=gray,
-                         ha="left", va="top")
+                fig.add_artist(
+                    plt.Line2D(
+                        [x_start, x_end],
+                        [y_line, y_line],
+                        transform=fig.transFigure,
+                        color=blue,
+                        linewidth=0.8,
+                    )
+                )
+                fig.text(
+                    x_end, y, url_suffix, fontsize=9, color=gray, ha="left", va="top"
+                )
             else:
-                fig.text(x0, y, text, fontsize=9, color=gray, ha="left", va="top",
-                         fontweight="bold" if is_bold else "normal")
+                fig.text(
+                    x0,
+                    y,
+                    text,
+                    fontsize=9,
+                    color=gray,
+                    ha="left",
+                    va="top",
+                    fontweight="bold" if is_bold else "normal",
+                )
             y -= step
 
         if output_file:
-            plt.savefig(output_file, dpi=150, bbox_inches='tight')
+            plt.savefig(output_file, dpi=150, bbox_inches="tight")
             logger.info(f"Plot saved to {output_file}")
         else:
             plt.show()
@@ -820,9 +961,9 @@ def generate_report(args: argparse.Namespace):
     # remove default sheet
     wb.remove(wb["Sheet"])
     wb.save(args.report_file)
-    
+
     # Draw plots if requested
     if args.draw_plots and (all_cases_df.size > 0):
         draw_summary_plots(all_cases_df, args.plot_output)
-    
+
     return 0
