@@ -97,19 +97,23 @@ def add_report_generator_arguments(
         "--combined-results",
         default=False,
         action="store_true",
-        help="Creates 'All cases' sheet with combined results from all algorithms.",
+        help="[EXPERIMENTAL] Creates 'All cases' and 'Summary (for plots)' sheets "
+        "combining time[ms] and speedup of all algorithms into single pages with "
+        "per-dtype and total GEOMEAN rows. Use together with --compatibility-mode.",
     )
     parser.add_argument(
         "--draw-plots",
         default=False,
         action="store_true",
-        help="Draw comparison plots from summary data using matplotlib.",
+        help="[EXPERIMENTAL] Draw Training/Inference speedup bar charts from combined "
+        "results (requires --combined-results).",
     )
     parser.add_argument(
         "--plot-output",
         type=str,
         default=None,
-        help="Output file path for plots (e.g., plots.png). If not specified, plots are displayed.",
+        help="[EXPERIMENTAL] Output file path for plots (e.g., plots.png). "
+        "If not specified, plots are displayed.",
     )
     # color scale settings
     parser.add_argument(
