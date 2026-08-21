@@ -29,6 +29,28 @@ from ..utils.logger import logger
 def convert_data(data, dformat: str, order: str, dtype: str, device: str = None):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
         data = data.toarray()
+    # Remember which columns are categorical (and their exact CategoricalDtype)
+    # before the numpy round-trip below flattens the DataFrame and drops this
+    # metadata. The categoricals are restored after converting back to pandas,
+    # so estimators with native categorical support (e.g. XGBoost with
+    # enable_categorical=True) still see "category" columns.
+    categorical_dtypes = None
+    if (
+        dformat == "pandas"
+        and isinstance(data, pd.DataFrame)
+        and any(str(t) == "category" for t in data.dtypes)
+    ):
+        categorical_dtypes = {
+            column: data[column].dtype
+            for column in data.columns
+            if str(data[column].dtype) == "category"
+        }
+        column_names = list(data.columns)
+        # dtype requested for the non-categorical (numeric) columns; re-applied
+        # after the round-trip. Categoricals can't be cast to a numeric dtype,
+        # so the numpy round-trip itself must run untyped (object).
+        numeric_dtype = None if dtype in (None, "preserve") else dtype
+        dtype = None
     if dtype == "preserve":
         dtype = None
     if order == "F":
@@ -42,7 +64,17 @@ def convert_data(data, dformat: str, order: str, dtype: str, device: str = None)
     elif dformat == "pandas":
         if data.ndim == 1:
             return pd.Series(data)
-        return pd.DataFrame(data)
+        data = pd.DataFrame(data)
+        if categorical_dtypes is not None:
+            # restore original column names, re-apply the saved CategoricalDtype
+            # to categorical columns, and cast the rest to the requested dtype.
+            data.columns = column_names
+            for column in data.columns:
+                if column in categorical_dtypes:
+                    data[column] = data[column].astype(categorical_dtypes[column])
+                elif numeric_dtype is not None:
+                    data[column] = data[column].astype(numeric_dtype)
+        return data
     elif dformat == "dpnp":
         import dpnp
 

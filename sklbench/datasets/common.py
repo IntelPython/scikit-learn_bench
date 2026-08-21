@@ -59,7 +59,12 @@ def get_filenames_by_prefix(directory: str, prefix: str) -> List[str]:
 
 def load_data_file(filepath, extension):
     if extension == "parq":
-        data = pd.read_parquet(filepath)
+        # Read with the same engine used for writing (fastparquet). Reading a
+        # fastparquet-written file with the default "auto"/pyarrow engine drops
+        # pandas "category" dtype (string categories come back as object),
+        # which would prevent XGBoost's native categorical handling from ever
+        # seeing category columns loaded from cache.
+        data = pd.read_parquet(filepath, engine="fastparquet")
     elif extension.endswith("npz"):
         npz_content = np.load(filepath)
         if extension == "npz":
