@@ -6,7 +6,8 @@
                     "device": "cpu",
                     "estimator_params": {
                         "tree_method": "hist",
-                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                        "enable_categorical": true
                     },
                     "enable_modelbuilders": false
                 }
@@ -16,7 +17,8 @@
                     "device": "gpu",
                     "estimator_params": {
                         "tree_method": "hist",
-                        "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                        "n_jobs": "[SPECIAL_VALUE]physical_cpus",
+                        "enable_categorical": true
                     }
                 },
                 "data": { "format": "cudf" }

@@ -581,6 +581,28 @@ def load_airline_satisfaction(
 
 
 @cache
+def load_bioresponse(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    Bioresponse dataset.
+    https://www.openml.org/d/4134
+
+    Binary classification from drug discovery: predict whether a molecule
+    elicits a biological response (1) or not (0) from 1776 numeric molecular
+    descriptors. A real, wide, roughly balanced dataset (3751 samples x 1776
+    features, ~54% majority class, no missing values).
+
+    Source: OpenML dataset id 4134 (Bioresponse, curated by TabArena).
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(4134, raw_data_cache)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
 def load_ijcnn(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
@@ -956,6 +978,58 @@ def load_qsar_tid_11(
 
 
 @cache
+def load_nyc_taxi_green(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    NYC green taxi trip records, December 2016 (credit-card trips only).
+    https://www.openml.org/d/42729
+
+    Regression task: predict the tip amount (`tip_amount`) from trip features.
+    ~582k samples x 18 features.
+
+    OpenML marks 9 columns as nominal, but several of them are really numeric
+    fee amounts whose values carry order/magnitude (extra, mta_tax,
+    improvement_surcharge). Treating those as unordered categories throws away
+    the numeric meaning, so this loader converts them (and the ordinal
+    RatecodeID) back to numeric, and keeps only the genuinely categorical
+    columns -- vendor, forwarding flag, high-cardinality pickup/dropoff
+    location IDs, and trip type -- as pandas "category" dtype.
+    """
+    # nominal columns that are actually numeric-valued -> cast to numeric
+    numeric_from_nominal = [
+        "RatecodeID",
+        "extra",
+        "mta_tax",
+        "improvement_surcharge",
+    ]
+    # columns kept as genuine (unordered) categoricals
+    categorical_columns = [
+        "VendorID",
+        "store_and_fwd_flag",
+        "PULocationID",
+        "DOLocationID",
+        "trip_type",
+    ]
+
+    def transform_x_y(x, y):
+        for col in numeric_from_nominal:
+            if col in x.columns:
+                # category -> its (numeric) code values, as float
+                x[col] = pd.to_numeric(x[col].astype("str"), errors="coerce").astype(
+                    "float32"
+                )
+        for col in categorical_columns:
+            if col in x.columns:
+                x[col] = x[col].astype("category")
+        return x, y
+
+    x, y = load_openml(42729, raw_data_cache, transform_x_y, as_frame=True)
+    data_desc = {"default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
 def load_road_network(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
@@ -1031,6 +1105,7 @@ dataset_loading_functions = {
     "susy": load_susy,
     "ijcnn": load_ijcnn,
     "amazon_employee_access": load_amazon_employee_access,
+    "bioresponse": load_bioresponse,
     "apsfailure": load_apsfailure,
     "airline_satisfaction": load_airline_satisfaction,
     "kddcup09_appetency": load_kddcup09_appetency,
@@ -1056,6 +1131,7 @@ dataset_loading_functions = {
     "yolanda": load_yolanda,
     "superconductivity": load_superconductivity,
     "qsar_tid_11": load_qsar_tid_11,
+    "nyc_taxi_green": load_nyc_taxi_green,
     "road_network": load_road_network,
     # index search
     "sift": load_sift,

@@ -4,23 +4,6 @@
         "gbt regression data": [
             {
                 "data": {
-                    "dataset": "twodplanes",
-                    "split_kwargs": {
-                        "train_size": 0.33,
-                        "test_size": null
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "learning_rate": 0.01,
-                        "reg_alpha": 1.0,
-                        "reg_lambda": 0.1,
-                        "n_estimators": 500
-                    }
-                }
-            },
-            {
-                "data": {
                     "dataset": "medical_charges_nominal",
                     "split_kwargs": {
                         "train_size": 0.1,
@@ -74,24 +57,6 @@
             },
             {
                 "data": {
-                    "dataset": "gisette",
-                    "split_kwargs": {
-                        "train_size": 2000,
-                        "test_size": 5000
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "learning_rate": 0.15,
-                        "max_leaves": 256,
-                        "colsample_bytree": 0.1,
-                        "colsample_bynode": 0.1,
-                        "n_estimators": 100
-                    }
-                }
-            },
-            {
-                "data": {
                     "dataset": "superconductivity",
                     "split_kwargs": {
                         "test_size": 0.2,
@@ -125,6 +90,26 @@
                         "colsample_bytree": 0.8,
                         "reg_lambda": 1.0,
                         "n_estimators": 1000
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "nyc_taxi_green",
+                    "preprocessing_kwargs": {
+                        "category_encoding": ["ordinal", "ignore"]
+                    },
+                    "split_kwargs": {
+                        "test_size": 0.2,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.1,
+                        "max_depth": 8,
+                        "reg_lambda": 1.0,
+                        "n_estimators": 500
                     }
                 }
             }
