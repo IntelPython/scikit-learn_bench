@@ -40,12 +40,6 @@ conda env create -n sklearn -f envs/conda-env-sklearn.yml
 conda env create -n rapids --solver=libmamba -f envs/conda-env-rapids.yml
 ```
 
-GPU benchmarks using `sklearnex`'s `device: gpu` rely on scikit-learn's Array API support (`array_api_dispatch`), which requires `SCIPY_ARRAY_API=1` to be set in the environment before running:
-
-```bash
-export SCIPY_ARRAY_API=1
-```
-
 ## 🚀 How To Use Scikit-learn_bench
 
 ### Benchmarks Runner

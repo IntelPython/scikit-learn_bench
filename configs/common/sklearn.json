@@ -15,7 +15,7 @@
                     "device": "gpu",
                     "sklearn_context": { "array_api_dispatch": true }
                 },
-                "data": { "format": "dpnp" }
+                "data": { "format": "dpnp", "order": "C" }
             }
         ],
         "sklearnex spmd implementation": {

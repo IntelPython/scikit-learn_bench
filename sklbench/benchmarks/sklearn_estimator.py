@@ -22,6 +22,9 @@ import os
 from importlib.metadata import PackageNotFoundError, version
 from typing import Dict, List, Union
 
+# sklbench uses array API by default; must precede scipy import to take effect
+os.environ.setdefault("SCIPY_ARRAY_API", "1")
+
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -147,10 +150,6 @@ def get_subset_metrics_of_estimator(
             and getattr(estimator_instance, "probability") == False
         ):
             y_pred_proba = convert_to_numpy(estimator_instance.predict_proba(x))
-            # GPU/float32 predict_proba rows may drift outside roc_auc_score's
-            # sum-to-one tolerance for multiclass, so renormalize before scoring
-            if y_pred_proba.shape[1] > 2:
-                y_pred_proba = y_pred_proba / y_pred_proba.sum(axis=1, keepdims=True)
             metrics.update(
                 {
                     "ROC AUC": float(
