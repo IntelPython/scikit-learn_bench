@@ -22,6 +22,9 @@ import os
 from importlib.metadata import PackageNotFoundError, version
 from typing import Dict, List, Union
 
+# sklbench uses array API by default; must precede scipy import to take effect
+os.environ.setdefault("SCIPY_ARRAY_API", "1")
+
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
