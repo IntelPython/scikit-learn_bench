@@ -26,7 +26,9 @@ from ..utils.bench_case import get_bench_case_value
 from ..utils.logger import logger
 
 
-def convert_data(data, dformat: str, order: str, dtype: str, device: str = None, sycl_queue=None):
+def convert_data(
+    data, dformat: str, order: str, dtype: str, device: str = None, sycl_queue=None
+):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
         data = data.toarray()
     if dtype == "preserve":
