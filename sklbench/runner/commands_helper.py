@@ -18,6 +18,7 @@ import json
 import os
 import sys
 from time import time
+from datetime import datetime
 from typing import Dict, List, Tuple
 
 from ..utils.bench_case import get_bench_case_name, get_bench_case_value
@@ -61,7 +62,7 @@ def generate_benchmark_command(
                         get_bench_case_name(bench_case, shortened=True, separator="_"),
                         hash_from_json_repr(bench_case),
                         # TODO: replace unix time in ms with datetime
-                        str(int(time() * 1000)),
+                        datetime.now().strftime("%Y-%m-%d %H:%M"),
                     ]
                 ),
             )
