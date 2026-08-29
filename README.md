@@ -64,6 +64,14 @@ python -m sklbench --config configs/sklearn_example.json --report --result-file 
 
 For a description of all benchmarks runner arguments, refer to [documentation](sklbench/runner/README.md#arguments).
 
+Can also specify filters in addition to what the configs state - for example, to benchmark cases before/after a change in some CPU-only algorithm like PCA in oneDAL:
+```shell
+python -m sklbench \
+  --config configs/regular/pca.json \
+  --filters algorithm:library=sklearnex algorithm:device=cpu \
+  --result-file pca_before.json
+```
+
 ### Report Generator
 
 To combine raw result files gathered from different environments, call the report generator:
