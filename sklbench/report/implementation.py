@@ -71,6 +71,8 @@ METRICS = {
         # NB: 'n_clusters' is parameter of KMeans while
         # 'clusters' is number of computer clusters by DBSCAN
         "clusters",
+        # tree ensembles
+        "n_nodes",
     ],
     "incomparable": [
         "1st-mean run ratio",
