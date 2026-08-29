@@ -64,24 +64,6 @@ def convert_data(
         import dpctl.tensor
 
         return dpctl.tensor.asarray(data, dtype=dtype, order=order, device=device)
-    elif dformat.startswith("modin"):
-        if dformat.endswith("ray"):
-            os.environ["MODIN_ENGINE"] = "ray"
-        elif dformat.endswith("dask"):
-            os.environ["MODIN_ENGINE"] = "dask"
-        elif dformat.endswith("unidist"):
-            os.environ["MODIN_ENGINE"] = "unidist"
-            os.environ["UNIDIST_BACKEND"] = "mpi"
-        else:
-            logger.info(
-                "Modin engine is unknown or not specified. Default engine will be used."
-            )
-
-        import modin.pandas as modin_pd
-
-        if data.ndim == 1:
-            return modin_pd.Series(data)
-        return modin_pd.DataFrame(data)
     elif dformat == "cudf":
         import cudf
 
