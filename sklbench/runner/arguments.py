@@ -137,6 +137,15 @@ def add_runner_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         action="store_true",
         help="Interrupt runner and exit if last benchmark failed with error.",
     )
+    # throughput mode
+    parser.add_argument(
+        "--throughput-mode",
+        default=False,
+        action="store_true",
+        help="Run in throughput mode: multiple synchronized parallel instances "
+        "with CPU pinning via numactl. Configure via bench:num_instances, "
+        "bench:cores_per_instance, bench:measurement_duration in config.",
+    )
     # option to get parser description in Markdown table format for READMEs
     parser.add_argument(
         "--describe-parser",
