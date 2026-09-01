@@ -69,11 +69,12 @@ def convert_data(data, dformat: str, order: str, dtype: str, device: str = None)
             # restore original column names, re-apply the saved CategoricalDtype
             # to categorical columns, and cast the rest to the requested dtype.
             data.columns = column_names
-            for column in data.columns:
-                if column in categorical_dtypes:
-                    data[column] = data[column].astype(categorical_dtypes[column])
-                elif numeric_dtype is not None:
-                    data[column] = data[column].astype(numeric_dtype)
+            dtype_map = {
+                column: categorical_dtypes.get(column, numeric_dtype)
+                for column in column_names
+                if column in categorical_dtypes or numeric_dtype is not None
+            }
+            data = data.astype(dtype_map)
         return data
     elif dformat == "dpnp":
         import dpnp
