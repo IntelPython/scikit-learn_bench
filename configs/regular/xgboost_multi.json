@@ -4,6 +4,16 @@
         "gbt multi classification data": [
             {
                 "data": {
+                    "dataset": "connect"
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "n_estimators": 500
+                    }
+                }
+            },
+            {
+                "data": {
                     "dataset": "covtype"
                 },
                 "algorithm": {
@@ -12,16 +22,6 @@
                         "reg_lambda": 1,
                         "max_depth": 14,
                         "n_estimators": 100
-                    }
-                }
-            },
-            {
-                "data": {
-                    "dataset": "connect"
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "n_estimators": 500
                     }
                 }
             }

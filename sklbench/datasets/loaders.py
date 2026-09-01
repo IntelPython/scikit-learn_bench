@@ -31,7 +31,13 @@ from sklearn.datasets import (
     make_regression,
 )
 
-from .common import cache, load_data_description, load_data_from_cache, preprocess
+from .common import (
+    cache,
+    load_data_description,
+    load_data_from_cache,
+    preprocess,
+    task_dispatch,
+)
 from .downloaders import download_and_read_csv, load_openml, retrieve
 
 
@@ -103,6 +109,7 @@ Classification datasets
 """
 
 
+@task_dispatch
 @cache
 def load_airline_depdelay(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -112,6 +119,9 @@ def load_airline_depdelay(
     http://kt.ijs.si/elena_ikonomovska/data.html
 
     Classification task. n_classes = 2.
+
+    This dataset can also be used for regression problems, to do that
+    dataset_params:task should be set to "regression".
     """
     url = "http://kt.ijs.si/elena_ikonomovska/datasets/airline/airline_14col.data.bz2"
 
@@ -152,22 +162,15 @@ def load_airline_depdelay(
     for col in df.select_dtypes(["object"]).columns:
         df[col] = df[col].astype("category")
 
-    task = dataset_params.get("task", "classification")
-    if task == "classification":
-        df["ArrDelay"] = (df["ArrDelay"] > 0).astype(int)
-    elif task == "regression":
-        pass
-    else:
-        raise ValueError(f'Unknown "{task}" task type for airline dataset.')
-
-    y = df["ArrDelay"].to_numpy(dtype=np.float32)
+    y_cls = (df["ArrDelay"] > 0).astype(int).to_numpy(dtype=np.float32)
+    y_reg = df["ArrDelay"].to_numpy(dtype=np.float32)
     x = df.drop(columns=["ArrDelay"])
 
     data_description = {
         "n_classes": 2,
         "default_split": {"test_size": 0.2, "random_state": 42},
     }
-    return {"x": x, "y": y}, data_description
+    return {"x": x, "y_cls": y_cls, "y_reg": y_reg}, data_description
 
 
 @cache
