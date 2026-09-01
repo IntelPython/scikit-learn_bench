@@ -105,6 +105,9 @@ COLUMNS_ORDER = [
     "n_classes",
     "n_clusters",
     "batch_size",
+    "category_encoding",
+    "replace_nan",
+    "normalize",
 ]
 
 RED_COLOR, YELLOW_COLOR, GREEN_COLOR, WHITE_COLOR = "F85D5E", "FAF52E", "58C144", "FFFFFF"
