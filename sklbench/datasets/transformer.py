@@ -26,7 +26,9 @@ from ..utils.bench_case import get_bench_case_value
 from ..utils.logger import logger
 
 
-def convert_data(data, dformat: str, order: str, dtype: str, device: str = None):
+def convert_data(
+    data, dformat: str, order: str, dtype: str, device: str = None, sycl_queue=None
+):
     if isinstance(data, csr_matrix) and dformat != "csr_matrix":
         data = data.toarray()
     if dtype == "preserve":
@@ -46,6 +48,11 @@ def convert_data(data, dformat: str, order: str, dtype: str, device: str = None)
     elif dformat == "dpnp":
         import dpnp
 
+        # Pin every subset to one shared queue: sklearnex builds its internal
+        # arrays (e.g. the take() indices in KNN predict) on the device's default
+        # queue, and array_api_dispatch requires all arrays share one queue object.
+        if sycl_queue is not None:
+            return dpnp.asarray(data, dtype=dtype, order=order, sycl_queue=sycl_queue)
         return dpnp.array(data, dtype=dtype, order=order, device=device)
     elif dformat == "dpctl":
         warnings.warn(
@@ -143,6 +150,14 @@ def split_and_transform_data(bench_case, data, data_description):
 
     device = get_bench_case_value(bench_case, "algorithm:device", None)
     common_data_format = get_bench_case_value(bench_case, "data:format", "pandas")
+
+    # Resolve one queue for the device up front so all dpnp subsets share it;
+    # dpnp.array(device=...) per subset can otherwise land on distinct queues.
+    sycl_queue = None
+    if common_data_format == "dpnp" and device is not None:
+        import dpnp
+
+        sycl_queue = dpnp.array([], device=device).sycl_queue
     common_data_order = get_bench_case_value(bench_case, "data:order", "F")
     common_data_dtype = get_bench_case_value(bench_case, "data:dtype", "float32")
 
@@ -177,7 +192,7 @@ def split_and_transform_data(bench_case, data, data_description):
             data_dtype = required_label_dtype
 
         converted_data = convert_data(
-            subset_content, data_format, data_order, data_dtype, device
+            subset_content, data_format, data_order, data_dtype, device, sycl_queue
         )
         data_dict[subset_name] = converted_data
         if not is_label:
