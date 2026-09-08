@@ -111,9 +111,9 @@ def add_report_generator_arguments(
     parser.add_argument(
         "--plot-output",
         type=str,
-        default=None,
+        default="plot.png",
         help="[EXPERIMENTAL] Output file path for plots (e.g., plots.png). "
-        "If not specified, plots are displayed.",
+        "If not specified, plots are saved to plot.png.",
     )
     # color scale settings
     parser.add_argument(

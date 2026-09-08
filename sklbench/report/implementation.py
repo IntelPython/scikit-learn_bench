@@ -410,7 +410,7 @@ def prepare_all_cases_df(all_cases_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def write_all_cases_2_sheet(dfs, wb):
+def write_all_cases_2_sheet(dfs: Dict[str, pd.DataFrame], wb: xl.Workbook):
     """
     Write 'All cases' sheet: one block per algorithm group with columns
       Algorithm | sklearn time[ms] | sklearnex time[ms] | Speedup | <stability> | <parameters>.
@@ -423,8 +423,7 @@ def write_all_cases_2_sheet(dfs, wb):
     ws = wb.create_sheet(title="All cases", index=1)
     row, geomean_rows = 1, []
 
-    def geomean_row(label, r0, r1):
-        nonlocal row
+    def geomean_row(row, label, r0, r1):
         ws.append(
             [label]
             + [
@@ -432,8 +431,7 @@ def write_all_cases_2_sheet(dfs, wb):
                 for c in (2, 3, 4)
             ]
         )
-        row += 1
-        return row - 1
+        return row + 1, row
 
     for df_name, df in dfs.items():
         if not isinstance(df.columns, pd.MultiIndex):
@@ -510,12 +508,12 @@ def write_all_cases_2_sheet(dfs, wb):
                         j = i
                         while j + 1 < len(dtypes) and dtypes[j + 1] == dtypes[i]:
                             j += 1
-                        dtype_rows[dtypes[i]] = geomean_row(
-                            f"GEOMEAN {dtypes[i]}", start + i, start + j
+                        row, dtype_rows[dtypes[i]] = geomean_row(
+                            row, f"GEOMEAN {dtypes[i]}", start + i, start + j
                         )
                         i = j + 1
 
-                total_row = geomean_row("GEOMEAN total", start, end)
+                row, total_row = geomean_row(row, "GEOMEAN total", start, end)
                 geomean_rows.append((name, total_row, dtype_rows))
 
                 vals = gdf[speedup].dropna()
@@ -542,7 +540,7 @@ def write_all_cases_2_sheet(dfs, wb):
     return geomean_rows
 
 
-def write_summary_2_sheet(geomean_rows, wb):
+def write_summary_2_sheet(geomean_rows, wb: xl.Workbook):
     """
     Write 'Summary (for plots)' sheet with columns:
       Algorithm | geomean sklearn | geomean sklearnex | geomean speedup
@@ -583,8 +581,7 @@ def write_summary_2_sheet(geomean_rows, wb):
             return [None, None, None]
         return [f"={src_sheet_name}!{c}{row_num}" for c in "BCD"]
 
-    def write_section(title, rows):
-        nonlocal current_row
+    def write_section(current_row, title, rows):
         ws.append([title] + HEADER[1:])
         current_row += 1
         start = current_row
@@ -610,10 +607,10 @@ def write_summary_2_sheet(geomean_rows, wb):
                     end_color=GREEN_COLOR,
                 ),
             )
-        return start, end
+        return current_row, start, end
 
-    t_start, t_end = write_section("Training", training_rows)
-    i_start, i_end = write_section("Inference", inference_rows)
+    current_row, t_start, t_end = write_section(current_row, "Training", training_rows)
+    current_row, i_start, i_end = write_section(current_row, "Inference", inference_rows)
 
     # Summary GEOMEANs (uncolored)
     ws.append([])
@@ -631,7 +628,7 @@ def write_summary_2_sheet(geomean_rows, wb):
         current_row += 1
 
 
-def write_environment_info(results, workbook):
+def write_environment_info(results, workbook: xl.Workbook):
     env_infos = results["environment"]
     for env_name, env_info in env_infos.items():
         for info_type, info_subclass in env_info.items():
@@ -655,7 +652,161 @@ def write_environment_info(results, workbook):
                 new_ws.append([None])
 
 
-def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
+def _draw_panel(ax, groups, comp_col, title, color):
+    """Draw a single speedup bar panel (one algorithm group set) on ``ax``."""
+    labels, values = [], []
+    for label, gdf in groups.items():
+        vals = gdf[comp_col].dropna()
+        if len(vals) > 0:
+            labels.append(label)
+            values.append(gmean(vals, nan_policy="omit"))
+    if not values:
+        return
+    x = np.arange(len(labels))
+    ax.set_axisbelow(True)
+    bars = ax.bar(x, values, color=color, width=0.7, zorder=3)
+    exp = min(4, max(1, int(np.floor(np.log10(max(values)))) + 1))
+    y_ticks = [10**i for i in range(exp + 1)]
+    ax.set_yscale("log")
+    ax.yaxis.set_major_locator(FixedLocator(y_ticks))
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(FixedFormatter([f"{float(t):.1f}" for t in y_ticks]))
+    ax.set_ylim(1, y_ticks[-1])
+    ax.grid(
+        axis="y",
+        which="major",
+        linestyle="-",
+        linewidth=0.8,
+        color="#e0e0e0",
+        zorder=0,
+    )
+    ax.set_title(title, fontsize=16, color="#555555", pad=15)
+    ax.set_ylabel(
+        "Speedup over original version\n(higher is better)",
+        color="#555555",
+        fontsize=11,
+    )
+    ax.set_xlabel("scikit-learn* Algorithms", fontweight="bold", labelpad=10, fontsize=11)
+    ax.set_xticks(x)
+    ax.set_xticklabels(
+        [l.replace("|", " | ") for l in labels],
+        rotation=45,
+        ha="right",
+        fontsize=9,
+    )
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            height * 1.1,
+            f"{height:.1f}",
+            ha="center",
+            va="bottom",
+            rotation=90,
+            fontsize=8,
+            color="#555555",
+        )
+
+
+def _draw_footnote(fig):
+    """
+    Draw the Intel testing-date / configuration / disclaimer footnote at the
+    bottom of the figure.
+    Configuration placeholders below should be edited to match the machine/run.
+    The hardware and software configuration details can be collected via a
+    PerfSpect report (https://github.com/intel/PerfSpect).
+    """
+    TEST_DATE = "Month DD, YYYY"
+    HARDWARE_CONFIG = (
+        "x-node, CPU NAME, xx cores per socket, x sockets (x used), "
+        "microcode xxx, HT on/off, Turbo on/off, SNC on/off (x NUMA nodes), "
+        "xxxxGB (RAM type)"
+    )
+    SOFTWARE_CONFIG = "Ubuntu xxx Python xxx " "Python libraries"
+
+    def mathbf(text):
+        # Bold run for matplotlib mathtext (spaces must be escaped as '\ ')
+        return r"$\bf{" + text.replace(" ", r"\ ") + "}$"
+
+    # Each entry is (text, is_bold); "__URL__" is a special marker for the
+    # line that embeds the www.Intel.com/PerformanceIndex link.
+    footnote_lines = [
+        (
+            f"{mathbf('Testing Date:')} Performance results are based on "
+            f"{mathbf(f'testing by Intel as of {TEST_DATE}')} and may not reflect all publically available security updates",
+            False,
+        ),
+        (
+            f"{mathbf('Configuration Details and Workload Setup:')} {HARDWARE_CONFIG}",
+            False,
+        ),
+        (SOFTWARE_CONFIG, False),
+        (
+            "See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ",
+            False,
+        ),
+        ("__URL__", False),
+        (
+            "No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.",
+            False,
+        ),
+        (
+            "© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.",
+            False,
+        ),
+    ]
+
+    url_prefix = "and may not reflect all publicly available updates. Results may vary. Performance varies by use, configuration and other factors. Learn more at "
+    url_text = "www.Intel.com/PerformanceIndex"
+    url_suffix = "."
+
+    # Render once so text extents can be measured for link placement
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    fig_w, fig_h = fig.bbox.width, fig.bbox.height
+
+    x0, y0, step = 0.01, 0.05, 0.022
+    gray, blue = "#606060", "#0068B5"
+    y = y0
+    for text, is_bold in footnote_lines:
+        if text == "__URL__":
+            t_pref = fig.text(
+                x0, y, url_prefix, fontsize=9, color=gray, ha="left", va="top"
+            )
+            w_pref = t_pref.get_window_extent(renderer=renderer).width / fig_w
+            t_url = fig.text(
+                x0 + w_pref, y, url_text, fontsize=9, color=blue, ha="left", va="top"
+            )
+            ext = t_url.get_window_extent(renderer=renderer)
+            x_start, x_end = ext.x0 / fig_w, ext.x1 / fig_w
+            y_line = ext.y0 / fig_h
+            fig.add_artist(
+                plt.Line2D(
+                    [x_start, x_end],
+                    [y_line, y_line],
+                    transform=fig.transFigure,
+                    color=blue,
+                    linewidth=0.8,
+                )
+            )
+            fig.text(x_end, y, url_suffix, fontsize=9, color=gray, ha="left", va="top")
+        else:
+            fig.text(
+                x0,
+                y,
+                text,
+                fontsize=9,
+                color=gray,
+                ha="left",
+                va="top",
+                fontweight="bold" if is_bold else "normal",
+            )
+        y -= step
+
+
+def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str):
     """
     Draw plots from all_cases dataframe with algorithm comparison data.
     Separates into fit (training) and predict (inference) plots.
@@ -710,74 +861,14 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
 
         color_fit, color_inference = "#004A99", "#E66100"
 
-        def draw_panel(ax, groups, comp_col, title, color):
-            labels, values = [], []
-            for label, gdf in groups.items():
-                vals = gdf[comp_col].dropna()
-                if len(vals) > 0:
-                    labels.append(label)
-                    values.append(gmean(vals, nan_policy="omit"))
-            if not values:
-                return
-            x = np.arange(len(labels))
-            ax.set_axisbelow(True)
-            bars = ax.bar(x, values, color=color, width=0.7, zorder=3)
-            exp = min(4, max(1, int(np.floor(np.log10(max(values)))) + 1))
-            y_ticks = [10**i for i in range(exp + 1)]
-            ax.set_yscale("log")
-            ax.yaxis.set_major_locator(FixedLocator(y_ticks))
-            ax.yaxis.set_minor_locator(NullLocator())
-            ax.yaxis.set_major_formatter(
-                FixedFormatter([f"{float(t):.1f}" for t in y_ticks])
-            )
-            ax.set_ylim(1, y_ticks[-1])
-            ax.grid(
-                axis="y",
-                which="major",
-                linestyle="-",
-                linewidth=0.8,
-                color="#e0e0e0",
-                zorder=0,
-            )
-            ax.set_title(title, fontsize=16, color="#555555", pad=15)
-            ax.set_ylabel(
-                "Speedup over original version\n(higher is better)",
-                color="#555555",
-                fontsize=11,
-            )
-            ax.set_xlabel(
-                "scikit-learn* Algorithms", fontweight="bold", labelpad=10, fontsize=11
-            )
-            ax.set_xticks(x)
-            ax.set_xticklabels(
-                [l.replace("|", " | ") for l in labels],
-                rotation=45,
-                ha="right",
-                fontsize=9,
-            )
-            for spine in ("top", "right"):
-                ax.spines[spine].set_visible(False)
-            for bar in bars:
-                height = bar.get_height()
-                ax.text(
-                    bar.get_x() + bar.get_width() / 2,
-                    height * 1.1,
-                    f"{height:.1f}",
-                    ha="center",
-                    va="bottom",
-                    rotation=90,
-                    fontsize=8,
-                    color="#555555",
-                )
-
         # One row per comparison: training (left) + inference (right)
         n = len(comparison_cols)
         fig, axes = plt.subplots(n, 2, figsize=(16, 7 * n))
         if n == 1:
             axes = [axes]
         for i, comp_col in enumerate(comparison_cols):
-            draw_panel(axes[i][0], fit_groups, comp_col, "Training", color_fit)
-            draw_panel(axes[i][1], inf_groups, comp_col, "Inference", color_inference)
+            _draw_panel(axes[i][0], fit_groups, comp_col, "Training", color_fit)
+            _draw_panel(axes[i][1], inf_groups, comp_col, "Inference", color_inference)
 
         # Reserve top margin for the two-component title
         plt.tight_layout(rect=[0, 0.06, 1, 0.90])
@@ -802,103 +893,10 @@ def draw_summary_plots(all_cases_df: pd.DataFrame, output_file: str = None):
             va="top",
         )
 
-        # Configuration placeholders — edit these to match the machine/run.
-        TEST_DATE = "Month DD, YYYY"
-        HARDWARE_CONFIG = (
-            "x-node, CPU NAME, xx cores per socket, x sockets (x used), "
-            "microcode xxx, HT on/off, Turbo on/off, SNC on/off (x NUMA nodes), "
-            "xxxxGB (RAM type)"
-        )
-        SOFTWARE_CONFIG = "Ubuntu xxx Python xxx " "Python libraries"
+        _draw_footnote(fig)
 
-        def mathbf(text):
-            # Bold run for matplotlib mathtext (spaces must be escaped as '\ ')
-            return r"$\bf{" + text.replace(" ", r"\ ") + "}$"
-
-        # Footnote / disclaimer, drawn line by line so the URL renders as a link.
-        # Each entry is (text, is_bold); "__URL__" is a special marker for the
-        # line that embeds the www.Intel.com/PerformanceIndex link.
-        footnote_lines = [
-            (
-                f"{mathbf('Testing Date:')} Performance results are based on "
-                f"{mathbf(f'testing by Intel as of {TEST_DATE}')} and may not reflect all publically available security updates",
-                False,
-            ),
-            (
-                f"{mathbf('Configuration Details and Workload Setup:')} {HARDWARE_CONFIG}",
-                False,
-            ),
-            (SOFTWARE_CONFIG, False),
-            (
-                "See backup for workloads and configurations. Performance results are based on testing as of dates shown in configurations ",
-                False,
-            ),
-            ("__URL__", False),
-            (
-                "No product or component can be absolutely secure. Your costs and results may vary. Intel technologies may require enabled hardware, software or service activation.",
-                False,
-            ),
-            (
-                "© Intel Corporation. Intel, the Intel logo, and other Intel marks are trademarks of Intel Corporation or its subsidiaries. Other names and brands may be claimed as the property of others.",
-                False,
-            ),
-        ]
-
-        url_prefix = "and may not reflect all publicly available updates. Results may vary. Performance varies by use, configuration and other factors. Learn more at "
-        url_text = "www.Intel.com/PerformanceIndex"
-        url_suffix = "."
-
-        # Render once so text extents can be measured for link placement
-        fig.canvas.draw()
-        renderer = fig.canvas.get_renderer()
-        fig_w, fig_h = fig.bbox.width, fig.bbox.height
-
-        x0, y0, step = 0.01, 0.05, 0.022
-        gray, blue = "#606060", "#0068B5"
-        y = y0
-        for text, is_bold in footnote_lines:
-            if text == "__URL__":
-                t_pref = fig.text(
-                    x0, y, url_prefix, fontsize=9, color=gray, ha="left", va="top"
-                )
-                w_pref = t_pref.get_window_extent(renderer=renderer).width / fig_w
-                t_url = fig.text(
-                    x0 + w_pref, y, url_text, fontsize=9, color=blue, ha="left", va="top"
-                )
-                ext = t_url.get_window_extent(renderer=renderer)
-                x_start, x_end = ext.x0 / fig_w, ext.x1 / fig_w
-                y_line = ext.y0 / fig_h
-                fig.add_artist(
-                    plt.Line2D(
-                        [x_start, x_end],
-                        [y_line, y_line],
-                        transform=fig.transFigure,
-                        color=blue,
-                        linewidth=0.8,
-                    )
-                )
-                fig.text(
-                    x_end, y, url_suffix, fontsize=9, color=gray, ha="left", va="top"
-                )
-            else:
-                fig.text(
-                    x0,
-                    y,
-                    text,
-                    fontsize=9,
-                    color=gray,
-                    ha="left",
-                    va="top",
-                    fontweight="bold" if is_bold else "normal",
-                )
-            y -= step
-
-        if output_file:
-            plt.savefig(output_file, dpi=150, bbox_inches="tight")
-            logger.info(f"Plot saved to {output_file}")
-        else:
-            plt.show()
-
+        plt.savefig(output_file, dpi=150, bbox_inches="tight")
+        logger.info(f"Plot saved to {output_file}")
         plt.close()
 
     except Exception as e:
