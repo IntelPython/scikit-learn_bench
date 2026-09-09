@@ -18,6 +18,12 @@
                 "data": { "format": "dpnp", "order": "C" }
             }
         ],
+        "sklearn-ex[preview,cpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": "cpu" }
+            ]
+        },
         "sklearnex spmd implementation": {
             "algorithm": {
                 "library": "sklearnex.spmd",
