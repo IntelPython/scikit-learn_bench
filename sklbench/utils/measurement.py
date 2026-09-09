@@ -72,6 +72,7 @@ def enrich_metrics(
                 {
                     "1st run time[ms]": res["time[ms]"][0],
                     "1st-mean run ratio": res["time[ms]"][0] / mean,
+                    "median time[ms]": float(np.median(res["time[ms]"])),
                 }
             )
         res.update(
