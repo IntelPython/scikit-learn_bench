@@ -91,7 +91,7 @@
             },
             {
                 "algorithm": {
-                    "estimator": ["LinearRegression", "Ridge", "Lasso", "ElasticNet"]
+                    "estimator": ["LinearRegression", "Ridge"]
                 }
             },
             {
@@ -116,11 +116,27 @@
                     }
                 }
             }
+        ],
+        "preview algorithms": [
+            {
+                "algorithm": {
+                    "estimator": ["Lasso", "ElasticNet"]
+                }
+            }
         ]
     },
     "TEMPLATES": {
         "test": {
             "SETS": ["sklearn-ex[cpu] implementations", "common parameters", "data formats", "datasets", "algorithms"]
+        },
+        "test preview": {
+            "SETS": [
+                "sklearn-ex[preview,cpu] implementations",
+                "common parameters",
+                "data formats",
+                "datasets",
+                "preview algorithms"
+            ]
         }
     }
 }

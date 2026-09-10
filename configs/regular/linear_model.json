@@ -61,10 +61,10 @@
             ]
         },
         "sklearn lasso": {
-            "SETS": ["sklearn-ex[cpu] implementations", "common lasso parameters", "regression datasets"]
+            "SETS": ["sklearn-ex[preview,cpu] implementations", "common lasso parameters", "regression datasets"]
         },
         "sklearn elasticnet": {
-            "SETS": ["sklearn-ex[cpu] implementations", "common elasticnet parameters", "regression datasets"]
+            "SETS": ["sklearn-ex[preview,cpu] implementations", "common elasticnet parameters", "regression datasets"]
         },
         "cuml linear": {
             "SETS": ["cuml implementation", "common linear parameters", "cuml L2 parameters", "regression datasets"]

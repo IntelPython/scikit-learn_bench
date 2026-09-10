@@ -50,7 +50,7 @@ def transform_results_to_compatible(results: pd.DataFrame):
             ],
         )
         # auto-assigned `n_jobs` drop for different CPUs
-        if results["n_jobs"].unique().size > 1:
+        if "n_jobs" in results.columns and results["n_jobs"].unique().size > 1:
             results.drop(
                 inplace=True,
                 errors="ignore",
