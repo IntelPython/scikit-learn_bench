@@ -1,0 +1,129 @@
+{
+    "INCLUDE": ["../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "hdbscan parameters data [tree]": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": 100000,
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan parameters data [brute]": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": 25000,
+                    "n_features": 64,
+                    "cluster_std": 4.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan parameters data [real]": {
+            "data": {
+                "dataset": "skin_segmentation",
+                "split_kwargs": { "train_size": 30000 },
+                "preprocessing_kwargs": { "normalize": "standard" }
+            }
+        }
+    },
+    "TEMPLATES": {
+        "hdbscan metrics [tree]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan tree methods",
+                "hdbscan tree metrics",
+                "hdbscan parameters data [tree]"
+            ]
+        },
+        "hdbscan minkowski [tree]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan minkowski metric",
+                "hdbscan parameters data [tree]"
+            ]
+        },
+        "hdbscan metrics [brute]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan brute method",
+                "hdbscan tree metrics",
+                "hdbscan parameters data [brute]"
+            ]
+        },
+        "hdbscan cosine [brute]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan cosine metric",
+                "hdbscan parameters data [brute]"
+            ]
+        },
+        "hdbscan cluster selection": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan cluster selection sweep",
+                "hdbscan parameters data [tree]"
+            ]
+        },
+        "hdbscan density": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan density sweep",
+                "hdbscan parameters data [tree]"
+            ]
+        },
+        "hdbscan store centers": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan store centers sweep",
+                "hdbscan parameters data [tree]"
+            ]
+        },
+        "hdbscan dtypes": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan all methods",
+                "hdbscan dtype sweep",
+                "hdbscan parameters data [real]"
+            ]
+        },
+        "hdbscan data formats": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan data format sweep",
+                "hdbscan parameters data [tree]"
+            ]
+        }
+    }
+}

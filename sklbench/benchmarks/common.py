@@ -16,6 +16,7 @@
 
 import argparse
 import json
+import re
 from typing import Dict
 
 from ..utils.bench_case import get_bench_case_value, get_data_name
@@ -26,16 +27,23 @@ from ..utils.logger import logger
 def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
     """Common function for all benchmarks to update
     the result with additional information"""
+    library = (
+        get_bench_case_value(bench_case, "algorithm:library")
+        .replace(
+            # skipping emulators namespace for conciseness
+            "sklbench.emulators.",
+            "",
+        )
+        .replace(".utils", "")
+    )
+    # estimators available only from a preview namespace (like `sklearnex.preview.cluster`)
+    # are reported under their library so that they are comparable
+    # with the stock implementation in the report
+    library = re.sub(r"\.preview(\..+)?$", "", library)
     result.update(
         {
             "dataset": get_data_name(bench_case, shortened=True),
-            "library": get_bench_case_value(bench_case, "algorithm:library")
-            .replace(
-                # skipping emulators namespace for conciseness
-                "sklbench.emulators.",
-                "",
-            )
-            .replace(".utils", ""),
+            "library": library,
             "device": get_bench_case_value(bench_case, "algorithm:device"),
         }
     )

@@ -1,0 +1,83 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "hdbscan tree-friendly datasets": {
+            "data": [
+                {
+                    "dataset": "skin_segmentation",
+                    "split_kwargs": { "train_size": 100000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "road_network",
+                    "split_kwargs": { "train_size": 100000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "covtype",
+                    "split_kwargs": { "train_size": 50000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 10,
+                        "n_samples": 100000,
+                        "n_features": [4, 16, 64],
+                        "cluster_std": 2.0
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        },
+        "hdbscan brute-friendly datasets": {
+            "data": [
+                {
+                    "dataset": "mnist",
+                    "split_kwargs": { "train_size": 20000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "cifar",
+                    "split_kwargs": { "train_size": 15000 },
+                    "preprocessing_kwargs": { "normalize": "mean" }
+                },
+                {
+                    "dataset": "sensit",
+                    "split_kwargs": { "train_size": 25000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 10,
+                        "n_samples": 25000,
+                        "n_features": [64, 256, 1024],
+                        "cluster_std": 4.0
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "hdbscan tree methods": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan tree methods",
+                "hdbscan tree-friendly datasets"
+            ]
+        },
+        "hdbscan brute force": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan brute method",
+                "hdbscan brute-friendly datasets"
+            ]
+        }
+    }
+}

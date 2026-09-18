@@ -1,0 +1,217 @@
+{
+    "INCLUDE": ["../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "sklearnex hdbscan implementation": {
+            "algorithm": { "library": "sklearnex.preview.cluster", "device": "cpu" }
+        },
+        "hdbscan thread scaling": [
+            {
+                "bench": { "taskset": "0" },
+                "algorithm": { "estimator_params": { "n_jobs": 1 } }
+            },
+            {
+                "bench": { "taskset": "0-3" },
+                "algorithm": { "estimator_params": { "n_jobs": 4 } }
+            },
+            {
+                "bench": { "taskset": "0-7" },
+                "algorithm": { "estimator_params": { "n_jobs": 8 } }
+            },
+            {
+                "bench": { "taskset": "0-15" },
+                "algorithm": { "estimator_params": { "n_jobs": 16 } }
+            },
+            {
+                "bench": { "taskset": "0-27" },
+                "algorithm": { "estimator_params": { "n_jobs": 28 } }
+            },
+            {
+                "bench": { "taskset": "0-55" },
+                "algorithm": { "estimator_params": { "n_jobs": 56 } }
+            },
+            {
+                "bench": { "taskset": "0-111" },
+                "algorithm": { "estimator_params": { "n_jobs": 112 } }
+            },
+            {
+                "bench": { "taskset": "0-223" },
+                "algorithm": { "estimator_params": { "n_jobs": 224 } }
+            }
+        ],
+        "hdbscan numa scaling": [
+            {
+                "bench": { "taskset": "0-55" },
+                "algorithm": { "estimator_params": { "n_jobs": 56 } }
+            },
+            {
+                "bench": { "taskset": "0-27,56-83" },
+                "algorithm": { "estimator_params": { "n_jobs": 56 } }
+            },
+            {
+                "bench": { "taskset": "0-111" },
+                "algorithm": { "estimator_params": { "n_jobs": 112 } }
+            }
+        ],
+        "hdbscan scaling profiling": {
+            "bench": {
+                "n_runs": 3,
+                "time_limit": 1200,
+                "cpu_profile": true,
+                "memory_profile": true
+            }
+        },
+        "hdbscan brute scaling data": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": 50000,
+                    "n_features": 256,
+                    "cluster_std": 4.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan tree scaling data": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": 1000000,
+                    "n_features": 16,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan n_samples sweep [brute]": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": "[RANGE]mul:5000:40000:2",
+                    "n_features": 64,
+                    "cluster_std": 4.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan n_samples sweep [tree]": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": "[RANGE]mul:25000:400000:2",
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan n_samples sweep [tree, sklearnex only]": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": "[RANGE]mul:500000:8000000:2",
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan n_features sweep": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 10,
+                    "n_samples": 20000,
+                    "n_features": "[RANGE]pow:2:2:10",
+                    "cluster_std": 4.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "hdbscan size sweep limits": {
+            "bench": { "n_runs": 3, "time_limit": 300 }
+        }
+    },
+    "TEMPLATES": {
+        "hdbscan thread scaling [brute]": {
+            "SETS": [
+                "sklearnex hdbscan implementation",
+                "common hdbscan parameters",
+                "hdbscan scaling profiling",
+                "hdbscan brute method",
+                "hdbscan thread scaling",
+                "hdbscan brute scaling data"
+            ]
+        },
+        "hdbscan thread scaling [kd_tree]": {
+            "SETS": [
+                "sklearnex hdbscan implementation",
+                "common hdbscan parameters",
+                "hdbscan scaling profiling",
+                "hdbscan kd_tree method",
+                "hdbscan thread scaling",
+                "hdbscan tree scaling data"
+            ]
+        },
+        "hdbscan numa scaling [brute]": {
+            "SETS": [
+                "sklearnex hdbscan implementation",
+                "common hdbscan parameters",
+                "hdbscan scaling profiling",
+                "hdbscan brute method",
+                "hdbscan numa scaling",
+                "hdbscan brute scaling data"
+            ]
+        },
+        "hdbscan n_samples scaling [brute]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan brute method",
+                "hdbscan n_samples sweep [brute]",
+                "hdbscan size sweep limits"
+            ]
+        },
+        "hdbscan n_samples scaling [kd_tree]": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan n_samples sweep [tree]",
+                "hdbscan size sweep limits"
+            ]
+        },
+        "hdbscan n_samples scaling [kd_tree, beyond sklearn]": {
+            "SETS": [
+                "sklearnex hdbscan implementation",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan n_samples sweep [tree, sklearnex only]",
+                "hdbscan size sweep limits"
+            ]
+        },
+        "hdbscan n_features scaling": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan all methods",
+                "hdbscan n_features sweep",
+                "hdbscan size sweep limits"
+            ]
+        }
+    }
+}

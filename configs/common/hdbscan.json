@@ -1,0 +1,94 @@
+{
+    "PARAMETERS_SETS": {
+        "hdbscan sklearn-ex[cpu] implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex.preview.cluster", "device": "cpu" }
+            ]
+        },
+        "common hdbscan parameters": {
+            "algorithm": {
+                "estimator": "HDBSCAN",
+                "estimator_params": {
+                    "min_cluster_size": 5,
+                    "min_samples": 5,
+                    "metric": "euclidean",
+                    "cluster_selection_method": "eom",
+                    "allow_single_cluster": false,
+                    "store_centers": null,
+                    "copy": false
+                },
+                "estimator_methods": { "training": "fit" }
+            },
+            "data": { "format": "numpy", "order": "C", "dtype": "float64" },
+            "bench": { "n_runs": 3, "time_limit": 1200 }
+        },
+        "sklearn hdbscan parameters": {
+            "algorithm": {
+                "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+            }
+        },
+        "hdbscan brute method": {
+            "algorithm": { "estimator_params": { "algorithm": "brute" } }
+        },
+        "hdbscan kd_tree method": {
+            "algorithm": { "estimator_params": { "algorithm": "kd_tree", "leaf_size": 40 } }
+        },
+        "hdbscan ball_tree method": {
+            "algorithm": { "estimator_params": { "algorithm": "ball_tree", "leaf_size": 40 } }
+        },
+        "hdbscan tree methods": {
+            "algorithm": {
+                "estimator_params": { "algorithm": ["kd_tree", "ball_tree"], "leaf_size": 40 }
+            }
+        },
+        "hdbscan all methods": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": ["brute", "kd_tree", "ball_tree"],
+                    "leaf_size": 40
+                }
+            }
+        },
+        "hdbscan tree metrics": {
+            "algorithm": {
+                "estimator_params": { "metric": ["euclidean", "manhattan", "chebyshev"] }
+            }
+        },
+        "hdbscan minkowski metric": {
+            "algorithm": {
+                "estimator_params": { "metric": "minkowski", "metric_params": { "p": 3 } }
+            }
+        },
+        "hdbscan cosine metric": {
+            "algorithm": {
+                "estimator_params": { "metric": "cosine", "algorithm": "brute" }
+            }
+        },
+        "hdbscan cluster selection sweep": {
+            "algorithm": {
+                "estimator_params": { "cluster_selection_method": ["eom", "leaf"] }
+            }
+        },
+        "hdbscan density sweep": {
+            "algorithm": {
+                "estimator_params": { "min_cluster_size": [5, 25, 100], "min_samples": [5, 25] }
+            }
+        },
+        "hdbscan store centers sweep": {
+            "algorithm": {
+                "estimator_params": { "store_centers": [null, "centroid", "medoid", "both"] }
+            }
+        },
+        "hdbscan dtype sweep": {
+            "data": { "dtype": ["float32", "float64"] }
+        },
+        "hdbscan data format sweep": {
+            "data": [
+                { "format": "numpy", "order": "C" },
+                { "format": "numpy", "order": "F" },
+                { "format": "pandas", "order": "F" }
+            ]
+        }
+    }
+}
