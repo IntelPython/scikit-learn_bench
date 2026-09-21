@@ -91,7 +91,7 @@
             },
             {
                 "algorithm": {
-                    "estimator": ["LinearRegression", "Ridge", "Lasso", "ElasticNet"]
+                    "estimator": ["LinearRegression", "Ridge"]
                 }
             },
             {
