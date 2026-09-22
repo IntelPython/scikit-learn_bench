@@ -49,46 +49,6 @@
                     "leaf_size": 40
                 }
             }
-        },
-        "hdbscan tree metrics": {
-            "algorithm": {
-                "estimator_params": { "metric": ["euclidean", "manhattan", "chebyshev"] }
-            }
-        },
-        "hdbscan minkowski metric": {
-            "algorithm": {
-                "estimator_params": { "metric": "minkowski", "metric_params": { "p": 3 } }
-            }
-        },
-        "hdbscan cosine metric": {
-            "algorithm": {
-                "estimator_params": { "metric": "cosine", "algorithm": "brute" }
-            }
-        },
-        "hdbscan cluster selection sweep": {
-            "algorithm": {
-                "estimator_params": { "cluster_selection_method": ["eom", "leaf"] }
-            }
-        },
-        "hdbscan density sweep": {
-            "algorithm": {
-                "estimator_params": { "min_cluster_size": [5, 25, 100], "min_samples": [5, 25] }
-            }
-        },
-        "hdbscan store centers sweep": {
-            "algorithm": {
-                "estimator_params": { "store_centers": [null, "centroid", "medoid", "both"] }
-            }
-        },
-        "hdbscan dtype sweep": {
-            "data": { "dtype": ["float32", "float64"] }
-        },
-        "hdbscan data format sweep": {
-            "data": [
-                { "format": "numpy", "order": "C" },
-                { "format": "numpy", "order": "F" },
-                { "format": "pandas", "order": "F" }
-            ]
         }
     }
 }

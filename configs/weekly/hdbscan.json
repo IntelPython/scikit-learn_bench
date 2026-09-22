@@ -1,10 +1,10 @@
 {
     "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
     "PARAMETERS_SETS": {
-        "hdbscan tree-friendly datasets": {
+        "high-load hdbscan tree-friendly datasets": {
             "data": [
                 {
-                    "dataset": "skin_segmentation",
+                    "dataset": ["road_network", "covtype"],
                     "split_kwargs": { "train_size": 100000 },
                     "preprocessing_kwargs": { "normalize": "standard" }
                 },
@@ -13,18 +13,23 @@
                     "generation_kwargs": {
                         "centers": 10,
                         "n_samples": 100000,
-                        "n_features": 16,
+                        "n_features": [4, 16, 64],
                         "cluster_std": 2.0
                     },
                     "split_kwargs": { "ignore": true }
                 }
             ]
         },
-        "hdbscan brute-friendly datasets": {
+        "high-load hdbscan brute-friendly datasets": {
             "data": [
                 {
-                    "dataset": "mnist",
-                    "split_kwargs": { "train_size": 20000 },
+                    "dataset": "cifar",
+                    "split_kwargs": { "train_size": 15000 },
+                    "preprocessing_kwargs": { "normalize": "mean" }
+                },
+                {
+                    "dataset": "sensit",
+                    "split_kwargs": { "train_size": 25000 },
                     "preprocessing_kwargs": { "normalize": "standard" }
                 },
                 {
@@ -32,7 +37,7 @@
                     "generation_kwargs": {
                         "centers": 10,
                         "n_samples": 25000,
-                        "n_features": 256,
+                        "n_features": [64, 256, 1024],
                         "cluster_std": 4.0
                     },
                     "split_kwargs": { "ignore": true }
@@ -41,13 +46,13 @@
         }
     },
     "TEMPLATES": {
-        "hdbscan kd_tree": {
+        "hdbscan tree methods": {
             "SETS": [
                 "hdbscan sklearn-ex[cpu] implementations",
                 "common hdbscan parameters",
                 "sklearn hdbscan parameters",
-                "hdbscan kd_tree method",
-                "hdbscan tree-friendly datasets"
+                "hdbscan tree methods",
+                "high-load hdbscan tree-friendly datasets"
             ]
         },
         "hdbscan brute force": {
@@ -56,7 +61,7 @@
                 "common hdbscan parameters",
                 "sklearn hdbscan parameters",
                 "hdbscan brute method",
-                "hdbscan brute-friendly datasets"
+                "high-load hdbscan brute-friendly datasets"
             ]
         }
     }
