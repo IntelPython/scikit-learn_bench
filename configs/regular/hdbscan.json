@@ -1,0 +1,63 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "hdbscan tree-friendly datasets": {
+            "data": [
+                {
+                    "dataset": "skin_segmentation",
+                    "split_kwargs": { "train_size": 100000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 100,
+                        "n_samples": 100000,
+                        "n_features": 8,
+                        "cluster_std": 1.0
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        },
+        "hdbscan brute-friendly datasets": {
+            "data": [
+                {
+                    "dataset": "mnist",
+                    "split_kwargs": { "train_size": 20000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 10,
+                        "n_samples": 25000,
+                        "n_features": 4,
+                        "cluster_std": 1.0
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "hdbscan kd_tree": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan kd_tree method",
+                "hdbscan tree-friendly datasets"
+            ]
+        },
+        "hdbscan brute force": {
+            "SETS": [
+                "hdbscan sklearn-ex[cpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan brute method",
+                "hdbscan brute-friendly datasets"
+            ]
+        }
+    }
+}
