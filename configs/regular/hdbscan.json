@@ -11,10 +11,10 @@
                 {
                     "source": "make_blobs",
                     "generation_kwargs": {
-                        "centers": 10,
+                        "centers": 100,
                         "n_samples": 100000,
-                        "n_features": 16,
-                        "cluster_std": 2.0
+                        "n_features": 8,
+                        "cluster_std": 1.0
                     },
                     "split_kwargs": { "ignore": true }
                 }
@@ -32,8 +32,8 @@
                     "generation_kwargs": {
                         "centers": 10,
                         "n_samples": 25000,
-                        "n_features": 256,
-                        "cluster_std": 4.0
+                        "n_features": 4,
+                        "cluster_std": 1.0
                     },
                     "split_kwargs": { "ignore": true }
                 }
