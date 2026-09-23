@@ -15,9 +15,11 @@
 # ===============================================================================
 
 import argparse
+import inspect
 import json
 from typing import Dict
 
+from ..datasets.common import preprocess_x
 from ..utils.bench_case import get_bench_case_value, get_data_name
 from ..utils.custom_types import BenchCase
 from ..utils.logger import logger
@@ -50,6 +52,22 @@ def enrich_result(result: Dict, bench_case: BenchCase) -> Dict:
             f"`{result['library']}` to `sklearnex` in benchmark output."
         )
         result["library"] = "sklearnex"
+    preproc_kwargs = get_bench_case_value(bench_case, "data:preprocessing_kwargs", dict())
+    preproc_defaults = {
+        name: param.default
+        for name, param in inspect.signature(preprocess_x).parameters.items()
+    }
+    result.update(
+        {
+            "category_encoding": preproc_kwargs.get(
+                "category_encoding", preproc_defaults["category_encoding"]
+            ),
+            "replace_nan": preproc_kwargs.get(
+                "replace_nan", preproc_defaults["replace_nan"]
+            ),
+            "normalize": preproc_kwargs.get("normalize", preproc_defaults["normalize"]),
+        }
+    )
     taskset = get_bench_case_value(bench_case, "bench:taskset", None)
     if taskset is not None:
         result.update({"taskset": taskset})

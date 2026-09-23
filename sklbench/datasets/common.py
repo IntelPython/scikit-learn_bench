@@ -34,19 +34,19 @@ from ..utils.custom_types import Array
 from ..utils.logger import logger
 
 # NB: non-registered data components and extensions will not be found by loader
-KNOWN_DATA_COMPONENTS = ["x", "y"]
+KNOWN_DATA_COMPONENTS = ["x", "y", "y_cls", "y_reg"]
 KNOWN_DATA_EXTENSIONS = ["parq", "npz", "csr.npz"]
 
 
 def get_expr_by_prefix(prefix: str) -> str:
     def get_or_expr_from_list(a: List[str]) -> str:
         # transforms list to OR expression: "['x', 'y']" -> "x|y"
-        return str(a)[1:-1].replace("'", "").replace(", ", "|")
+        return "|".join(re.escape(item) for item in a)
 
     data_comp_expr = get_or_expr_from_list(KNOWN_DATA_COMPONENTS)
     data_ext_expr = get_or_expr_from_list(KNOWN_DATA_EXTENSIONS)
 
-    return f"{prefix}_({data_comp_expr}).({data_ext_expr})"
+    return f"^{re.escape(prefix)}_({data_comp_expr})\\.({data_ext_expr})$"
 
 
 def get_filenames_by_prefix(directory: str, prefix: str) -> List[str]:
@@ -59,7 +59,12 @@ def get_filenames_by_prefix(directory: str, prefix: str) -> List[str]:
 
 def load_data_file(filepath, extension):
     if extension == "parq":
-        data = pd.read_parquet(filepath)
+        # Read with the same engine used for writing (fastparquet). Reading a
+        # fastparquet-written file with the default "auto"/pyarrow engine drops
+        # pandas "category" dtype (string categories come back as object),
+        # which would prevent XGBoost's native categorical handling from ever
+        # seeing category columns loaded from cache.
+        data = pd.read_parquet(filepath, engine="fastparquet")
     elif extension.endswith("npz"):
         npz_content = np.load(filepath)
         if extension == "npz":
@@ -134,6 +139,27 @@ def load_data_description(data_cache: str, data_name: str) -> Dict:
 def save_data_description(data_desc: Dict, data_cache: str, data_name: str):
     with open(os.path.join(data_cache, f"{data_name}.json"), "w") as desc_file:
         json.dump(data_desc, desc_file)
+
+
+"""
+This function is needed to avoid storing the dataset two times if
+it's used for both classification and regression tasks (e.g. airline_deepdelay)
+"""
+
+
+def task_dispatch(function):
+    def task_dispatch_wrapper(**kwargs):
+        data, data_desc = function(**kwargs)
+        dataset_params = kwargs.get("dataset_params", dict())
+        task = dataset_params.get("task", "classification")
+        if task == "classification":
+            return {"x": data["x"], "y": data["y_cls"]}, data_desc
+        elif task == "regression":
+            return {"x": data["x"], "y": data["y_reg"]}, data_desc
+        else:
+            raise ValueError(f'Unknown "{task}" task type for airline dataset.')
+
+    return task_dispatch_wrapper
 
 
 def cache(function):

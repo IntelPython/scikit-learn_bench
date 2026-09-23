@@ -6,11 +6,11 @@
                 "data": {
                     "dataset": "airline_depdelay",
                     "preprocessing_kwargs": {
-                        "category_encoding": ["onehot", "ordinal"],
-                        "subsample": 600000
+                        "category_encoding": ["ordinal"],
+                        "subsample": 700000
                     },
                     "split_kwargs": {
-                        "train_size": 100000,
+                        "train_size": 200000,
                         "test_size": 500000
                     }
                 },
@@ -26,9 +26,92 @@
             },
             {
                 "data": {
+                    "dataset": "airline_satisfaction",
+                    "preprocessing_kwargs": {
+                        "category_encoding": ["ignore", "ordinal"]
+                    },
+                    "split_kwargs": {
+                        "test_size": 0.2,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.1,
+                        "max_depth": 6,
+                        "reg_lambda": 1.0,
+                        "n_estimators": 1000,
+                        "enable_categorical": true
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "amazon_employee_access",
+                    "preprocessing_kwargs": {
+                        "category_encoding": ["ignore", "ordinal"]
+                    },
+                    "split_kwargs": {
+                        "test_size": 0.2,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.05,
+                        "max_depth": 6,
+                        "reg_lambda": 1.0,
+                        "n_estimators": 500,
+                        "enable_categorical": true
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "apsfailure",
+                    "preprocessing_kwargs": {
+                        "replace_nan": ["ignore", "mean"]
+                    },
+                    "split_kwargs": {
+                        "test_size": 0.2,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.05,
+                        "max_depth": 6,
+                        "subsample": 0.8,
+                        "colsample_bytree": 0.8,
+                        "reg_lambda": 1.0,
+                        "n_estimators": 200
+                    }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "bioresponse",
+                    "split_kwargs": {
+                        "test_size": 0.2,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": {
+                        "learning_rate": 0.05,
+                        "max_depth": 6,
+                        "subsample": 0.8,
+                        "colsample_bytree": 0.8,
+                        "reg_lambda": 1.0,
+                        "n_estimators": 200
+                    }
+                }
+            },
+            {
+                "data": {
                     "dataset": "hepmass",
                     "split_kwargs": {
-                        "train_size": 200000,
+                        "train_size": 400000,
                         "test_size": 1000000
                     }
                 },
@@ -38,25 +121,7 @@
                         "reg_alpha": 1.0,
                         "reg_lambda": 1.0,
                         "max_leaves": 256,
-                        "n_estimators": 500
-                    }
-                }
-            },
-            {
-                "data": {
-                    "dataset": "gisette",
-                    "split_kwargs": {
-                        "train_size": 2000,
-                        "test_size": 5000
-                    }
-                },
-                "algorithm": {
-                    "estimator_params": {
-                        "learning_rate": 0.15,
-                        "max_leaves": 256,
-                        "colsample_bytree": 0.1,
-                        "colsample_bynode": 0.1,
-                        "n_estimators": 100
+                        "n_estimators": 200
                     }
                 }
             }

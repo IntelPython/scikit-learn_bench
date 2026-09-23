@@ -31,7 +31,13 @@ from sklearn.datasets import (
     make_regression,
 )
 
-from .common import cache, load_data_description, load_data_from_cache, preprocess
+from .common import (
+    cache,
+    load_data_description,
+    load_data_from_cache,
+    preprocess,
+    task_dispatch,
+)
 from .downloaders import download_and_read_csv, load_openml, retrieve
 
 
@@ -103,6 +109,7 @@ Classification datasets
 """
 
 
+@task_dispatch
 @cache
 def load_airline_depdelay(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
@@ -112,6 +119,9 @@ def load_airline_depdelay(
     http://kt.ijs.si/elena_ikonomovska/data.html
 
     Classification task. n_classes = 2.
+
+    This dataset can also be used for regression problems, to do that
+    dataset_params:task should be set to "regression".
     """
     url = "http://kt.ijs.si/elena_ikonomovska/datasets/airline/airline_14col.data.bz2"
 
@@ -152,22 +162,15 @@ def load_airline_depdelay(
     for col in df.select_dtypes(["object"]).columns:
         df[col] = df[col].astype("category")
 
-    task = dataset_params.get("task", "classification")
-    if task == "classification":
-        df["ArrDelay"] = (df["ArrDelay"] > 0).astype(int)
-    elif task == "regression":
-        pass
-    else:
-        raise ValueError(f'Unknown "{task}" task type for airline dataset.')
-
-    y = df["ArrDelay"].to_numpy(dtype=np.float32)
+    y_cls = (df["ArrDelay"] > 0).astype(int).to_numpy(dtype=np.float32)
+    y_reg = df["ArrDelay"].to_numpy(dtype=np.float32)
     x = df.drop(columns=["ArrDelay"])
 
     data_description = {
         "n_classes": 2,
         "default_split": {"test_size": 0.2, "random_state": 42},
     }
-    return {"x": x, "y": y}, data_description
+    return {"x": x, "y_cls": y_cls, "y_reg": y_reg}, data_description
 
 
 @cache
@@ -473,6 +476,132 @@ def load_fraud(
 ) -> Tuple[Dict, Dict]:
     x, y = load_openml(42175, raw_data_cache)
     data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 77}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_kddcup09_appetency(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    KDD Cup 2009: Customer relationship prediction (appetency task).
+    https://kdd.org/kdd-cup/view/kdd-cup-2009/Results
+
+    The data comes from the French telecom company Orange and is used to
+    predict the propensity of customers to buy new products or services
+    ("appetency"). It is a hard, real-world marketing dataset whose key
+    characteristics are a large number of missing values (every instance
+    has at least one) and heavily unbalanced classes (the positive class
+    is roughly 1.8% of samples). Feature names and categorical values are
+    anonymized and carry no semantic meaning.
+
+    Source: OpenML dataset id 46939 (kddcup09_appetency, small training set).
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(46939, raw_data_cache)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_amazon_employee_access(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    Amazon employee access dataset.
+    https://www.openml.org/d/46905
+
+    Binary classification (predict whether a resource request is approved) from
+    9 purely categorical, high-cardinality features (up to ~7500 distinct values
+    each) with no numeric features and no missing values. Heavily imbalanced
+    (~94% positive), so ROC AUC is the meaningful metric.
+
+    Loaded with as_frame=True so the categorical columns are preserved as pandas
+    "category" dtype -- this lets the dataset exercise XGBoost's native
+    categorical handling (enable_categorical) when preprocessing does not
+    ordinal-encode the features.
+
+    Source: OpenML dataset id 46905 (Amazon_employee_access, curated by TabArena).
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(46905, raw_data_cache, as_frame=True)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_apsfailure(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    APSFailure dataset (Scania trucks Air Pressure System failure).
+    https://www.openml.org/d/46908
+
+    Binary classification from the UCI IDA 2016 Industrial Challenge: predict
+    whether a truck component failure is related to the APS, from 170 numeric
+    sensor / histogram features. The dataset has many missing values -- ~99%
+    of rows have at least one -- which gradient boosting handles natively, and
+    heavily unbalanced classes (~1.8% positive).
+
+    Source: OpenML dataset id 46908 (APSFailure, curated by TabArena).
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(46908, raw_data_cache)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_airline_satisfaction(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    Airline passenger satisfaction dataset.
+    https://www.openml.org/d/46920
+
+    Binary classification: predict whether an airline passenger is satisfied
+    from flight and service-rating features. The dataset has a genuine mix of
+    16 categorical columns (customer/travel type, cabin class, service ratings)
+    and 5 numerical columns (age, flight distance, boarding, delays), and with
+    ~130k samples the optimal gradient-boosting model uses close to a thousand
+    trees.
+
+    Source: OpenML dataset id 46920 (customer_satisfaction_in_airline,
+    curated by TabArena).
+
+    Loaded with as_frame=True so the categorical columns keep their pandas
+    "category" dtype, allowing the native categorical path (enable_categorical)
+    when preprocessing does not ordinal-encode them.
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(46920, raw_data_cache, as_frame=True)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_bioresponse(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    Bioresponse dataset.
+    https://www.openml.org/d/4134
+
+    Binary classification from drug discovery: predict whether a molecule
+    elicits a biological response (1) or not (0) from 1776 numeric molecular
+    descriptors. A real, wide, roughly balanced dataset (3751 samples x 1776
+    features, ~54% majority class, no missing values).
+
+    Source: OpenML dataset id 4134 (Bioresponse, curated by TabArena).
+
+    Classification task. n_classes = 2.
+    """
+    x, y = load_openml(4134, raw_data_cache)
+    data_desc = {"n_classes": 2, "default_split": {"test_size": 0.2, "random_state": 42}}
     return {"x": x, "y": y}, data_desc
 
 
@@ -810,6 +939,100 @@ def load_yolanda(
 
 
 @cache
+def load_superconductivity(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    Superconductivity dataset from the UCI machine learning repository.
+    https://archive.ics.uci.edu/dataset/464/superconductivty+data
+
+    Regression task: predict the critical temperature of a superconductor from
+    81 features extracted from its chemical composition. Unlike many tabular
+    datasets, the target has enough signal that gradient boosting keeps
+    improving well past a thousand trees, making it a good stress test for
+    XGBoost regression with a large number of estimators.
+
+    Source: OpenML dataset id 46961 (superconductivity, curated by TabArena).
+    """
+    x, y = load_openml(46961, raw_data_cache)
+    data_desc = {"default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_qsar_tid_11(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    QSAR-TID-11 dataset from ChEMBL.
+    https://www.openml.org/d/46953
+
+    Regression task: predict a compound's median pXC50 bioactivity
+    (MEDIAN_PXC50) against a drug target from 1024 numeric molecular
+    fingerprint / descriptor features. This is a high-dimensional,
+    low-sample dataset (5742 samples x 1024 features) that rewards a
+    large number of gradient-boosting estimators.
+
+    Source: OpenML dataset id 46953 (QSAR-TID-11, curated by TabArena).
+    """
+    x, y = load_openml(46953, raw_data_cache)
+    data_desc = {"default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
+def load_nyc_taxi_green(
+    data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
+) -> Tuple[Dict, Dict]:
+    """
+    NYC green taxi trip records, December 2016 (credit-card trips only).
+    https://www.openml.org/d/42729
+
+    Regression task: predict the tip amount (`tip_amount`) from trip features.
+    ~582k samples x 18 features.
+
+    OpenML marks 9 columns as nominal, but several of them are really numeric
+    fee amounts whose values carry order/magnitude (extra, mta_tax,
+    improvement_surcharge). Treating those as unordered categories throws away
+    the numeric meaning, so this loader converts them (and the ordinal
+    RatecodeID) back to numeric, and keeps only the genuinely categorical
+    columns -- vendor, forwarding flag, high-cardinality pickup/dropoff
+    location IDs, and trip type -- as pandas "category" dtype.
+    """
+    # nominal columns that are actually numeric-valued -> cast to numeric
+    numeric_from_nominal = [
+        "RatecodeID",
+        "extra",
+        "mta_tax",
+        "improvement_surcharge",
+    ]
+    # columns kept as genuine (unordered) categoricals
+    categorical_columns = [
+        "VendorID",
+        "store_and_fwd_flag",
+        "PULocationID",
+        "DOLocationID",
+        "trip_type",
+    ]
+
+    def transform_x_y(x, y):
+        for col in numeric_from_nominal:
+            if col in x.columns:
+                # category -> its (numeric) code values, as float
+                x[col] = pd.to_numeric(x[col].astype("str"), errors="coerce").astype(
+                    "float32"
+                )
+        for col in categorical_columns:
+            if col in x.columns:
+                x[col] = x[col].astype("category")
+        return x, y
+
+    x, y = load_openml(42729, raw_data_cache, transform_x_y, as_frame=True)
+    data_desc = {"default_split": {"test_size": 0.2, "random_state": 42}}
+    return {"x": x, "y": y}, data_desc
+
+
+@cache
 def load_road_network(
     data_name: str, data_cache: str, raw_data_cache: str, dataset_params: Dict
 ) -> Tuple[Dict, Dict]:
@@ -884,6 +1107,11 @@ dataset_loading_functions = {
     "higgs": load_higgs,
     "susy": load_susy,
     "ijcnn": load_ijcnn,
+    "amazon_employee_access": load_amazon_employee_access,
+    "bioresponse": load_bioresponse,
+    "apsfailure": load_apsfailure,
+    "airline_satisfaction": load_airline_satisfaction,
+    "kddcup09_appetency": load_kddcup09_appetency,
     "klaverjas": load_klaverjas,
     "cifar": load_cifar,
     "connect": load_connect,
@@ -904,6 +1132,9 @@ dataset_loading_functions = {
     "twodplanes": load_twodplanes,
     "year_prediction_msd": load_year_prediction_msd,
     "yolanda": load_yolanda,
+    "superconductivity": load_superconductivity,
+    "qsar_tid_11": load_qsar_tid_11,
+    "nyc_taxi_green": load_nyc_taxi_green,
     "road_network": load_road_network,
     # index search
     "sift": load_sift,
