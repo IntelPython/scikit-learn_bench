@@ -10,8 +10,7 @@ dependencies:
   # sklbench dependencies
   - scikit-learn
   - pandas
-  - tabulate
-  - fastparquet
+  - pyarrow
   - h5py
   - openpyxl
   - tqdm

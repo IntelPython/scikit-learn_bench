@@ -2,16 +2,13 @@
 xgboost
 catboost
 lightgbm
-faiss-cpu
-modin[all]
 scikit-learn-intelex
 dpctl
 dpnp
 # sklbench dependencies
 scikit-learn
 pandas
-tabulate
-fastparquet
+pyarrow
 h5py
 openpyxl
 tqdm
