@@ -65,6 +65,8 @@ def enrich_metrics(
     """Transforms raw performance and other results into aggregated metrics"""
     # time metrics
     res = bench_result.copy()
+    if "time[ms]" not in res:
+        return res
     if isinstance(res["time[ms]"], list):
         mean, std = box_filter(res["time[ms]"])
         if include_performance_stability_metrics:

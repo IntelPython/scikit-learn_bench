@@ -106,13 +106,20 @@ def run_benchmarks(args: argparse.Namespace) -> int:
             pool.map(load_data_with_cleanup, dataset_cases.values())
 
     # run bench_cases
-    return_code, result = call_benchmarks(
-        bench_cases,
-        param_filters,
-        args.bench_log_level,
-        args.environment_name,
-        args.exit_on_error,
-    )
+    if args.throughput_mode:
+        from .throughput import run_throughput_benchmarks
+
+        return_code, result = run_throughput_benchmarks(
+            bench_cases, param_filters, args
+        )
+    else:
+        return_code, result = call_benchmarks(
+            bench_cases,
+            param_filters,
+            args.bench_log_level,
+            args.environment_name,
+            args.exit_on_error,
+        )
 
     # output raw result
     logger.debug(custom_format(result))
