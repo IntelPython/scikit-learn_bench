@@ -190,6 +190,17 @@ def get_subset_metrics_of_estimator(
                         )
                     }
                 )
+    elif task == "utility":
+        # SPMD estimators are skipped: their score triggers an additional collective fit
+        if (
+            "Covariance" in str(estimator_instance)
+            and stage == "training"
+            and hasattr(estimator_instance, "score")
+            and "spmd" not in type(estimator_instance).__module__
+        ):
+            metrics.update(
+                {"average log-likelihood": float(estimator_instance.score(x))}
+            )
     elif task == "clustering":
         if hasattr(estimator_instance, "inertia_"):
             # compute inertia manually using distances to cluster centers

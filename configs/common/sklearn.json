@@ -18,6 +18,24 @@
                 "data": { "format": "dpnp", "order": "C" }
             }
         ],
+        "sklearn-ex[cpu] preview implementations": {
+            "algorithm": [
+                { "library": "sklearn", "device": "cpu" },
+                { "library": "sklearnex.preview", "device": "cpu" }
+            ]
+        },
+        "sklearn-ex[cpu,gpu] preview implementations": [
+            { "algorithm": { "library": "sklearn", "device": "cpu" } },
+            { "algorithm": { "library": "sklearnex.preview", "device": "cpu" } },
+            {
+                "algorithm": {
+                    "library": "sklearnex.preview",
+                    "device": "gpu",
+                    "sklearn_context": { "array_api_dispatch": true }
+                },
+                "data": { "format": "dpnp", "order": "C" }
+            }
+        ],
         "sklearnex spmd implementation": {
             "algorithm": {
                 "library": "sklearnex.spmd",
