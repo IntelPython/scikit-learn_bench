@@ -23,11 +23,7 @@
     },
     "TEMPLATES": {
         "sklearn covariance": {
-            "SETS": [
-                "sklearn-ex[cpu,gpu] preview implementations",
-                "covariance parameters",
-                "covariance datasets"
-            ]
+            "SETS": ["sklearn-ex[cpu,gpu] preview implementations", "covariance parameters", "covariance datasets"]
         }
     }
 }
