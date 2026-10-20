@@ -54,6 +54,9 @@ from .common import enrich_result, main_template
 
 def get_estimator(library_name: str, estimator_name: str):
     classes_map, _ = get_module_members(library_name.split("."))
+    if estimator_name not in classes_map and library_name == "sklearnex":
+        # an estimator still in preview is found there until it is released
+        classes_map, _ = get_module_members(["sklearnex", "preview"])
     if estimator_name not in classes_map:
         raise ValueError(
             f"Unable to find {estimator_name} estimator in {library_name} module."
