@@ -1,0 +1,15 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "covariance parameters": {
+            "algorithm": {
+                "estimator": "EmpiricalCovariance",
+                "estimator_params": {
+                    "store_precision": [true, false],
+                    "assume_centered": false
+                },
+                "estimator_methods": { "training": "fit" }
+            }
+        }
+    }
+}

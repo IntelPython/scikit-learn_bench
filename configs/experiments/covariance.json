@@ -1,0 +1,29 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/covariance.json"],
+    "PARAMETERS_SETS": {
+        "covariance datasets": [
+            {
+                "data": {
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "n_samples": 10000000, "n_features": 50, "centers": 1 },
+                        { "n_samples": 2000000, "n_features": 500, "centers": 1 },
+                        { "n_samples": 200000, "n_features": 2000, "centers": 1 }
+                    ],
+                    "split_kwargs": { "ignore": true }
+                }
+            },
+            {
+                "data": {
+                    "dataset": ["susy", "higgs"],
+                    "split_kwargs": { "ignore": true }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "sklearn covariance": {
+            "SETS": ["sklearn-ex[cpu,gpu] preview implementations", "covariance parameters", "covariance datasets"]
+        }
+    }
+}

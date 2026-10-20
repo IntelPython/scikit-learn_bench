@@ -74,7 +74,7 @@ METRICS = {
     "indifferent": [
         # SVM
         "support vectors",
-        # PCA
+        # PCA, EmpiricalCovariance
         "average log-likelihood",
         "1st component variance ratio",
         # DBSCAN
