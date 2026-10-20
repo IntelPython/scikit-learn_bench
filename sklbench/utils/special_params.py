@@ -20,14 +20,13 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
-from psutil import cpu_count
 from sklearn.metrics import euclidean_distances
 
 from ..datasets import dataset_loading_functions
 from .bench_case import get_bench_case_value, set_bench_case_value
 from .common import convert_to_numpy, flatten_list
 from .custom_types import BenchCase, BenchTemplate
-from .env import get_numa_cpus_conf
+from .env import get_available_cpu_count, get_numa_cpus_conf
 from .logger import logger
 
 SP_VALUE_STR = "[SPECIAL_VALUE]"
@@ -222,9 +221,9 @@ def assign_case_special_values_on_run(
     if is_special_value(n_jobs):
         n_jobs = n_jobs.replace(SP_VALUE_STR, "")
         if n_jobs.startswith("physical_cpus"):
-            n_cpus = cpu_count(logical=False)
+            n_cpus = get_available_cpu_count(logical=False)
         elif n_jobs.startswith("logical_cpus"):
-            n_cpus = cpu_count(logical=True)
+            n_cpus = get_available_cpu_count(logical=True)
         else:
             raise ValueError(f'Unknown special value {n_jobs} for "n_jobs"')
         n_jobs = int(n_cpus * get_ratio_from_n_jobs(n_jobs))

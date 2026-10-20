@@ -137,7 +137,7 @@ List of available special values:
 | `data`:`dataset` | all | `all_named` | Sets datasets to use as list of all named datasets available in loaders. |
 | `data`:`generation_kwargs`:`n_informative` | all | *float* value in [0, 1] range | Sets datasets to use as list of all named datasets available in loaders. |
 | `bench`:`taskset` | all | Specification of numa nodes in `numa:{numa_node_0}[\|{numa_node_1}...]` format | Sets CPUs affinity using `taskset` utility. |
-| `algorithm`:`estimator_params`:`n_jobs` | sklearn_estimator | `physical_cpus`, `logical_cpus`, or ratio of previous ones in format `{type}_cpus:{ratio}` where `ratio` is float | Sets `n_jobs` parameter to a number of physical/logical CPUs or ratio of them for an estimator. |
+| `algorithm`:`estimator_params`:`n_jobs` | sklearn_estimator | `physical_cpus`, `logical_cpus`, or ratio of previous ones in format `{type}_cpus:{ratio}` where `ratio` is float | Sets `n_jobs` parameter to a number of physical/logical CPUs or ratio of them for an estimator. On Linux, only the CPUs in the process affinity mask (`bench`:`taskset`, numactl) are counted. |
 | `algorithm`:`estimator_params`:`scale_pos_weight` | sklearn_estimator | `auto` | Sets `scale_pos_weight` parameter to `sum(negative instances) / sum(positive instances)` value for estimator. |
 | `algorithm`:`estimator_params`:`n_clusters` | sklearn_estimator | `auto` | Sets `n_clusters` parameter to number of clusters or classes from dataset description for estimator. |
 | `algorithm`:`estimator_params`:`eps` | sklearn_estimator | `distances_quantile:{quantile}` format where quantile is *float* value in [0, 1] range | Computes `eps` parameter as quantile value of distances in `x_train` matrix for estimator. |
