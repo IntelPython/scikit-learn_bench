@@ -2,6 +2,8 @@
 
 `daal4py_svd`: tests performance scalability of `daal4py.svd` algorithm
 
+`hdbscan_datasets`: runs `HDBSCAN` over real datasets, synthetic shapes and large tall or wide data, to cover different data situations rather than parameters.
+
 `hdbscan_gpu_boundaries`: compares `HDBSCAN` on CPU and GPU over `n_samples`, `n_features`, dtypes and metrics, up to sizes stock `sklearn` does not finish.
 
 `hdbscan_parameters`: sweeps the `HDBSCAN` parameter space (metrics, cluster selection, density thresholds, stored centers, dtypes and data formats) over the `sklearn` and `sklearnex` implementations.
