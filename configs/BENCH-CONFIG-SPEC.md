@@ -108,6 +108,7 @@ Configs have the three highest parameter keys:
 |:---------------|:--------------|:--------|:------------|
 | `algorithm`:`estimator` | None |  | Name of measured estimator. |
 | `algorithm`:`estimator_params` | Empty `dict` |  | Parameters for estimator constructor. |
+| `algorithm`:`method_params`:`{method}` | None |  | Parameters for a measured method of estimator. A method listed here is called with these parameters only, without data, which fits methods working off the fitted model such as `HDBSCAN.dbscan_clustering`. |
 | `algorithm`:`batch_size`:`{stage}` | None | Any positive integer | Enables online mode for `{stage}` methods of estimator (sequential calls for each batch). |
 | `algorithm`:`sklearn_context` | None |  | Parameters for sklearn `config_context` used over estimator. `array_api_dispatch` requires `SCIPY_ARRAY_API=1`, which scikit-learn_bench sets by default if it is unset in the environment. |
 | `algorithm`:`sklearnex_context` | None |  | Parameters for sklearnex `config_context` used over estimator. Updated by `sklearn_context` if set. |
@@ -136,10 +137,11 @@ List of available special values:
 | `data`:`dataset` | all | `all_named` | Sets datasets to use as list of all named datasets available in loaders. |
 | `data`:`generation_kwargs`:`n_informative` | all | *float* value in [0, 1] range | Sets datasets to use as list of all named datasets available in loaders. |
 | `bench`:`taskset` | all | Specification of numa nodes in `numa:{numa_node_0}[\|{numa_node_1}...]` format | Sets CPUs affinity using `taskset` utility. |
-| `algorithm`:`estimator_params`:`n_jobs` | sklearn_estimator | `physical_cpus`, `logical_cpus`, or ratio of previous ones in format `{type}_cpus:{ratio}` where `ratio` is float | Sets `n_jobs` parameter to a number of physical/logical CPUs or ratio of them for an estimator. |
+| `algorithm`:`estimator_params`:`n_jobs` | sklearn_estimator | `physical_cpus`, `logical_cpus`, or ratio of previous ones in format `{type}_cpus:{ratio}` where `ratio` is float | Sets `n_jobs` parameter to a number of physical/logical CPUs or ratio of them for an estimator. On Linux, only the CPUs in the process affinity mask (`bench`:`taskset`, numactl) are counted. |
 | `algorithm`:`estimator_params`:`scale_pos_weight` | sklearn_estimator | `auto` | Sets `scale_pos_weight` parameter to `sum(negative instances) / sum(positive instances)` value for estimator. |
 | `algorithm`:`estimator_params`:`n_clusters` | sklearn_estimator | `auto` | Sets `n_clusters` parameter to number of clusters or classes from dataset description for estimator. |
 | `algorithm`:`estimator_params`:`eps` | sklearn_estimator | `distances_quantile:{quantile}` format where quantile is *float* value in [0, 1] range | Computes `eps` parameter as quantile value of distances in `x_train` matrix for estimator. |
+| `algorithm`:`method_params`:`dbscan_clustering`:`cut_distance` | sklearn_estimator | `distances_quantile:{quantile}` format where quantile is *float* value in [0, 1] range | Computes `cut_distance` the same way as `eps` above, so that an HDBSCAN hierarchy can be re-cut at the distance DBSCAN is measured at. |
 
 ## Range of Values
 
