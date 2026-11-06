@@ -225,7 +225,7 @@ def get_subset_metrics_of_estimator(
                         )
                     }
                 )
-            if len(np.unique(y)) < 128:
+            if len(np.unique(y_compat)) < 128:
                 metrics.update(
                     {
                         "homogeneity": (
