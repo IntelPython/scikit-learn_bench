@@ -1,0 +1,79 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "dbscan metrics": {
+            "algorithm": {
+                "estimator": "DBSCAN",
+                "estimator_params": [
+                    { "metric": "euclidean" },
+                    { "metric": "manhattan" },
+                    { "metric": "chebyshev" },
+                    { "metric": "cosine" },
+                    { "metric": "minkowski", "p": 3 }
+                ]
+            }
+        },
+        "dbscan eps and jobs": {
+            "algorithm": {
+                "estimator_params": {
+                    "eps": "[SPECIAL_VALUE]distances_quantile:0.01",
+                    "min_samples": 5,
+                    "n_jobs": "[SPECIAL_VALUE]physical_cpus"
+                }
+            },
+            "bench": { "n_runs": 5, "time_limit": 900 }
+        },
+        "sklearn brute and tree": [
+            { "algorithm": { "library": "sklearn", "device": "cpu", "estimator_params": { "algorithm": "brute" } } },
+            { "algorithm": { "library": "sklearn", "device": "cpu", "estimator_params": { "algorithm": "auto" } } }
+        ],
+        "sklearnex cpu": {
+            "algorithm": { "library": "sklearnex", "device": "cpu", "estimator_params": { "algorithm": "brute" } }
+        },
+        "sklearnex gpu": {
+            "algorithm": {
+                "library": "sklearnex",
+                "device": "gpu",
+                "estimator_params": { "algorithm": "brute" },
+                "sklearn_context": { "array_api_dispatch": true }
+            },
+            "data": { "format": "dpnp", "order": "C" }
+        },
+        "dbscan datasets": {
+            "data": [
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": [
+                        { "centers": 20, "n_samples": 50000, "n_features": 8, "cluster_std": 1.0 },
+                        { "centers": 20, "n_samples": 200000, "n_features": 8, "cluster_std": 1.0 },
+                        { "centers": 20, "n_samples": 100000, "n_features": 32, "cluster_std": 1.0 },
+                        { "centers": 20, "n_samples": 50000, "n_features": 256, "cluster_std": 1.0 },
+                        { "centers": 100, "n_samples": 500000, "n_features": 2, "cluster_std": 1.0 }
+                    ],
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "dataset": "cifar",
+                    "split_kwargs": { "ignore": true },
+                    "preprocessing_kwargs": { "normalize": "mean" }
+                },
+                {
+                    "dataset": "covtype",
+                    "split_kwargs": { "train_size": 100000, "test_size": null },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearn dbscan": {
+            "SETS": ["sklearn brute and tree", "dbscan metrics", "dbscan eps and jobs", "dbscan datasets"]
+        },
+        "sklearnex cpu dbscan": {
+            "SETS": ["sklearnex cpu", "dbscan metrics", "dbscan eps and jobs", "dbscan datasets"]
+        },
+        "sklearnex gpu dbscan": {
+            "SETS": ["sklearnex gpu", "dbscan metrics", "dbscan eps and jobs", "dbscan datasets"]
+        }
+    }
+}

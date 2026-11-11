@@ -21,7 +21,7 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 from psutil import cpu_count
-from sklearn.metrics import euclidean_distances
+from sklearn.metrics import pairwise_distances
 
 from ..datasets import dataset_loading_functions
 from .bench_case import get_bench_case_value, set_bench_case_value
@@ -288,7 +288,18 @@ def assign_case_special_values_on_run(
         # conversion to lower precision is required
         # to produce same distances quantile for different dtypes of x
         x_sample = x_sample.astype("float32")
-        dist = np.tril(euclidean_distances(x_sample, x_sample)).reshape(-1)
+        # the quantile is taken in the estimator's own metric, so eps has the right scale
+        metric = get_bench_case_value(
+            bench_case, "algorithm:estimator_params:metric", "euclidean"
+        )
+        metric_kwargs = {}
+        if metric == "minkowski":
+            metric_kwargs["p"] = get_bench_case_value(
+                bench_case, "algorithm:estimator_params:p", 2
+            )
+        dist = np.tril(
+            pairwise_distances(x_sample, x_sample, metric=metric, **metric_kwargs)
+        ).reshape(-1)
         dist = dist[dist != 0]
         quantile = float(np.quantile(dist, quantile))
         set_bench_case_value(bench_case, "algorithm:estimator_params:eps", quantile)
