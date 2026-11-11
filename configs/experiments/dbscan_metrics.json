@@ -47,6 +47,7 @@
                         { "centers": 20, "n_samples": 50000, "n_features": 8, "cluster_std": 1.0 },
                         { "centers": 20, "n_samples": 200000, "n_features": 8, "cluster_std": 1.0 },
                         { "centers": 20, "n_samples": 100000, "n_features": 32, "cluster_std": 1.0 },
+                        { "centers": 20, "n_samples": 50000, "n_features": 256, "cluster_std": 1.0 },
                         { "centers": 100, "n_samples": 500000, "n_features": 2, "cluster_std": 1.0 }
                     ],
                     "split_kwargs": { "ignore": true }
