@@ -74,7 +74,7 @@ def read_output_from_command(command: str) -> Tuple[int, str, str]:
     )
 
 
-def hash_from_json_repr(x: JsonTypesUnion, hash_limit: int = 5) -> str:
+def hash_from_json_repr(x: JsonTypesUnion, hash_limit: Union[int, None] = 5) -> str:
     h = hashlib.sha256()
     h.update(bytes(json.dumps(x), encoding="utf-8"))
     return h.hexdigest()[:hash_limit]
