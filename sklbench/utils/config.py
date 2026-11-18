@@ -206,9 +206,11 @@ def expand_template(
 
 
 def remove_duplicated_bench_cases(bench_cases: List[BenchCase]) -> List[BenchCase]:
+    # full hash: the default 5 hex digits collide for different cases
+    # in runs with ~1000+ cases, which silently dropped one of them
     hash_map = dict()
     for bench_case in bench_cases:
-        hash_map[hash_from_json_repr(bench_case)] = bench_case
+        hash_map[hash_from_json_repr(bench_case, hash_limit=None)] = bench_case
     return list(hash_map.values())
 
 
@@ -216,9 +218,9 @@ def bench_case_filter(bench_case: BenchCase, filters: List[BenchCase]):
     # filtering is implemented by comparison of
     # benchmark case and case merged with filters:
     # filtering is passed if one of merged cases has same hash as original
-    original_hash = hash_from_json_repr(bench_case)
+    original_hash = hash_from_json_repr(bench_case, hash_limit=None)
     filtered_hashes = [
-        hash_from_json_repr(merge_dicts(bench_case, bench_filter))
+        hash_from_json_repr(merge_dicts(bench_case, bench_filter), hash_limit=None)
         for bench_filter in filters
     ]
     return original_hash in filtered_hashes or len(filtered_hashes) == 0
