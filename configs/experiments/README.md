@@ -12,6 +12,8 @@
 
 `hdbscan_vs_cuml`: compares `sklearnex` `HDBSCAN` on Intel GPU with `cuml` `HDBSCAN` on NVIDIA GPU.
 
+`hdbscan_vs_hdbscan_lib`: compares `sklearnex` `HDBSCAN` on CPU and GPU with the `hdbscan` library; its `min_samples - 1` and exact MST give the same dendrogram.
+
 `hdbscan_vs_dbscan`: compares `HDBSCAN` and its `dbscan_clustering` re-cut with `DBSCAN` at the same distance.
 
 `nearest_neighbors`: tests performance of neighbors search implementations from `sklearnex`, `sklearn`, `raft`, `faiss` and `svs`.

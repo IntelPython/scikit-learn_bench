@@ -43,7 +43,12 @@ from sklearn.metrics import (
 from ..datasets import load_data
 from ..datasets.transformer import split_and_transform_data
 from ..utils.bench_case import get_bench_case_value
-from ..utils.common import convert_to_numpy, custom_format, get_module_members
+from ..utils.common import (
+    convert_to_numpy,
+    custom_format,
+    get_module_members,
+    is_json_serializable,
+)
 from ..utils.config import bench_case_filter
 from ..utils.custom_types import BenchCase, Numeric, NumpyNumeric
 from ..utils.logger import logger
@@ -601,9 +606,10 @@ def main(bench_case: BenchCase, filters: List[BenchCase]):
         result_template["assume_finite"] = context_params["assume_finite"]
     if hasattr(estimator_instance, "get_params"):
         estimator_params = estimator_instance.get_params()
-    # note: "handle" is not JSON-serializable
-    if "handle" in estimator_params:
-        del estimator_params["handle"]
+    # objects such as cuml's "handle" or hdbscan's "memory" are not JSON-serializable
+    estimator_params = {
+        k: v for k, v in estimator_params.items() if is_json_serializable(v)
+    }
     logger.debug(f"Estimator parameters:\n{custom_format(estimator_params)}")
     result_template.update(estimator_params)
 

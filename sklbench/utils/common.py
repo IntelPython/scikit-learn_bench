@@ -80,6 +80,14 @@ def hash_from_json_repr(x: JsonTypesUnion, hash_limit: int = 5) -> str:
     return h.hexdigest()[:hash_limit]
 
 
+def is_json_serializable(x) -> bool:
+    try:
+        json.dumps(x)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
 def ensure_list_types_homogeneity(input_list: List):
     list_types = set([type(el) for el in input_list])
     if len(list_types) != 1:
