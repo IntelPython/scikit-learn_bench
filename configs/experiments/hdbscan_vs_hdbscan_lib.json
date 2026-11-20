@@ -1,0 +1,119 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "sklearnex implementations": [
+            {
+                "algorithm": {
+                    "library": "sklearnex",
+                    "device": "cpu",
+                    "estimator_params": { "n_jobs": "[SPECIAL_VALUE]physical_cpus" }
+                }
+            },
+            {
+                "algorithm": {
+                    "library": "sklearnex",
+                    "device": "gpu",
+                    "sklearn_context": { "array_api_dispatch": true }
+                },
+                "data": { "format": "dpnp", "order": "C" }
+            }
+        ],
+        "hdbscan library implementation": {
+            "algorithm": {
+                "library": "hdbscan",
+                "estimator_params": {
+                    "store_centers": "[REMOVE]",
+                    "copy": "[REMOVE]",
+                    "min_samples": 4,
+                    "approx_min_span_tree": false,
+                    "gen_min_span_tree": false,
+                    "core_dist_n_jobs": -1
+                }
+            }
+        },
+        "sklearnex methods": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": ["brute", "kd_tree", "ball_tree"],
+                    "leaf_size": 40
+                }
+            }
+        },
+        "hdbscan library methods": {
+            "algorithm": {
+                "estimator_params": {
+                    "algorithm": ["generic", "boruvka_kdtree", "boruvka_balltree"],
+                    "leaf_size": 40
+                }
+            }
+        },
+        "blobs n_samples": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 20,
+                    "n_samples": [10000, 50000, 200000, 1000000],
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "blobs n_features": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 20,
+                    "n_samples": 50000,
+                    "n_features": [2, 8, 16, 32, 64],
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "real datasets": {
+            "data": [
+                { "dataset": "skin_segmentation", "preprocessing_kwargs": { "normalize": "standard" } },
+                { "dataset": "road_network", "preprocessing_kwargs": { "normalize": "standard" } },
+                { "dataset": "covtype", "preprocessing_kwargs": { "normalize": "standard" } }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "sklearnex n_samples": {
+            "SETS": ["common hdbscan parameters", "sklearnex implementations", "sklearnex methods", "blobs n_samples"]
+        },
+        "hdbscan library n_samples": {
+            "SETS": [
+                "common hdbscan parameters",
+                "hdbscan library implementation",
+                "hdbscan library methods",
+                "blobs n_samples"
+            ]
+        },
+        "sklearnex n_features": {
+            "SETS": ["common hdbscan parameters", "sklearnex implementations", "sklearnex methods", "blobs n_features"]
+        },
+        "hdbscan library n_features": {
+            "SETS": [
+                "common hdbscan parameters",
+                "hdbscan library implementation",
+                "hdbscan library methods",
+                "blobs n_features"
+            ]
+        },
+        "sklearnex real datasets": {
+            "SETS": ["common hdbscan parameters", "sklearnex implementations", "sklearnex methods", "real datasets"]
+        },
+        "hdbscan library real datasets": {
+            "SETS": [
+                "common hdbscan parameters",
+                "hdbscan library implementation",
+                "hdbscan library methods",
+                "real datasets"
+            ]
+        }
+    }
+}

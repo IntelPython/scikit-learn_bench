@@ -1,0 +1,145 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "comparison implementations": [
+            {
+                "algorithm": {
+                    "library": "sklearnex",
+                    "device": "gpu",
+                    "sklearn_context": { "array_api_dispatch": true },
+                    "estimator_params": { "algorithm": ["brute", "kd_tree"] }
+                },
+                "data": { "format": "dpnp", "order": "C" }
+            },
+            {
+                "algorithm": {
+                    "library": "cuml",
+                    "estimator_params": {
+                        "algorithm": "[REMOVE]",
+                        "leaf_size": "[REMOVE]",
+                        "store_centers": "[REMOVE]",
+                        "copy": "[REMOVE]",
+                        "build_algo": ["brute_force", "nn_descent"]
+                    }
+                },
+                "data": { "format": "cupy" }
+            }
+        ],
+        "comparison parameters": {
+            "data": { "dtype": "float32" },
+            "bench": { "n_runs": 3, "time_limit": 600 }
+        },
+        "blobs n_samples": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 20,
+                    "n_samples": [10000, 50000, 100000, 200000, 500000, 1000000, 2000000, 4000000],
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "blobs n_features": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 20,
+                    "n_samples": 100000,
+                    "n_features": [2, 4, 16, 32, 64, 128, 256],
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            }
+        },
+        "blobs min_samples": {
+            "data": {
+                "source": "make_blobs",
+                "generation_kwargs": {
+                    "centers": 20,
+                    "n_samples": 200000,
+                    "n_features": 8,
+                    "cluster_std": 2.0,
+                    "random_state": 42
+                },
+                "split_kwargs": { "ignore": true }
+            },
+            "algorithm": { "estimator_params": { "min_samples": [1, 10, 50, 100] } }
+        },
+        "real datasets": {
+            "data": [
+                { "dataset": "letters", "preprocessing_kwargs": { "normalize": "standard" } },
+                {
+                    "dataset": "california_housing",
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                { "dataset": "skin_segmentation", "preprocessing_kwargs": { "normalize": "standard" } },
+                { "dataset": "road_network", "preprocessing_kwargs": { "normalize": "standard" } },
+                { "dataset": "covtype", "preprocessing_kwargs": { "normalize": "standard" } },
+                {
+                    "dataset": "susy",
+                    "split_kwargs": { "train_size": 1000000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "higgs",
+                    "split_kwargs": { "train_size": 1000000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                { "dataset": "creditcard", "preprocessing_kwargs": { "normalize": "standard" } },
+                {
+                    "dataset": "year_prediction_msd",
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                { "dataset": "sensit", "preprocessing_kwargs": { "normalize": "standard" } },
+                { "dataset": "mnist", "preprocessing_kwargs": { "normalize": "standard" } },
+                {
+                    "dataset": "fashion_mnist",
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "cifar",
+                    "split_kwargs": { "train_size": 30000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "vs cuml n_samples": {
+            "SETS": [
+                "common hdbscan parameters",
+                "comparison implementations",
+                "comparison parameters",
+                "blobs n_samples"
+            ]
+        },
+        "vs cuml n_features": {
+            "SETS": [
+                "common hdbscan parameters",
+                "comparison implementations",
+                "comparison parameters",
+                "blobs n_features"
+            ]
+        },
+        "vs cuml min_samples": {
+            "SETS": [
+                "common hdbscan parameters",
+                "comparison implementations",
+                "comparison parameters",
+                "blobs min_samples"
+            ]
+        },
+        "vs cuml real datasets": {
+            "SETS": [
+                "common hdbscan parameters",
+                "comparison implementations",
+                "comparison parameters",
+                "real datasets"
+            ]
+        }
+    }
+}

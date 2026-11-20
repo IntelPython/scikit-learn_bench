@@ -56,6 +56,11 @@ def box_filter(array, left=0.2, right=0.8):
         return array[0], 0.0
     lower, upper = array[int(size * left)], array[int(size * right)]
     result = np.array([item for item in array if lower < item < upper])
+    if result.size == 0:
+        # the box is empty for short series (2 measurements always are, and a
+        # `time_limit` early stop can leave exactly 2), which would make the
+        # aggregated time NaN - fall back to the whole series instead
+        result = np.array(array)
     return np.mean(result), np.std(result)
 
 

@@ -15,14 +15,42 @@
 # ===============================================================================
 
 import json
+import os
 import subprocess
 import sys
 from typing import Dict
 
 import pandas as pd
+from psutil import cpu_count
 
 from .common import read_output_from_command
 from .logger import logger
+
+
+def get_available_cpu_count(logical: bool) -> int:
+    """Count the CPUs this process may run on, as limited by taskset or numactl.
+
+    Physical cores are counted from the Linux CPU topology; elsewhere the
+    affinity mask is not taken into account.
+    """
+    if not hasattr(os, "sched_getaffinity"):
+        return cpu_count(logical=logical)
+    cpus = os.sched_getaffinity(0)
+    if logical:
+        return len(cpus)
+    cores = set()
+    try:
+        for cpu in cpus:
+            topology = f"/sys/devices/system/cpu/cpu{cpu}/topology"
+            with open(f"{topology}/physical_package_id") as package_file:
+                package = package_file.read().strip()
+            with open(f"{topology}/core_id") as core_file:
+                core = core_file.read().strip()
+            cores.add((package, core))
+    except OSError:
+        logger.warning("Unable to read CPU topology, ignoring the affinity mask")
+        return cpu_count(logical=False)
+    return len(cores)
 
 
 def get_numa_cpus_conf() -> Dict[int, str]:

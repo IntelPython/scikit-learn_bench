@@ -116,11 +116,42 @@
                     }
                 }
             }
-        ]
+        ],
+        "hdbscan algorithms": {
+            "algorithm": [
+                {
+                    "estimator": "HDBSCAN",
+                    "estimator_params": { "min_cluster_size": 5, "algorithm": ["brute", "kd_tree", "ball_tree"] }
+                },
+                {
+                    "estimator": "HDBSCAN",
+                    "estimator_params": {
+                        "min_cluster_size": 5,
+                        "algorithm": "kd_tree",
+                        "metric": ["manhattan", "chebyshev"]
+                    }
+                },
+                {
+                    "estimator": "HDBSCAN",
+                    "estimator_params": { "min_cluster_size": 5, "algorithm": "brute" },
+                    "estimator_methods": { "training": "fit|dbscan_clustering" },
+                    "method_params": {
+                        "dbscan_clustering": {
+                            "cut_distance": "[SPECIAL_VALUE]distances_quantile:0.01",
+                            "min_cluster_size": 5
+                        }
+                    }
+                }
+            ]
+        }
     },
     "TEMPLATES": {
         "test": {
             "SETS": ["sklearn-ex[cpu] implementations", "common parameters", "data formats", "datasets", "algorithms"]
+        },
+        "hdbscan": {
+            "SETS": ["common parameters", "data formats", "datasets", "hdbscan algorithms"],
+            "algorithm": { "library": "sklearn", "device": "cpu" }
         }
     }
 }

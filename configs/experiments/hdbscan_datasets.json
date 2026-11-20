@@ -1,0 +1,156 @@
+{
+    "INCLUDE": ["../common/sklearn.json", "../common/hdbscan.json"],
+    "PARAMETERS_SETS": {
+        "sklearnex only [cpu,gpu]": [
+            { "algorithm": { "library": "sklearnex", "device": "cpu" } },
+            {
+                "algorithm": {
+                    "library": "sklearnex",
+                    "device": "gpu",
+                    "sklearn_context": { "array_api_dispatch": true }
+                },
+                "data": { "format": "dpnp", "order": "C" }
+            }
+        ],
+        "hdbscan datasets limits": {
+            "bench": { "n_runs": 3, "time_limit": 600 }
+        },
+        "hdbscan brute and kd_tree methods": {
+            "algorithm": { "estimator_params": { "algorithm": ["brute", "kd_tree"], "leaf_size": 40 } }
+        },
+        "moderate real datasets": {
+            "data": [
+                {
+                    "dataset": ["letters", "california_housing", "digits"],
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": ["skin_segmentation", "road_network"],
+                    "split_kwargs": { "train_size": 50000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": ["covtype", "sensit", "year_prediction_msd"],
+                    "split_kwargs": { "train_size": 20000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "creditcard",
+                    "split_kwargs": { "train_size": 30000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": "fashion_mnist",
+                    "split_kwargs": { "train_size": 10000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                }
+            ]
+        },
+        "synthetic shapes": {
+            "data": [
+                {
+                    "source": "make_moons",
+                    "generation_kwargs": { "n_samples": 20000, "noise": 0.05, "random_state": 42 },
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "source": "make_circles",
+                    "generation_kwargs": { "n_samples": 20000, "noise": 0.05, "factor": 0.5, "random_state": 42 },
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 50,
+                        "n_samples": 20000,
+                        "n_features": 8,
+                        "cluster_std": [0.5, 8.0],
+                        "random_state": 42
+                    },
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_samples": 20000,
+                        "n_features": 20,
+                        "n_informative": 10,
+                        "n_classes": 5,
+                        "random_state": 42
+                    },
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        },
+        "large tall datasets": {
+            "data": [
+                {
+                    "dataset": [
+                        "skin_segmentation",
+                        "road_network",
+                        "covtype",
+                        "creditcard",
+                        "year_prediction_msd",
+                        "sensit"
+                    ],
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                },
+                {
+                    "dataset": ["susy", "higgs"],
+                    "split_kwargs": { "train_size": 1000000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                }
+            ]
+        },
+        "large wide datasets": {
+            "data": [
+                { "dataset": ["mnist", "fashion_mnist"], "preprocessing_kwargs": { "normalize": "standard" } },
+                {
+                    "dataset": "cifar",
+                    "split_kwargs": { "train_size": 30000 },
+                    "preprocessing_kwargs": { "normalize": "standard" }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "hdbscan real datasets [all methods]": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan all methods",
+                "moderate real datasets",
+                "hdbscan datasets limits"
+            ]
+        },
+        "hdbscan synthetic shapes [all methods]": {
+            "SETS": [
+                "sklearn-ex[cpu,gpu] implementations",
+                "common hdbscan parameters",
+                "sklearn hdbscan parameters",
+                "hdbscan all methods",
+                "synthetic shapes",
+                "hdbscan datasets limits"
+            ]
+        },
+        "hdbscan large tall datasets [kd_tree]": {
+            "SETS": [
+                "sklearnex only [cpu,gpu]",
+                "common hdbscan parameters",
+                "hdbscan kd_tree method",
+                "large tall datasets",
+                "hdbscan datasets limits"
+            ]
+        },
+        "hdbscan large wide datasets [brute, kd_tree]": {
+            "SETS": [
+                "sklearnex only [cpu,gpu]",
+                "common hdbscan parameters",
+                "hdbscan brute and kd_tree methods",
+                "large wide datasets",
+                "hdbscan datasets limits"
+            ]
+        }
+    }
+}
