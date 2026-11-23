@@ -33,6 +33,7 @@ steps:
       conda activate bench-env
       conda env update -f envs/conda-env-sklearn.yml -n bench-env
       conda list
+      conda install --dry-run -n bench-env -c conda-forge -c nodefaults "scikit-learn-intelex=2026.1.0"
     displayName: Install requirements via conda
     condition: eq(variables['PKG_MANAGER'], 'conda')
   - script: |
