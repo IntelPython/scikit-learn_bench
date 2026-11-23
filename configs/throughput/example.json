@@ -1,0 +1,231 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "throughput settings": {
+            "bench": {
+                "num_instances": 7,
+                "cores_per_instance": 8,
+                "measurement_duration": 30
+            }
+        },
+        "linear regression": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "copy_X": true
+                }
+            }
+        },
+        "random forest regressor": {
+            "algorithm": {
+                "estimator": "RandomForestRegressor",
+                "estimator_params": {
+                    "n_estimators": 100,
+                    "max_depth": 12,
+                    "random_state": 42
+                }
+            }
+        },
+        "knn classifier kdtree": {
+            "algorithm": {
+                "estimator": "KNeighborsClassifier",
+                "estimator_params": {
+                    "n_neighbors": 10,
+                    "weights": "uniform",
+                    "algorithm": "kd_tree",
+                    "metric": "minkowski",
+                    "p": 2
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": "standard" }
+            }
+        },
+        "kmeans": {
+            "algorithm": {
+                "estimator": "KMeans",
+                "estimator_params": {
+                    "n_clusters": 10,
+                    "n_init": 1,
+                    "max_iter": 100,
+                    "tol": 1e-4,
+                    "random_state": 42,
+                    "algorithm": "lloyd"
+                },
+                "estimator_methods": {
+                    "inference": "predict"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": "standard" }
+            }
+        },
+        "linear regression datasets": {
+            "data": [
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 500000,
+                        "n_features": 50,
+                        "n_informative": 10,
+                        "noise": 20.0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 100000,
+                        "n_features": 2000,
+                        "n_informative": 10,
+                        "noise": 60.0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                },
+                {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                }
+            ]
+        },
+        "random forest datasets": {
+            "data": [
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 100000,
+                        "n_features": 20,
+                        "n_informative": 10,
+                        "noise": 10.0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "source": "make_regression",
+                    "generation_kwargs": {
+                        "n_samples": 50000,
+                        "n_features": 200,
+                        "n_informative": 20,
+                        "noise": 30.0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                },
+                {
+                    "dataset": "medical_charges_nominal",
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        },
+        "knn datasets": {
+            "data": [
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 5,
+                        "n_samples": 200000,
+                        "n_features": 10,
+                        "n_informative": 8,
+                        "n_redundant": 2,
+                        "n_repeated": 0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "source": "make_classification",
+                    "generation_kwargs": {
+                        "n_classes": 5,
+                        "n_samples": 50000,
+                        "n_features": 50,
+                        "n_informative": 20,
+                        "n_redundant": 10,
+                        "n_repeated": 0,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "dataset": "letters",
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "dataset": "codrnanorm",
+                    "split_kwargs": { "ignore": true }
+                }
+            ]
+        },
+        "kmeans datasets": {
+            "data": [
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 10,
+                        "cluster_std": 4.0,
+                        "n_samples": 500000,
+                        "n_features": 20,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "source": "make_blobs",
+                    "generation_kwargs": {
+                        "centers": 10,
+                        "cluster_std": 8.0,
+                        "n_samples": 100000,
+                        "n_features": 200,
+                        "random_state": 42
+                    }
+                },
+                {
+                    "dataset": "creditcard",
+                    "split_kwargs": { "ignore": true }
+                },
+                {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": 0.8, "test_size": 0.2 }
+                }
+            ]
+        }
+    },
+    "TEMPLATES": {
+        "linear_regression_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "linear regression",
+                "linear regression datasets"
+            ]
+        },
+        "random_forest_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "random forest regressor",
+                "random forest datasets"
+            ]
+        },
+        "knn_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "knn classifier kdtree",
+                "knn datasets"
+            ]
+        },
+        "kmeans_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "kmeans",
+                "kmeans datasets"
+            ]
+        }
+    }
+}

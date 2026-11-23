@@ -1,0 +1,164 @@
+{
+    "INCLUDE": ["../common/sklearn.json"],
+    "PARAMETERS_SETS": {
+        "throughput settings": {
+            "bench": {
+                "num_instances": 7,
+                "cores_per_instance": 8,
+                "measurement_duration": 30
+            }
+        },
+        "linear regression": {
+            "algorithm": {
+                "estimator": "LinearRegression",
+                "estimator_params": {
+                    "fit_intercept": true,
+                    "copy_X": true
+                }
+            }
+        },
+        "random forest classifier": {
+            "algorithm": {
+                "estimator": "RandomForestClassifier",
+                "estimator_params": {
+                    "n_estimators": 500,
+                    "max_depth": 12,
+                    "max_samples": 0.8,
+                    "min_samples_split": 5,
+                    "min_samples_leaf": 2,
+                    "bootstrap": true,
+                    "criterion": "gini",
+                    "max_features": "sqrt",
+                    "random_state": 42
+                }
+            }
+        },
+        "knn regressor kdtree": {
+            "algorithm": {
+                "estimator": "KNeighborsRegressor",
+                "estimator_params": {
+                    "n_neighbors": 100,
+                    "weights": "uniform",
+                    "algorithm": "kd_tree",
+                    "metric": "minkowski",
+                    "p": 2
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": "standard" }
+            }
+        },
+        "kmeans": {
+            "algorithm": {
+                "estimator": "KMeans",
+                "estimator_params": {
+                    "n_clusters": 10,
+                    "n_init": 1,
+                    "max_iter": 30,
+                    "tol": 1e-3,
+                    "random_state": 42,
+                    "init": "k-means++",
+                    "algorithm": "lloyd"
+                },
+                "estimator_methods": {
+                    "inference": "predict"
+                }
+            },
+            "data": {
+                "preprocessing_kwargs": { "normalize": "standard" }
+            }
+        },
+        "linear regression datasets": {
+            "data": [
+                {
+                    "dataset": "hepmass",
+                    "split_kwargs": { "train_size": 2000000, "test_size": null }
+                },
+                {
+                    "dataset": "year_prediction_msd",
+                    "split_kwargs": { "train_size": 0.5, "test_size": 0.5 }
+                }
+            ]
+        },
+        "random forest classifier datasets": {
+            "data": [
+                {
+                    "dataset": "codrnanorm",
+                    "split_kwargs": { "train_size": 0.25, "test_size": null }
+                },
+                {
+                    "dataset": "connect",
+                    "split_kwargs": { "train_size": 0.5, "test_size": null }
+                }
+            ]
+        },
+        "knn regressor datasets": {
+            "data": [
+                {
+                    "dataset": "skin_segmentation",
+                    "split_kwargs": { "train_size": 0.25, "test_size": 0.75 }
+                },
+                {
+                    "dataset": "medical_charges_nominal",
+                    "split_kwargs": { "train_size": 0.75, "test_size": 0.25 }
+                }
+            ]
+        },
+        "kmeans datasets": [
+            {
+                "data": {
+                    "dataset": "hepmass",
+                    "split_kwargs": {
+                        "train_size": 2000000,
+                        "test_size": null,
+                        "shuffle": true,
+                        "random_state": 42
+                    }
+                },
+                "algorithm": {
+                    "estimator_params": { "n_clusters": 50 }
+                }
+            },
+            {
+                "data": {
+                    "dataset": "mnist",
+                    "split_kwargs": { "ignore": true }
+                }
+            }
+        ]
+    },
+    "TEMPLATES": {
+        "linear_regression_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "linear regression",
+                "linear regression datasets"
+            ]
+        },
+        "random_forest_classifier_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "random forest classifier",
+                "random forest classifier datasets"
+            ]
+        },
+        "knn_regressor_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "knn regressor kdtree",
+                "knn regressor datasets"
+            ]
+        },
+        "kmeans_throughput": {
+            "SETS": [
+                "sklearn-ex[cpu] implementations",
+                "throughput settings",
+                "kmeans",
+                "kmeans datasets"
+            ]
+        }
+    }
+}
