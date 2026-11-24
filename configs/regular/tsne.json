@@ -25,7 +25,7 @@
     "TEMPLATES": {
         "sklearn tsne": {
             "SETS": [
-                "sklearn-ex[cpu,gpu] implementations",
+                "sklearn-ex[cpu] implementations",
                 "common tsne parameters",
                 "sklearn parameters",
                 "tsne datasets"
